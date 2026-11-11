@@ -84,9 +84,9 @@ const metalTex = () => ctex("ar_metal2", 512, 512, (g, r) => {
   g.strokeStyle = "rgba(255,255,255,0.05)"; for (let i = 0; i < 40; i++) { g.beginPath(); const x = r() * 512, y = r() * 512; g.moveTo(x, y); g.lineTo(x + 30 * r(), y + 3); g.stroke(); }
 });
 const discTex = (n: number) => ctex("ar_disc" + n, 256, 256, (g) => {
-  g.fillStyle = "#3b4150"; g.beginPath(); g.arc(128, 128, 124, 0, 7); g.fill();
-  g.strokeStyle = "#1a1d24"; g.lineWidth = 10; g.stroke();
-  g.fillStyle = "#c8ccd6"; g.font = "bold 92px DejaVu Sans, sans-serif"; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText(String(n), 128, 134);
+  g.fillStyle = "#eef0f4"; g.beginPath(); g.arc(128, 128, 124, 0, 7); g.fill();   // socles blancs (décision utilisateur)
+  g.strokeStyle = "#8d939f"; g.lineWidth = 10; g.stroke();
+  g.fillStyle = "#2a2e38"; g.font = "bold 92px DejaVu Sans, sans-serif"; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText(String(n), 128, 134);
 });
 const speakerTex = () => ctex("ar_speaker", 256, 256, (g) => {
   g.fillStyle = "#1c1f26"; g.fillRect(0, 0, 256, 256);
