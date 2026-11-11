@@ -32,13 +32,15 @@ Alors, tu cours vers le **monolithe**, ou vers la **forêt** ? Dis-le en comment
 
 ## Découpage visuel prévu (≈ 16 plans)
 1. POV au sol, herbe floue au premier plan, mains + bracelet « 24 » (insert lumineux cyan).
-2. Plan large : silhouettes qui se relèvent dans une clairière brumeuse, aube froide.
+2. Plan large en lent travelling latéral : silhouettes qui se relèvent dans une clairière brumeuse, aube froide.
 3. Contre-plongée sur le ciel : légère trame/hexagones du dôme visible (le « plafond »).
 4. Insert haut-parleur dans un tronc ; la voix résonne (sous-titres entre « »).
 5. Écran géant dans le ciel : logo de l'Arène, chiffre 24 (texte diégétique).
 6. Plan des caméras-drones dans les arbres (« filmé ») + chiffres de paris défilant sur l'écran du ciel.
 7. Insert bracelet (« compteur »).
-8. Glissé vers le centre : monolithe noir, caisses ; lumière rouge d'alerte en haut du monolithe.
+8. **Plan signature** (« Au centre de la clairière… », ~4 s) : la caméra part du POV, s'élève d'une traite au-dessus des
+   arbres et bascule en plongée : le monolithe noir et les caisses au centre, les 24 candidats en cercle tout autour,
+   la forêt et le bord du dôme au loin. Lumière rouge d'alerte en haut du monolithe.
 9. Écran du ciel : 60 → compte à rebours rouge.
 10. Le garçon (carte 2D, capuche, visage inquiet) en plan moyen, flou d'arrière-plan.
 11. Insert gourde/caisse d'eau sous la lumière rouge.

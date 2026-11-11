@@ -36,6 +36,9 @@ Valeurs de style : `docs/STYLE_ARTISTIQUE.md`. Code : `docs/ARCHITECTURE_TECHNIQ
 3. `CAMS` : coupe sur chaque grand saut, glissés 18-40 images centrés sur le mot, poussée continue, rolls 4-5° sur les temps forts.
 4. `KICKS` aux impacts, `XFADE` aux changements de lieu, `FLASH_AT` après l'accroche, `DOF` par plan, `FOREGROUND` dans ~1/3 des plans.
 5. Règle d'or : chaque réaction visuelle 0-3 images **avant** son mot.
+6. **Plans spectaculaires** : 1-2 par épisode sur les moments clés (révélation du lieu, retournement) : envolée
+   POV → plongée aérienne, orbite, survol (courbe de Bézier comme `S15c` du bridge, 90-120 images, glide).
+   La caméra subjective « tu » reste la base, entrecoupée de plans larges cinéma.
 
 ## Étape 5 — Monde
 - `lights.ts` (presets/palette), `build.ts` (lieu, maisons, props Kenney recolorés, culling des lignes de vue),
