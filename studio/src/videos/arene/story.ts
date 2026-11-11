@@ -29,8 +29,7 @@ export type ShotDef = { id: number; a: number; b: number; insert?: Insert };
 // nouveaux plans (ids 21-28) : redressement POV, visage, grue dans la forêt, drone, écran des paris, travelling circulaire, ravitaillement
 export const SHOTS: ShotDef[] = [
   { id: 1, a: 0, b: 108 },          // réveil au ras de l'herbe
-  { id: 21, a: 108, b: 168 },       // tu te redresses (POV qui se lève, candidats encore assis)
-  { id: 2, a: 168, b: 262, insert: "wrist" }, // bracelet 24
+  { id: 29, a: 108, b: 262 },       // depuis le centre, poussée rapide vers toi : tu regardes devant, puis baisses la tête vers ton bracelet
   { id: 3, a: 262, b: 370 },        // les autres se relèvent (travelling latéral)
   { id: 22, a: 370, b: 445 },       // visage d'un candidat perdu (arc lent)
   { id: 4, a: 445, b: 530 },        // le ciel trop lisse (contre-plongée)
@@ -56,6 +55,8 @@ export const SHOTS: ShotDef[] = [
 export const shotAt = (f: number) => SHOTS.find((s) => f >= s.a && f < s.b) ?? SHOTS[SHOTS.length - 1];
 
 /** moments clés (s) */
+/** plan 29 (images anciennes) : regard baissé, bras levé, écran du bracelet allumé (« Il affiche ») */
+export const HERO_POSE = { down: [170, 184], arm: [176, 192], lit: 206 };
 export const AT = { stand0: 9.4, welcome: 22.2, count24: 23.7, bets: 32.7, tug: 39.6, sixty: 48.6, beep0: 59.0, drop23: 62.4, choice: 65.4 };
 /** nombre affiché par le bracelet */
 export const counter = (t: number) => (t >= AT.drop23 ? 23 : 24);
@@ -103,6 +104,9 @@ const CAMS: Record<number, Key[]> = {
     { f: 38, dur: 56, s: (f) => dolly([0.3, 0.45, RING + 0.6], [1.2, 1.5, RING - 9], push(f, 38, 0.0015), { fov: 46, roll: 0.02 }) },
   ],
   21: [{ f: 108, s: (f) => { const u = glide((f - 108) / 60); return { pos: lerp3([0.3, 0.45, RING + 0.6], [0, 1.5, RING + 0.3], u), look: lerp3([1.2, 0.6, RING - 6], [-2.2, 1.3, RING - 9], u), fov: 46, roll: 0.06 * (1 - u) }; } }],
+  29: [{ f: 108, s: (f) => { const u = glide((f - 108) / 58), v = smooth((f - 166) / 96);
+    const far: V3 = [0.6, 4.2, 8.5], near: V3 = [0.12, 1.3, RING - 2.3], close: V3 = [0.08, 1.22, RING - 2.05];
+    return { pos: lerp3(lerp3(far, near, u), close, v), look: lerp3([0, 1.0, RING], [0, 1.0, RING], v), fov: 40, roll: 0.02 * (1 - u) }; } }],
   2: [{ f: 108, s: (f) => dolly([0, 1.45, RING + 0.15], [0.05, 0.75, RING - 0.55], push(f, 108, 0.0012), { fov: 44 }) }],
   3: [
     { f: 262, s: (f) => { const u = (f - 262) / 108; return { pos: [-7 + 7 * u, 1.55, RING + 9], look: [-3 + 4.2 * u, 1.0, RING - 4], fov: 40 }; } },
@@ -165,8 +169,7 @@ export const camAt = (id: number, f: number): Cam => {
 export type Dof = { f: number; cInf: number; focus?: V3 };
 export const DOF: Dof[] = [
   { f: 0, cInf: 12, focus: [1.0, 0.8, RING - 7] },
-  { f: 108, cInf: 10 },               // redressement : focus = point visé
-  { f: 168, cInf: 16 },               // bracelet : focus = point visé
+  { f: 108, cInf: 9 },                // poussée vers toi : focus = point visé
   { f: 262, cInf: 6, focus: [0, 1.2, RING - 3] },
   { f: 370, cInf: 14 },               // visage
   { f: 445, cInf: 0 },

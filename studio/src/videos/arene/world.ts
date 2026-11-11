@@ -10,7 +10,7 @@ import { TONE, CHAR, untone } from "../bridge/shade";
 import { NOINK } from "../bridge/ink";
 import { Pool, Actor, Fx, SU } from "../bridge/cast";
 import { Pen, bodyFront, Outfit, Expr, INK, SKINS } from "../bridge/toon";
-import { FPS, RING, HERO, BOY, discPos, dronePos, shotAt, camAt, counter, countdown, AT, SPEAKER, SKYSCREEN, TOWER_SCREEN, WATER, V3, smooth } from "./story";
+import { FPS, RING, HERO, BOY, HERO_POSE, discPos, dronePos, shotAt, camAt, counter, countdown, AT, SPEAKER, SKYSCREEN, TOWER_SCREEN, WATER, V3, smooth } from "./story";
 import { DAWN } from "./look";
 
 // ---------------- assets ----------------
@@ -131,6 +131,7 @@ const SUITS = ["#4f5d4a", "#5b5148", "#46566b", "#6a4f4f", "#55604f", "#4a4a5a"]
 const outfitOf = (i: number): Outfit => i === BOY
   ? { jacket: "#2f3a4f", pants: "#2b2f3a", boots: "#1d1a20", hat: "hair", hair: "#6b3a24", dress: "#34405a", skin: SKINS[2] } // la fille qui murmure
   : { jacket: SUITS[i % 6], pants: "#2e3036", boots: "#1d1a20", hat: i % 3 === 0 ? null : "hair", hair: ["#2a201a", "#5a3b2a", "#8a6a3a", "#1d1a20"][i % 4], skin: SKINS[i % 4], build: i % 7 === 3 ? "stout" : "adult" };
+const HERO_OUTFIT: Outfit = { jacket: "#3a4458", pants: "#2b2f3a", boots: "#1d1a20", hat: "hair", hair: "#3a2a20", skin: "#f2c49c" }; // assorti à l'insert poignet
 const EXPR: Expr[] = ["nervous", "stern", "shock", "neutral", "nervous", "dazed"];
 const hh = (i: number, s = 0) => { const v = Math.sin(i * 127.1 + s * 311.7) * 43758.5453; return v - Math.floor(v); };
 const tierOf = (d: number): [number, number, number] => (d < 3.5 ? [1080, 1800, 1.8] : d < 12 ? [600, 1000, 1] : [300, 500, 0.5]);
@@ -156,6 +157,22 @@ const drawWrist = (g: CanvasRenderingContext2D, n: number, tug: number) => {
   g.fillText(String(n), 0, 6); g.restore();
   g.fillStyle = "#d6dbe4"; for (const y of [-128, 128]) { g.beginPath(); g.arc(55, y, 8, 0, 7); g.fill(); }
   g.restore();
+};
+
+/** avant-bras du héros levé devant la poitrine, bracelet face caméra (espace 600 x 1000, personnage assis) */
+const heroArm = (g: CanvasRenderingContext2D, k: number, lit: boolean) => {
+  if (k <= 0) return;
+  const y = 905 - 140 * k, x0 = 200, x1 = 352 + 10 * k, yy = y - 18 * k;
+  g.save(); g.lineCap = "round"; g.lineJoin = "round";
+  g.strokeStyle = INK; g.lineWidth = 62; g.beginPath(); g.moveTo(x0, y + 40); g.lineTo(x1, yy); g.stroke();
+  g.strokeStyle = "#3a4458"; g.lineWidth = 48; g.beginPath(); g.moveTo(x0, y + 40); g.lineTo(x1 - 40, yy + 10); g.stroke();
+  g.fillStyle = "#f2c49c"; g.strokeStyle = INK; g.lineWidth = 7; g.beginPath(); g.ellipse(x1 + 4, yy - 2, 30, 25, -0.3, 0, 7); g.fill(); g.stroke();
+  // bracelet : boîtier métal + écran noir, « 24 » cyan quand il s'allume
+  const bx = x1 - 52, by = yy + 4; g.save(); g.translate(bx, by); g.rotate(-0.25);
+  g.fillStyle = "#59606e"; g.beginPath(); g.roundRect(-30, -38, 60, 76, 10); g.fill(); g.lineWidth = 6; g.stroke();
+  g.fillStyle = "#0d1218"; g.beginPath(); g.roundRect(-22, -28, 44, 56, 6); g.fill(); g.lineWidth = 3; g.stroke();
+  if (lit) { g.shadowColor = "#4fe3f0"; g.shadowBlur = 16; g.fillStyle = "#7ff3ff"; g.font = `bold 30px ${FONT}`; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText("24", 0, 2); }
+  g.restore(); g.restore();
 };
 
 /** cheveux longs dessinés derrière la tête et les épaules (la fille), dans l'espace 600 x 1000 du dessin */
@@ -359,13 +376,19 @@ export class World {
     const right = V(1, 0, 0).applyQuaternion(cam.quaternion);
     for (let i = 0; i < 24; i++) {
       const A = this.actors[i], Bl = this.blobs[i];
-      if (i === 0) { A.mesh.visible = false; Bl.mesh.visible = false; continue; } // le héros (« tu ») : caméra subjective
+      if (i === 0 && id !== 29) { A.mesh.visible = false; Bl.mesh.visible = false; continue; } // le héros (« tu ») : caméra subjective, sauf au plan 29
       const p = discPos(i), d = cam.position.distanceTo(V(p[0], 1.2, p[2])), [w, h, k] = tierOf(d);
       const st = AT.stand0 + hh(i, 4) * 3, standing = t > st || f >= 445 || (id === 22 && i === 21);
       const ex = f >= 1765 ? (i % 2 ? "nervous" : "stern") : t < 20 ? (i % 3 ? "dazed" : "shock") : EXPR[i % 6];
       const blink = (Math.floor(t * FPS) + Math.floor(hh(i, 9) * 60)) % Math.floor(40 + hh(i, 2) * 30) < 4;
       const o = outfitOf(i), look = id === 11 && i === BOY ? -0.6 : 0;
       const fo = { mode: standing ? "stand" : "sit", expr: (i === BOY && id === 11 ? "nervous" : ex) as Expr, blink, light: -2.4, seed: (i % 7) + 1, facing: 0 as const, look };
+      if (i === 0) { // toi, vu de face : regard droit devant, puis tête baissée vers le bracelet levé
+        const dn = Math.round(smooth((f - HERO_POSE.down[0]) / (HERO_POSE.down[1] - HERO_POSE.down[0])) * 6) / 6;
+        const ar = Math.round(smooth((f - HERO_POSE.arm[0]) / (HERO_POSE.arm[1] - HERO_POSE.arm[0])) * 8) / 8, lit = f >= HERO_POSE.lit;
+        const hf = { mode: "sit", expr: (dn > 0.5 ? "nervous" : "neutral") as Expr, blink: dn > 0 ? false : blink, light: -2.4, seed: 3, facing: 0 as const, look: 0, faceDown: dn };
+        A.r = this.pool.req(`H|${JSON.stringify(hf)}|${ar}|${lit}`, w, h, k, (pen: Pen) => { bodyFront(pen, HERO_OUTFIT, hf as never); heroArm(pen.g, ar, lit); });
+      } else
       A.r = this.pool.req(`F|${i}|${JSON.stringify(fo)}`, w, h, k, (pen: Pen) => { if (i === BOY) longHair(pen, o.hair!); bodyFront(pen, o, fo as never); });
       const yaw = Math.atan2(cam.position.x - p[0], cam.position.z - p[2]);
       A.mesh.position.set(p[0], 0.08 - (standing ? 0 : 0.02), p[2]); A.mesh.rotation.set(0, yaw, 0); A.mesh.visible = true;
