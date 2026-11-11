@@ -69,6 +69,30 @@ def aventure(dur, cues, seed=9):
     for d, g in ((0.33, 0.35), (0.71, 0.22), (1.2, 0.12)):
         k_ = int(d * SR); wh[k_:] += wh[:-k_] * g
     c = cues
+    # bascule épique (option « epic », s) : montée + impact, coups de cuivres aux changements d'accord, galop doublé à l'octave
+    ep = c.get("epic")
+    stab, fx, gal8 = np.zeros(n), np.zeros(n), np.zeros(n)
+    if ep is not None:
+        for cc in range(int(dur // 8) + 1):
+            t0 = cc * 8.0
+            if t0 >= dur: break
+            r0 = CHORDS[cc % 4][0]; Lb = int(2.6 * SR); xb = np.arange(Lb) / SR
+            eb = np.clip(xb / 0.03, 0, 1) * (0.3 + 0.7 * np.exp(-xb * 2.5)) * np.clip((2.6 - xb) / 0.7, 0, 1)
+            put(stab, sum(saw(midi(m), xb, 12) * g for m, g in ((r0 - 12, 1), (r0 - 5, 0.8), (r0, 0.6), (r0 + 3 + (1 if cc % 4 == 3 else 0), 0.45))) * eb, t0)
+        stab = _lp(stab, 1500)
+        k = 0; gal8 = np.zeros(n)
+        while k * 3 * E8 < dur:
+            t0 = k * 3 * E8; r = root(t0)
+            for off, d, g in ((0, E8 * 1.4, 1.0), (2 * E8, E8 * 0.45, 0.5), (2.5 * E8, E8 * 0.45, 0.55)):
+                L = int(d * SR); x = np.arange(L) / SR; e = np.clip(x / 0.006, 0, 1) * np.exp(-x * 9)
+                put(gal8, saw(midi(r + 12), x, 6) * e, t0 + off, g)
+            k += 1
+        gal8 = _lp(gal8, 1800)
+        for t1, g in ((ep, 1.0), (c["full"], 0.8)):
+            Lr = int(2.2 * SR); xr = np.arange(Lr) / SR
+            put(fx, np.convolve(rng.standard_normal(Lr) * (xr / 2.2) ** 2, np.ones(6) / 6, "same") * 0.5, t1 - 2.2, g)
+            Lb = int(2.5 * SR); xb = np.arange(Lb) / SR
+            put(fx, np.sin(2 * np.pi * np.cumsum(35 + 60 * np.exp(-xb * 6)) / SR) * np.exp(-xb * 1.6) * 1.6 + np.convolve(rng.standard_normal(Lb), np.ones(12) / 12, "same") * np.exp(-xb * 10) * 2, t1, g)
     base = ambient(dur, 5)
     full, after = ramp(t, c["full"] - 3, c["full"]), ramp(t, c["dip"] + 0.6, c["dip"] + 1.8)
     fin = ramp(t, c["end"] - 6, c["end"] - 4)
@@ -79,6 +103,10 @@ def aventure(dur, cues, seed=9):
     g_tr = 0.07 * ramp(t, c["full"] - 4, c["full"] + 2) * (1 - 0.5 * after)
     wh_on = cues.get("whistle", True)
     y = 0.8 * base * ((1 - 0.6 * ramp(t, 0, 0.1) * (1 - ramp(t, 3.5, 6))) if wh_on else 1) + g_gal * nz(gal) + g_dr * nz(dr) + g_dr2 * nz(dr2) + g_hn * nz(hn) + g_tr * nz(trem) + (0.5 * nz(wh) if wh_on else 0)
+    if ep is not None:
+        E = ramp(t, ep - 0.05, ep + 0.4) * (1 - 0.55 * after * (1 - fin))
+        y = y + E * (0.42 * nz(stab) + 0.22 * nz(gal8) + 0.22 * nz(dr2)) + 0.4 * nz(fx)
+        y += E * 0.12 * nz(hn)
     y *= 1 - ramp(t, c["end"] - 1.2, c["end"])
     return y / (np.abs(y).max() + 1e-9)
 
