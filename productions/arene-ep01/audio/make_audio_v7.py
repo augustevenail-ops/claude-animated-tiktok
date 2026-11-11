@@ -51,7 +51,7 @@ while start + k + 0.2 < DUR - 0.3:                                              
 put(sfx, tone(2900, 0.09), v23 - 0.04, 0.35); put(sfx, tone(2300, 0.09), v23 + 0.1, 0.35)                     # 24 -> 23
 
 MUS = sys.argv[2] if len(sys.argv) > 2 else "A"          # A | B | C | none
-_cues = {"welcome": hp[0]["s"], "sixty": at("soixante"), "dip": v23, "end": DUR, "start": 2.0 if MUS == "J2" else 0.0}
+_cues = {"welcome": hp[0]["s"], "sixty": at("soixante"), "dip": v23, "end": DUR, "start": 2.0 if MUS in ("J2", "J3") else 0.0}
 music = BANDES2[MUS](DUR, _cues) if MUS in BANDES2 else bande(MUS, DUR, {"welcome": hp[0]["s"], "sixty": at("soixante"), "dip": v23, "end": DUR}) if MUS != "none" else np.zeros(N)
 duck = np.ones(N)
 for w in words: duck[int(max(0, w["s"] - 0.08) * SR):int(min(DUR, w["e"] + 0.12) * SR)] = db(-3)

@@ -115,4 +115,23 @@ def band_J2(dur, c):  # J validée + départ retardé (cues["start"]) + tension 
     s0 = c.get("start", 0.0); y *= ramp(t, s0, s0 + 0.35) if s0 else 1   # musique coupée avant « start »
     return nz(y)
 
-BANDES3 = {"H": band_H, "I": band_I, "J": band_J, "K": band_K, "J2": band_J2}
+def band_J3(dur, c):  # J2 + rythme léger dès l'annonce : shaker en doubles croches, petits clics sur 2 et 4, pizzicati en croches
+    T = Track(dur, 46); t = T.t; beat = 60 / 96; bar = 4 * beat; w = c["welcome"]
+    base = band_J2(dur, c)
+    sh, rim, pz = T.buf(), T.buf(), T.buf()
+    NOTES = [50, 57, 53, 57, 50, 57, 55, 53]                               # ré la fa la ré la sol fa (aigu, discret)
+    k = 0
+    while k * beat / 4 < dur:
+        t0 = k * beat / 4
+        T.put(sh, hp(T.rng.standard_normal(int(0.035 * SR)), 6500) * np.exp(-T.x(0.035) * 75), t0, 1.0 if k % 2 else 0.45)
+        if k % 8 == 4: T.put(rim, hp(T.rng.standard_normal(int(0.02 * SR)), 2500) * np.exp(-T.x(0.02) * 160) + 0.5 * np.sin(2 * np.pi * 1700 * T.x(0.02)) * np.exp(-T.x(0.02) * 200), t0)
+        if k % 2 == 0: T.put(pz, pizz(midi(NOTES[(k // 2) % 8] + 12), T.x(0.35)), t0, 1.0 if k % 4 == 0 else 0.7)
+        k += 1
+    I, g = curve(T, c)
+    r = ramp(t, w - 0.2, w + 1.0) * (0.75 + 0.25 * ramp(t, c["sixty"] - 2, c["sixty"]))
+    add = r * (0.10 * nz(sh) + 0.10 * nz(rim) + 0.16 * nz(lp(pz, 2500))) * g
+    s0 = c.get("start", 0.0); add *= ramp(t, s0, s0 + 0.35) if s0 else 1
+    y = base + nz(reverb(add, 1.2, 0.2)) * 0.5 * np.abs(base).max()
+    return nz(y)
+
+BANDES3 = {"H": band_H, "I": band_I, "J": band_J, "K": band_K, "J2": band_J2, "J3": band_J3}
