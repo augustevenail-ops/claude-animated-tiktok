@@ -20,7 +20,7 @@ Chaque année, le pays tire au sort vingt-quatre personnes. Le jeu est **filmé*
 Ton bracelet, c'est ton **compteur**. Il montre combien de joueurs sont encore en vie. Et il ne s'enlève pas.
 Au centre de la clairière, un **monolithe** noir. À ses pieds, des caisses : de l'eau, des armes, des sacs.
 « Le jeu commence dans **soixante** secondes. »
-Le garçon à côté de toi te murmure : « Ne cours pas au **centre**. L'an dernier, la moitié est tombée là-bas. »
+La fille à côté de toi te murmure : « Ne cours pas au **centre**. L'an dernier, la moitié est tombée là-bas. »
 Mais sans **eau**, tu ne tiendras pas trois jours.
 Le compte à rebours démarre.
 Et ton bracelet passe à… **vingt-trois**.
@@ -41,7 +41,7 @@ Alors, tu cours vers le **monolithe**, ou vers la **forêt** ? Dis-le en comment
    arbres et bascule en plongée : le monolithe noir et les caisses au centre, les 24 candidats en cercle tout autour,
    la forêt et le bord du dôme au loin. Lumière rouge d'alerte en haut du monolithe.
 9. Écran du ciel : 60 → compte à rebours rouge.
-10. Le garçon (carte 2D, capuche, visage inquiet) en plan moyen, flou d'arrière-plan.
+10. La fille (carte 2D, visage inquiet) en plan moyen, flou d'arrière-plan.
 11. Insert gourde/caisse d'eau sous la lumière rouge.
 12. Plans serrés alternés des joueurs immobiles, compte à rebours, kick caméra au bip.
 13. Insert bracelet : 24 → 23 (micro-pause, silence musical).
