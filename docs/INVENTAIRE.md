@@ -44,6 +44,11 @@ Les chiffres des rapports restent la source de vérité ; on ne peut pas refaire
 | `audio/cues.md` | Rapport du mix bridge : loudness, carte musicale, 100+ événements SFX | 🔎 loudness + carte musicale |
 | `scripts/*` (5 fichiers) | Stills, planches, plans, QA, fusion | ✅ |
 
+## Références externes fournies par l'utilisateur
+| Ressource | Utilité | Statut |
+|---|---|---|
+| `Apokalyps_video_no_watermark.mp4` (upload, non versionné) | Référence n° 2 : voix, suspense, nuit, montage → `docs/REFERENCE_APOKALYPS.md` | 🔎 image entière (planches 0,5 s), audio mesuré ; transcription automatique impossible |
+
 ## ⛔ Ressources non présentes (à fournir/créer pour produire)
 - Projet Remotion (package.json, `src/index.ts`, `src/Root.tsx`, tsconfig).
 - Modèles Kenney `.glb` (26 noms dans `world.ts`) → `public/bridge/kenney/`.

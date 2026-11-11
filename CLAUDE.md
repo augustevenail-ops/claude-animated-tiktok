@@ -60,6 +60,13 @@ L'analyse complète du dépôt est faite (2026-11-11) : **ne pas la refaire**. L
 2. `docs/STYLE_ARTISTIQUE.md` — toutes les valeurs de style chiffrées (personnages, couleurs, encre, DOF, caméra, son).
 3. `docs/ARCHITECTURE_TECHNIQUE.md` — dépendances, rôle de chaque module, contrats, commandes.
 4. `docs/INVENTAIRE.md` — ressources, ce qui a été analysé, ce qui manque.
+5. `docs/REFERENCE_APOKALYPS.md` — **référence officielle n° 2** (voix, suspense, nuit, montage) : règles §7, écarts à trancher §8.
+
+## Références officielles
+1. Style « bridge » (`SKILL.md`, `references/`, `templates/bridge/`) : look, personnages 2D, caméra, son.
+2. Vidéo Apokalyps (`docs/REFERENCE_APOKALYPS.md`) : **modèle de narration vocale** (voix grave proche, ~4,5 syll/s,
+   micro-pauses avant les révélations), structure à retournements, lumière motivée de nuit, drone + basse pulsée.
+   Ses écarts (français, sous-titres, fiction, CTA) ne s'appliquent **pas** tant que l'utilisateur ne les a pas validés.
 Ouvrir un rapport `references/reports/*.md` ou un fichier de `templates/` seulement pour le détail d'implémentation.
 
 Points clés à retenir :
@@ -75,6 +82,7 @@ Points clés à retenir :
 | `docs/STYLE_ARTISTIQUE.md` | Fiche de style condensée et chiffrée |
 | `docs/ARCHITECTURE_TECHNIQUE.md` | Pile technique, modules, chaîne de rendu et audio, commandes |
 | `docs/INVENTAIRE.md` | Inventaire des ressources et statut d'analyse |
+| `docs/REFERENCE_APOKALYPS.md` | Analyse de la vidéo de référence n° 2 et règles réutilisables |
 | `README.md` | Présentation, installation, structure du dépôt |
 | `SKILL.md` | Pipeline complet, valeurs de look finales, boucle d'ajustement, pièges connus |
 | `references/STYLE_BIBLE.md` | Formule de script et de mise en image mesurée sur 20 shorts |
