@@ -1,7 +1,7 @@
 # Musique « aventure angoissante » (synthèse numpy) + sifflement-signature ORIGINAL de la série (4 notes propres au projet,
-# aucune reprise d'un motif existant). 6/8 à 64 mesures/min (une mesure = 0,9375 s ; accord Rém - Si♭ - Solm - La toutes
-# aucune reprise d'un motif existant). 6/8 (croche 0,3125 s, mesure 1,875 s ; accord Rém - Si♭ - Solm - La toutes
-
+# aucune reprise d'un motif existant). 6/8 (croche 0,3125 s, mesure 1,875 s) ; accords Rém - Si♭ - Solm - La toutes
+# les 8 s (nappe d'ambient.py), galop des cordes graves étouffées, thème de cors lent (ré dorien), tambours graves espacés,
+# trémolo aigu discret pendant le compte à rebours, sifflement + réponse lointaine au tout début.
 # aventure(dur, cues) -> mono float64 48 kHz. cues : drums, full, dip, end (s). Aperçu : python aventure.py 70 apercu.wav
 import os, subprocess, sys
 import numpy as np
