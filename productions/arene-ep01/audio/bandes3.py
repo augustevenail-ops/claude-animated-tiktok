@@ -134,4 +134,21 @@ def band_J3(dur, c):  # J2 + rythme léger dès l'annonce : shaker en doubles cr
     y = base + nz(reverb(add, 1.2, 0.2)) * 0.5 * np.abs(base).max()
     return nz(y)
 
-BANDES3 = {"H": band_H, "I": band_I, "J": band_J, "K": band_K, "J2": band_J2, "J3": band_J3}
+def band_J4(dur, c):  # J3 jusqu'à « Le jeu commence… », puis nappe tendue tenue SANS rythmique (place pour la fille qui chuchote)
+    T = Track(dur, 47); t = T.t; k0 = c["calm"]
+    base = band_J3(dur, c)
+    CH = [(38, 45, 50), (38, 46, 51), (38, 45, 50), (37, 44, 49)]
+    br = T.buf()
+    for k in range(int(dur // 8) + 1): T.put(br, sum(pad(midi(m), T.x(8.6), 1.5) * gg for m, gg in zip(CH[k % 4], (1, 0.7, 0.5))), k * 8.0)
+    drone = saw(midi(26), t, 6) * (0.8 + 0.2 * np.sin(2 * np.pi * 0.12 * t))
+    cluster = (np.sin(2 * np.pi * midi(86) * t) + np.sin(2 * np.pi * midi(87) * t)) * (0.7 + 0.3 * np.sin(2 * np.pi * 0.5 * t))
+    I, g = curve(T, c)
+    calm = (0.5 * nz(lp(br, 650)) + 0.3 * nz(lp(drone, 220)) + 0.06 * nz(cluster) * (0.5 + 0.5 * I)) * g
+    calm = nz(reverb(calm, 2.4, 0.35))
+    seg = (t > k0 - 6) & (t < k0); segc = (t > k0 + 1) & (t < c["dip"] - 0.5)
+    rb = np.sqrt(np.mean(base[seg] ** 2)); rc = np.sqrt(np.mean(calm[segc] ** 2)) + 1e-9
+    calm *= rb / rc * 10 ** (-2.5 / 20)                                     # un peu sous le niveau d'avant
+    x = ramp(t, k0 - 0.2, k0 + 1.0)
+    return nz(base * (1 - x) + calm * x)
+
+BANDES3 = {"H": band_H, "I": band_I, "J": band_J, "K": band_K, "J2": band_J2, "J3": band_J3, "J4": band_J4}

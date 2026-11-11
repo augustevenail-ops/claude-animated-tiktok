@@ -51,10 +51,10 @@ while start + k + 0.2 < DUR - 0.3:                                              
 put(sfx, tone(2900, 0.09), v23 - 0.04, 0.35); put(sfx, tone(2300, 0.09), v23 + 0.1, 0.35)                     # 24 -> 23
 
 MUS = sys.argv[2] if len(sys.argv) > 2 else "A"          # A | B | C | none
-_cues = {"welcome": hp[0]["s"], "sixty": at("soixante"), "dip": v23, "end": DUR, "start": 2.0 if MUS in ("J2", "J3") else 0.0}
+_cues = {"welcome": hp[0]["s"], "sixty": at("soixante"), "dip": v23, "end": DUR, "start": 2.0 if MUS in ("J2", "J3", "J4") else 0.0, "calm": [w for w in words if w["w"].startswith("commence")][0]["s"] - 0.37}
 music = BANDES2[MUS](DUR, _cues) if MUS in BANDES2 else bande(MUS, DUR, {"welcome": hp[0]["s"], "sixty": at("soixante"), "dip": v23, "end": DUR}) if MUS != "none" else np.zeros(N)
 duck = np.ones(N)
-for w in words: duck[int(max(0, w["s"] - 0.08) * SR):int(min(DUR, w["e"] + 0.12) * SR)] = db(-3)
+for w in words: duck[int(max(0, w["s"] - 0.08) * SR):int(min(DUR, w["e"] + 0.12) * SR)] = db(-7 if MUS == "J4" and w.get("role") == "fille" else -3)  # J4 : -4 dB de plus sous le chuchotement
 dip = 1 - (1 - db(-12)) * np.clip(np.minimum((t - (v23 - 1.2)) / 0.3, ((v23 + 1.6) - t) / 0.6), 0, 1)
 music *= smooth(duck, 2000) * dip
 
