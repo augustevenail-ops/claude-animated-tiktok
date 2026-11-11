@@ -1,4 +1,4 @@
-# L'Arène — épisode 2 « Numéro deux » (brouillon v1, à valider)
+# L'Arène — épisode 2 « Dix-neuf » (brouillon v2, à valider)
 
 ## Rappel de la série (voir `productions/arene-ep01/SCRIPT.md`)
 24 personnes tirées au sort, une forêt sous un dôme dont le ciel est un écran, un bracelet-compteur soudé au poignet,
@@ -6,7 +6,59 @@ un monolithe noir au centre. Narration à la 2ᵉ personne, fin sur un choix A/B
 Continuité ép. 1 : tu es sur le **socle n° 1** ; la fille qui chuchote est sur le **socle n° 2**, juste à côté de toi ;
 le compteur est passé à **23** avant même le départ.
 
-## Idée de l'épisode (originale)
+## Script v2 (retours utilisateur du 2026-11-11) — l'idée des objets numérotés (v1, plus bas) est abandonnée
+Résultat du choix de l'ép. 1 (donné par l'utilisateur) : **77 % pour le monolithe**.
+
+### Rappel — repris TEL QUEL de l'ép. 1 (voix + images des plans 1 et 29, ≈ 8,5 s, aucun crédit ni rendu)
+Imagine… Tu te réveilles dans une forêt que tu n'as jamais vue. Avec un bracelet de métal soudé à ton poignet.
+Il affiche un seul chiffre : vingt-quatre.
+
+### Nouveau
+Vous avez été **soixante-dix-sept pour cent** à choisir le monolithe. Alors tu cours.
+Le compte à rebours tombe à zéro… et tout le monde s'élance en même temps.
+Au pied du monolithe, c'est le chaos. Ça pousse, ça tombe, ça hurle.
+Tu attrapes un sac. Quelqu'un tire sur l'autre bretelle. Tu tires plus fort.
+Par terre, entre deux caisses, un **couteau**. Tu le ramasses sans réfléchir.
+Et tu fais demi-tour.
+Ton bracelet bipe. **Vingt et un**. Encore. **Vingt**. **Dix-neuf**.
+Tu cours de toutes tes forces. Tes poumons brûlent.
+Autour de toi, d'autres silhouettes filent vers la forêt. Chacun pour soi.
+Au-dessus de toi, un drone te suit. Sur l'écran du ciel, ton numéro apparaît pour la première fois.
+Tu passes les premiers arbres. Le bruit derrière toi s'éteint d'un coup.
+Et là, au pied d'un tronc… la **fille**. Celle qui t'avait dit de ne pas courir au centre.
+Elle se tient la cheville. Elle ne peut plus marcher.
+{fille}« Pars. Ils arrivent. »
+Derrière vous, des pas. Quelqu'un vous a suivis.
+Alors, tu t'arrêtes pour l'**aider**, ou tu continues de **courir** ? Dis-le en commentaire.
+
+(≈ 180 mots rappel compris ⇒ ≈ 66-70 s. Micro-pauses voulues avant « Vingt et un », « la fille » et « Derrière vous ».
+La violence reste hors champ : coupes rapides, secousses, caisses qui tombent, compteur qui chute.)
+
+### Idées en option (à valider)
+- **Le bruit qui s'éteint** à la lisière : coupure nette de la musique et des bruitages, seul le souffle reste.
+- **Ta cote sur l'écran du ciel** : « N° 1 » apparaît avec une cote qui chute (les spectateurs misent sur toi).
+- **Le sac** : tu n'as pas encore regardé dedans → mystère réservé à l'ép. 3.
+- Fin alternative : « tu ouvres le sac maintenant, ou tu continues de courir ? » (moins forte que la fille blessée).
+
+### Découpage visuel v2 (≈ 16 plans)
+1-2. **Rappel** : plans 1 (plongée du ciel, socles blancs) et 29 (poussée vers toi + bracelet 24) de l'ép. 1, tels quels.
+3. Carte « 77 % » diégétique sur l'écran du ciel (A · MONOLITHE 77 % / B · FORÊT 23 %), en accord avec le texte.
+4. Écran de la tour : 3, 2, 1, **0** ; les fentes rouges s'éteignent d'un coup.
+5. **Plan signature n° 1** : vue du ciel, les 23 silhouettes partent toutes en même temps vers le centre (étoile qui se resserre).
+6-7. Mêlée suggérée : plans très courts caméra secouée, caisses qui basculent, silhouettes floues au premier plan.
+8. Le sac : tir à la corde sur la bretelle (deux mains, deux manches de couleurs différentes).
+9. Insert : le couteau entre deux caisses, ta main qui le ramasse.
+10. Insert bracelet : 21 → 20 → 19 (même insert que l'ép. 1, secousse à chaque bip).
+11. **Plan signature n° 2** : caméra basse qui recule devant toi en pleine course, la tour s'éloigne, d'autres silhouettes filent sur les côtés.
+12. Le drone au-dessus de toi, puis l'écran du ciel avec « N° 1 » et ta cote.
+13. Lisière : passage entre les premiers troncs, silence soudain.
+14. La fille au pied d'un tronc, la main sur la cheville (contre-plongée douce).
+15. Gros plan de la fille qui murmure « Pars. Ils arrivent. »
+16. Choix final : toi et elle, des silhouettes floues au fond entre les arbres ; étiquettes **A · L'AIDER** / **B · COURIR**.
+
+---
+
+## (v1, abandonnée) Idée de l'épisode
 Au signal, tout le ravitaillement est **numéroté** : chaque objet appartient à un candidat. Le haut-parleur annonce
 qu'on peut prendre l'objet d'un autre, mais que c'est **lui qui paiera**. Tu tiens l'eau numéro **deux** : celle de la
 fille qui t'a prévenu. Dilemme moral, sans violence montrée ; la tension vient du compteur, des drones et des paris.
