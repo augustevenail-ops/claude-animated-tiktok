@@ -127,7 +127,14 @@ pas de résolution : la fin renvoie la décision au spectateur.
 12. Fond = drone tonal tenu + basse pulsée ; la tension se règle par le niveau du grave ; silence/retrait avant les chocs.
 13. Bruitages d'interface (vibration, notification) synchronisés à l'image, 0-3 images avant le mot correspondant.
 
-## 8. Écarts avec nos règles actuelles — décisions à prendre par l'utilisateur
+## 8. Écarts avec nos règles d'origine — décisions
+
+**Tranché le 2026-11-11 (utilisateur)** : français ✅, sous-titres comme cette vidéo ✅, fiction angoissante /
+mystérieuse, inventée ou inspirée de l'ambiance de films connus (*La Plateforme*, *Hunger Games*…) ✅, ton non comique ✅,
+couleurs : base de cette vidéo (sombre, intrigant) en gardant des accents saturés ✅.
+**Encore ouvert** : question finale + appel à commenter ; narration à la 2ᵉ personne ; personnages cartes 2D ou 3D.
+
+Tableau d'origine (pour mémoire) :
 | Sujet | Cette référence | Nos règles (CLAUDE.md) |
 |---|---|---|
 | Langue | français | anglais uniquement |
@@ -138,3 +145,22 @@ pas de résolution : la fin renvoie la décision au spectateur.
 | Rendu | personnages partiellement 3D, textures réalistes, nuit sombre | cartes 2D, textures peintes, couleurs saturées |
 Tant que l'utilisateur n'a pas tranché, ces règles restent en vigueur ; seules les règles du §7 compatibles
 (voix, rythme, lumière motivée, audio) s'appliquent d'office.
+
+## 9. Spécification des sous-titres (mesurée, à reproduire)
+- Mots-groupes de **1 à 3 mots**, remplacement sec (pas de fondu, pas d'animation d'entrée), calés sur `words.json`.
+- **MAJUSCULES**, sans-serif très gras (police exacte non identifiable ; équivalent libre proposé : Montserrat Black
+  ou Anton via `@remotion/google-fonts`), blanc #FFFFFF, contour noir fin + légère ombre portée.
+- **Un mot-clé par groupe en rouge #F53C38** (mesuré ≈ rgb 245,60,57) : danger, lieu, chiffre, mot révélateur.
+- Taille : hauteur de capitale ≈ 2 % de la hauteur d'image (≈ 38-40 px à 1920, police ~54 px) ; centré horizontalement ;
+  centre vertical à **~73 %** de la hauteur, remonté à ~71 % ou au-dessus des mains quand le téléphone occupe le bas.
+- Citations entre guillemets français « … » quand un personnage parle ou qu'un SMS est lu.
+- Badge contextuel permanent possible (ex. « NUIT », rouge sur pastille sombre, haut gauche, ~10 % de la hauteur).
+- Implémentation : composant React DOM (`AbsoluteFill`) au-dessus des `ThreeCanvas` dans le composant principal,
+  lisant `words.json` + une table `KEYWORDS`/`GROUPS` dans `story.ts` ; taille en px × (hauteur/1920).
+
+## 10. Palette cible (direction actuelle)
+- Base Apokalyps : luma médiane ~0,18-0,30, p98 ~0,6-0,8, noirs bleutés relevés (jamais 0), vignette marquée.
+- Accents **saturés** issus du style bridge : sources pratiques chaudes (#FFB36B-#FFD9A0), rouge d'alerte #F53C38,
+  cyan/bleu froid des écrans et de la nuit (#3E7FD2, #22A7B6), un accent de couleur par plan maximum.
+- Ombres violet-bleu (jamais brunes ni grises), comme le preset golden du bridge.
+- Encre, personnages (tête haricot, contour prune), DOF et grammaire caméra du bridge restent valables.

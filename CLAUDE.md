@@ -4,14 +4,20 @@ Ce fichier est lu automatiquement par Claude Code au début de chaque session.
 Il fixe le cadre ; le détail technique est dans les fichiers de documentation listés plus bas.
 
 ## Objectif
-Créer des **vidéos 3D verticales de 60 à 90 secondes** (TikTok / Shorts / Reels) :
-des histoires vraies et surprenantes racontées en voix off, avec des personnages cartoon 2D
-dans un monde 3D coloré (contours à l'encre, textures peintes, flou de profondeur, caméras glissées,
-musique et bruitages synthétisés). Tout est rendu en local avec three.js dans Remotion,
+Créer des **vidéos 3D verticales de 60 à 90 secondes** (TikTok / Shorts / Reels), **en français, sous-titrées** :
+des **fictions angoissantes, stressantes, mystérieuses ou intrigantes** (jamais joviales ni comiques),
+inventées ou inspirées de l'ambiance de films connus (ex. *La Plateforme*, *Hunger Games*), racontées en voix off,
+avec des personnages cartoon dans un monde 3D (contours à l'encre, textures peintes, flou de profondeur,
+caméras glissées, musique et bruitages synthétisés). Tout est rendu en local avec three.js dans Remotion,
 **sans générateur vidéo IA**.
 
+**Direction artistique (décision utilisateur du 2026-11-11)** : partir de la vidéo Apokalyps
+(`docs/REFERENCE_APOKALYPS.md`) — couleurs parfois sombres, lumière motivée, ambiance intrigante et stressante —
+tout en gardant de la **saturation** et la construction du style bridge (personnages, encre, caméra) :
+zones sombres désaturées + accents saturés (lumières pratiques chaudes, rouge, cyan…), jamais une image grise et terne.
+
 - Format : 1080x1920, 30 fps ; export final 2K 1440x2560 (`--scale 1.3333`).
-- Durée : 60-90 s (script à ~3,7 mots/s, soit ~220-330 mots). Cette fourchette prime sur
+- Durée : 60-90 s (français à ~4,5 syllabes/s ≈ 3 mots/s, soit ~180-270 mots). Cette fourchette prime sur
   les « 55-70 s » mentionnés dans `SKILL.md`.
 - Exemple de référence : *The Bridge That Fell for a Song* (pont de Broughton, 1831), source dans `templates/bridge/`.
 
@@ -27,11 +33,15 @@ musique et bruitages synthétisés). Tout est rendu en local avec three.js dans 
    → monde → personnages → post → son → vérifications de look → rendu final → livraison.
 2. Toute nouvelle vidéo part d'une **copie** de `templates/bridge/` vers `src/videos/<nom>/` ;
    ne jamais modifier les templates pour un projet donné.
-3. Histoire, personnages et voix sont **toujours originaux**. Les références (`references/`)
-   servent à l'étude du style uniquement : ne jamais les publier, les envoyer ni copier leurs scripts,
-   personnages ou plans ; ne jamais citer la chaîne étudiée.
-4. Pas de sous-titres ni de textes à l'écran, anglais uniquement, voix au ton constant,
-   blagues = faits réels vérifiés (source en tête de `SCRIPT.md`).
+3. Histoire, personnages et voix sont **toujours originaux**. Une histoire peut reprendre l'**ambiance** ou le
+   **concept général** d'un film connu (huis clos vertical, jeu de survie…), jamais ses noms, personnages, répliques,
+   scènes ou visuels reconnaissables. Les références (`references/`, vidéo Apokalyps) servent à l'étude du style
+   uniquement : ne jamais les publier, les envoyer ni copier leurs scripts, personnages ou plans ; ne jamais citer
+   les chaînes étudiées.
+4. **Français** uniquement ; **sous-titres à l'écran** comme la vidéo Apokalyps (spec dans
+   `docs/REFERENCE_APOKALYPS.md` §9) ; textes diégétiques autorisés (SMS, post-it, badges) ; voix au ton constant de
+   conteur, la tension vient des mots et des pauses. Ces règles **priment sur** « English only » et « no captions »
+   de `SKILL.md`/`STYLE_BIBLE.md` et sur la formule humoristique (« Luckily / Unluckily », faits réels).
 5. Tout est calé sur `words.json` : chaque réaction visuelle tombe 0-3 images avant son mot.
    Verrouiller les timings image **avant** de produire le son.
 6. Mix standard : musique +3 dB, SFX -6 dB, voix inchangée. Mux avec `-map 0:v:0 -map 1:a:0`.
@@ -66,7 +76,8 @@ L'analyse complète du dépôt est faite (2026-11-11) : **ne pas la refaire**. L
 1. Style « bridge » (`SKILL.md`, `references/`, `templates/bridge/`) : look, personnages 2D, caméra, son.
 2. Vidéo Apokalyps (`docs/REFERENCE_APOKALYPS.md`) : **modèle de narration vocale** (voix grave proche, ~4,5 syll/s,
    micro-pauses avant les révélations), structure à retournements, lumière motivée de nuit, drone + basse pulsée.
-   Ses écarts (français, sous-titres, fiction, CTA) ne s'appliquent **pas** tant que l'utilisateur ne les a pas validés.
+   **Référence principale** depuis le 2026-11-11 pour la langue, les sous-titres, le ton, la structure et les couleurs.
+   Encore à trancher : question finale / appel à commenter, narration à la 2ᵉ personne (cf. §8 du document).
 Ouvrir un rapport `references/reports/*.md` ou un fichier de `templates/` seulement pour le détail d'implémentation.
 
 Points clés à retenir :

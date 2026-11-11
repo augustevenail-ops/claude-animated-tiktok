@@ -1,5 +1,10 @@
 # Style artistique — fiche de référence condensée
 
+> **Direction actuelle (2026-11-11)** : français, sous-titres, fiction angoissante, couleurs plus sombres de
+> `docs/REFERENCE_APOKALYPS.md` (§9 sous-titres, §10 palette) **priment** sur les §1 (« aucun sous-titre »),
+> §3 (palette jour très claire) et §8 (script humoristique en anglais) ci-dessous. Le reste (personnages, encre,
+> textures, DOF, caméra, son) reste la base technique.
+
 Synthèse chiffrée de `references/STYLE_BIBLE.md`, des 7 rapports `references/reports/*.md`, de `SKILL.md`
 et du code `templates/bridge/`. Les valeurs « **cible** » sont celles mesurées sur les 20 shorts de référence ;
 les valeurs « **bridge** » sont celles réellement codées dans le template après 4 tours de vérification.

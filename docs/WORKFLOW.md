@@ -14,14 +14,16 @@ Valeurs de style : `docs/STYLE_ARTISTIQUE.md`. Code : `docs/ARCHITECTURE_TECHNIQ
 5. Définir `REMOTION_TMP` sur un disque spacieux.
 6. Validation : rendre quelques stills du bridge non modifié (copie de `templates/bridge/`) pour vérifier la pile.
 
-## Étape 1 — Sujet et faits
-- Une histoire **vraie**, surprenante, avec cause → effet **physique** (visuelle) + une analogie du quotidien.
-- Écrire les faits **avec sources** en tête de `SCRIPT.md` (modèle : `templates/SCRIPT_example.md`).
+## Étape 1 — Concept (fiction)
+- Fiction **angoissante / mystérieuse / stressante**, inventée ou inspirée de l'**ambiance** d'un film connu
+  (sans reprendre noms, personnages, scènes). Un lieu fort, une règle ou une menace claire, des objets-preuves visuels.
+- En tête de `SCRIPT.md` : pitch en 2 lignes, inspiration éventuelle, lieu(x), personnages, objets-preuves.
 
-## Étape 2 — Script (validation utilisateur obligatoire)
-- 220-330 mots à ~3,7 mots/s (60-90 s). Formule : accroche → cadre → escalade (3-6 temps) → rupture →
-  « Luckily / Unluckily » → « You see, » + analogie → conséquence → chute/rappel.
-- Ne jamais décrire ce que l'image montre déjà. Blagues = faits réels. Après validation : « just do it ».
+## Étape 2 — Script en français (validation utilisateur obligatoire)
+- 180-270 mots (~3 mots/s, ~4,5 syllabes/s). Formule (REFERENCE_APOKALYPS §1 et §7) : accroche anormale en une phrase →
+  indices rassurants → contradiction prouvée par un objet → approche → retournement 1 → règle/test →
+  retournement 2 plus fort → fin ouverte ou chute glaçante (question finale : à confirmer).
+- Ne jamais décrire ce que l'image montre déjà. Marquer les mots-clés rouges des sous-titres. Après validation : « just do it ».
 
 ## Étape 3 — Voix
 - `voice.wav` (ton constant) + `words.json` `[{ "w": "word", "s": 0.12, "e": 0.40 }, …]` (s/e obligatoires) via
@@ -43,6 +45,9 @@ Valeurs de style : `docs/STYLE_ARTISTIQUE.md`. Code : `docs/ARCHITECTURE_TECHNIQ
 ## Étape 6 — Personnages
 - Nouvelles tenues `Outfit` dans `toon.ts` (respecter proportions et couleurs), nouvelles expressions/props si nécessaire.
 - `cast.ts` : rôles, positions, marches, clignements, effets 2D par plan (`stage`).
+
+## Étape 6 bis — Sous-titres
+- Composant React au-dessus des canvas, groupes de 1-3 mots en majuscules, mot-clé rouge #F53C38 (REFERENCE_APOKALYPS §9).
 
 ## Étape 7 — Post
 - Ne pas toucher la chaîne (Ink → lens → bloom → tone map → grade) sauf besoin ; ajuster `GRADES` si nouvelle lumière (nuit…).
