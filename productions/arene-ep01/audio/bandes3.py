@@ -96,4 +96,23 @@ def band_K(dur, c):
     y = 0.7 * filt + 0.12 * nz(hat) * I + 0.25 * nz(padd) * (0.5 + 0.5 * I) + 0.3 * nz(heart(T, beat)) * ramp(t, c["sixty"] - 2, c["sixty"]) + 0.3 * nz(swell(T, c["welcome"]) + swell(T, c["sixty"]))
     return nz(reverb(y * g, 1.4, 0.22))
 
-BANDES3 = {"H": band_H, "I": band_I, "J": band_J, "K": band_K}
+def band_J2(dur, c):  # J validée + départ retardé (cues["start"]) + tension supplémentaire dès l'annonce du haut-parleur
+    T = Track(dur, 45); t = T.t; beat = 60 / 96; bar = 4 * beat; w = c["welcome"]
+    base = band_J(dur, c)
+    ghost, pedal = T.buf(), T.buf()
+    x = T.x(0.5); G = np.sin(2 * np.pi * np.cumsum(90 + 30 * np.exp(-x * 25)) / SR) * np.exp(-x * 12)
+    k = 0
+    while k * beat / 4 < dur:   # toms fantômes en doubles croches entre les coups
+        if k % 4 in (1, 3): T.put(ghost, G, k * beat / 4, 0.5 + 0.5 * (k % 8 == 7))
+        xp = T.x(beat / 2 * 0.9)
+        if k % 2 == 0: T.put(pedal, saw(midi(26), xp, 8) * np.clip(xp / 0.01, 0, 1) * np.exp(-xp * 5), k * beat / 4, 1 if k % 8 == 0 else 0.6)
+        k += 1
+    cluster = (np.sin(2 * np.pi * midi(86) * t) + np.sin(2 * np.pi * midi(87) * t) + 0.6 * np.sin(2 * np.pi * midi(81) * t)) * (0.65 + 0.35 * np.sin(2 * np.pi * 9 * t))
+    I, g = curve(T, c)
+    ten = ramp(t, w - 0.2, w + 1.5) * (0.6 + 0.4 * ramp(t, c["sixty"] - 2, c["sixty"]))
+    add = ten * (0.22 * nz(lp(ghost, 1200)) + 0.22 * nz(lp(pedal, 380)) + 0.07 * nz(cluster) * (0.5 + 0.5 * I)) * g
+    y = base + nz(reverb(add, 2.0, 0.3)) * 0.55 * np.abs(base).max()
+    s0 = c.get("start", 0.0); y *= ramp(t, s0, s0 + 0.35) if s0 else 1   # musique coupée avant « start »
+    return nz(y)
+
+BANDES3 = {"H": band_H, "I": band_I, "J": band_J, "K": band_K, "J2": band_J2}
