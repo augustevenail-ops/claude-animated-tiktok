@@ -54,9 +54,27 @@ musique et bruitages synthétisés). Tout est rendu en local avec three.js dans 
 - Grouper les appels d'outils indépendants dans une même réponse.
 - Les stills de contrôle se font à l'échelle 0.5 ; le rendu 2K complet seulement à la fin.
 
+## Démarrage rapide (nouvelle session)
+L'analyse complète du dépôt est faite (2026-11-11) : **ne pas la refaire**. Lire dans l'ordre, selon le besoin :
+1. `docs/WORKFLOW.md` — étapes de production + checklist « première vidéo ».
+2. `docs/STYLE_ARTISTIQUE.md` — toutes les valeurs de style chiffrées (personnages, couleurs, encre, DOF, caméra, son).
+3. `docs/ARCHITECTURE_TECHNIQUE.md` — dépendances, rôle de chaque module, contrats, commandes.
+4. `docs/INVENTAIRE.md` — ressources, ce qui a été analysé, ce qui manque.
+Ouvrir un rapport `references/reports/*.md` ou un fichier de `templates/` seulement pour le détail d'implémentation.
+
+Points clés à retenir :
+- Le dépôt contient le **code source** (templates) mais **pas** le projet Remotion (package.json, `src/Root.tsx`, `public/`),
+  ni les modèles Kenney, ni voix, ni vidéos de référence : ils sont à créer/fournir (voir `docs/INVENTAIRE.md`).
+- La grammaire caméra de `STYLE_BIBLE.md` (« ease-out bursts ») est obsolète : suivre `SKILL.md` / `story.ts` (glissés smootherstep).
+- Le son reprend les timings d'image (`audio/timeline.py` miroir de `story.ts`) : verrouiller l'image avant le son.
+
 ## Documentation du projet
 | Fichier | Contenu |
 |---|---|
+| `docs/WORKFLOW.md` | Workflow complet et réutilisable de création vidéo |
+| `docs/STYLE_ARTISTIQUE.md` | Fiche de style condensée et chiffrée |
+| `docs/ARCHITECTURE_TECHNIQUE.md` | Pile technique, modules, chaîne de rendu et audio, commandes |
+| `docs/INVENTAIRE.md` | Inventaire des ressources et statut d'analyse |
 | `README.md` | Présentation, installation, structure du dépôt |
 | `SKILL.md` | Pipeline complet, valeurs de look finales, boucle d'ajustement, pièges connus |
 | `references/STYLE_BIBLE.md` | Formule de script et de mise en image mesurée sur 20 shorts |
