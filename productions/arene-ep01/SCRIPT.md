@@ -13,7 +13,7 @@
 Imagine… Tu te réveilles dans une forêt que tu n'as jamais vue. Avec un bracelet de métal soudé à ton poignet.
 Il affiche un seul chiffre : **vingt-quatre**.
 Autour de toi, d'autres gens se relèvent dans l'herbe. Personne ne sait comment il est arrivé là.
-Au-dessus des arbres, le ciel est étrange. Trop lisse. Comme un **plafond** peint.
+Au-dessus des arbres, le ciel est bizarre. Trop lisse. Comme un **plafond** peint.
 Puis une voix sort des troncs.
 {hp}« Bienvenue dans l'**Arène**. Vous êtes vingt-quatre. Un seul ressortira. »
 Chaque année, le pays tire au sort vingt-quatre personnes. Le jeu est **filmé**, diffusé partout. Et les gens parient.

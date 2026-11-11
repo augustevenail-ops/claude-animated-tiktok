@@ -45,4 +45,4 @@ Commande : `python tools/voice_edit.py productions/<ep>/voice --tension "<mot>"`
   toms sourds réverbérés en motif régulier + cuivres graves tenus ; tension qui monte par couches, silence net sur « vingt-trois ».
   Leçon : pour ce type de scène, viser « l'attente avant le déclenchement » (pulsation, montée par couches), pas l'épique ni l'ouverture de film.
 - Correction de texte isolée sans tout régénérer : `python tools/voice_patch.py productions/<ep> <i_premier_mot> <i_dernier_mot> "<phrase>"`
-  (même créneau, durée totale inchangée). En attente : « bizarre » -> « étrange » (mots 44-50) dès que le quota ElevenLabs est rechargé.
+  (même créneau, durée totale inchangée).
