@@ -3,12 +3,14 @@
 #   vent léger (tout du long) ; bip du bracelet sur « vingt-quatre » ; grésillement + bourdonnement du haut-parleur sur ses
 #   répliques ; impacts sur « Bienvenue » et « vingt-trois » ; bips du compte à rebours chaque seconde après « démarre » ;
 #   double bip 24 -> 23. Musique : ducking -3 dB sous la voix, creux -12 dB autour de « vingt-trois ». Master -15 LUFS / -1,2 dBTP.
-# Usage : python make_audio_v7.py [durée_s] [A|B|C|D|E|F|G|none]  -> mix_<X>.wav + mix_<X>_ecoute.mp3
+# Usage : python make_audio_v7.py [durée_s] [A..K|none]  -> mix_<X>.wav + mix_<X>_ecoute.mp3
 import json, os, subprocess, sys
 import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from bandes import bande, SR
 from bandes2 import BANDES2
+from bandes3 import BANDES3
+BANDES2 = {**BANDES2, **BANDES3}
 
 HERE = os.path.dirname(os.path.abspath(__file__)); VOICE = os.path.join(HERE, "..", "voice")
 words = json.load(open(os.path.join(VOICE, "words.json"), encoding="utf-8"))
