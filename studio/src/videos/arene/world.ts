@@ -136,7 +136,7 @@ const drawWrist = (g: CanvasRenderingContext2D, n: number, tug: number) => {
 
 export class World {
   root = new THREE.Group();
-  private sun: THREE.DirectionalLight; private hemi: THREE.HemisphereLight; private fog: THREE.Fog;
+  sun: THREE.DirectionalLight; private hemi: THREE.HemisphereLight; private fog: THREE.Fog;
   private pool = new Pool(); private actors: Actor[] = []; private blobs: Fx[] = [];
   private sky: THREE.Mesh; private skyScreen: Screen; private towerScreen: Screen; private wrist: Screen;
   private ringTop = new THREE.Group(); private drones: THREE.Group[] = []; private grassFg: THREE.Group;
@@ -156,17 +156,21 @@ export class World {
     b.add(new THREE.CircleGeometry(15, 48).rotateX(-Math.PI / 2).translate(0, 0.01, 0), solid("dirt", "#6f5f4a"));
     // forêt : anneau de pins + falaises
     const pines = ["tree_pineTallA", "tree_pineTallB", "tree_pineTallC", "tree_pineTallD", "tree_pineRoundA", "tree_pineRoundC", "tree_pineDefaultA", "tree_pineDefaultB"];
-    for (let i = 0; i < 520; i++) {
-      const a = r() * Math.PI * 2, d = 40 + Math.pow(r(), 0.7) * 120;
-      put(b, kit, pines[i % pines.length], Math.sin(a) * d, 0, Math.cos(a) * d, 9 + r() * 9, r() * 6);
+    // forêt en secteurs (culling par la caméra) : anneau proche avec ombres, anneau lointain sans ombres
+    const SECT = 16, near = Array.from({ length: SECT }, () => new Batch()), far = Array.from({ length: SECT }, () => new Batch());
+    const sectOf = (a: number) => Math.floor((((a % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI)) / (2 * Math.PI) * SECT) % SECT;
+    for (let i = 0; i < 340; i++) {
+      const a = r() * Math.PI * 2, d = 40 + Math.pow(r(), 0.8) * 115, isNear = d < 72;
+      put((isNear ? near : far)[sectOf(a)], kit, pines[i % pines.length], Math.sin(a) * d, 0, Math.cos(a) * d, 9 + r() * 9, r() * 6);
     }
+    const grassB = Array.from({ length: SECT }, () => new Batch());
     // rochers, souches, buissons dans la clairière
     for (let i = 0; i < 60; i++) {
       const a = r() * Math.PI * 2, d = 26 + r() * 16, n = ["rock_largeA", "rock_largeC", "rock_largeE", "stump_old", "stump_round", "log", "plant_bushLarge"][i % 7];
       if (Math.hypot(Math.sin(a) * d - HERO[0], Math.cos(a) * d - HERO[2]) < 9 || (Math.sin(a) * d > -9 && Math.sin(a) * d < 5 && Math.cos(a) * d > 26 && Math.cos(a) * d < 36)) continue;
       put(b, kit, n, Math.sin(a) * d, 0, Math.cos(a) * d, n.startsWith("rock") ? 0.8 + r() * 1.6 : 0.5 + r() * 0.6, r() * 6);
     }
-    for (let i = 0; i < 900; i++) { const a = r() * Math.PI * 2, d = 6 + r() * 40; put(b, kit, i % 3 ? "grass_large" : "grass", Math.sin(a) * d, 0, Math.cos(a) * d, 0.35 + r() * 0.4, r() * 6); }
+    for (let i = 0; i < 520; i++) { const a = r() * Math.PI * 2, d = 6 + r() * 40; put(grassB[sectOf(a)], kit, i % 3 ? "grass_large" : "grass", Math.sin(a) * d, 0, Math.cos(a) * d, 0.35 + r() * 0.4, r() * 6); }
     // socle octogonal à trois marches + tour en plaques décalées
     const met = solid("metal", "#4a5060", { map: rep(metalTex(), 1, 1) }), dark = solid("dark", "#262a33");
     [[7.5, 0], [6.2, 0.35], [5.0, 0.7]].forEach(([rad, y]) => b.add(new THREE.CylinderGeometry(rad, rad, 0.35, 8).translate(0, y + 0.175, 0), met));
@@ -230,6 +234,8 @@ export class World {
     spk.position.set(...SPEAKER); spk.rotation.y = Math.PI; R.add(spk);
     const led = new THREE.Mesh(new THREE.SphereGeometry(0.03, 8, 6), slit); led.position.set(SPEAKER[0] + 0.2, SPEAKER[1] + 0.2, SPEAKER[2] - 0.12); led.layers.set(NOINK); R.add(led);
     b.build(R, true);
+    const sub = (bs: Batch[], cast: boolean) => bs.forEach((x) => { const g = new THREE.Group(); x.build(g, cast); g.traverse((o) => { const m = o as THREE.Mesh; if (m.isMesh) { m.geometry.computeBoundingSphere(); m.frustumCulled = true; } }); R.add(g); });
+    sub(near, true); sub(far, false); sub(grassB, false);
     R.traverse((o) => { const m = o as THREE.Mesh; if (m.isMesh && !m.layers.isEnabled(NOINK)) m.receiveShadow = true; });
     // drones
     for (let k = 0; k < 5; k++) {

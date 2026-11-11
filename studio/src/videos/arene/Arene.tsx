@@ -17,8 +17,8 @@ import { GRADE_DAWN } from "./look";
 import WORDS from "./words.json";
 
 export const ARENE_FRAMES = TOTAL;
-type Post = { ink: boolean; lens: boolean; bloom: boolean; grade: boolean; audio: boolean };
-const post = (): Post => ({ ink: true, lens: true, bloom: true, grade: true, audio: true, ...((getInputProps() as { post?: Partial<Post> }).post ?? {}) });
+type Post = { ink: boolean; lens: boolean; bloom: boolean; grade: boolean; audio: boolean; shadow: boolean; smap: number; dpr?: number };
+const post = (): Post => ({ ink: true, lens: true, bloom: true, grade: true, audio: true, shadow: true, smap: 2048, ...((getInputProps() as { post?: Partial<Post> }).post ?? {}) });
 
 const makeBloom = () => {
   const b = new BloomEffect({ blendFunction: BlendFunction.ADD, intensity: 0.6, luminanceThreshold: 1.0, luminanceSmoothing: 0.2, mipmapBlur: true, levels: 5, radius: 0.6 });
@@ -31,8 +31,8 @@ const fwd = new THREE.Vector3(), fpt = new THREE.Vector3();
 const Inner: React.FC<{ kit: Kit }> = ({ kit }) => {
   const f = useCurrentFrame();
   const { camera, scene } = useThree();
-  const world = useMemo(() => new World(kit), [kit]);
   const on = useMemo(post, []);
+  const world = useMemo(() => { const w = new World(kit); w.sun.castShadow = on.shadow; w.sun.shadow.mapSize.set(on.smap, on.smap); return w; }, [kit, on]);
   const fx = useMemo(() => ({
     ink: new InkPass(scene, camera as THREE.PerspectiveCamera),
     lens: new LensBlur({ maxCoC: 22, nearScale: 1.2 }),
@@ -100,7 +100,7 @@ const Choice: React.FC<{ t: number }> = ({ t }) => {
     <div style={{ position: "absolute", left: x, top: y, transform: `scale(${0.8 + 0.2 * k})`, opacity: k, padding: "10px 20px", borderRadius: 12,
       background: "rgba(10,10,14,0.82)", border: `4px solid ${col}`, fontFamily: "'Liberation Sans', 'DejaVu Sans', sans-serif", fontWeight: 900, fontSize: 34, color: "#fff" }}>{txt}</div>
   );
-  return <>{pill("A · MONOLITHE", "#ff4a3d", 330, 560)}{pill("B · FORÊT", "#7ee08a", 120, 1180)}</>;
+  return <>{pill("A · MONOLITHE", "#ff4a3d", 330, 560)}{pill("B · FORÊT", "#7ee08a", 60, 780)}</>;
 };
 
 const useKit = () => {
@@ -117,7 +117,7 @@ export const AreneEp1: React.FC = () => {
   if (!kit) return null;
   return (
     <AbsoluteFill style={{ background: "#0d1320" }}>
-      <ThreeCanvas width={1080} height={1920} shadows gl={{ antialias: false, stencil: false, powerPreference: "high-performance" }} camera={{ fov: 44, near: 0.1, far: 2000 }}>
+      <ThreeCanvas width={1080} height={1920} {...(on.dpr ? { dpr: on.dpr } : {})} shadows gl={{ antialias: false, stencil: false, powerPreference: "high-performance" }} camera={{ fov: 44, near: 0.1, far: 2000 }}>
         <Inner kit={kit} />
       </ThreeCanvas>
       <Badge />
