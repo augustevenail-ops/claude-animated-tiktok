@@ -10,7 +10,7 @@
   corne dorée, plateformes de départ, oiseau emblème).
 
 ## Script (≈ 240 mots, ~68-72 s ; blancs ramenés à ~0,2 s par `tools/voice_tighten.py`) — voix : George (ElevenLabs), réglage expressif à choisir
-Imagine… Tu te réveilles dans une forêt que tu n'as jamais vue. Avec un bracelet de métal… soudé à ton poignet.
+Imagine… Tu te réveilles dans une forêt que tu n'as jamais vue. Avec un bracelet de métal soudé à ton poignet.
 Il affiche un seul chiffre : **vingt-quatre**.
 Autour de toi, d'autres gens se relèvent dans l'herbe. Personne ne sait comment il est arrivé là.
 Ton dernier souvenir, c'est ta chambre. Et une lumière blanche.
