@@ -132,7 +132,8 @@ pas de résolution : la fin renvoie la décision au spectateur.
 **Tranché le 2026-11-11 (utilisateur)** : français ✅, sous-titres comme cette vidéo ✅, fiction angoissante /
 mystérieuse, inventée ou inspirée de l'ambiance de films connus (*La Plateforme*, *Hunger Games*…) ✅, ton non comique ✅,
 couleurs : base de cette vidéo (sombre, intrigant) en gardant des accents saturés ✅.
-**Encore ouvert** : question finale + appel à commenter ; narration à la 2ᵉ personne ; personnages cartes 2D ou 3D.
+Aussi tranché : question finale A/B + appel à commenter **à chaque vidéo** ✅ ; narration à la 2ᵉ personne ✅ ;
+personnages en **cartes 2D** (style bridge) ✅ ; voix par **TTS** ✅ (service au choix de l'utilisateur ; cible : consigne §7).
 
 Tableau d'origine (pour mémoire) :
 | Sujet | Cette référence | Nos règles (CLAUDE.md) |

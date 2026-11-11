@@ -22,11 +22,11 @@ Valeurs de style : `docs/STYLE_ARTISTIQUE.md`. Code : `docs/ARCHITECTURE_TECHNIQ
 ## Étape 2 — Script en français (validation utilisateur obligatoire)
 - 180-270 mots (~3 mots/s, ~4,5 syllabes/s). Formule (REFERENCE_APOKALYPS §1 et §7) : accroche anormale en une phrase →
   indices rassurants → contradiction prouvée par un objet → approche → retournement 1 → règle/test →
-  retournement 2 plus fort → fin ouverte ou chute glaçante (question finale : à confirmer).
+  retournement 2 plus fort → **question finale A/B + « dis-le en commentaire »** (toujours). Narration à la 2ᵉ personne (« tu »).
 - Ne jamais décrire ce que l'image montre déjà. Marquer les mots-clés rouges des sous-titres. Après validation : « just do it ».
 
 ## Étape 3 — Voix
-- `voice.wav` (ton constant) + `words.json` `[{ "w": "word", "s": 0.12, "e": 0.40 }, …]` (s/e obligatoires) via
+- `voice.wav` par **TTS français** (voix grave, ~4,5 syll/s, micro-pauses : REFERENCE_APOKALYPS §7) + `words.json` `[{ "w": "word", "s": 0.12, "e": 0.40 }, …]` (s/e obligatoires) via
   n'importe quel outil de reconnaissance vocale avec horodatage par mot ; **corriger les timings à la main**.
 - `TOTAL` = ceil(durée voix × 30) + quelques images de fin.
 
