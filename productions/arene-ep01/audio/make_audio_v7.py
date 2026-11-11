@@ -3,11 +3,12 @@
 #   vent léger (tout du long) ; bip du bracelet sur « vingt-quatre » ; grésillement + bourdonnement du haut-parleur sur ses
 #   répliques ; impacts sur « Bienvenue » et « vingt-trois » ; bips du compte à rebours chaque seconde après « démarre » ;
 #   double bip 24 -> 23. Musique : ducking -3 dB sous la voix, creux -12 dB autour de « vingt-trois ». Master -15 LUFS / -1,2 dBTP.
-# Usage : python make_audio_v7.py [durée_s] [A|B|C|none]  -> mix_<X>.wav + mix_<X>_ecoute.mp3
+# Usage : python make_audio_v7.py [durée_s] [A|B|C|D|E|F|G|none]  -> mix_<X>.wav + mix_<X>_ecoute.mp3
 import json, os, subprocess, sys
 import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from bandes import bande, SR
+from bandes2 import BANDES2
 
 HERE = os.path.dirname(os.path.abspath(__file__)); VOICE = os.path.join(HERE, "..", "voice")
 words = json.load(open(os.path.join(VOICE, "words.json"), encoding="utf-8"))
@@ -48,7 +49,8 @@ while start + k + 0.2 < DUR - 0.3:                                              
 put(sfx, tone(2900, 0.09), v23 - 0.04, 0.35); put(sfx, tone(2300, 0.09), v23 + 0.1, 0.35)                     # 24 -> 23
 
 MUS = sys.argv[2] if len(sys.argv) > 2 else "A"          # A | B | C | none
-music = bande(MUS, DUR, {"welcome": hp[0]["s"], "sixty": at("soixante"), "dip": v23, "end": DUR}) if MUS != "none" else np.zeros(N)
+_cues = {"welcome": hp[0]["s"], "sixty": at("soixante"), "dip": v23, "end": DUR}
+music = BANDES2[MUS](DUR, _cues) if MUS in BANDES2 else bande(MUS, DUR, {"welcome": hp[0]["s"], "sixty": at("soixante"), "dip": v23, "end": DUR}) if MUS != "none" else np.zeros(N)
 duck = np.ones(N)
 for w in words: duck[int(max(0, w["s"] - 0.08) * SR):int(min(DUR, w["e"] + 0.12) * SR)] = db(-3)
 dip = 1 - (1 - db(-12)) * np.clip(np.minimum((t - (v23 - 1.2)) / 0.3, ((v23 + 1.6) - t) / 0.6), 0, 1)
