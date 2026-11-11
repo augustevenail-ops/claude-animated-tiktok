@@ -10,7 +10,7 @@ import { TONE, CHAR, untone } from "../bridge/shade";
 import { NOINK } from "../bridge/ink";
 import { Pool, Actor, Fx, SU } from "../bridge/cast";
 import { Pen, bodyFront, Outfit, Expr, INK, SKINS } from "../bridge/toon";
-import { FPS, RING, HERO, BOY, HERO_POSE, discPos, dronePos, shotAt, camAt, counter, countdown, AT, SPEAKER, SKYSCREEN, TOWER_SCREEN, WATER, V3, smooth } from "./story";
+import { FPS, RING, HERO, BOY, HERO_POSE, WAKE, discPos, dronePos, shotAt, camAt, counter, countdown, AT, SPEAKER, SKYSCREEN, TOWER_SCREEN, WATER, V3, smooth } from "./story";
 import { DAWN } from "./look";
 
 // ---------------- assets ----------------
@@ -342,7 +342,7 @@ export class World {
     for (const m of this.slitMats) m.color.setRGB(3.2 * pulse, 0.25 * pulse, 0.2 * pulse);
     this.ringTop.rotation.y = t * 0.25;
     this.drones.forEach((g, k) => { g.position.set(...dronePos(k, t)); g.rotation.y = -(k * 1.3 + t * 0.12); });
-    this.grassFg.visible = id === 1 || id === 21;
+    this.grassFg.visible = id === 21;
     // écran du ciel (visible du réveil à la fin des paris)
     this.skyScreen.mesh.visible = [4, 5, 6, 7, 23, 24, 25].includes(id);
     this.skyScreen.mesh.lookAt(cam.position.x, SKYSCREEN[1], cam.position.z);
@@ -376,6 +376,14 @@ export class World {
     const right = V(1, 0, 0).applyQuaternion(cam.quaternion);
     for (let i = 0; i < 24; i++) {
       const A = this.actors[i], Bl = this.blobs[i];
+      if (id === 1) { // vue du ciel : tout le monde est couché à plat, tête vers le centre ; toi, tu ouvres les yeux
+        const p0 = discPos(i), d0 = cam.position.distanceTo(V(p0[0], 0.1, p0[2])), [w0, h0, k0] = tierOf(d0), o0 = i === 0 ? HERO_OUTFIT : outfitOf(i);
+        const eyes = i === 0 ? (f >= WAKE.open ? 0 : f >= WAKE.half ? 0.5 : 1) : 1;
+        const lf = { mode: "stand", expr: (i === 0 && f >= WAKE.open ? "shock" : "neutral") as Expr, blink: eyes, light: -2.4, seed: i === 0 ? 3 : (i % 7) + 1, facing: 0 as const, look: 0 };
+        A.r = this.pool.req(`L|${i}|${JSON.stringify(lf)}`, w0, h0, k0, (pen: Pen) => { if (i === BOY) longHair(pen, o0.hair!); bodyFront(pen, o0, lf as never); });
+        A.mesh.position.set(p0[0], 0.16, p0[2]); A.mesh.rotation.set(-Math.PI / 2, (i / 24) * Math.PI * 2, 0, "YXZ"); A.mesh.visible = true;
+        Bl.mesh.visible = false; continue;
+      }
       if (i === 0 && id !== 29) { A.mesh.visible = false; Bl.mesh.visible = false; continue; } // le héros (« tu ») : caméra subjective, sauf au plan 29
       const p = discPos(i), d = cam.position.distanceTo(V(p[0], 1.2, p[2])), [w, h, k] = tierOf(d);
       const st = AT.stand0 + hh(i, 4) * 3, standing = t > st || f >= 445 || (id === 22 && i === 21);

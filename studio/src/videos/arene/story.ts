@@ -56,6 +56,8 @@ export const shotAt = (f: number) => SHOTS.find((s) => f >= s.a && f < s.b) ?? S
 
 /** moments clés (s) */
 /** plan 29 (images anciennes) : regard baissé, bras levé, écran du bracelet allumé (« Il affiche ») */
+/** plan 1 (images anciennes) : tu ouvres les yeux sur « réveilles » */
+export const WAKE = { half: 44, open: 48 };
 export const HERO_POSE = { down: [170, 184], arm: [176, 192], lit: 206 };
 export const AT = { stand0: 9.4, welcome: 22.2, count24: 23.7, bets: 32.7, tug: 39.6, sixty: 48.6, beep0: 59.0, drop23: 62.4, choice: 65.4 };
 /** nombre affiché par le bracelet */
@@ -99,11 +101,9 @@ export const TOWER_SCREEN: V3 = [0, 5.2, 2.05];
 export const WATER: V3 = [2.0, 0.4, 8.6];
 
 const CAMS: Record<number, Key[]> = {
-  1: [
-    { f: 0, s: (f) => dolly([0.35, 0.32, RING + 0.6], [0.9, 0.15, RING - 2.5], push(f, 0, 0.001), { fov: 46, roll: 0.06 }) },
-    { f: 38, dur: 56, s: (f) => dolly([0.3, 0.45, RING + 0.6], [1.2, 1.5, RING - 9], push(f, 38, 0.0015), { fov: 46, roll: 0.02 }) },
-  ],
-  21: [{ f: 108, s: (f) => { const u = glide((f - 108) / 60); return { pos: lerp3([0.3, 0.45, RING + 0.6], [0, 1.5, RING + 0.3], u), look: lerp3([1.2, 0.6, RING - 6], [-2.2, 1.3, RING - 9], u), fov: 46, roll: 0.06 * (1 - u) }; } }],
+  // plan 1 : vue du ciel, plongée verticale rapide vers toi, allongé dans l'herbe (les candidats sont couchés, tête vers le centre)
+  1: [{ f: 0, s: (f) => { const u = glide(f / 74), zc = RING - 1.25, h = 95 * Math.pow(2.4 / 95, u) - 0.35 * smooth((f - 74) / 34);
+    return { pos: [0, h, zc + 0.05 * h], look: [0, 0, zc], fov: 40, roll: 0.7 * (1 - u) }; } }],
   29: [{ f: 108, s: (f) => { const u = glide((f - 108) / 58), v = smooth((f - 166) / 96);
     const far: V3 = [0.6, 4.2, 8.5], near: V3 = [0.12, 1.3, RING - 2.3], close: V3 = [0.08, 1.22, RING - 2.05];
     return { pos: lerp3(lerp3(far, near, u), close, v), look: lerp3([0, 1.0, RING], [0, 1.0, RING], v), fov: 40, roll: 0.02 * (1 - u) }; } }],
@@ -168,7 +168,7 @@ export const camAt = (id: number, f: number): Cam => {
 // ---------------- flou de profondeur (px à 1080 pour l'infini ; 0 = net) ----------------
 export type Dof = { f: number; cInf: number; focus?: V3 };
 export const DOF: Dof[] = [
-  { f: 0, cInf: 12, focus: [1.0, 0.8, RING - 7] },
+  { f: 0, cInf: 5 },                  // plongée du ciel : focus = point visé
   { f: 108, cInf: 9 },                // poussée vers toi : focus = point visé
   { f: 262, cInf: 6, focus: [0, 1.2, RING - 3] },
   { f: 370, cInf: 14 },               // visage
