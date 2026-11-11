@@ -83,10 +83,11 @@ const metalTex = () => ctex("ar_metal2", 512, 512, (g, r) => {
   }
   g.strokeStyle = "rgba(255,255,255,0.05)"; for (let i = 0; i < 40; i++) { g.beginPath(); const x = r() * 512, y = r() * 512; g.moveTo(x, y); g.lineTo(x + 30 * r(), y + 3); g.stroke(); }
 });
-const discTex = (n: number) => ctex("ar_disc" + n, 256, 256, (g) => {
-  g.fillStyle = "#eef0f4"; g.beginPath(); g.arc(128, 128, 124, 0, 7); g.fill();   // socles blancs (décision utilisateur)
-  g.strokeStyle = "#8d939f"; g.lineWidth = 10; g.stroke();
-  g.fillStyle = "#2a2e38"; g.font = "bold 92px DejaVu Sans, sans-serif"; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText(String(n), 128, 134);
+const discTex = (n: number, white = false) => ctex((white ? "ar_discW" : "ar_disc") + n, 256, 256, (g) => {
+  // socles sombres ; version blanche pour le plan 1 vu du ciel (décision utilisateur)
+  g.fillStyle = white ? "#eef0f4" : "#3b4150"; g.beginPath(); g.arc(128, 128, 124, 0, 7); g.fill();
+  g.strokeStyle = white ? "#8d939f" : "#1a1d24"; g.lineWidth = 10; g.stroke();
+  g.fillStyle = white ? "#2a2e38" : "#c8ccd6"; g.font = "bold 92px DejaVu Sans, sans-serif"; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText(String(n), 128, 134);
 });
 const speakerTex = () => ctex("ar_speaker", 256, 256, (g) => {
   g.fillStyle = "#1c1f26"; g.fillRect(0, 0, 256, 256);
@@ -190,6 +191,7 @@ export class World {
   sun: THREE.DirectionalLight; private hemi: THREE.HemisphereLight; private fog: THREE.Fog;
   private pool = new Pool(); private actors: Actor[] = []; private blobs: Fx[] = [];
   private sky: THREE.Mesh; private skyScreen: Screen; private towerScreen: Screen; private wrist: Screen;
+  private discs: { mat: THREE.MeshLambertMaterial; dark: THREE.Texture; white: THREE.Texture }[] = [];
   private ringTop = new THREE.Group(); private drones: THREE.Group[] = []; private grassFg: THREE.Group;
   private slitMats: THREE.MeshBasicMaterial[] = [];
   constructor(kit: Kit) {
@@ -277,8 +279,9 @@ export class World {
     put(b, kit, "box-large-open", WATER[0], 0, WATER[2], 0.5, 0.3);
     // disques numérotés
     for (let i = 0; i < 24; i++) {
-      const p = discPos(i), m = new THREE.Mesh(new THREE.CylinderGeometry(0.75, 0.8, 0.08, 24), new THREE.MeshLambertMaterial({ map: discTex(i + 1) }));
+      const p = discPos(i), mat = new THREE.MeshLambertMaterial({ map: discTex(i + 1) }), m = new THREE.Mesh(new THREE.CylinderGeometry(0.75, 0.8, 0.08, 24), mat);
       m.position.set(p[0], 0.04, p[2]); m.rotation.y = Math.atan2(p[0], p[2]); m.receiveShadow = true; R.add(m);
+      this.discs.push({ mat, dark: mat.map!, white: discTex(i + 1, true) });
     }
     // haut-parleur sur un tronc derrière le héros
     put(b, kit, "tree_pineTallA", SPEAKER[0], 0, SPEAKER[2] + 0.45, 14, 0.3);
@@ -343,6 +346,9 @@ export class World {
     this.ringTop.rotation.y = t * 0.25;
     this.drones.forEach((g, k) => { g.position.set(...dronePos(k, t)); g.rotation.y = -(k * 1.3 + t * 0.12); });
     this.grassFg.visible = id === 21;
+    for (const d of this.discs) { // socles blancs au plan 1 seulement (un peu auto-éclairés pour rester blancs à l'ombre)
+      const w = id === 1, tx = w ? d.white : d.dark;
+      if (d.mat.map !== tx) { d.mat.map = tx; d.mat.emissiveMap = w ? d.white : null; d.mat.emissive.set(w ? "#ffffff" : "#000000"); d.mat.emissiveIntensity = w ? 0.55 : 1; d.mat.needsUpdate = true; } }
     // écran du ciel (visible du réveil à la fin des paris)
     this.skyScreen.mesh.visible = [4, 5, 6, 7, 23, 24, 25].includes(id);
     this.skyScreen.mesh.lookAt(cam.position.x, SKYSCREEN[1], cam.position.z);
