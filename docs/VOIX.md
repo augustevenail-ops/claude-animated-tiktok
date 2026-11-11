@@ -41,3 +41,8 @@ Commande : `python tools/voice_edit.py productions/<ep>/voice --tension "<mot>"`
   timbre plus plein `equalizer=f=140:t=q:w=1.1:g=4,equalizer=f=320:t=q:w=1.4:g=1.5,highshelf=f=6500:g=-2.5`, tempo 0,975, sans changement de hauteur.
 - Musique d'ambiance : **~6 dB sous la voix** (relevée trois fois à la demande).
 - Crédits ElevenLabs (forfait gratuit 10 000/mois) : une narration de 70 s ≈ 1 100 crédits ; prévoir le quota avant les itérations.
+- **Musique validée ép. 1 (2026-11-11) : « J – Tambours lointains »** (`productions/arene-ep01/audio/bandes3.py`, `make_audio_v7.py 69.73 J`) :
+  toms sourds réverbérés en motif régulier + cuivres graves tenus ; tension qui monte par couches, silence net sur « vingt-trois ».
+  Leçon : pour ce type de scène, viser « l'attente avant le déclenchement » (pulsation, montée par couches), pas l'épique ni l'ouverture de film.
+- Correction de texte isolée sans tout régénérer : `python tools/voice_patch.py productions/<ep> <i_premier_mot> <i_dernier_mot> "<phrase>"`
+  (même créneau, durée totale inchangée). En attente : « bizarre » -> « étrange » (mots 44-50) dès que le quota ElevenLabs est rechargé.
