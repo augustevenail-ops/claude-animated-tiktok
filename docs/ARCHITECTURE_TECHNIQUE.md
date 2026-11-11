@@ -99,3 +99,12 @@ python scripts/bridge_shots.py src/videos/<nom>/story.ts && python scripts/short
 ```
 Performances bridge : stills 3-8 s après ~40 s de bundle ; rendu 2K ≈ 4 img/s (~10 min pour 67 s).
 Disque : chaque bundle copie `public/` (~1,3 Go) dans le dossier temporaire ⇒ `REMOTION_TMP`/`TEMP`/`TMP` sur un grand disque.
+
+## 8. Performance de rendu (machine cloud sans GPU, mesuré le 2026-11-11 sur L'Arène ép. 1)
+- Pas de GPU (`/dev/dri` absent) : seul `--gl=swangle` (SwiftShader) fonctionne ; `angle`, `angle-egl`, `swiftshader` échouent.
+- **`frameloop="demand"` + `invalidate()` + `delayRender`/`addAfterEffect`** (`studio/src/videos/arene/Arene.tsx`) : une seule passe
+  par image au lieu d'un rendu continu (221 → 34 appels `gl.render` par still) ; pixels identiques.
+- Coût d'une image isolée ≈ 7 s dont ~5,8 s fixes (page, GLB, décor, compilation des shaders) ; **en séquence : ~0,9 s/image
+  (3D interne 720p) ou ~1,5 s/image (1080p natif)** → épisode de 2 100 images ≈ 32-55 min. `--concurrency 2` : aucun gain (CPU saturé).
+- Outils : `scripts/stills.mjs <comp> <prefix> <frames> <scale> '<inputProps>'` (PNG, logs `[prof]` si `post.prof`),
+  `scripts/imgdiff.py ref.png new.png`, `scripts/render.mjs <comp> <out> <scale> <a-b> <conc> '<inputProps>'`.
