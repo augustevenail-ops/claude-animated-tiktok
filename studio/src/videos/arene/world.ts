@@ -10,7 +10,7 @@ import { TONE, CHAR, untone } from "../bridge/shade";
 import { NOINK } from "../bridge/ink";
 import { Pool, Actor, Fx, SU } from "../bridge/cast";
 import { Pen, bodyFront, Outfit, Expr, INK, SKINS } from "../bridge/toon";
-import { FPS, RING, HERO, BOY, HERO_POSE, WAKE, discPos, dronePos, shotAt, camAt, counter, countdown, AT, SPEAKER, SKYSCREEN, TOWER_SCREEN, WATER, V3, smooth } from "./story";
+import { FPS, RING, HERO, BOY, HERO_POSE, WAKE, LIE_SHIFT, discPos, dronePos, shotAt, camAt, counter, countdown, AT, SPEAKER, SKYSCREEN, TOWER_SCREEN, WATER, V3, smooth } from "./story";
 import { DAWN } from "./look";
 
 // ---------------- assets ----------------
@@ -387,7 +387,7 @@ export class World {
         const eyes = i === 0 ? (f >= WAKE.open ? 0 : f >= WAKE.half ? 0.5 : 1) : 1;
         const lf = { mode: "stand", expr: (i === 0 && f >= WAKE.open ? "shock" : "neutral") as Expr, blink: eyes, light: -2.4, seed: i === 0 ? 3 : (i % 7) + 1, facing: 0 as const, look: 0 };
         A.r = this.pool.req(`L|${i}|${JSON.stringify(lf)}`, w0, h0, k0, (pen: Pen) => { if (i === BOY) longHair(pen, o0.hair!); bodyFront(pen, o0, lf as never); });
-        A.mesh.position.set(p0[0], 0.16, p0[2]); A.mesh.rotation.set(-Math.PI / 2, (i / 24) * Math.PI * 2, 0, "YXZ"); A.mesh.visible = true;
+        const out = 1 + LIE_SHIFT / RING; A.mesh.position.set(p0[0] * out, 0.16, p0[2] * out); A.mesh.rotation.set(-Math.PI / 2, (i / 24) * Math.PI * 2, 0, "YXZ"); A.mesh.visible = true;
         Bl.mesh.visible = false; continue;
       }
       if (i === 0 && id !== 29) { A.mesh.visible = false; Bl.mesh.visible = false; continue; } // le héros (« tu ») : caméra subjective, sauf au plan 29

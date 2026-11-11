@@ -58,6 +58,8 @@ export const shotAt = (f: number) => SHOTS.find((s) => f >= s.a && f < s.b) ?? S
 /** plan 29 (images anciennes) : regard baissé, bras levé, écran du bracelet allumé (« Il affiche ») */
 /** plan 1 (images anciennes) : tu ouvres les yeux sur « réveilles » */
 export const WAKE = { half: 44, open: 48 };
+/** plan 1 : pieds décalés vers l'extérieur de 0,84 m pour que le milieu du corps couché (1,7 m) soit au centre du socle */
+export const LIE_SHIFT = 0.84;
 export const HERO_POSE = { down: [170, 184], arm: [176, 192], lit: 206 };
 export const AT = { stand0: 9.4, welcome: 22.2, count24: 23.7, bets: 32.7, tug: 39.6, sixty: 48.6, beep0: 59.0, drop23: 62.4, choice: 65.4 };
 /** nombre affiché par le bracelet */
@@ -102,7 +104,7 @@ export const WATER: V3 = [2.0, 0.4, 8.6];
 
 const CAMS: Record<number, Key[]> = {
   // plan 1 : vue du ciel, plongée verticale rapide vers toi, allongé dans l'herbe (les candidats sont couchés, tête vers le centre)
-  1: [{ f: 0, s: (f) => { const u = glide(f / 74), zc = RING - 1.25, h = 95 * Math.pow(2.4 / 95, u) - 0.35 * smooth((f - 74) / 34);
+  1: [{ f: 0, s: (f) => { const u = glide(f / 74), zc = RING + LIE_SHIFT - 1.25, h = 95 * Math.pow(2.4 / 95, u) - 0.35 * smooth((f - 74) / 34);
     return { pos: [0, h, zc + 0.05 * h], look: [0, 0, zc], fov: 40, roll: 0.7 * (1 - u) }; } }],
   29: [{ f: 108, s: (f) => { const u = glide((f - 108) / 58), v = smooth((f - 166) / 96);
     const far: V3 = [0.6, 4.2, 8.5], near: V3 = [0.12, 1.3, RING - 2.3], close: V3 = [0.08, 1.22, RING - 2.05];
