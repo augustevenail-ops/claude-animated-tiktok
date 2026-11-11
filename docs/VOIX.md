@@ -37,3 +37,7 @@ Commande : `python tools/voice_edit.py productions/<ep>/voice --tension "<mot>"`
 - Configuration : `productions/<ep>/voices.json` ; répliques balisées `{role}« … »` dans SCRIPT.md ; outil : `python tools/tts_roles.py productions/<ep>`.
 - Blancs : fin de phrase 0,27 s, virgule 0,10 s, **mots liés dans la phrase** (≤ 0,06 s), tension 0,55 s, avant réplique 0,12 s.
 - Musique : `productions/<ep>/audio/ambient.py` (nappe mineure + cloches lointaines), ~9 dB sous la voix (validé) ; bruitages réduits à l'essentiel (`make_audio_v2.py`).
+- **Narrateur validé (2026-11-11, « B »)** : George, stability 0.6, similarity 0.85, style 0.2 (phrasé posé, fins de phrase graves) +
+  timbre plus plein `equalizer=f=140:t=q:w=1.1:g=4,equalizer=f=320:t=q:w=1.4:g=1.5,highshelf=f=6500:g=-2.5`, tempo 0,975, sans changement de hauteur.
+- Musique d'ambiance : **~6 dB sous la voix** (relevée trois fois à la demande).
+- Crédits ElevenLabs (forfait gratuit 10 000/mois) : une narration de 70 s ≈ 1 100 crédits ; prévoir le quota avant les itérations.

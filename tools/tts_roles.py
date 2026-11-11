@@ -4,7 +4,7 @@
 # mots liés à l'intérieur d'une phrase (inner, aucun trou), pause de tension avant certains mots ; entre une annonce
 # « … te murmure : » et la réplique : before_quote.
 # Usage : python tools/tts_roles.py productions/<ep>   -> voice/voice.wav (48 kHz), voice/words.json (w, s, e, role, q), voice/voice_ecoute.mp3
-import base64, json, os, re, subprocess, sys, urllib.request
+import base64, json, os, re, subprocess, sys, urllib.error, urllib.request
 import numpy as np
 
 EP = sys.argv[1]
@@ -33,7 +33,14 @@ def tts(role, txt, k):
     if c.get("settings"): body["voice_settings"] = c["settings"]
     req = urllib.request.Request(f"https://api.elevenlabs.io/v1/text-to-speech/{c['voice']}/with-timestamps?output_format=mp3_44100_128",
         data=json.dumps(body).encode(), headers={"Content-Type": "application/json", "xi-api-key": os.environ.get("XI_API_KEY", "proxy-injected")})
-    d = json.load(urllib.request.urlopen(req, timeout=300))
+    try:
+        d = json.load(urllib.request.urlopen(req, timeout=300))
+    except urllib.error.HTTPError as e:
+        msg = e.read()[:300]
+        if os.path.exists(fj):  # quota épuisé, etc. : on garde l'ancienne prise en le signalant
+            print(f"ATTENTION segment {key} : API refusée ({e.code} {msg!r}) -> ancienne prise conservée (réglages différents)")
+            return fa, json.load(open(fj, encoding="utf-8"))["words"]
+        raise
     open(fa, "wb").write(base64.b64decode(d["audio_base64"]))
     al = d.get("normalized_alignment") or d["alignment"]
     words, cur = [], None

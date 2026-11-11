@@ -3,14 +3,14 @@
     "voice": "JBFqnCBsd6RMkjVDRZzb",
     "model": "eleven_multilingual_v2",
     "settings": {
-      "stability": 0.32,
-      "similarity_boost": 0.8,
-      "style": 0.45,
+      "stability": 0.6,
+      "similarity_boost": 0.85,
+      "style": 0.2,
       "use_speaker_boost": true
     },
     "pitch": 0,
     "tempo": 0.975,
-    "fx": ""
+    "fx": "equalizer=f=140:t=q:w=1.1:g=4,equalizer=f=320:t=q:w=1.4:g=1.5,highshelf=f=6500:g=-2.5"
   },
   "hp": {
     "voice": "JBFqnCBsd6RMkjVDRZzb",
