@@ -57,16 +57,17 @@ float vn(vec3 x){ vec3 i = floor(x), f = fract(x); f = f * f * (3.0 - 2.0 * f);
   return mix(mix(mix(h3(i), h3(i + vec3(1,0,0)), f.x), mix(h3(i + vec3(0,1,0)), h3(i + vec3(1,1,0)), f.x), f.y),
              mix(mix(h3(i + vec3(0,0,1)), h3(i + vec3(1,0,1)), f.x), mix(h3(i + vec3(0,1,1)), h3(i + vec3(1,1,1)), f.x), f.y), f.z); }`;
 /** amp = force des taches, sc = taille (1/m), grad = assombrissement vers le pied (feuillages) */
-const painted = (m: THREE.Material, amp: number, sc: number, grad: number) => {
+const painted = (m: THREE.Material, amp: number, sc: number, grad: number, bands = 0) => {
   const prev = m.onBeforeCompile.bind(m);
   m.onBeforeCompile = (sh, r) => {
     prev(sh, r);
     sh.vertexShader = "varying vec3 vWP;\n" + sh.vertexShader.replace("#include <project_vertex>", "#include <project_vertex>\nvWP = (modelMatrix * vec4(transformed, 1.0)).xyz;");
     sh.fragmentShader = NOISE_GLSL + "\n" + sh.fragmentShader.replace("#include <color_fragment>", `#include <color_fragment>
       { float n = 0.6 * vn(vWP * ${sc.toFixed(3)}) + 0.4 * vn(vWP * ${(sc * 3.1).toFixed(3)});
-        diffuseColor.rgb *= mix(1.0 - ${amp.toFixed(3)}, 1.0 + ${(amp * 0.6).toFixed(3)}, n) * mix(1.0 - ${grad.toFixed(3)}, 1.08, smoothstep(0.0, 12.0, vWP.y)); }`);
+        diffuseColor.rgb *= mix(1.0 - ${amp.toFixed(3)}, 1.0 + ${(amp * 0.6).toFixed(3)}, n) * mix(1.0 - ${grad.toFixed(3)}, 1.08, smoothstep(0.0, 12.0, vWP.y))
+        * (1.0 - ${bands.toFixed(3)} * smoothstep(0.55, 0.95, fract(vWP.y * 0.85 + 0.3 * n))); }`);
   };
-  m.customProgramCacheKey = () => `painted_${amp}_${sc}_${grad}`;
+  m.customProgramCacheKey = () => `painted_${amp}_${sc}_${grad}_${bands}`;
   m.needsUpdate = true;
 };
 
@@ -205,7 +206,8 @@ export class World {
     }
     for (let i = 0; i < 520; i++) { const a = r() * Math.PI * 2, d = 6 + r() * 40; put(grassB[sectOf(a)], kit, i % 3 ? "grass_large" : "grass", Math.sin(a) * d, 0, Math.cos(a) * d, 0.35 + r() * 0.4, r() * 6); }
     // socle octogonal à trois marches + tour en plaques décalées
-    const met = solid("metal", "#4a5060", { map: rep(metalTex(), 1, 1) }), dark = solid("dark", "#262a33");
+    const mtx = rep(metalTex(), 1, 1);
+    const met = solid("metal", "#6a7388", { map: mtx, emissive: new THREE.Color("#5a6a8c"), emissiveMap: mtx, emissiveIntensity: 0.9 }), dark = solid("dark", "#363c4a", { emissive: new THREE.Color("#141a26"), emissiveIntensity: 1 });
     [[7.5, 0], [6.2, 0.35], [5.0, 0.7]].forEach(([rad, y]) => b.add(new THREE.CylinderGeometry(rad, rad, 0.35, 8).translate(0, y + 0.175, 0), met));
     let y = 1.05, w = 3.8;
     for (let k = 0; k < 7; k++) {
@@ -275,10 +277,10 @@ export class World {
     R.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh || Array.isArray(m.material)) return; const mt = m.material as THREE.MeshLambertMaterial;
       if (done.has(mt) || !(mt as THREE.MeshLambertMaterial).isMeshLambertMaterial) return; done.add(mt);
       const hex = "#" + mt.color.getHexString();
-      if (["#2f5f3f", "#3b6b45"].includes(hex)) painted(mt, 0.38, 0.55, 0.45);
-      else if (["#5a3d2e", "#6a4a34"].includes(hex)) painted(mt, 0.3, 1.6, 0.1);
+      if (["#2f5f3f", "#3b6b45"].includes(hex)) painted(mt, 0.55, 0.9, 0.55, 0.35);
+      else if (["#5a3d2e", "#6a4a34"].includes(hex)) painted(mt, 0.45, 2.4, 0.15);
       else if (hex === "#5c8a46" || hex === "#7d8f5c") painted(mt, 0.3, 0.35, 0);
-      else if (hex === "#4a5060" || hex === "#262a33") painted(mt, 0.22, 2.2, 0.15); });
+      else if (hex === "#6a7388" || hex === "#363c4a") painted(mt, 0.4, 3.0, 0.25, 0.2); });
     // drones
     for (let k = 0; k < 5; k++) {
       const g = new THREE.Group(), body = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.22, 0.7), dark); g.add(body);
