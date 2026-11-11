@@ -2,7 +2,7 @@
 // Monde : sol y = 0, tour au centre (0, 0, 0), 24 candidats en cercle (rayon RING), le héros (« tu ») sur le disque 0 en +z.
 export const FPS = 30;
 import WARP from "./warp.json";
-export const TOTAL = 2080; // 69,3 s (voix v4 multi-rôles 68,9 s)
+export const TOTAL = 2064; // 68,8 s (voix v4 multi-rôles 68,4 s)
 /** la mise en scène a été réglée sur la voix v3 : chaque instant de la nouvelle voix est ramené au même mot de l'ancienne
  *  (interpolation linéaire entre débuts de mots) ; tout le reste (plans, caméras, flou, écrans) lit cette image « ancienne ». */
 const WP = WARP as [number, number][];

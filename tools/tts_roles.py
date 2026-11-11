@@ -27,9 +27,9 @@ if text[pos:].strip(): segs.append(("narrateur", text[pos:].strip()))
 def tts(role, txt, k):
     c = CFG[role]; key = f"{k:02d}_{role}"
     fa, fj = os.path.join(CACHE, key + ".mp3"), os.path.join(CACHE, key + ".json")
-    sig = json.dumps([c["voice"], c["model"], c.get("settings"), c.get("prefix", ""), txt], ensure_ascii=False)
+    sig = json.dumps([c["voice"], c["model"], c.get("settings"), c.get("prefix", ""), txt, c.get("suffix", "")], ensure_ascii=False)
     if os.path.exists(fj) and json.load(open(fj, encoding="utf-8")).get("sig") == sig: return fa, json.load(open(fj, encoding="utf-8"))["words"]
-    body = {"text": c.get("prefix", "") + txt, "model_id": c["model"], "language_code": "fr"}
+    body = {"text": c.get("prefix", "") + txt + c.get("suffix", ""), "model_id": c["model"], "language_code": "fr"}
     if c.get("settings"): body["voice_settings"] = c["settings"]
     req = urllib.request.Request(f"https://api.elevenlabs.io/v1/text-to-speech/{c['voice']}/with-timestamps?output_format=mp3_44100_128",
         data=json.dumps(body).encode(), headers={"Content-Type": "application/json", "xi-api-key": os.environ.get("XI_API_KEY", "proxy-injected")})
@@ -66,7 +66,7 @@ def tighten(x, W):
         if gap > tgt + 2 * M:
             half = max(0.0, tgt - 2 * M) / 2
             pieces.append((seg0, w["e"] + M + half)); seg0 = n["s"] - M - half
-    pieces.append((seg0, W[-1]["e"] + 0.1))
+    pieces.append((seg0, W[-1]["e"] + 0.5))  # queue naturelle (souffle, écho) gardée puis fondue, mélangée au segment suivant
     out, mp, acc = [], [], 0.0
     for a, b in pieces:
         s = x[int(a * SR):int(b * SR)].copy()
@@ -76,7 +76,9 @@ def tighten(x, W):
         for a, b, n0 in mp:
             if t <= b: return n0 + max(0.0, t - a)
         return acc
-    return np.concatenate(out), [{"w": w["w"], "s": rm(w["s"]), "e": rm(w["e"])} for w in W]
+    y = np.concatenate(out); tail = int(0.35 * SR)
+    y[-tail:] *= np.cos(np.linspace(0, np.pi / 2, tail)) ** 2  # fondu doux, plus de coupure nette
+    return y, [{"w": w["w"], "s": rm(w["s"]), "e": rm(w["e"])} for w in W], rm(W[-1]["e"]) + 0.1
 
 def process(x, role):
     c = CFG[role]; af = []
@@ -87,21 +89,21 @@ def process(x, role):
                        input=x.astype(np.float32).tobytes(), capture_output=True, check=True).stdout
     return np.frombuffer(r, np.float32).copy()
 
-audio, words, t = [], [], 0.0
+audio, words, t = np.zeros(int(400 * SR)), [], 0.0
 for k, (role, txt) in enumerate(segs):
     fa, W = tts(role, txt, k)
-    x, W = tighten(decode(fa), W)
+    x, W, core = tighten(decode(fa), W)
     tempo = CFG[role].get("tempo", 1)
     y = process(x, role)
     for j, w in enumerate(W):
         words.append({"w": w["w"], "s": round(t + w["s"] / tempo, 3), "e": round(t + w["e"] / tempo, 3), "role": role, **({"q": 1} if role != "narrateur" and j == 0 else {})})
-    seg_len = len(x) / SR / tempo
-    audio.append(np.concatenate([y[: int(seg_len * SR)], np.zeros(max(0, int(seg_len * SR) - len(y)))]))
+    i0 = int(t * SR); audio[i0:i0 + len(y)] += y      # superposition : la queue déborde sur le blanc suivant
+    end = t + len(y) / SR
     nxt = segs[k + 1][0] if k + 1 < len(segs) else None
     gap = P["before_quote"] if nxt and nxt != "narrateur" and txt.rstrip().endswith(":") else P["end"]
-    gap = max(0.0, gap - 0.14)  # la tête (0,04 s) et la queue (0,1 s) des segments comptent déjà dans le blanc
-    if nxt: audio.append(np.zeros(int(gap * SR))); t += seg_len + gap
-y = np.concatenate(audio)
+    gap = max(0.0, gap - 0.14)  # la tête (0,04 s) et la fin utile (0,1 s) des segments comptent déjà dans le blanc
+    t += core / tempo + gap
+y = audio[: int(max(end, t) * SR)]
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "f32le", "-ar", str(SR), "-ac", "1", "-i", "-", "-ar", "48000", os.path.join(OUT, "voice.wav")], input=y.astype(np.float32).tobytes(), check=True)
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", os.path.join(OUT, "voice.wav"), "-b:a", "160k", os.path.join(OUT, "voice_ecoute.mp3")])
 json.dump(words, open(os.path.join(OUT, "words.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=0)
