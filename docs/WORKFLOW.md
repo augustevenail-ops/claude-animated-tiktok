@@ -23,7 +23,7 @@ Valeurs de style : `docs/STYLE_ARTISTIQUE.md`. Code : `docs/ARCHITECTURE_TECHNIQ
 - 180-270 mots (~3 mots/s, ~4,5 syllabes/s). Formule (REFERENCE_APOKALYPS §1 et §7) : accroche anormale en une phrase →
   indices rassurants → contradiction prouvée par un objet → approche → retournement 1 → règle/test →
   retournement 2 plus fort → **question finale A/B + « dis-le en commentaire »** (toujours). Narration à la 2ᵉ personne (« tu »).
-- Ne jamais décrire ce que l'image montre déjà. Marquer les mots-clés rouges des sous-titres. Après validation : « just do it ».
+- Ne jamais décrire ce que l'image montre déjà. Sous-titres tout en blanc (pas de mot coloré). Après validation : « just do it ».
 
 ## Étape 3 — Voix
 - `voice.wav` par **TTS français** (voix grave, ~4,5 syll/s, micro-pauses : REFERENCE_APOKALYPS §7) + `words.json` `[{ "w": "word", "s": 0.12, "e": 0.40 }, …]` (s/e obligatoires) via
@@ -47,7 +47,7 @@ Valeurs de style : `docs/STYLE_ARTISTIQUE.md`. Code : `docs/ARCHITECTURE_TECHNIQ
 - `cast.ts` : rôles, positions, marches, clignements, effets 2D par plan (`stage`).
 
 ## Étape 6 bis — Sous-titres
-- Composant React au-dessus des canvas, groupes de 1-3 mots en majuscules, mot-clé rouge #F53C38 (REFERENCE_APOKALYPS §9).
+- Composant React au-dessus des canvas, groupes de 1-3 mots en majuscules, tout en blanc, ~46 px à 1920 (REFERENCE_APOKALYPS §9).
 
 ## Étape 7 — Post
 - Ne pas toucher la chaîne (Ink → lens → bloom → tone map → grade) sauf besoin ; ajuster `GRADES` si nouvelle lumière (nuit…).

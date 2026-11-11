@@ -151,8 +151,8 @@ Tant que l'utilisateur n'a pas tranché, ces règles restent en vigueur ; seules
 - Mots-groupes de **1 à 3 mots**, remplacement sec (pas de fondu, pas d'animation d'entrée), calés sur `words.json`.
 - **MAJUSCULES**, sans-serif très gras (police exacte non identifiable ; équivalent libre proposé : Montserrat Black
   ou Anton via `@remotion/google-fonts`), blanc #FFFFFF, contour noir fin + légère ombre portée.
-- **Un mot-clé par groupe en rouge #F53C38** (mesuré ≈ rgb 245,60,57) : danger, lieu, chiffre, mot révélateur.
-- Taille : hauteur de capitale ≈ 2 % de la hauteur d'image (≈ 38-40 px à 1920, police ~54 px) ; centré horizontalement ;
+- Référence Apokalyps : un mot-clé par groupe en rouge #F53C38. **Décision utilisateur (2026-11-11) : tout en blanc, aucun mot coloré.**
+- Taille : référence ≈ 2 % de hauteur de capitale ; **décision : un peu plus petit, ≈ 1,7 % (≈ 33 px de capitale à 1920, police ~46 px)**, à valider sur les premiers stills ; centré horizontalement ;
   centre vertical à **~73 %** de la hauteur, remonté à ~71 % ou au-dessus des mains quand le téléphone occupe le bas.
 - Citations entre guillemets français « … » quand un personnage parle ou qu'un SMS est lu.
 - Badge contextuel permanent possible (ex. « NUIT », rouge sur pastille sombre, haut gauche, ~10 % de la hauteur).

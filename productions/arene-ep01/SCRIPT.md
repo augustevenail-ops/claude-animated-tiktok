@@ -28,7 +28,7 @@ Et ton bracelet passe à… **vingt-trois**.
 Personne n'a encore bougé.
 Alors, tu cours vers le **monolithe**, ou vers la **forêt** ? Dis-le en commentaire.
 
-(Mots en gras = mot-clé rouge des sous-titres. Micro-pauses voulues avant « vingt-trois » et « Personne n'a encore bougé ».)
+(Mots en gras = mots appuyés par la voix ; sous-titres tout en blanc. Micro-pauses voulues avant « vingt-trois » et « Personne n'a encore bougé ».)
 
 ## Découpage visuel prévu (≈ 16 plans)
 1. POV au sol, herbe floue au premier plan, mains + bracelet « 24 » (insert lumineux cyan).
