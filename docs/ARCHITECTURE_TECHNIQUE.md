@@ -114,3 +114,6 @@ Disque : chaque bundle copie `public/` (~1,3 Go) dans le dossier temporaire ⇒ 
 images perdues via H.264 brut) ; décodage bout à bout + réencodage unique CRF 12 en CFR 30 i/s exact, sans les pistes
 audio muettes des morceaux (`-an`). Mux : audio complété/coupé à la durée vidéo (`apad,atrim`), jamais `-shortest`.
 Épisode 1 : 7 morceaux de 300 images, ~13-15 min chacun (flou allégé 32/16), total ≈ 1 h 20.
+- Retouche d'un seul plan : ne rendre que ses images (`node scripts/render.mjs <comp> <out> 1 <a-b> 1 '<props>'`),
+  puis recoller avec les images inchangées du morceau précédent (filtre `select` + `concat`, CRF 12) avant `assemble.sh`.
+  Seul le son change : remixer puis relancer uniquement la partie mux d'`assemble.sh` (aucun rendu).
