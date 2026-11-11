@@ -36,4 +36,4 @@ Commande : `python tools/voice_edit.py productions/<ep>/voice --tension "<mot>"`
   Forfait gratuit : pas de création de voix par l'API ; pas de voix d'ado masculin français satisfaisante → préférer des personnages féminins/adultes.
 - Configuration : `productions/<ep>/voices.json` ; répliques balisées `{role}« … »` dans SCRIPT.md ; outil : `python tools/tts_roles.py productions/<ep>`.
 - Blancs : fin de phrase 0,27 s, virgule 0,10 s, **mots liés dans la phrase** (≤ 0,06 s), tension 0,55 s, avant réplique 0,12 s.
-- Musique : `productions/<ep>/audio/ambient.py` (nappe mineure + cloches lointaines), ~17 dB sous la voix ; bruitages réduits à l'essentiel (`make_audio_v2.py`).
+- Musique : `productions/<ep>/audio/ambient.py` (nappe mineure + cloches lointaines), ~9 dB sous la voix (validé) ; bruitages réduits à l'essentiel (`make_audio_v2.py`).
