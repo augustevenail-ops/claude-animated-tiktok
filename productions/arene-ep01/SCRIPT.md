@@ -9,21 +9,19 @@
 - À éviter (originalité) : noms, lieux, symboles et scènes du film d'inspiration (pas de « tributs », « districts »,
   corne dorée, plateformes de départ, oiseau emblème).
 
-## Script (≈ 240 mots, ~68-72 s ; blancs ramenés à ~0,2 s par `tools/voice_tighten.py`) — voix : George (ElevenLabs), réglage expressif à choisir
+## Script v3 (≈ 200 mots, 69,8 s) — voix : George (ElevenLabs, v2 expressif), −1,5 demi-ton, tempo 0,975, pauses 0,27 s en fin de phrase, 0,1 s aux virgules, 0,55 s avant « vingt-trois »
 Imagine… Tu te réveilles dans une forêt que tu n'as jamais vue. Avec un bracelet de métal soudé à ton poignet.
 Il affiche un seul chiffre : **vingt-quatre**.
 Autour de toi, d'autres gens se relèvent dans l'herbe. Personne ne sait comment il est arrivé là.
-Ton dernier souvenir, c'est ta chambre. Et une lumière blanche.
-Au-dessus des arbres, le ciel a quelque chose de bizarre. Il est trop lisse. Comme un **plafond** peint.
-Puis une voix sort des haut-parleurs cachés dans les troncs.
+Au-dessus des arbres, le ciel est bizarre. Trop lisse. Comme un **plafond** peint.
+Puis une voix sort des troncs.
 « Bienvenue dans l'**Arène**. Vous êtes vingt-quatre. Un seul ressortira. »
-Chaque année, le pays tire au sort vingt-quatre personnes. Le jeu est **filmé**, diffusé partout, et les gens parient
-sur qui tiendra le plus longtemps.
-Ton bracelet, c'est ton **compteur**. Il montre combien de joueurs sont encore en vie. Et il ne s'enlève pas. Tu as déjà essayé.
-Au centre de la clairière, un **monolithe** noir. À ses pieds, des caisses : de l'eau, des couteaux, des sacs, des cartes.
+Chaque année, le pays tire au sort vingt-quatre personnes. Le jeu est **filmé**, diffusé partout. Et les gens parient.
+Ton bracelet, c'est ton **compteur**. Il montre combien de joueurs sont encore en vie. Et il ne s'enlève pas.
+Au centre de la clairière, un **monolithe** noir. À ses pieds, des caisses : de l'eau, des armes, des sacs.
 « Le jeu commence dans **soixante** secondes. »
 Le garçon à côté de toi te murmure : « Ne cours pas au **centre**. L'an dernier, la moitié est tombée là-bas. »
-Mais sans **eau**, tu ne tiendras pas trois jours. Et la rivière la plus proche, personne ne sait où elle est.
+Mais sans **eau**, tu ne tiendras pas trois jours.
 Le compte à rebours démarre.
 Et ton bracelet passe à… **vingt-trois**.
 Personne n'a encore bougé.
