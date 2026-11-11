@@ -33,7 +33,7 @@ Elle se tient la cheville. Elle ne peut plus marcher.
 Derrière vous, des pas. Quelqu'un vous a suivis.
 Alors, tu t'arrêtes pour l'**aider**, ou tu continues de **courir** ? Dis-le en commentaire.
 
-(≈ 197 mots rappel compris ⇒ ≈ 70-72 s ; explique le 23 de l'ép. 1. Micro-pauses voulues avant « Vingt et un », « la fille » et « Derrière vous ».
+(≈ 230 mots rappel compris ⇒ ≈ 80-84 s (dans la fourchette 60-90 s, plus long que l'ép. 1) ; explique le 23 de l'ép. 1. Micro-pauses voulues avant « Vingt et un », « la fille » et « Derrière vous ».
 La violence reste hors champ : coupes rapides, secousses, caisses qui tombent, compteur qui chute.)
 
 ### Idées en option (à valider)
