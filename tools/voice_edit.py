@@ -1,6 +1,6 @@
 # Pauses choisies + voix plus grave/lente, à partir de voice_raw.mp3 + words_raw.json (tools/tts_episode.py).
-# Usage : python tools/voice_edit.py <dossier voice> [--end 0.32] [--comma 0.12] [--inner 0.06]
-#           [--tension "mot1,mot2"] [--tpause 0.55] [--pitch -1.5] [--tempo 0.95]
+# Usage : python tools/voice_edit.py <dossier voice> [--end 0.27] [--comma 0.10] [--inner 0.06]
+#           [--tension "mot1,mot2"] [--tpause 0.55] [--pitch -1.5] [--tempo 0.975]
 # Règle des pauses : fin de phrase (. ? ! … ») = --end ; virgule / deux-points = --comma ; entre deux mots = --inner max ;
 # avant les mots listés dans --tension (début du mot) = --tpause. Les blancs plus courts que la cible ne sont pas allongés.
 # Puis ffmpeg rubberband : --pitch demi-tons (négatif = plus grave), --tempo (< 1 = plus lent).
@@ -9,7 +9,7 @@ import json, os, re, subprocess, sys
 import numpy as np
 
 d = sys.argv[1]
-o = {"--end": "0.32", "--comma": "0.12", "--inner": "0.06", "--tension": "", "--tpause": "0.55", "--pitch": "-1.5", "--tempo": "0.95"}
+o = {"--end": "0.27", "--comma": "0.10", "--inner": "0.06", "--tension": "", "--tpause": "0.55", "--pitch": "-1.5", "--tempo": "0.975"}  # validated defaults (docs/VOIX.md)
 a = sys.argv[2:]
 for i, k in enumerate(a):
     if k in o: o[k] = a[i + 1]
