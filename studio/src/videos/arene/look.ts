@@ -10,7 +10,7 @@ export const DAWN = {
   fog: "#6d7b8f", fogNear: 45, fogFar: 260,
 };
 export const GRADE_DAWN: GradeParams = {
-  ky: [0.02, 0.085, 0.22, 0.48, 0.74, 0.9, 1],
+  ky: [0.02, 0.095, 0.25, 0.54, 0.8, 0.935, 1],
   sat: [0.92, 1.08, 1.12],
   tintS: [0.02, -0.002], tintM: [0, 0.004], tintH: [-0.012, 0.012],
   vig: [0.32, 0.38],

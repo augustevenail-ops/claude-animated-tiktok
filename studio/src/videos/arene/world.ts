@@ -50,11 +50,34 @@ const put = (b: Batch, kit: Kit, name: string, x: number, y: number, z: number, 
 const solid = (key: string, color: string, extra: THREE.MeshLambertMaterialParameters = {}) => lam("ar_" + key, () => ({ color, ...extra }));
 const glow = (r: number, g: number, b: number) => { const m = new THREE.MeshBasicMaterial({ color: new THREE.Color(r, g, b), toneMapped: true }); return m; };
 
+// ---------------- texture peinte procédurale (bruit monde, aucun UV requis) ----------------
+const NOISE_GLSL = `varying vec3 vWP;
+float h3(vec3 p){ p = fract(p * 0.3183099 + 0.1); p *= 17.0; return fract(p.x * p.y * p.z * (p.x + p.y + p.z)); }
+float vn(vec3 x){ vec3 i = floor(x), f = fract(x); f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(mix(h3(i), h3(i + vec3(1,0,0)), f.x), mix(h3(i + vec3(0,1,0)), h3(i + vec3(1,1,0)), f.x), f.y),
+             mix(mix(h3(i + vec3(0,0,1)), h3(i + vec3(1,0,1)), f.x), mix(h3(i + vec3(0,1,1)), h3(i + vec3(1,1,1)), f.x), f.y), f.z); }`;
+/** amp = force des taches, sc = taille (1/m), grad = assombrissement vers le pied (feuillages) */
+const painted = (m: THREE.Material, amp: number, sc: number, grad: number) => {
+  const prev = m.onBeforeCompile.bind(m);
+  m.onBeforeCompile = (sh, r) => {
+    prev(sh, r);
+    sh.vertexShader = "varying vec3 vWP;\n" + sh.vertexShader.replace("#include <project_vertex>", "#include <project_vertex>\nvWP = (modelMatrix * vec4(transformed, 1.0)).xyz;");
+    sh.fragmentShader = NOISE_GLSL + "\n" + sh.fragmentShader.replace("#include <color_fragment>", `#include <color_fragment>
+      { float n = 0.6 * vn(vWP * ${sc.toFixed(3)}) + 0.4 * vn(vWP * ${(sc * 3.1).toFixed(3)});
+        diffuseColor.rgb *= mix(1.0 - ${amp.toFixed(3)}, 1.0 + ${(amp * 0.6).toFixed(3)}, n) * mix(1.0 - ${grad.toFixed(3)}, 1.08, smoothstep(0.0, 12.0, vWP.y)); }`);
+  };
+  m.customProgramCacheKey = () => `painted_${amp}_${sc}_${grad}`;
+  m.needsUpdate = true;
+};
+
 // ---------------- textures peintes ----------------
-const metalTex = () => ctex("ar_metal", 512, 512, (g, r) => {
-  g.fillStyle = "#2a2e38"; g.fillRect(0, 0, 512, 512);
+const metalTex = () => ctex("ar_metal2", 512, 512, (g, r) => {
+  g.fillStyle = "#15171d"; g.fillRect(0, 0, 512, 512);
   for (let y = 0; y < 512; y += 128) for (let x = 0; x < 512; x += 128) {
-    g.fillStyle = `hsl(222, 12%, ${15 + r() * 7}%)`; g.fillRect(x + 3, y + 3, 122, 122);
+    const l = 13 + r() * 14; g.fillStyle = `hsl(222, 14%, ${l}%)`; g.fillRect(x + 4, y + 4, 120, 120);
+    const gr = g.createLinearGradient(x, y, x, y + 128); gr.addColorStop(0, "rgba(255,255,255,0.10)"); gr.addColorStop(0.5, "rgba(0,0,0,0)"); gr.addColorStop(1, "rgba(0,0,0,0.25)"); g.fillStyle = gr; g.fillRect(x + 4, y + 4, 120, 120);
+    g.fillStyle = "rgba(200,215,235,0.22)"; g.fillRect(x + 4, y + 4, 120, 3); g.fillStyle = "rgba(0,0,0,0.5)"; g.fillRect(x + 4, y + 121, 120, 3);
+    for (let k = 0; k < 3; k++) { g.fillStyle = `rgba(120,40,30,${0.08 + r() * 0.1})`; g.fillRect(x + 10 + r() * 100, y + 20 + r() * 60, 2 + r() * 3, 20 + r() * 50); }
     g.fillStyle = "#14161c"; for (const [a, c] of [[10, 10], [114, 10], [10, 114], [114, 114]]) { g.beginPath(); g.arc(x + a, y + c, 4, 0, 7); g.fill(); }
   }
   g.strokeStyle = "rgba(255,255,255,0.05)"; for (let i = 0; i < 40; i++) { g.beginPath(); const x = r() * 512, y = r() * 512; g.moveTo(x, y); g.lineTo(x + 30 * r(), y + 3); g.stroke(); }
@@ -237,6 +260,15 @@ export class World {
     const sub = (bs: Batch[], cast: boolean) => bs.forEach((x) => { const g = new THREE.Group(); x.build(g, cast); g.traverse((o) => { const m = o as THREE.Mesh; if (m.isMesh) { m.geometry.computeBoundingSphere(); m.frustumCulled = true; } }); R.add(g); });
     sub(near, true); sub(far, false); sub(grassB, false);
     R.traverse((o) => { const m = o as THREE.Mesh; if (m.isMesh && !m.layers.isEnabled(NOINK)) m.receiveShadow = true; });
+    // texture peinte : feuillages / écorces / herbe (taches + pied plus sombre), métal de la tour (taches fines)
+    const done = new Set<THREE.Material>();
+    R.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh || Array.isArray(m.material)) return; const mt = m.material as THREE.MeshLambertMaterial;
+      if (done.has(mt) || !(mt as THREE.MeshLambertMaterial).isMeshLambertMaterial) return; done.add(mt);
+      const hex = "#" + mt.color.getHexString();
+      if (["#2f5f3f", "#3b6b45"].includes(hex)) painted(mt, 0.38, 0.55, 0.45);
+      else if (["#5a3d2e", "#6a4a34"].includes(hex)) painted(mt, 0.3, 1.6, 0.1);
+      else if (hex === "#5c8a46" || hex === "#7d8f5c") painted(mt, 0.3, 0.35, 0);
+      else if (hex === "#4a5060" || hex === "#262a33") painted(mt, 0.22, 2.2, 0.15); });
     // drones
     for (let k = 0; k < 5; k++) {
       const g = new THREE.Group(), body = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.22, 0.7), dark); g.add(body);

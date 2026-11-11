@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import * as THREE from "three";
 import { AbsoluteFill, Audio, continueRender, delayRender, getInputProps, staticFile, useCurrentFrame } from "remotion";
 import { ThreeCanvas } from "@remotion/three";
-import { useThree } from "@react-three/fiber";
+import { useThree, addAfterEffect } from "@react-three/fiber";
 import { EffectComposer } from "@react-three/postprocessing";
 import { BlendFunction, BloomEffect, ToneMappingEffect, ToneMappingMode } from "postprocessing";
 import { InkPass, noInkFallback } from "../bridge/ink";
@@ -17,7 +17,7 @@ import { GRADE_DAWN } from "./look";
 import WORDS from "./words.json";
 
 export const ARENE_FRAMES = TOTAL;
-type Post = { ink: boolean; lens: boolean; bloom: boolean; grade: boolean; audio: boolean; shadow: boolean; smap: number; dpr?: number };
+type Post = { ink: boolean; lens: boolean; bloom: boolean; grade: boolean; audio: boolean; shadow: boolean; smap: number; dpr?: number; prof?: boolean };
 const post = (): Post => ({ ink: true, lens: true, bloom: true, grade: true, audio: true, shadow: true, smap: 2048, ...((getInputProps() as { post?: Partial<Post> }).post ?? {}) });
 
 const makeBloom = () => {
@@ -30,9 +30,9 @@ const fwd = new THREE.Vector3(), fpt = new THREE.Vector3();
 
 const Inner: React.FC<{ kit: Kit }> = ({ kit }) => {
   const f = useCurrentFrame();
-  const { camera, scene } = useThree();
+  const { camera, scene, gl, invalidate } = useThree();
   const on = useMemo(post, []);
-  const world = useMemo(() => { const w = new World(kit); w.sun.castShadow = on.shadow; w.sun.shadow.mapSize.set(on.smap, on.smap); return w; }, [kit, on]);
+  const world = useMemo(() => { const t0 = performance.now(); const w = new World(kit); if (on.prof) console.warn(`[prof] world build ${(performance.now() - t0).toFixed(0)} ms`); w.sun.castShadow = on.shadow; w.sun.shadow.mapSize.set(on.smap, on.smap); return w; }, [kit, on]);
   const fx = useMemo(() => ({
     ink: new InkPass(scene, camera as THREE.PerspectiveCamera),
     lens: new LensBlur({ maxCoC: 22, nearScale: 1.2 }),
@@ -50,15 +50,32 @@ const Inner: React.FC<{ kit: Kit }> = ({ kit }) => {
       {on.grade ? <primitive object={fx.grade} dispose={null} /> : <></>}
     </EffectComposer>
   ), [fx, on]);
+  useMemo(() => { // profilage : temps GPU (logiciel) de chaque gl.render, forcé par gl.finish()
+    if (!on.prof) return;
+    const ctx = gl.getContext(), orig = gl.render.bind(gl); let n = 0, acc = 0, last = performance.now();
+    gl.render = (sc: THREE.Object3D, c: THREE.Camera) => { const t0 = performance.now(); orig(sc, c); ctx.finish(); const dt = performance.now() - t0; acc += dt; n++;
+      const rt = gl.getRenderTarget(); console.warn(`[prof] render#${n} ${rt ? rt.width + "x" + rt.height : "screen"} ${dt.toFixed(0)} ms (sum ${acc.toFixed(0)}, since frame start ${(performance.now() - last).toFixed(0)})`); };
+  }, [gl, on]);
   const cam = camera as THREE.PerspectiveCamera;
   const id = shotAt(f).id;
+  const tU = performance.now();
   const target = world.update(id, f, cam, scene);
+  if (on.prof) console.warn(`[prof] frame ${f} world.update ${(performance.now() - tU).toFixed(0)} ms`);
   noInkFallback(world.root);
   const d = dofAt(f);
   cam.getWorldDirection(fwd);
   if (d.focus) fpt.set(...d.focus); else fpt.copy(target);
   fx.lens.focus = Math.max(0.3, fpt.sub(cam.position).dot(fwd));
   fx.lens.cInf = d.cInf;
+  // rendu à la demande : une seule passe complète par image Remotion, capture après la fin du rendu
+  useEffect(() => {
+    const h = delayRender(`frame ${f}`);
+    let done = false;
+    const finish = () => { if (!done) { done = true; continueRender(h); } };
+    const unsub = addAfterEffect(() => { unsub(); finish(); return true; });
+    invalidate();
+    return () => { unsub(); finish(); };
+  }, [f, invalidate]);
   return (<><primitive object={world.root} dispose={null} />{chain}</>);
 };
 
@@ -84,8 +101,8 @@ const Captions: React.FC<{ t: number }> = ({ t }) => {
   if (!g) return null;
   return (
     <div style={{ position: "absolute", left: 0, right: 0, top: "73%", transform: "translateY(-50%)", textAlign: "center", padding: "0 90px" }}>
-      <span style={{ fontFamily: "'Liberation Sans', 'DejaVu Sans', Arial, sans-serif", fontWeight: 900, fontSize: 46, letterSpacing: 0.5, color: "#ffffff",
-        WebkitTextStroke: "7px #000", paintOrder: "stroke fill", textShadow: "0 3px 6px rgba(0,0,0,0.55)" }}>{g.text}</span>
+      <span style={{ fontFamily: "'Liberation Sans', 'DejaVu Sans', Arial, sans-serif", fontWeight: 900, fontSize: 56, letterSpacing: 0.5, color: "#ffffff",
+        WebkitTextStroke: "8px #000", paintOrder: "stroke fill", textShadow: "0 3px 6px rgba(0,0,0,0.55)" }}>{g.text}</span>
     </div>
   );
 };
@@ -117,7 +134,7 @@ export const AreneEp1: React.FC = () => {
   if (!kit) return null;
   return (
     <AbsoluteFill style={{ background: "#0d1320" }}>
-      <ThreeCanvas width={1080} height={1920} {...(on.dpr ? { dpr: on.dpr } : {})} shadows gl={{ antialias: false, stencil: false, powerPreference: "high-performance" }} camera={{ fov: 44, near: 0.1, far: 2000 }}>
+      <ThreeCanvas width={1080} height={1920} frameloop="demand" {...(on.dpr ? { dpr: on.dpr } : {})} shadows gl={{ antialias: false, stencil: false, powerPreference: "high-performance" }} camera={{ fov: 44, near: 0.1, far: 2000 }}>
         <Inner kit={kit} />
       </ThreeCanvas>
       <Badge />
