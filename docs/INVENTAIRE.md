@@ -49,8 +49,16 @@ Les chiffres des rapports restent la source de vérité ; on ne peut pas refaire
 |---|---|---|
 | `Apokalyps_video_no_watermark.mp4` (upload, non versionné) | Référence n° 2 : voix, suspense, nuit, montage → `docs/REFERENCE_APOKALYPS.md` | 🔎 image entière (planches 0,5 s), audio mesuré ; transcription automatique impossible |
 
+## `assets/kenney/` (fournis par l'utilisateur le 2026-11-11, CC0)
+| Kit | Contenu | Usage |
+|---|---|---|
+| `nature/` (Nature Kit 2.1) | 329 `.glb` : pins, arbres, rochers, falaises, souches, troncs, tentes, feux, ponts, clôtures, herbes | Arène, forêts ; noms identiques à la liste `KENNEY` de `world.ts` |
+| `survival/` (Survival Kit) | 80 `.glb` + `Textures/colormap.png` : caisses, tonneaux, sacs, outils, bâches, structures métal | Ravitaillement, camps |
+| `furniture/` (Furniture Kit) | 140 `.glb` : mobilier d'intérieur | Scènes de maison |
+À copier dans `public/<nom>/kenney/` du projet Remotion (staticFile). Productions : `productions/<nom>/SCRIPT.md`.
+
 ## ⛔ Ressources non présentes (à fournir/créer pour produire)
 - Projet Remotion (package.json, `src/index.ts`, `src/Root.tsx`, tsconfig).
-- Modèles Kenney `.glb` (26 noms dans `world.ts`) → `public/bridge/kenney/`.
+- ~~Modèles Kenney~~ : fournis (voir `assets/kenney/`).
 - Voix (`voice.wav`) et timings (`words.json`) — ni enregistrement ni TTS dans le dépôt.
 - Aucun fichier son, vidéo ou modèle 3D n'est versionné ; aucun rendu du bridge n'est disponible pour comparaison.
