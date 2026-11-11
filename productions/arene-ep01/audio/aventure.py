@@ -65,7 +65,7 @@ def aventure(dur, cues, seed=9):
         x = t[i0:i1]; trem[i0:i1] = np.sin(2 * np.pi * midi(CHORDS[c % 4][2] + 12) * x) * (0.6 + 0.4 * np.sin(2 * np.pi * 12 * x))
     # sifflement-signature + réponse lointaine (écho de forêt)
     wh = np.zeros(n); w = whistle(rng)
-    put(wh, w, 0.15, 1.0); put(wh, _lp(w, 2500), 2.55, 0.45)
+    if cues.get("whistle", True): put(wh, w, 0.15, 1.0); put(wh, _lp(w, 2500), 2.55, 0.45)
     for d, g in ((0.33, 0.35), (0.71, 0.22), (1.2, 0.12)):
         k_ = int(d * SR); wh[k_:] += wh[:-k_] * g
     c = cues
@@ -77,7 +77,8 @@ def aventure(dur, cues, seed=9):
     g_dr2 = 0.28 * full * (1 - after)
     g_hn = 0.24 * ramp(t, c["drums"] + 2, c["drums"] + 5) + 0.06 * full
     g_tr = 0.07 * ramp(t, c["full"] - 4, c["full"] + 2) * (1 - 0.5 * after)
-    y = 0.8 * base * (1 - 0.6 * ramp(t, 0, 0.1) * (1 - ramp(t, 3.5, 6))) + g_gal * nz(gal) + g_dr * nz(dr) + g_dr2 * nz(dr2) + g_hn * nz(hn) + g_tr * nz(trem) + 0.5 * nz(wh)
+    wh_on = cues.get("whistle", True)
+    y = 0.8 * base * ((1 - 0.6 * ramp(t, 0, 0.1) * (1 - ramp(t, 3.5, 6))) if wh_on else 1) + g_gal * nz(gal) + g_dr * nz(dr) + g_dr2 * nz(dr2) + g_hn * nz(hn) + g_tr * nz(trem) + (0.5 * nz(wh) if wh_on else 0)
     y *= 1 - ramp(t, c["end"] - 1.2, c["end"])
     return y / (np.abs(y).max() + 1e-9)
 

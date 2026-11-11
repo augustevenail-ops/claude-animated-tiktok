@@ -47,7 +47,7 @@ while start + k + 0.2 < DUR - 0.3:                                              
     put(sfx, tone(1180, 0.08) + 0.2 * tone(2360, 0.08), start + 0.15 + k, 0.3); k += 1
 put(sfx, tone(2900, 0.09), v23 - 0.04, 0.35); put(sfx, tone(2300, 0.09), v23 + 0.1, 0.35)                     # 24 -> 23
 
-music = aventure(DUR, {"drums": hp[0]["s"], "full": at("soixante"), "dip": v23, "end": DUR})
+music = aventure(DUR, {"drums": hp[0]["s"], "full": at("soixante"), "dip": v23, "end": DUR, "whistle": False})  # sifflement retiré (décision utilisateur)
 duck = np.ones(N)
 for w in words: duck[int(max(0, w["s"] - 0.08) * SR):int(min(DUR, w["e"] + 0.12) * SR)] = db(-3)
 dip = 1 - (1 - db(-12)) * np.clip(np.minimum((t - (v23 - 1.2)) / 0.3, ((v23 + 1.6) - t) / 0.6), 0, 1)
