@@ -30,5 +30,7 @@ for c, a, b in zip(ch, t0, t1):
     else: cur["w"] += c; cur["e"] = b
 if cur: words.append(cur)
 words = [w for w in words if re.search(r"\w", w["w"])]
+for i in range(len(words) - 1):  # trailing punctuation can stretch a word into the next pause
+    words[i]["e"] = min(words[i]["e"], words[i + 1]["s"])
 json.dump(words, open(os.path.join(outdir, "words_raw.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=0)
 print(len(text.split()), "mots ;", len(words), "mots alignés ; fin", round(words[-1]["e"], 2), "s")
