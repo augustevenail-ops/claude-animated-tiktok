@@ -277,6 +277,7 @@ export class World {
     R.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh || Array.isArray(m.material)) return; const mt = m.material as THREE.MeshLambertMaterial;
       if (done.has(mt) || !(mt as THREE.MeshLambertMaterial).isMeshLambertMaterial) return; done.add(mt);
       const hex = "#" + mt.color.getHexString();
+      if ((globalThis as { __noPaint?: boolean }).__noPaint) return;
       if (["#2f5f3f", "#3b6b45"].includes(hex)) painted(mt, 0.55, 0.9, 0.55, 0.35);
       else if (["#5a3d2e", "#6a4a34"].includes(hex)) painted(mt, 0.45, 2.4, 0.15);
       else if (hex === "#5c8a46" || hex === "#7d8f5c") painted(mt, 0.3, 0.35, 0);
@@ -372,7 +373,9 @@ export class World {
       Bl.mesh.position.set(p[0], 0.09, p[2]); Bl.mesh.rotation.set(-Math.PI / 2, 0, 0); Bl.mesh.scale.set(0.9, 0.6, 1); Bl.use(true); Bl.mesh.visible = true;
       void right;
     }
+    const tP = performance.now(); const nNew = (this.pool as unknown as { live: Map<string, unknown> }).live.size;
     this.pool.flush();
+    if ((globalThis as { __prof?: boolean }).__prof) console.warn(`[prof] pool flush ${(performance.now() - tP).toFixed(0)} ms, live ${nNew}`);
     for (const a of this.actors) a.bind();
     for (const bl of this.blobs) { const tx = bl.r?.tex; if (tx) { bl.soft.map = tx; bl.mesh.material = bl.soft; } }
     void SU; void RING;

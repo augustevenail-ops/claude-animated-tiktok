@@ -8,7 +8,7 @@ import { useThree, addAfterEffect } from "@react-three/fiber";
 import { EffectComposer } from "@react-three/postprocessing";
 import { BlendFunction, BloomEffect, ToneMappingEffect, ToneMappingMode } from "postprocessing";
 import { InkPass, noInkFallback } from "../bridge/ink";
-import { LensBlur } from "../bridge/lensblur";
+import { LensBlurEffect } from "../bridge/lensblur";
 import { GradeEffect } from "../bridge/grade";
 import { Kit } from "../bridge/build";
 import { World, loadKit } from "./world";
@@ -17,8 +17,8 @@ import { GRADE_DAWN } from "./look";
 import WORDS from "./words.json";
 
 export const ARENE_FRAMES = TOTAL;
-type Post = { ink: boolean; lens: boolean; bloom: boolean; grade: boolean; audio: boolean; shadow: boolean; smap: number; dpr?: number; prof?: boolean };
-const post = (): Post => ({ ink: true, lens: true, bloom: true, grade: true, audio: true, shadow: true, smap: 2048, ...((getInputProps() as { post?: Partial<Post> }).post ?? {}) });
+type Post = { ink: boolean; lens: boolean; bloom: boolean; grade: boolean; audio: boolean; shadow: boolean; smap: number; dpr?: number; prof?: boolean; lensTaps: number; lensNear: number };
+const post = (): Post => ({ ink: true, lens: true, bloom: true, grade: true, audio: true, shadow: true, smap: 2048, lensTaps: 64, lensNear: 32, ...((getInputProps() as { post?: Partial<Post> }).post ?? {}) });
 
 const makeBloom = () => {
   const b = new BloomEffect({ blendFunction: BlendFunction.ADD, intensity: 0.6, luminanceThreshold: 1.0, luminanceSmoothing: 0.2, mipmapBlur: true, levels: 5, radius: 0.6 });
@@ -32,19 +32,22 @@ const Inner: React.FC<{ kit: Kit }> = ({ kit }) => {
   const f = useCurrentFrame();
   const { camera, scene, gl, invalidate } = useThree();
   const on = useMemo(post, []);
+  (globalThis as { __prof?: boolean }).__prof = !!on.prof;
+  (globalThis as { __noPaint?: boolean }).__noPaint = !!(on as { noPaint?: boolean }).noPaint;
   const world = useMemo(() => { const t0 = performance.now(); const w = new World(kit); if (on.prof) console.warn(`[prof] world build ${(performance.now() - t0).toFixed(0)} ms`); w.sun.castShadow = on.shadow; w.sun.shadow.mapSize.set(on.smap, on.smap); return w; }, [kit, on]);
   const fx = useMemo(() => ({
     ink: new InkPass(scene, camera as THREE.PerspectiveCamera),
-    lens: new LensBlur({ maxCoC: 22, nearScale: 1.2 }),
+    // flou de profondeur : seule la passe principale ; nombre d'échantillons réglable (lensTaps / lensNear)
+    lens: new LensBlurEffect({ maxCoC: 22, nearScale: 1.2, stage: { taps: on.lensTaps, spread: 0.958, nearTaps: on.lensNear, rot: 0 } }),
     bloom: makeBloom(),
     tone: new ToneMappingEffect({ mode: ToneMappingMode.NEUTRAL }),
     grade: (() => { const g = new GradeEffect(GRADE_DAWN, 1); return g; })(),
-  }), [camera, scene]);
+  }), [camera, scene, on]);
   useEffect(() => () => fx.ink.dispose(), [fx]);
   const chain = useMemo(() => (
     <EffectComposer multisampling={0}>
       {on.ink ? <primitive object={fx.ink} dispose={null} /> : <></>}
-      {on.lens ? <primitive object={fx.lens.main} dispose={null} /> : <></>}
+      {on.lens ? <primitive object={fx.lens} dispose={null} /> : <></>}
       {on.bloom ? <primitive object={fx.bloom} dispose={null} /> : <></>}
       <primitive object={fx.tone} dispose={null} />
       {on.grade ? <primitive object={fx.grade} dispose={null} /> : <></>}

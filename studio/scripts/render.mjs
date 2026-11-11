@@ -9,6 +9,7 @@ const serveUrl = await bundle({ entryPoint: path.resolve(process.env.ENTRY || "s
 const composition = await selectComposition({ serveUrl, id, browserExecutable, chromiumOptions, timeoutInMilliseconds: 300000, inputProps: JSON.parse(props) });
 const t0 = Date.now(); let last = 0;
 await renderMedia({ composition, serveUrl, codec: "h264", crf: 16, outputLocation: out, scale: Number(scale), browserExecutable, chromiumOptions,
-  concurrency: Number(conc), inputProps: JSON.parse(props), timeoutInMilliseconds: 600000, frameRange: range ? range.split("-").map(Number) : undefined,
+  concurrency: Number(conc), inputProps: JSON.parse(props),
+  onBrowserLog: (l) => { if (l.text.includes("[prof]") && !l.text.includes("render#")) console.log(l.text); }, timeoutInMilliseconds: 600000, frameRange: range ? range.split("-").map(Number) : undefined,
   onProgress: ({ renderedFrames }) => { if (renderedFrames !== last) { last = renderedFrames; console.log("frames", renderedFrames, ((Date.now() - t0) / 1000).toFixed(0) + "s"); } } });
 console.log("done", ((Date.now() - t0) / 1000).toFixed(0) + "s");
