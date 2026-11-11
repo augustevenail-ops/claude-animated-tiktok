@@ -1,7 +1,17 @@
 // L'Arène, épisode 1 « Vingt-quatre » : plans, caméras, flou, secousses, calés sur productions/arene-ep01/voice/words.json.
 // Monde : sol y = 0, tour au centre (0, 0, 0), 24 candidats en cercle (rayon RING), le héros (« tu ») sur le disque 0 en +z.
 export const FPS = 30;
-export const TOTAL = 2100; // 70,0 s (voix 69,8 s)
+import WARP from "./warp.json";
+export const TOTAL = 2080; // 69,3 s (voix v4 multi-rôles 68,9 s)
+/** la mise en scène a été réglée sur la voix v3 : chaque instant de la nouvelle voix est ramené au même mot de l'ancienne
+ *  (interpolation linéaire entre débuts de mots) ; tout le reste (plans, caméras, flou, écrans) lit cette image « ancienne ». */
+const WP = WARP as [number, number][];
+export const oldTime = (t: number) => {
+  if (t <= WP[0][0]) return t - WP[0][0] + WP[0][1];
+  for (let i = 1; i < WP.length; i++) if (t <= WP[i][0]) { const [a0, b0] = WP[i - 1], [a1, b1] = WP[i]; return b0 + ((t - a0) * (b1 - b0)) / Math.max(1e-6, a1 - a0); }
+  const [a, b] = WP[WP.length - 1]; return b + (t - a);
+};
+export const oldFrame = (f: number) => Math.min(2099, oldTime(f / 30) * 30);
 export const RING = 22;
 export type V3 = [number, number, number];
 export const HERO: V3 = [0, 0, RING];

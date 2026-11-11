@@ -9,18 +9,18 @@
 - À éviter (originalité) : noms, lieux, symboles et scènes du film d'inspiration (pas de « tributs », « districts »,
   corne dorée, plateformes de départ, oiseau emblème).
 
-## Script v3 (≈ 200 mots, 69,8 s) — voix : George (ElevenLabs, v2 expressif), −1,5 demi-ton, tempo 0,975, pauses 0,27 s en fin de phrase, 0,1 s aux virgules, 0,55 s avant « vingt-trois »
+## Script v4 — voix par rôle (`voices.json`, `tools/tts_roles.py`) : narrateur George naturel ; {hp} haut-parleur George grave + effet ; {fille} Jessica chuchotée (v3)
 Imagine… Tu te réveilles dans une forêt que tu n'as jamais vue. Avec un bracelet de métal soudé à ton poignet.
 Il affiche un seul chiffre : **vingt-quatre**.
 Autour de toi, d'autres gens se relèvent dans l'herbe. Personne ne sait comment il est arrivé là.
 Au-dessus des arbres, le ciel est bizarre. Trop lisse. Comme un **plafond** peint.
 Puis une voix sort des troncs.
-« Bienvenue dans l'**Arène**. Vous êtes vingt-quatre. Un seul ressortira. »
+{hp}« Bienvenue dans l'**Arène**. Vous êtes vingt-quatre. Un seul ressortira. »
 Chaque année, le pays tire au sort vingt-quatre personnes. Le jeu est **filmé**, diffusé partout. Et les gens parient.
 Ton bracelet, c'est ton **compteur**. Il montre combien de joueurs sont encore en vie. Et il ne s'enlève pas.
 Au centre de la clairière, un **monolithe** noir. À ses pieds, des caisses : de l'eau, des armes, des sacs.
-« Le jeu commence dans **soixante** secondes. »
-La fille à côté de toi te murmure : « Ne cours pas au **centre**. L'an dernier, la moitié est tombée là-bas. »
+{hp}« Le jeu commence dans **soixante** secondes. »
+La fille à côté de toi te murmure : {fille}« Ne cours pas au **centre**. L'an dernier, la moitié est tombée là-bas. »
 Mais sans **eau**, tu ne tiendras pas trois jours.
 Le compte à rebours démarre.
 Et ton bracelet passe à… **vingt-trois**.

@@ -28,3 +28,12 @@ Commande : `python tools/voice_edit.py productions/<ep>/voice --tension "<mot>"`
 - Commencer par « **Imagine…** » ; phrases courtes ; points de suspension seulement là où une pause est voulue ;
   pas de « … » au milieu d'un groupe qui doit s'enchaîner (ex. « un bracelet de métal soudé à ton poignet »).
 - Après génération : faire écouter `voice_ecoute.mp3`, puis verrouiller avant toute animation (tout est calé sur `words.json`).
+
+## Mise à jour 2026-11-11 : voix par rôle (prime sur les réglages ci-dessus)
+- **Narrateur (voix off, toujours la même)** : George, réglages « v2 expressif », **sans grave ajouté** (pitch 0), tempo 0,975.
+- **Haut-parleur / annonces de l'Arène** : George −1,5 demi-ton + effet haut-parleur (passe-haut 280 Hz, passe-bas 4,2 kHz, compression, écho de forêt).
+- **Personnages** : une voix par personnage ; ex. la fille = Jessica (`cgSgspJ2msm6clMCkdW9`), modèle `eleven_v3`, préfixe `[whispers] ` (chuchotement).
+  Forfait gratuit : pas de création de voix par l'API ; pas de voix d'ado masculin français satisfaisante → préférer des personnages féminins/adultes.
+- Configuration : `productions/<ep>/voices.json` ; répliques balisées `{role}« … »` dans SCRIPT.md ; outil : `python tools/tts_roles.py productions/<ep>`.
+- Blancs : fin de phrase 0,27 s, virgule 0,10 s, **mots liés dans la phrase** (≤ 0,06 s), tension 0,55 s, avant réplique 0,12 s.
+- Musique : `productions/<ep>/audio/ambient.py` (nappe mineure + cloches lointaines), ~17 dB sous la voix ; bruitages réduits à l'essentiel (`make_audio_v2.py`).

@@ -1,0 +1,10 @@
+{
+  "narrateur": { "voice": "JBFqnCBsd6RMkjVDRZzb", "model": "eleven_multilingual_v2",
+    "settings": { "stability": 0.32, "similarity_boost": 0.8, "style": 0.45, "use_speaker_boost": true }, "pitch": 0, "tempo": 0.975, "fx": "" },
+  "hp": { "voice": "JBFqnCBsd6RMkjVDRZzb", "model": "eleven_multilingual_v2",
+    "settings": { "stability": 0.32, "similarity_boost": 0.8, "style": 0.45, "use_speaker_boost": true }, "pitch": -1.5, "tempo": 0.975,
+    "fx": "highpass=f=280,lowpass=f=4200,acompressor=threshold=-18dB:ratio=4,aecho=0.8:0.6:180|420:0.35|0.2,volume=1.4" },
+  "fille": { "voice": "cgSgspJ2msm6clMCkdW9", "model": "eleven_v3", "prefix": "[whispers] ",
+    "settings": { "stability": 0.5 }, "pitch": 0, "tempo": 1.0, "fx": "highpass=f=110,volume=1.2" },
+  "pauses": { "end": 0.27, "comma": 0.10, "inner": 0.06, "tension": 0.55, "tension_words": ["vingt-trois"], "before_quote": 0.12 }
+}

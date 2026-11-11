@@ -12,7 +12,7 @@ import { LensBlur } from "../bridge/lensblur";
 import { GradeEffect } from "../bridge/grade";
 import { Kit } from "../bridge/build";
 import { World, loadKit } from "./world";
-import { TOTAL, FPS, shotAt, dofAt, AT } from "./story";
+import { TOTAL, FPS, shotAt, dofAt, AT, oldFrame } from "./story";
 import { GRADE_DAWN } from "./look";
 import WORDS from "./words.json";
 
@@ -57,12 +57,13 @@ const Inner: React.FC<{ kit: Kit }> = ({ kit }) => {
       const rt = gl.getRenderTarget(); console.warn(`[prof] render#${n} ${rt ? rt.width + "x" + rt.height : "screen"} ${dt.toFixed(0)} ms (sum ${acc.toFixed(0)}, since frame start ${(performance.now() - last).toFixed(0)})`); };
   }, [gl, on]);
   const cam = camera as THREE.PerspectiveCamera;
-  const id = shotAt(f).id;
+  const fo = oldFrame(f);
+  const id = shotAt(fo).id;
   const tU = performance.now();
-  const target = world.update(id, f, cam, scene);
+  const target = world.update(id, fo, cam, scene);
   if (on.prof) console.warn(`[prof] frame ${f} world.update ${(performance.now() - tU).toFixed(0)} ms`);
   noInkFallback(world.root);
-  const d = dofAt(f);
+  const d = dofAt(fo);
   cam.getWorldDirection(fwd);
   if (d.focus) fpt.set(...d.focus); else fpt.copy(target);
   fx.lens.focus = Math.max(0.3, fpt.sub(cam.position).dot(fwd));
@@ -138,7 +139,7 @@ export const AreneEp1: React.FC = () => {
         <Inner kit={kit} />
       </ThreeCanvas>
       <Badge />
-      <Choice t={t} />
+      <Choice t={oldFrame(f) / FPS} />
       <Captions t={t} />
       {on.audio ? <Audio src={staticFile("arene/mix.wav")} /> : null}
     </AbsoluteFill>

@@ -128,7 +128,7 @@ const FONT = "DejaVu Sans, Liberation Sans, sans-serif";
 // ---------------- personnages ----------------
 const SUITS = ["#4f5d4a", "#5b5148", "#46566b", "#6a4f4f", "#55604f", "#4a4a5a"];
 const outfitOf = (i: number): Outfit => i === BOY
-  ? { jacket: "#2f3a4f", pants: "#2b2f3a", boots: "#1d1a20", hat: "hair", hair: "#3a2a20", skin: SKINS[1] }
+  ? { jacket: "#2f3a4f", pants: "#2b2f3a", boots: "#1d1a20", hat: "hair", hair: "#6b3a24", dress: "#34405a", skin: SKINS[2] } // la fille qui murmure
   : { jacket: SUITS[i % 6], pants: "#2e3036", boots: "#1d1a20", hat: i % 3 === 0 ? null : "hair", hair: ["#2a201a", "#5a3b2a", "#8a6a3a", "#1d1a20"][i % 4], skin: SKINS[i % 4], build: i % 7 === 3 ? "stout" : "adult" };
 const EXPR: Expr[] = ["nervous", "stern", "shock", "neutral", "nervous", "dazed"];
 const hh = (i: number, s = 0) => { const v = Math.sin(i * 127.1 + s * 311.7) * 43758.5453; return v - Math.floor(v); };
@@ -154,6 +154,16 @@ const drawWrist = (g: CanvasRenderingContext2D, n: number, tug: number) => {
   g.shadowColor = "#4fe3f0"; g.shadowBlur = 30; g.fillStyle = "#7ff3ff"; g.font = `bold 118px ${FONT}`; g.textAlign = "center"; g.textBaseline = "middle";
   g.fillText(String(n), 0, 6); g.restore();
   g.fillStyle = "#d6dbe4"; for (const y of [-128, 128]) { g.beginPath(); g.arc(55, y, 8, 0, 7); g.fill(); }
+  g.restore();
+};
+
+/** cheveux longs dessinés derrière la tête et les épaules (la fille), dans l'espace 600 x 1000 du dessin */
+const longHair = (p: Pen, col: string) => {
+  const g = p.g; g.save();
+  g.beginPath(); g.moveTo(300, 170); g.bezierCurveTo(470, 175, 460, 420, 440, 600); g.quadraticCurveTo(372, 640, 300, 612);
+  g.quadraticCurveTo(228, 640, 160, 600); g.bezierCurveTo(140, 420, 130, 175, 300, 170); g.closePath();
+  g.fillStyle = col; g.fill(); g.lineWidth = 12; g.strokeStyle = INK; g.stroke();
+  g.strokeStyle = "rgba(0,0,0,0.18)"; g.lineWidth = 6; for (const x of [200, 250, 350, 400]) { g.beginPath(); g.moveTo(x, 330); g.quadraticCurveTo(x + (x < 300 ? -12 : 12), 470, x, 590); g.stroke(); }
   g.restore();
 };
 
@@ -353,7 +363,7 @@ export class World {
       const blink = (Math.floor(t * FPS) + Math.floor(hh(i, 9) * 60)) % Math.floor(40 + hh(i, 2) * 30) < 4;
       const o = outfitOf(i), look = id === 11 && i === BOY ? -0.6 : 0;
       const fo = { mode: standing ? "stand" : "sit", expr: (i === BOY && id === 11 ? "nervous" : ex) as Expr, blink, light: -2.4, seed: (i % 7) + 1, facing: 0 as const, look };
-      A.r = this.pool.req(`F|${i}|${JSON.stringify(fo)}`, w, h, k, (pen: Pen) => bodyFront(pen, o, fo as never));
+      A.r = this.pool.req(`F|${i}|${JSON.stringify(fo)}`, w, h, k, (pen: Pen) => { if (i === BOY) longHair(pen, o.hair!); bodyFront(pen, o, fo as never); });
       const yaw = Math.atan2(cam.position.x - p[0], cam.position.z - p[2]);
       A.mesh.position.set(p[0], 0.08 - (standing ? 0 : 0.02), p[2]); A.mesh.rotation.set(0, yaw, 0); A.mesh.visible = true;
       Bl.r = this.pool.req("blob|c", 128, 128, 1, (pen: Pen) => { const g = pen.g; const gr = g.createRadialGradient(64, 64, 4, 64, 64, 62); gr.addColorStop(0, "rgba(40,40,70,0.55)"); gr.addColorStop(1, "rgba(40,40,70,0)"); g.fillStyle = gr; g.fillRect(0, 0, 128, 128); });
