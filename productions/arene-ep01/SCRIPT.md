@@ -9,8 +9,8 @@
 - À éviter (originalité) : noms, lieux, symboles et scènes du film d'inspiration (pas de « tributs », « districts »,
   corne dorée, plateformes de départ, oiseau emblème).
 
-## Script (≈ 200 mots, ~65-70 s)
-Tu te réveilles dans une forêt que tu n'as jamais vue, avec un bracelet de métal soudé au poignet.
+## Script (≈ 200 mots, ~65-75 s) — voix : George (ElevenLabs), réglage expressif à choisir
+Imagine… Tu te réveilles dans une forêt que tu n'as jamais vue. Avec un bracelet de métal… soudé à ton poignet.
 Il affiche un seul chiffre : **vingt-quatre**.
 Autour de toi, d'autres gens se relèvent dans l'herbe. Personne ne sait comment il est arrivé là.
 Au-dessus des arbres, le ciel a quelque chose de bizarre. Il est trop lisse. Comme un **plafond** peint.
