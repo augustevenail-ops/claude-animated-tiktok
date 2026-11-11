@@ -149,6 +149,7 @@ def band_J4(dur, c):  # J3 jusqu'à « Le jeu commence… », puis nappe tendue 
     rb = np.sqrt(np.mean(base[seg] ** 2)); rc = np.sqrt(np.mean(calm[segc] ** 2)) + 1e-9
     calm *= rb / rc * 10 ** (-2.5 / 20)                                     # un peu sous le niveau d'avant
     x = ramp(t, k0 - 0.2, k0 + 1.0)
+    if c.get("resume") is not None: x = x * (1 - ramp(t, c["resume"], c["resume"] + 1.0))   # J5 : la rythmique légère revient
     return nz(base * (1 - x) + calm * x)
 
-BANDES3 = {"H": band_H, "I": band_I, "J": band_J, "K": band_K, "J2": band_J2, "J3": band_J3, "J4": band_J4}
+BANDES3 = {"H": band_H, "I": band_I, "J": band_J, "K": band_K, "J2": band_J2, "J3": band_J3, "J4": band_J4, "J5": band_J4}
