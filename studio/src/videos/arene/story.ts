@@ -25,18 +25,28 @@ export const T = (f: number) => f / FPS;
 
 export type Insert = "none" | "wrist";
 export type ShotDef = { id: number; a: number; b: number; insert?: Insert };
+// montage v2 (retours utilisateur) : inserts poignet raccourcis, plans 3/4/7 raccourcis, plan 9 réduit au mouvement,
+// nouveaux plans (ids 21-28) : redressement POV, visage, grue dans la forêt, drone, écran des paris, travelling circulaire, ravitaillement
 export const SHOTS: ShotDef[] = [
   { id: 1, a: 0, b: 108 },          // réveil au ras de l'herbe
-  { id: 2, a: 108, b: 280, insert: "wrist" }, // bracelet 24
-  { id: 3, a: 280, b: 445 },        // les autres se relèvent (travelling latéral)
-  { id: 4, a: 445, b: 606 },        // le ciel trop lisse (contre-plongée)
+  { id: 21, a: 108, b: 168 },       // tu te redresses (POV qui se lève, candidats encore assis)
+  { id: 2, a: 168, b: 262, insert: "wrist" }, // bracelet 24
+  { id: 3, a: 262, b: 370 },        // les autres se relèvent (travelling latéral)
+  { id: 22, a: 370, b: 445 },       // visage d'un candidat perdu (arc lent)
+  { id: 4, a: 445, b: 530 },        // le ciel trop lisse (contre-plongée)
+  { id: 23, a: 530, b: 606 },       // grue à travers les pins : le plafond peint au-dessus de la forêt
   { id: 5, a: 606, b: 660 },        // haut-parleur dans un tronc
   { id: 6, a: 660, b: 798 },        // écran du ciel : bienvenue / 24
-  { id: 7, a: 798, b: 1015 },       // drones, paris
-  { id: 8, a: 1015, b: 1218, insert: "wrist" }, // le compteur, il ne s'enlève pas
-  { id: 9, a: 1218, b: 1430 },      // PLAN SIGNATURE : envolée POV -> plongée sur la clairière
+  { id: 7, a: 798, b: 900 },        // orbite haute : tirage au sort
+  { id: 24, a: 900, b: 975 },       // derrière un drone qui filme les candidats
+  { id: 25, a: 975, b: 1015 },      // écran du ciel : paris en cours
+  { id: 8, a: 1015, b: 1090, insert: "wrist" }, // ton bracelet, ton compteur
+  { id: 26, a: 1090, b: 1172 },     // travelling circulaire face aux candidats : combien sont encore en vie
+  { id: 27, a: 1172, b: 1218, insert: "wrist" }, // il ne s'enlève pas (arrachage)
+  { id: 9, a: 1218, b: 1338 },      // PLAN SIGNATURE : envolée POV -> plongée (mouvement seul)
+  { id: 28, a: 1338, b: 1430 },     // glissé bas dans le ravitaillement : caisses, eau, armes, sacs
   { id: 10, a: 1430, b: 1500 },     // compte à rebours 60 sur la tour
-  { id: 11, a: 1500, b: 1680 },     // le garçon murmure
+  { id: 11, a: 1500, b: 1680 },     // la fille murmure
   { id: 12, a: 1680, b: 1765 },     // l'eau sous la lumière rouge
   { id: 13, a: 1765, b: 1845 },     // compte à rebours, visages figés
   { id: 14, a: 1845, b: 1902, insert: "wrist" }, // 24 -> 23
@@ -78,6 +88,10 @@ const lerp3 = (a: V3, b: V3, u: number): V3 => [a[0] + (b[0] - a[0]) * u, a[1] +
 const bez = (a: V3, c: V3, b: V3, s: number): V3 => { const r = 1 - s; return [0, 1, 2].map((i) => r * r * a[i] + 2 * r * s * c[i] + s * s * b[i]) as V3; };
 
 const B = discPos(BOY);
+/** trajectoire des drones (partagée avec world.ts) */
+export const dronePos = (k: number, t: number): V3 => { const a = k * 1.3 + t * 0.12; return [Math.sin(a) * (14 + k * 3), 12 + k * 1.5 + Math.sin(t * 1.3 + k) * 0.3, Math.cos(a) * (14 + k * 3)]; };
+const ringAt = (a: number, r: number, y: number): V3 => [Math.sin(a) * r, y, Math.cos(a) * r];
+const C22 = discPos(21);
 export const SPEAKER: V3 = [2.6, 2.3, RING + 6.4];
 export const SKYSCREEN: V3 = [-70, 60, -130];
 export const TOWER_SCREEN: V3 = [0, 5.2, 2.05];
@@ -88,18 +102,32 @@ const CAMS: Record<number, Key[]> = {
     { f: 0, s: (f) => dolly([0.35, 0.32, RING + 0.6], [0.9, 0.15, RING - 2.5], push(f, 0, 0.001), { fov: 46, roll: 0.06 }) },
     { f: 38, dur: 56, s: (f) => dolly([0.3, 0.45, RING + 0.6], [1.2, 1.5, RING - 9], push(f, 38, 0.0015), { fov: 46, roll: 0.02 }) },
   ],
+  21: [{ f: 108, s: (f) => { const u = glide((f - 108) / 60); return { pos: lerp3([0.3, 0.45, RING + 0.6], [0, 1.5, RING + 0.3], u), look: lerp3([1.2, 0.6, RING - 6], [-2.2, 1.3, RING - 9], u), fov: 46, roll: 0.06 * (1 - u) }; } }],
   2: [{ f: 108, s: (f) => dolly([0, 1.45, RING + 0.15], [0.05, 0.75, RING - 0.55], push(f, 108, 0.0012), { fov: 44 }) }],
   3: [
-    { f: 280, s: (f) => { const u = (f - 280) / 165; return { pos: [-7 + 10 * u, 1.55, RING + 9], look: [-3 + 6 * u, 1.0, RING - 4], fov: 40 }; } },
+    { f: 262, s: (f) => { const u = (f - 262) / 108; return { pos: [-7 + 7 * u, 1.55, RING + 9], look: [-3 + 4.2 * u, 1.0, RING - 4], fov: 40 }; } },
   ],
-  4: [{ f: 445, s: (f) => { const u = (f - 445) / 161; return { pos: [0, 1.4, RING + 0.3], look: [6 * Math.sin(0.5 + 0.4 * u), 40, RING - 30 - 8 * u], fov: 52, roll: 0.05 - 0.08 * u }; } }],
+  22: [{ f: 370, s: (f) => { const u = (f - 370) / 75, a0 = Math.atan2(C22[0], C22[2]) + 0.9 - 0.5 * u, d = 2.6 - 0.5 * u;
+    const c: V3 = [C22[0], 1.45, C22[2]]; return { pos: [c[0] + Math.sin(a0) * d, 1.6, c[2] + Math.cos(a0) * d], look: c, fov: 36, roll: -0.03 }; } }],
+  4: [{ f: 445, s: (f) => { const u = (f - 445) / 120; return { pos: [0, 1.4, RING + 0.3], look: [6 * Math.sin(0.5 + 0.4 * u), 40, RING - 30 - 8 * u], fov: 52, roll: 0.05 - 0.08 * u }; } }],
+  23: [{ f: 530, s: (f) => { const u = glide((f - 530) / 76); return { pos: [36.5, 3.5 + 11 * u, 5 - 2 * u], look: [120, 9 + 7 * u, -12], fov: 48, roll: 0.03 }; } }],
   5: [{ f: 606, s: (f) => dolly([SPEAKER[0] - 0.6, SPEAKER[1] - 0.15, SPEAKER[2] - 1.5], SPEAKER, push(f, 606, 0.004), { fov: 38, roll: -0.04 }) }],
   6: [{ f: 660, s: (f) => { const u = (f - 660) / 138; return { pos: [0.4, 1.5, RING + 1], look: lerp3([-30, 26, -50], [-36, 31, -62], u), fov: 44 - 4 * u }; } }],
   7: [{ f: 798, s: (f) => { const a = 0.9 + (f - 798) * 0.0016; return { pos: [Math.sin(a) * 34, 8, Math.cos(a) * 34], look: [0, 9, 0], fov: 42 }; } }],
+  24: [{ f: 900, s: (f) => { const t = f / FPS, d = dronePos(2, t), d2 = dronePos(2, t + 0.4), tx = d2[0] - d[0], tz = d2[2] - d[2], L = Math.hypot(tx, tz) || 1, R0 = Math.hypot(d[0], d[2]) || 1;
+    const hx = (tx / L) * 0.35 - (d[0] / R0) * 0.95, hz = (tz / L) * 0.35 - (d[2] / R0) * 0.95, H = Math.hypot(hx, hz);
+    const pos: V3 = [d[0] - (hx / H) * 6.5, d[1] + 2.4, d[2] - (hz / H) * 6.5];
+    return { pos, look: [pos[0] + (hx / H) * 14, pos[1] - 6.5, pos[2] + (hz / H) * 14], fov: 42, roll: 0.05 * Math.sin(t * 0.9) }; } }],
+  25: [{ f: 975, s: (f) => { const u = (f - 975) / 40; return { pos: [-0.6, 1.5, RING + 0.8], look: [SKYSCREEN[0] + 1 - 2 * u, SKYSCREEN[1] - 3, SKYSCREEN[2]], fov: 36 - 3 * u, roll: 0.02 }; } }],
   8: [{ f: 1015, s: (f) => dolly([0.05, 1.42, RING + 0.12], [0.08, 0.75, RING - 0.55], push(f, 1015, 0.0015), { fov: 42, roll: 0.02 }) }],
+  // travelling circulaire : part face au candidat n° 3 puis glisse le long du cercle (2-3 candidats toujours dans le cadre)
+  26: [{ f: 1090, s: (f) => { const u = clamp01((f - 1090) / 82), x = 4.4 * (0.15 * u + 0.85 * smooth(u)), th = 0.785 + (Math.PI / 12) * (x - (0.35 * Math.sin(2 * Math.PI * x)) / (2 * Math.PI)), a = th - 0.3; // ralentit sur chaque visage, jamais à l'arrêt
+    return { pos: ringAt(a, 19.2, 1.55), look: ringAt(th, RING, 1.35), fov: 42, roll: -0.03 }; } }],
+  27: [{ f: 1172, s: (f) => dolly([0.05, 1.42, RING + 0.12], [0.08, 0.75, RING - 0.55], push(f, 1015, 0.0015), { fov: 42, roll: 0.02 }) }],
+  28: [{ f: 1338, s: (f) => { const u = (f - 1338) / 92, a = 2.2 + 0.55 * u; return { pos: ringAt(a, 10.5 - 0.6 * u, 1.75), look: ringAt(a + 0.35, 6.4, 0.55), fov: 40, roll: 0.03 }; } }],
   9: [{ f: 1218, s: (f) => {
     const a: V3 = [0, 1.6, RING + 0.4], la: V3 = [0, 3.5, 0];
-    const s = glide((f - 1240) / 120), pos = bez(a, [0, 22, RING + 4], [0.5, 40, 2.5], s);
+    const s = glide((f - 1218) / 120), pos = bez(a, [0, 22, RING + 4], [0.5, 40, 2.5], s);
     return { pos, look: lerp3(la, [0, 0, 0], s), fov: 44 + 8 * s, roll: 0.5 * s * 0.1 + Math.max(0, f - 1360) * 0.0012 };
   } }],
   10: [{ f: 1430, s: (f) => dolly([0.8, 4.6, TOWER_SCREEN[2] + 4.2], TOWER_SCREEN, push(f, 1430, 0.004), { fov: 40, roll: 0.04 }) }],
@@ -137,13 +165,20 @@ export const camAt = (id: number, f: number): Cam => {
 export type Dof = { f: number; cInf: number; focus?: V3 };
 export const DOF: Dof[] = [
   { f: 0, cInf: 12, focus: [1.0, 0.8, RING - 7] },
-  { f: 108, cInf: 16 },               // bracelet : focus = point visé
-  { f: 280, cInf: 6, focus: [0, 1.2, RING - 3] },
+  { f: 108, cInf: 10 },               // redressement : focus = point visé
+  { f: 168, cInf: 16 },               // bracelet : focus = point visé
+  { f: 262, cInf: 6, focus: [0, 1.2, RING - 3] },
+  { f: 370, cInf: 14 },               // visage
   { f: 445, cInf: 0 },
   { f: 606, cInf: 14 },
   { f: 660, cInf: 0 },
+  { f: 900, cInf: 0 },                // drone
+  { f: 975, cInf: 0 },
   { f: 1015, cInf: 16 },
+  { f: 1090, cInf: 10 },              // travelling circulaire
+  { f: 1172, cInf: 16 },
   { f: 1218, cInf: 0 },
+  { f: 1338, cInf: 9 },               // ravitaillement
   { f: 1430, cInf: 10 },
   { f: 1500, cInf: 13 },
   { f: 1680, cInf: 14 },

@@ -10,7 +10,7 @@ import { TONE, CHAR, untone } from "../bridge/shade";
 import { NOINK } from "../bridge/ink";
 import { Pool, Actor, Fx, SU } from "../bridge/cast";
 import { Pen, bodyFront, Outfit, Expr, INK, SKINS } from "../bridge/toon";
-import { FPS, RING, HERO, BOY, discPos, shotAt, camAt, counter, countdown, AT, SPEAKER, SKYSCREEN, TOWER_SCREEN, WATER, V3, smooth } from "./story";
+import { FPS, RING, HERO, BOY, discPos, dronePos, shotAt, camAt, counter, countdown, AT, SPEAKER, SKYSCREEN, TOWER_SCREEN, WATER, V3, smooth } from "./story";
 import { DAWN } from "./look";
 
 // ---------------- assets ----------------
@@ -324,10 +324,10 @@ export class World {
     const pulse = 0.85 + 0.15 * Math.sin(t * 2.2) + (t > AT.beep0 ? 0.35 * Math.max(0, 1 - ((t - AT.beep0) % 1) * 4) : 0);
     for (const m of this.slitMats) m.color.setRGB(3.2 * pulse, 0.25 * pulse, 0.2 * pulse);
     this.ringTop.rotation.y = t * 0.25;
-    this.drones.forEach((g, k) => { const a = k * 1.3 + t * 0.12; g.position.set(Math.sin(a) * (14 + k * 3), 12 + k * 1.5 + Math.sin(t * 1.3 + k) * 0.3, Math.cos(a) * (14 + k * 3)); g.rotation.y = -a; });
-    this.grassFg.visible = id === 1;
+    this.drones.forEach((g, k) => { g.position.set(...dronePos(k, t)); g.rotation.y = -(k * 1.3 + t * 0.12); });
+    this.grassFg.visible = id === 1 || id === 21;
     // écran du ciel (visible du réveil à la fin des paris)
-    this.skyScreen.mesh.visible = id >= 4 && id <= 7;
+    this.skyScreen.mesh.visible = [4, 5, 6, 7, 23, 24, 25].includes(id);
     this.skyScreen.mesh.lookAt(cam.position.x, SKYSCREEN[1], cam.position.z);
     const skyMode = t < AT.welcome ? "logo" : t < AT.count24 ? "welcome" : t < AT.bets ? "24" : "bets";
     this.skyScreen.draw(skyMode + (skyMode === "bets" ? Math.floor(t * 2) : ""), (g, w, h) => {
@@ -336,7 +336,7 @@ export class World {
       if (skyMode === "logo" || skyMode === "welcome") { g.font = `bold 120px ${FONT}`; g.fillText(skyMode === "logo" ? "L'ARÈNE" : "BIENVENUE", w / 2, h / 2 - 70); g.font = `bold 70px ${FONT}`; g.fillText(skyMode === "logo" ? "ÉDITION 37" : "DANS L'ARÈNE", w / 2, h / 2 + 80); }
       else if (skyMode === "24") { g.font = `bold 360px ${FONT}`; g.fillText("24", w / 2, h / 2 + 20); }
       else { g.font = `bold 70px ${FONT}`; g.fillText("PARIS EN COURS", w / 2, 110); g.font = `bold 54px ${FONT}`; g.textAlign = "left";
-        for (let k = 0; k < 6; k++) { const n = (k * 7 + 3) % 24 + 1, odd = (2 + ((k * 13 + Math.floor(t * 2)) % 37) / 4).toFixed(1); g.fillText(`N° ${n}`, 250, 230 + k * 92); g.textAlign = "right"; g.fillText(`× ${odd}`, w - 250, 230 + k * 92); g.textAlign = "left"; } }
+        for (let k = 0; k < 6; k++) { const n = (k * 7 + 3) % 24 + 1, odd = (2 + ((k * 13 + Math.floor(t * 2)) % 37) / 4).toFixed(1); g.fillText(`N° ${n}`, w / 2 - 300, 230 + k * 92); g.textAlign = "right"; g.fillText(`× ${odd}`, w / 2 + 300, 230 + k * 92); g.textAlign = "left"; } }
     });
     // écran de la tour : compte à rebours
     const cd = countdown(t);
@@ -348,7 +348,7 @@ export class World {
     const wristOn = s.insert === "wrist";
     this.wrist.mesh.visible = wristOn;
     if (wristOn) {
-      const tug = id === 8 ? smooth((t - AT.tug) / 0.25) * (1 - smooth((t - AT.tug - 0.6) / 0.3)) : 0;
+      const tug = id === 27 ? smooth((t - AT.tug) / 0.25) * (1 - smooth((t - AT.tug - 0.6) / 0.3)) : 0;
       this.wrist.draw(`w${counter(t)}_${tug.toFixed(2)}`, (g) => drawWrist(g, counter(t), tug));
       const fwd = V(0, 0, -1).applyQuaternion(cam.quaternion), up = V(0, 1, 0).applyQuaternion(cam.quaternion);
       const dist = 0.5, hgt = 2 * dist * Math.tan((cam.fov * Math.PI) / 360);
@@ -361,8 +361,8 @@ export class World {
       const A = this.actors[i], Bl = this.blobs[i];
       if (i === 0) { A.mesh.visible = false; Bl.mesh.visible = false; continue; } // le héros (« tu ») : caméra subjective
       const p = discPos(i), d = cam.position.distanceTo(V(p[0], 1.2, p[2])), [w, h, k] = tierOf(d);
-      const st = AT.stand0 + hh(i, 4) * 3, standing = t > st || id > 3;
-      const ex = id >= 13 ? (i % 2 ? "nervous" : "stern") : t < 20 ? (i % 3 ? "dazed" : "shock") : EXPR[i % 6];
+      const st = AT.stand0 + hh(i, 4) * 3, standing = t > st || f >= 445 || (id === 22 && i === 21);
+      const ex = f >= 1765 ? (i % 2 ? "nervous" : "stern") : t < 20 ? (i % 3 ? "dazed" : "shock") : EXPR[i % 6];
       const blink = (Math.floor(t * FPS) + Math.floor(hh(i, 9) * 60)) % Math.floor(40 + hh(i, 2) * 30) < 4;
       const o = outfitOf(i), look = id === 11 && i === BOY ? -0.6 : 0;
       const fo = { mode: standing ? "stand" : "sit", expr: (i === BOY && id === 11 ? "nervous" : ex) as Expr, blink, light: -2.4, seed: (i % 7) + 1, facing: 0 as const, look };
