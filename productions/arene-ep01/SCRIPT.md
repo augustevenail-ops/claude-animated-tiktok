@@ -49,6 +49,27 @@ Alors, tu cours vers le **monolithe**, ou vers la **forêt** ? Dis-le en comment
 14. Plan large : personne ne bouge, le vent dans les herbes.
 15. Fin : POV, étiquettes à l'écran « A - MONOLITHE » / « B - FORÊT ».
 
+## Design du centre de l'Arène (« le Monolithe ») — original, aussi riche qu'une arène de film
+Pas un rocher : une **structure fabriquée**, imposante et pleine de détails.
+- **La tour** : flèche noire anguleuse de ~12 m, faite de plaques de métal empilées et décalées (rivets, panneaux
+  `metal-panel*` du Survival Kit), fendue de haut en bas par une **fente lumineuse rouge** ; au sommet, un anneau
+  d'écrans/caméras qui tourne lentement. Le compte à rebours s'affiche sur ses faces.
+- **Le socle** : plateforme octogonale à trois marches, grilles de sol métal (`structure-metal-floor`), rampes
+  d'où « débordent » les caisses, comme si la tour venait de les vomir.
+- **Le ravitaillement, disposé en éventail** (gradient de valeur = gradient de danger) :
+  - au pied de la tour (0-6 m) : le meilleur matériel en tas désordonné : coffres ouverts (`chest`, `box-large-open`),
+    sacs à dos, gourdes, trousses de soin, **râteliers d'armes** (lances, arcs, carquois, machettes, haches,
+    couteaux plantés dans les caisses), tonneaux, rouleaux de corde ;
+  - à mi-distance (6-18 m) : caisses isolées, sacs renversés, outils (`tool-axe`, `tool-pickaxe`, `tool-hammer`,
+    `tool-shovel`), bâches, couchages (`bedroll`), seaux, bouteilles, objets tombés dans l'herbe ;
+  - en périphérie (18-30 m) : quelques objets épars, à portée des plus prudents.
+  - Placement procédural (code) : seed fixe, densité décroissante, rotations aléatoires, objets renversés/entrouverts,
+    rien d'aligné ; armes à modéliser en code si absentes des kits (arc, lance, carquois, couteau).
+- **Les 24 candidats** en cercle à ~35 m, chacun sur un marquage au sol (disque métal + numéro), séparés de ~9 m.
+- **Autour** : herbe haute, souches, rochers, puis la ceinture de pins et les falaises ; au loin, le bord du dôme.
+- Couleurs : métal noir bleuté, fente et voyants rouges saturés, caisses ocre/vert militaire, bâches orange délavé,
+  lumière d'aube froide ; accents cyan des écrans et bracelets.
+
 ## Ambiance
 - Aube bleu-gris (nouveau preset `dawn` / `night` désaturé) + accents saturés : rouge #F53C38 (monolithe, compte à rebours),
   cyan des écrans et du bracelet. Badge permanent en haut à gauche : « ARÈNE · JOUR 1 ».
