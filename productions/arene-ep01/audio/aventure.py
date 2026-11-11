@@ -9,7 +9,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from ambient import ambient, SR, CHORDS, midi, _lp
 
 E8 = 0.3125                    # croche : 6/8, une mesure (6 croches) = 1,875 s ; un accord de 8 s ≈ 4,3 mesures
-WHISTLE = [(86, 0.38), (90, 0.30), (93, 0.30), (91, 0.85)]          # ré6 fa♯6 la6 sol6 : mélodie de l'utilisateur (2026-11-11)
+WHISTLE = [(79, 0.38), (82, 0.30), (84, 0.30), (86, 0.85)]          # sol5 si♭5 do6 ré6 : mélodie de l'utilisateur (2026-11-11)
 THEME = [(0, 3), (7, 3), (5, 2), (3, 1), (2, 3), (0, 3), (-2, 2), (0, 4)]  # degrés / fondamentale, durées en croches
 
 def ramp(t, a, b):
