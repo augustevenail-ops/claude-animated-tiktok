@@ -14,6 +14,8 @@ Imagine… Tu te réveilles dans une forêt que tu n'as jamais vue. Avec un brac
 Il affiche un seul chiffre : vingt-quatre.
 
 ### Nouveau
+Avant même le départ, ton bracelet était passé à vingt-trois. Quelqu'un avait essayé d'arracher le sien.
+Il ne s'enlève pas. Maintenant, tout le monde le sait.
 Vous avez été **soixante-dix-sept pour cent** à choisir le monolithe. Alors tu cours.
 Le compte à rebours tombe à zéro… et tout le monde s'élance en même temps.
 Au pied du monolithe, c'est le chaos. Ça pousse, ça tombe, ça hurle.
@@ -21,7 +23,7 @@ Tu attrapes un sac. Quelqu'un tire sur l'autre bretelle. Tu tires plus fort.
 Par terre, entre deux caisses, un **couteau**. Tu le ramasses sans réfléchir.
 Et tu fais demi-tour.
 Ton bracelet bipe. **Vingt et un**. Encore. **Vingt**. **Dix-neuf**.
-Tu cours de toutes tes forces. Tes poumons brûlent.
+Tu cours de toutes tes forces.
 Autour de toi, d'autres silhouettes filent vers la forêt. Chacun pour soi.
 Au-dessus de toi, un drone te suit. Sur l'écran du ciel, ton numéro apparaît pour la première fois.
 Tu passes les premiers arbres. Le bruit derrière toi s'éteint d'un coup.
@@ -31,7 +33,7 @@ Elle se tient la cheville. Elle ne peut plus marcher.
 Derrière vous, des pas. Quelqu'un vous a suivis.
 Alors, tu t'arrêtes pour l'**aider**, ou tu continues de **courir** ? Dis-le en commentaire.
 
-(≈ 180 mots rappel compris ⇒ ≈ 66-70 s. Micro-pauses voulues avant « Vingt et un », « la fille » et « Derrière vous ».
+(≈ 197 mots rappel compris ⇒ ≈ 70-72 s ; explique le 23 de l'ép. 1. Micro-pauses voulues avant « Vingt et un », « la fille » et « Derrière vous ».
 La violence reste hors champ : coupes rapides, secousses, caisses qui tombent, compteur qui chute.)
 
 ### Idées en option (à valider)
@@ -42,6 +44,7 @@ La violence reste hors champ : coupes rapides, secousses, caisses qui tombent, c
 
 ### Découpage visuel v2 (≈ 16 plans)
 1-2. **Rappel** : plans 1 (plongée du ciel, socles blancs) et 29 (poussée vers toi + bracelet 24) de l'ép. 1, tels quels.
+2b. Le 23 expliqué : un socle vide, plus loin dans le cercle, un bracelet arraché à moitié posé dessus qui clignote ; les voisins détournent les yeux (rien de violent montré).
 3. Carte « 77 % » diégétique sur l'écran du ciel (A · MONOLITHE 77 % / B · FORÊT 23 %), en accord avec le texte.
 4. Écran de la tour : 3, 2, 1, **0** ; les fentes rouges s'éteignent d'un coup.
 5. **Plan signature n° 1** : vue du ciel, les 23 silhouettes partent toutes en même temps vers le centre (étoile qui se resserre).
