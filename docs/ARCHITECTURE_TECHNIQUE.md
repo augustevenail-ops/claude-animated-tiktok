@@ -108,3 +108,9 @@ Disque : chaque bundle copie `public/` (~1,3 Go) dans le dossier temporaire ⇒ 
   (3D interne 720p) ou ~1,5 s/image (1080p natif)** → épisode de 2 100 images ≈ 32-55 min. `--concurrency 2` : aucun gain (CPU saturé).
 - Outils : `scripts/stills.mjs <comp> <prefix> <frames> <scale> '<inputProps>'` (PNG, logs `[prof]` si `post.prof`),
   `scripts/imgdiff.py ref.png new.png`, `scripts/render.mjs <comp> <out> <scale> <a-b> <conc> '<inputProps>'`.
+
+### Assemblage des morceaux (2026-11-11)
+`studio/scripts/assemble.sh` : ne pas joindre les morceaux en copie de flux (trous d'horodatage aux jointures, ou
+images perdues via H.264 brut) ; décodage bout à bout + réencodage unique CRF 12 en CFR 30 i/s exact, sans les pistes
+audio muettes des morceaux (`-an`). Mux : audio complété/coupé à la durée vidéo (`apad,atrim`), jamais `-shortest`.
+Épisode 1 : 7 morceaux de 300 images, ~13-15 min chacun (flou allégé 32/16), total ≈ 1 h 20.
