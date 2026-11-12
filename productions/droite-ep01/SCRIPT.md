@@ -21,7 +21,7 @@ Sa main se pose sur ton épaule. Elle est **glacée**.
 {faux}« Tu ne regardes plus ton père ? »
 Alors, tu **le regardes**, ou tu **cours vers la porte** ? Dis-le en commentaire.
 
-(≈ 150 mots ⇒ ≈ 55-60 s au débit validé ; on peut ajouter une phrase d'ambiance pour atteindre ~65 s.
+(≈ 160 mots ⇒ ≈ 58-60 s au débit validé ; on peut ajouter une phrase d'ambiance pour atteindre ~65 s.
 Micro-pauses voulues avant « Ce n'est pas moi », « Presque. » et « glacée ».)
 
 ## Découpage visuel prévu (≈ 14 plans, 2 mouvements spectaculaires)
