@@ -113,9 +113,9 @@ const drawPhone = (g: CanvasRenderingContext2D, w: number, h: number, p: ReturnT
 };
 
 // ---------------- personnages ----------------
-const FATHER_OUTFIT: Outfit = { jacket: "#5b4a3b", pants: "#2a2d36", boots: "#1c1a1f", hat: null, skin: "#efe9f0", build: "adult" };      // visage pâle (références), coupe créée par fatherHair
-const FATHER_PALE: Outfit = { ...FATHER_OUTFIT, jacket: "#46505c", skin: "#d4d9e7" };                                                   // le vrai père, blême sous la pluie
-const FATHER_SHADOW: Outfit = { jacket: "#07070b", pants: "#07070b", boots: "#07070b", hat: null, skin: "#08080d", build: "adult" };   // silhouette noire du reflet
+const FATHER_OUTFIT: Outfit = { jacket: "#5b4a3b", pants: "#2a2d36", boots: "#1c1a1f", hat: null, skin: "#e6c9a6", build: "adult" };      // peau beige (comme tout le monde), coupe créée par fatherHair
+const FATHER_PALE: Outfit = { ...FATHER_OUTFIT, jacket: "#46505c" };                                                   // le vrai père, blême sous la pluie
+const FATHER_SHADOW: Outfit = { jacket: "#13131d", pants: "#10101a", boots: "#0c0c14", hat: null, skin: "#08080d", build: "adult" };   // silhouette noire du reflet
 const YOU_OUTFIT: Outfit = HERO_OUTFIT;   // personnage principal (shared/hero.ts)
 const tierOf = (d: number): [number, number, number] => (d < 3.5 ? [1080, 1800, 1.8] : d < 12 ? [600, 1000, 1] : [300, 500, 0.5]);
 
@@ -160,7 +160,7 @@ export class World {
     const scr = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 0.68), new THREE.MeshBasicMaterial({ color: "#05060a", fog: false })); scr.position.set(0, 1.0, TV_Z); scr.layers.set(NOINK); R.add(scr);
     const sheen = new Screen(256, 256, 1.2, 0.68); sheen.mesh.position.set(0, 1.0, TV_Z + 0.022); sheen.mesh.renderOrder = 3; R.add(sheen.mesh);
     sheen.draw("sheen", (g, w, h) => { const d = g.createLinearGradient(0, 0, w, h); d.addColorStop(0, "rgba(160,190,255,0)"); d.addColorStop(0.38, "rgba(170,195,255,0.12)"); d.addColorStop(0.5, "rgba(170,195,255,0.03)"); d.addColorStop(1, "rgba(160,190,255,0)");
-      g.fillStyle = d; g.fillRect(0, 0, w, h); const r = g.createRadialGradient(w * 0.86, h * 0.78, 0, w * 0.86, h * 0.78, w * 0.4); r.addColorStop(0, "rgba(255,160,70,0.08)"); r.addColorStop(1, "rgba(255,160,70,0)"); g.fillStyle = r; g.fillRect(0, 0, w, h); });
+      g.fillStyle = d; g.fillRect(0, 0, w, h); });
     // halos ambre du lampadaire (additifs) : mur, sol, ampoule ; halo cyan faible de la fenêtre
     const addGlow = (rgb: string, w: number, h: number, pos: V3, rot: [number, number, number], op: number) => {
       const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: glowTex(rgb), transparent: true, opacity: op, blending: THREE.AdditiveBlending, depthWrite: false, fog: false }));
@@ -241,7 +241,7 @@ export class World {
       const { q, s } = proj(p); A.mesh.position.set(q[0], q[1], q[2]); A.mesh.rotation.set(0, 0, 0); A.mesh.scale.setScalar(s);
       A.mat.color.setRGB(dim * 0.62, dim * 0.76, dim); A.mesh.visible = reflOn;
     };
-    const dimYou = id === 2 ? 0.5 : 0.26, dimFake = id === 2 ? 0.95 : id === 6 ? 0.12 : id === 26 ? 0.15 + 0.45 * smooth((f - SHOT_A(26)) / 40) : 0.6;
+    const dimYou = id === 2 ? 0.55 : 0.42, dimFake = id === 2 ? 0.95 : id === 6 ? 0.12 : id === 26 ? 0.15 + 0.45 * smooth((f - SHOT_A(26)) / 40) : 0.6;
     reflect(this.rYou, "Y", YOU_OUTFIT, youFo, YOU, dimYou);
     reflect(this.rFake, "S", FATHER_SHADOW, { ...fakeFo, expr: "shadow" as Expr }, FAKE, dimFake);                       // dans le reflet : silhouette noire, yeux lumineux, grand sourire
     const sp = proj([0, 0.45, SOFA_Z_()]); const m0 = this.mirror[0]; m0.visible = reflOn; m0.position.set(sp.q[0], sp.q[1], TV_Z + 0.006); m0.scale.set(2.1 * sp.s, 0.85 * sp.s, 1);

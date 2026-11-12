@@ -115,7 +115,7 @@ Balançoire = deux cordes ; aucun prop à < 2 m de l'objectif ; buisson coupé a
 drapeaux d'époque ; panneaux en matériau non éclairé ; garde-corps qui traversent les jambes, pas les torses.
 
 ## Visages « pâles, yeux luisants » (références utilisateur du 2026-11-12, droite-ep01 et suivants)
-- **Personnages normaux** : visage pâle, grands yeux noirs ovales avec 2 reflets blancs (`gloss`), sourcils fins, bouche en trait ; expressions
+- **Personnages normaux** : peau **beige pour tout le monde** (décision 2026-11-12), coupes de cheveux basiques, grands yeux noirs ovales avec 2 reflets blancs (`gloss`), sourcils fins, bouche en trait ; expressions
   `calm` (regard normal), `worry` (inquiet, jamais en colère), `smile_fixed` (sourire trop figé). Plus de regards énervés (`stern`, `neutral` à paupières).
 - **Faux père / menace** : `creepy` = très large sourire à dents pointues ; `shadow` = silhouette noire, yeux blancs lumineux, grand sourire blanc
   à fentes noires (utilisée pour le reflet dans la télé).

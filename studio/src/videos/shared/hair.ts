@@ -19,7 +19,7 @@ export const fatherHair = (p: Pen, mode: string, seed: number, col = "#8b8b96", 
   g.closePath();
   g.fillStyle = col; g.fill(); g.strokeStyle = INK; g.lineWidth = 3.2 * u; g.stroke();
   g.strokeStyle = dark; g.lineWidth = 2 * u;
-  for (const [a, b, c, d, e, f] of [[-10, -41, -6, -50, 4, -55], [-28, -46, -16, -52, -4, -55], [12, -42, 26, -50, 38, -46], [-46, -34, -48, -24, -46, -12], [46, -34, 49, -24, 47, -10]])
+  for (const [a, b, c, d, e, f] of [[-8, -42, -4, -50, 6, -55], [14, -42, 28, -50, 40, -44]])
     { g.beginPath(); g.moveTo(X(a), Y(b)); g.quadraticCurveTo(X(c), Y(d), X(e), Y(f)); g.stroke(); }
   g.restore();
 };
