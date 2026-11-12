@@ -8,11 +8,10 @@ import { ctex, rep } from "../bridge/paint";
 import { TONE, CHAR, untone } from "../bridge/shade";
 import { NOINK } from "../bridge/ink";
 import { Pool, Actor } from "../bridge/cast";
-import { Pen, bodyFront, Outfit, Expr } from "../bridge/toon";
+import { Pen, Outfit, Expr } from "../bridge/toon";
 import { FPS, YOU, FAKE, TV_Z, WINDOW, FATHER, LAMP, V3, shotAt, camAt, flashAt, phoneAt, smooth, clamp01 } from "./story";
 import { NIGHT } from "./look";
-import { HERO_OUTFIT, heroBehind, heroFront } from "../shared/hero";
-import { fatherHair } from "../shared/hair";
+import { drawChar, CharSpec } from "../shared/chars";
 
 const FONT = "DejaVu Sans, Liberation Sans, sans-serif";
 const FURN = ["loungeSofa", "lampRoundFloor", "cabinetTelevision", "tableCoffee", "pottedPlant", "bookcaseClosed", "lampSquareTable", "books", "rugRectangle"];
@@ -113,10 +112,17 @@ const drawPhone = (g: CanvasRenderingContext2D, w: number, h: number, p: ReturnT
 };
 
 // ---------------- personnages ----------------
-const FATHER_OUTFIT: Outfit = { jacket: "#5b4a3b", pants: "#2a2d36", boots: "#1c1a1f", hat: null, skin: "#e6c9a6", build: "adult" };      // peau beige (comme tout le monde), coupe créée par fatherHair
-const FATHER_PALE: Outfit = { ...FATHER_OUTFIT, jacket: "#46505c" };                                                   // le vrai père, blême sous la pluie
-const FATHER_SHADOW: Outfit = { jacket: "#13131d", pants: "#10101a", boots: "#0c0c14", hat: null, skin: "#08080d", build: "adult" };   // silhouette noire du reflet
-const YOU_OUTFIT: Outfit = HERO_OUTFIT;   // personnage principal (shared/hero.ts)
+const FATHER_OUTFIT: Outfit = { jacket: "#7b5a47", pants: "#34374d", boots: "#16151c" };
+const FATHER_PALE: Outfit = { ...FATHER_OUTFIT, jacket: "#4c6288" };
+const FATHER_SHADOW: Outfit = { jacket: "#14141f", pants: "#10101a", boots: "#0c0c14" };
+/** apparence de chaque personnage (style des images de référence : tête nacrée, contours épais, aplats saturés) */
+const LOOK: Record<string, Partial<CharSpec>> = {
+  Y: { jacket: "#2b3f93", pants: "#2a2f4a", shoes: "#16151c", hair: "side", hairColor: "#5a3a26", hood: true },
+  F: { jacket: "#7b5a47", pants: "#34374d", shoes: "#16151c", hair: "short", hairColor: "#9b9ba8" },
+  D: { jacket: "#4c6288", pants: "#34374d", shoes: "#16151c", hair: "short", hairColor: "#abacb8" },
+  S: { jacket: "#14141f", pants: "#10101a", shoes: "#0c0c14", hair: "none", shadow: true },
+};
+const YOU_OUTFIT: Outfit = { jacket: "#27388a", pants: "#2a2f4a", boots: "#16151c" };   // (conservé pour la signature de place ; le dessin vient de shared/chars.ts)
 const tierOf = (d: number): [number, number, number] => (d < 3.5 ? [1080, 1800, 1.8] : d < 12 ? [600, 1000, 1] : [300, 500, 0.5]);
 
 export class World {
@@ -176,10 +182,9 @@ export class World {
     this.rain = new Screen(512, 512, 2.2, 1.5); this.rain.mesh.position.set(3.14, 1.4, 0.8); this.rain.mesh.rotation.y = -Math.PI / 2; R.add(this.rain.mesh);
     this.phone = new Screen(720, 1280, 1, 1.78); (this.phone.mesh.material as THREE.MeshBasicMaterial).depthTest = false; this.phone.mesh.renderOrder = 10; R.add(this.phone.mesh);
     this.hand = new Screen(512, 512, 0.5, 0.5); R.add(this.hand.mesh);
-    this.hand.draw("hand", (g) => { g.lineCap = "round"; g.strokeStyle = "#0b0c10"; g.lineWidth = 78; g.beginPath(); g.moveTo(40, 60); g.lineTo(250, 230); g.stroke();
-      g.strokeStyle = "#5b4a3b"; g.lineWidth = 62; g.beginPath(); g.moveTo(40, 60); g.lineTo(230, 215); g.stroke();
-      g.fillStyle = "#e6c29e"; g.strokeStyle = "#0b0c10"; g.lineWidth = 12; g.beginPath(); g.ellipse(310, 275, 80, 50, 0.7, 0, 7); g.fill(); g.stroke();
-      for (let i = 0; i < 4; i++) { g.beginPath(); g.moveTo(340 + i * 14, 300 + i * 6); g.lineTo(390 + i * 16, 360 + i * 8); g.stroke(); } });
+    this.hand.draw("hand", (g) => { g.lineCap = "round"; g.strokeStyle = "#17161d"; g.lineWidth = 74; g.beginPath(); g.moveTo(30, 50); g.lineTo(290, 270); g.stroke();
+      g.strokeStyle = "#7b5a47"; g.lineWidth = 60; g.beginPath(); g.moveTo(30, 50); g.lineTo(290, 270); g.stroke();
+      g.beginPath(); g.arc(318, 292, 42, 0, 7); g.fillStyle = "#f4f4f7"; g.fill(); g.lineWidth = 12; g.strokeStyle = "#17161d"; g.stroke(); });
     this.hand.mesh.visible = false;
     // miroir de la télé : fond du canapé reflété (quad sombre) ; les cartes reflétées sont des Actors
     const sofaRef = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ color: "#150d0b", transparent: true, opacity: 0.55, fog: false, depthWrite: false })); sofaRef.layers.set(NOINK); sofaRef.renderOrder = 0; R.add(sofaRef); this.mirror.push(sofaRef);
@@ -217,9 +222,8 @@ export class World {
     }
     // personnages (cartes face à la caméra)
     const yaw = (p: V3) => Math.atan2(cam.position.x - p[0], cam.position.z - p[2]);
-    const drawCard = (key: string, o: Outfit, fo: object) => (pen: Pen) => { const hero = key === "Y", fm = fo as { mode: string; seed: number };
-      if (hero) heroBehind(pen, fm.mode, fm.seed); bodyFront(pen, o, fo as never); if (hero) heroFront(pen, fm.mode, fm.seed);
-      if (key === "F") fatherHair(pen, fm.mode, fm.seed); if (key === "D") fatherHair(pen, fm.mode, fm.seed, "#a3a3b0", "#74747f"); };
+    const drawCard = (key: string, _o: Outfit, fo: object) => (pen: Pen) => { const f = fo as { mode: "stand" | "sit"; expr: CharSpec["expr"]; blink?: boolean; look?: number; wave?: number };
+      drawChar(pen, { ...(LOOK[key[0]] as CharSpec), mode: f.mode, expr: f.expr, blink: !!f.blink, look: f.look ?? 0, wave: f.wave ?? 0 }); };
     const place = (A: Actor, key: string, o: Outfit, p: V3, fo: object, extra = 0, visible = true) => {
       const d = cam.position.distanceTo(V(p[0], 1.1, p[2])), [w, h, k] = tierOf(d);
       A.r = this.pool.req(`${key}|${JSON.stringify(fo)}`, w, h, k, drawCard(key, o, fo));

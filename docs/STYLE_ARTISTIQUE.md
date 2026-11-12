@@ -122,3 +122,14 @@ drapeaux d'époque ; panneaux en matériau non éclairé ; garde-corps qui trave
 - **Cheveux** : coupes simples dessinées par le projet (`shared/hair.ts`, `shared/hero.ts`), jamais de coupe au bol ; aucun accessoire repris des références.
 - **Couleurs** : nuit bleu-violet (ombres violacées, clair bleuté), accents ambre / cyan ; visages clairs.
 - Personnage principal (« tu ») : avatar de l'utilisateur, `studio/src/videos/shared/hero.ts` (peau claire chaude, cheveux châtains en mèches, sweat bleu nuit).
+
+## Style des personnages « références » (analyse de 13 images fournies le 2026-11-12) — à appliquer à TOUS les personnages dès maintenant
+Module : `studio/src/videos/shared/chars.ts` (`drawChar`). Règles observées et encodées :
+- **Contour** épais et régulier, presque noir (#17161d), bouts arrondis, même épaisseur sur la tête, les bras, le corps.
+- **Tête** = sphère **blanc nacré** : dégradé radial à cœur très lumineux, bord gris-bleu, cou blanc très court.
+- **Visage** : yeux = ovales noirs pleins, écartés, petit reflet blanc ; **sourcils fins** et courts ; bouche minuscule ; **cernes violets** en croissant
+  sous les yeux. Expressions : calme / inquiet / sourire figé / grand sourire à dents (menace) / silhouette noire aux yeux lumineux (reflet).
+- **Corps** simples : torse en capsule, bras et jambes = tubes de largeur constante, **mains = ronds blancs sans doigts** ; pieds = ovales sombres.
+- **Vêtements** : aplats saturés (bleu marine / bleu vif, brun-orangé, gris-bleu) avec dégradé doux (clair en haut, sombre en bas) et un liseré clair.
+- **Cheveux** : aplat avec contour et 2 traits foncés, coupe simple (jamais au bol). **Aucun accessoire** repris des références.
+- **Ambiance** : décors sombres désaturés (bleu-violet / gris-vert), visages et mains = points lumineux de l'image.
