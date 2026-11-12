@@ -38,7 +38,7 @@ export const reflPoint = (c: V3, p: V3): V3 => { const pz = 2 * TV_Z - p[2], t =
 const headY = 1.21;
 const tvLook: V3 = [0, 0.98, TV_Z];
 const CAMS: Record<number, (u: number, f: number) => Cam> = {
-  1: () => P([0.5, 0.95, 0.15], [0.5, 0.4, 0.55], 40),                                                       // téléphone sur la cuisse
+  1: (u) => P(lerp3([0.5, 0.97, 0.18], [0.5, 0.88, 0.04], u), [0.5, 0.4, 0.55], 40, 0.04 * (1 - u)),                                                       // téléphone sur la cuisse
   2: (u) => P(lerp3([0.2, 1.05, 2.6], [0.1, 1.02, 0.5], smooth(u * 1.4)), tvLook, 38),                        // accroche : le reflet, zoom brusque
   3: (u) => P(lerp3([1.7, 0.95, 3.0], [0.9, 1.0, 2.0], smooth(u)), lerp3([-1.3, 0.85, 3.2], [0.0, 0.85, 0.7], smooth(u)), 42, 0.03),
   4: (u) => P(lerp3([0.35, 1.25, -1.55], [0.4, 1.25, -1.3], u), [YOU[0], 1.05, YOU[2]], 40, 0.02),
@@ -48,13 +48,13 @@ const CAMS: Record<number, (u: number, f: number) => Cam> = {
   8: (u) => P(lerp3([FAKE[0], 1.08, -0.9], [FAKE[0], 1.08, -0.7], u), [FAKE[0], 1.06, 0.55], 17),
   9: (u) => P(lerp3([-1.7, 1.2, -1.3], [-1.45, 1.2, -1.15], u), [FAKE[0], 1.05, 0.55], 42, 0.04),
   10: (u) => P(lerp3([0.5, 1.25, -1.6], [0.5, 1.22, -1.35], u), [YOU[0], 1.15, YOU[2]], 36),
-  11: () => P([0.5, 0.95, 0.15], [0.5, 0.4, 0.55], 40),
+  11: (u) => P(lerp3([0.5, 0.97, 0.18], [0.5, 0.9, 0.06], u), [0.5, 0.4, 0.55], 40, -0.03 * u),
   12: (u) => P(lerp3([0.5, 0.95, 0.15], [0.5, 0.85, 0.05], u), [0.5, 0.4, 0.55], 38),
   13: (u) => P(lerp3([0.45, 1.22, -1.5], [0.48, 1.2, -1.2], u), [YOU[0], 1.17, YOU[2]], 32),
   14: (u) => P(lerp3([0.2, 1.25, -2.9], [0.1, 1.22, -2.6], u), [0.0, 1.1, 0.6], 50),
   15: (u) => P(lerp3([0.8, 1.2, -1.4], [0.7, 1.2, -1.2], u), [-0.3, 1.1, 0.55], 44, 0.05),
   16: (u) => P(lerp3([0.5, 1.2, -1.7], [0.5, 1.19, -1.4], u), [YOU[0], 1.19, YOU[2]], 34),
-  17: () => P([0.5, 0.95, 0.15], [0.5, 0.4, 0.55], 40),
+  17: (u) => P(lerp3([0.5, 0.96, 0.16], [0.5, 0.9, 0.06], u), [0.5, 0.4, 0.55], 40, 0.03 * u),
   18: (u) => P([0.5, 0.95, 0.2], lerp3([0.5, 0.4, 0.55], [3.2, 1.5, 0.8], glide(clamp01((u - 0.45) / 0.55))), 42),
   19: (u) => P(lerp3([0.2, 1.1, 0.2], [1.9, 1.15, 0.7], glide(u)), lerp3([2.6, 1.3, 0.7], [3.2, 1.45, 0.8], glide(u)), 42, 0.02),
   20: (u) => P(lerp3([2.1, 1.3, 0.7], [2.4, 1.32, 0.78], u), WINDOW, 34),
@@ -78,7 +78,7 @@ const SHAKE: Record<number, number> = { 3: 0.012, 4: 0.01, 5: 0.02, 12: 0.006, 3
 export const camAt = (id: number, f: number): Cam => {
   const s = SHOTS[id - 1], u = clamp01((f - s.a) / Math.max(1, s.b - s.a)), c = CAMS[id](u, f), a = SHAKE[id] ?? 0.003;
   const n = f * 0.9 + id * 3.1;
-  return { ...c, look: [c.look[0] + a * Math.sin(n * 2.3), c.look[1] + a * Math.sin(n * 1.7 + 1), c.look[2] + a * Math.sin(n * 1.1)] };
+  return { ...c, roll: c.roll + 0.004 * Math.sin(f * 0.045 + id), look: [c.look[0] + a * Math.sin(n * 2.3), c.look[1] + a * Math.sin(n * 1.7 + 1), c.look[2] + a * Math.sin(n * 1.1)] };   // respiration de la caméra à l'épaule
 };
 
 // ---------------- flou de profondeur (px à 1080 pour l'infini ; focus par défaut = point visé) ----------------
