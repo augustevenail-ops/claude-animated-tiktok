@@ -6,8 +6,6 @@
 import json, os, subprocess, sys
 import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__)); EP = os.path.join(HERE, "..")
-sys.path.insert(0, os.path.join(HERE, "..", "..", "arene-ep01", "audio"))
-from bandes4 import band_P
 SR = 48000; OFF = 1.8
 words = json.load(open(os.path.join(EP, "voice", "words.json"), encoding="utf-8"))
 anch = json.load(open(os.path.join(EP, "..", "..", "studio", "src", "videos", "droite", "anchors.json")))["anchors"]
@@ -47,13 +45,19 @@ cl = smooth(rng.standard_normal(int(0.6 * SR)), 30) * np.hanning(int(0.6 * SR)) 
 for q in range(5): put(sfx, knock(), s33 + 0.15 + q * 0.28, 1.2)                                                      # coups sur la vitre (tour de caméra)
 sfx *= db(vref - 13 - rms(sfx[np.abs(sfx) > 1e-4]))
 
-# musique inquiétante (même parcours que la vidéo : montée sur le message, éclair, silence sur « glacée », reprise en suspens)
-music = band_P(DUR, {"welcome": W(40), "sixty": s20, "dip": dip, "end": DUR})
+# musique fournie par l'utilisateur (piste audio extraite de sa vidéo, ext/musique_utilisateur.wav, non versionnée) : utilisée telle quelle, sans décalage
+# (son creux à 49-51 s puis coup à 52 s = « Sa main se pose sur ton épaule » ; second coup à 60 s = fin), niveau bas ; plus aucune autre musique.
+ext = np.frombuffer(subprocess.run(["ffmpeg", "-v", "error", "-i", os.path.join(HERE, "ext", "musique_utilisateur.wav"), "-ac", "2", "-ar", str(SR), "-f", "f32le", "-"], capture_output=True).stdout, np.float32).astype(float).reshape(-1, 2)
+mus = np.zeros((N, 2)); Lm = min(N, len(ext)); mus[:Lm] = ext[:Lm]
+mus *= (1 - np.clip((t - (DUR - 0.5)) / 0.5, 0, 1))[:, None]
 duck = np.ones(N)
-for w in words: duck[int(max(0, w["s"] + OFF - 0.08) * SR):int(min(DUR, w["e"] + OFF + 0.12) * SR)] = db(-3)
-music *= smooth(duck, 2000)
-music *= db(vref - 6 - rms(music))
-mix = np.stack([voice + 0.95 * music + sfx, voice + music + 0.95 * sfx], 1)
+for w in words: duck[int(max(0, w["s"] + OFF - 0.08) * SR):int(min(DUR, w["e"] + OFF + 0.12) * SR)] = db(-3.5)
+mus *= smooth(duck, 2000)[:, None]
+mus *= db(vref - 11 - rms(mus.mean(axis=1)))                                    # « pas trop fort » : ~11 dB sous la voix
+# bourdonnement léger (cluster mi-fa très grave), un peu plus présent du message à l'éclair
+drone = (np.sin(2 * np.pi * 41.2 * t) + 0.8 * np.sin(2 * np.pi * 43.65 * t)) * (0.7 + 0.3 * np.sin(2 * np.pi * 0.13 * t))
+drone *= db(vref - 24 - rms(drone)) * (1 + 0.6 * np.clip((t - W(40)) / max(1.0, s20 - W(40)), 0, 1)) * (1 - np.clip((t - (DUR - 0.8)) / 0.8, 0, 1))
+mix = np.stack([voice + 0.95 * mus[:, 0] + sfx + drone, voice + mus[:, 1] + 0.95 * sfx + drone], 1)
 pre = os.path.join(HERE, "_pre.wav")
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "f64le", "-ar", str(SR), "-ac", "2", "-i", "-", pre], input=mix.tobytes(), check=True)
 m = subprocess.run(["ffmpeg", "-i", pre, "-af", "loudnorm=I=-15:TP=-1.2:LRA=7:print_format=json", "-f", "null", "-"], capture_output=True, text=True).stderr
