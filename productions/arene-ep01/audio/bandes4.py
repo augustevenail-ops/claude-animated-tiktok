@@ -82,3 +82,44 @@ def band_M(dur, c):
                 + 0.28 * nz(lp(drone, 180)) + 0.07 * ramp(t, w, s) * nz(beat_hi)) + ramp(t, dip + 2.2, dip + 2.8) * (0.30 * nz(hold) + 0.5 * nz(pul))
     y *= 1 - ramp(t, c["end"] - 0.6, c["end"])
     return nz(reverb(y, 1.5, 0.2))
+
+
+# ---------------------------------------------------------------------------------------------------------------------------------
+# « Piano de peur » : piano seul, léger, dans une tonalité de peur (demande utilisateur du 2026-11-12 : « de légères notes ou accords de
+# piano dans une tonalité de stress ou de peur »). Accords dissonants arpégés doucement (mi dim7, fa mineur 7 majeur, sol mineur avec ré/mi♭
+# qui frottent, triton la♭/si/mi♭/sol♭), la note du haut qui goutte, paire mi–fa aiguë qui tinte (seconde mineure). La tension monte (accords
+# plus rapprochés, notes plus fortes, octave en plus), gros cluster de piano sur l'éclair après une montée, silence net sur « glacée », puis
+# une note grave et la seconde mineure aiguë qui tinte jusqu'à la fin, sans résolution. band_P(dur, cues) -> mono float64 48 kHz.
+from bandes import piano
+
+CH_P = [[40, 52, 55, 58, 61], [41, 53, 56, 60, 64], [43, 55, 58, 62, 63], [44, 56, 59, 63, 66]]
+
+def band_P(dur, c):
+    T = Track(dur, 81); t = T.t; w, s, dip = c["welcome"], c["sixty"], c["dip"]
+    pn, hi, st, ped = T.buf(), T.buf(), T.buf(), T.buf()
+    p, k = 0.4, 0
+    while p < dip - 1.2:
+        I = 0.4 + 0.3 * float(ramp(np.array([p]), w - 2, w + 3)[0]) + 0.3 * float(ramp(np.array([p]), s - 6, s)[0])
+        ch = CH_P[k % 4]
+        T.put(pn, piano(midi(ch[0]), T.x(4.5)), p, 0.9)
+        gap = 0.46 - 0.2 * I; q = p + 0.18
+        for n in ch[1:]:
+            T.put(pn, piano(midi(n + (12 if I > 0.75 else 0)), T.x(3.2)), q, 0.5 + 0.3 * I); q += gap
+        for r in range(3): T.put(pn, piano(midi(ch[-1] + 12), T.x(2.4)), q + r * gap * 1.7, (0.32 + 0.25 * I) * (0.78 ** r))
+        p += 4.6 - 1.7 * I; k += 1
+    q = w - 0.5; step = 1.0                                                           # paire mi–fa aiguë qui tinte : de plus en plus serrée
+    while q < dip - 0.4:
+        T.put(hi, piano(midi(88), T.x(2.0)), q, 0.34); T.put(hi, piano(midi(89), T.x(2.0)), q + 0.11, 0.3)
+        q += step; step = max(0.38, step - 0.035)
+    def hit(t1, g):                                                                   # gros cluster de piano grave
+        for m in (28, 29, 35, 40, 41, 47, 52, 53, 59): T.put(st, piano(midi(m), T.x(4.0)), t1, g)
+    hit(w - 0.02, 0.35); hit(s - 0.02, 0.8)
+    T.put(ped, swell(T, s, 3.0), 0.0, 1.0)
+    p2 = dip + 2.3; T.put(pn, piano(midi(40), T.x(5.0)), p2, 0.9)
+    q = p2 + 0.9
+    while q < dur - 0.5: T.put(hi, piano(midi(88), T.x(2.4)), q, 0.34); T.put(hi, piano(midi(89), T.x(2.4)), q + 0.12, 0.28); q += 1.9
+    cut = np.where(t < dip, 1 - ramp(t, dip - 0.05, dip), 0.0); back = ramp(t, dip + 2.2, dip + 2.4)
+    drone = (np.sin(2 * np.pi * midi(28) * t) + 0.8 * np.sin(2 * np.pi * midi(29) * t)) * (0.7 + 0.3 * np.sin(2 * np.pi * 0.13 * t))
+    y = (cut + back) * (0.85 * nz(pn) + 0.40 * nz(hi)) + cut * (0.55 * nz(st) + 0.45 * nz(ped) + (0.10 + 0.14 * ramp(t, w, s)) * nz(lp(drone, 160)))
+    y *= 1 - ramp(t, c["end"] - 0.6, c["end"])
+    return nz(reverb(y, 2.4, 0.34))

@@ -1,5 +1,5 @@
-# Bande son de « Ne le regarde pas » : voix (décalée de VOICE_AT = 1,8 s, accroche muette avant) + musique STRESSANTE (« Tension » : ostinato grave
-# mi–fa, cordes aiguës qui frottent, tic-tac qui s'accélère, coups de cordes sur le message et l'éclair ; silence net sur « glacée », note aiguë tenue) + bruitages calés sur
+# Bande son de « Ne le regarde pas » : voix (décalée de VOICE_AT = 1,8 s, accroche muette avant) + musique « Piano de peur » (accords dissonants arpégés,
+# note du haut qui goutte, seconde mineure aiguë qui tinte, cluster sur l'éclair ; silence net sur « glacée », puis note grave + tintements) + bruitages calés sur
 # voice/words.json : pluie continue, tonnerre (accroche, éclair sur le vrai père), vibration/bips du téléphone, cliquetis de clés,
 # battement de cœur qui s'accélère jusqu'à « glacée », froissement de tissu, coups sur la vitre. Master -15 LUFS / -1,2 dBTP.
 # Usage : python make_audio.py <durée_s>   ->  mix.wav, mix_ecoute.mp3
@@ -7,7 +7,7 @@ import json, os, subprocess, sys
 import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__)); EP = os.path.join(HERE, "..")
 sys.path.insert(0, os.path.join(HERE, "..", "..", "arene-ep01", "audio"))
-from bandes4 import band_M
+from bandes4 import band_P
 SR = 48000; OFF = 1.8
 words = json.load(open(os.path.join(EP, "voice", "words.json"), encoding="utf-8"))
 anch = json.load(open(os.path.join(EP, "..", "..", "studio", "src", "videos", "droite", "anchors.json")))["anchors"]
@@ -48,7 +48,7 @@ for q in range(5): put(sfx, knock(), s33 + 0.15 + q * 0.28, 1.2)                
 sfx *= db(vref - 13 - rms(sfx[np.abs(sfx) > 1e-4]))
 
 # musique inquiétante (même parcours que la vidéo : montée sur le message, éclair, silence sur « glacée », reprise en suspens)
-music = band_M(DUR, {"welcome": W(40), "sixty": s20, "dip": dip, "end": DUR})
+music = band_P(DUR, {"welcome": W(40), "sixty": s20, "dip": dip, "end": DUR})
 duck = np.ones(N)
 for w in words: duck[int(max(0, w["s"] + OFF - 0.08) * SR):int(min(DUR, w["e"] + OFF + 0.12) * SR)] = db(-3)
 music *= smooth(duck, 2000)
