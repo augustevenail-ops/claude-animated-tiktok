@@ -1,12 +1,12 @@
 # « L'appel » — épisode 1 (script v2, à valider) — remplace « Le phare » (refusé par l'utilisateur)
 
-Apocalypse / épidémie. Règles données au fil de l'histoire. Voix : narrateur George ; haut-parleur = George + effet haut-parleur ;
+Apocalypse / épidémie. Règles données au fil de l'histoire. Voix : narrateur George ; {hp} haut-parleur = Daniel + effet haut-parleur ;
 Noé n'a pas de voix (c'est le sujet). Aucune violence montrée.
 
 ## Script v4 (mère descendue car sans voix, jamais rappelée ; feux vert/rouge ; nouveau dilemme) (≈ 220 mots ⇒ ≈ 78 s)
 Imagine… Tu vis dans la dernière tour encore habitée, et quand ce haut-parleur grésille, toute la ville retient son souffle.
 Dehors, une maladie a vidé le monde. Elle commence toujours de la même façon : la voix s'éteint.
-Alors chaque soir, c'est l'appel. Six mille fenêtres. Un numéro chacune.
+Alors chaque soir, c'est l'appel. {hp}« Début de l'appel. » Six mille fenêtres. Chaque habitant a son numéro.
 Règle numéro un : quand on appelle ton numéro, tu réponds. À voix haute.
 Ceux qui se taisent, les hommes en blanc les descendent au sous-sol. Personne n'en est jamais remonté.
 Il y a un an, la voix de ta mère s'est éteinte. Ils l'ont descendue le soir même.
@@ -17,8 +17,8 @@ Règle numéro deux : on ne répond jamais pour un autre. Celui qui ment descend
 Le vert se rapproche de vous.
 Règle numéro trois : pendant l'appel, on ne regarde jamais en bas. Tu regardes.
 Dans la cour, les hommes en blanc attendent, le visage levé vers ta fenêtre.
-Le haut-parleur appelle ton numéro. Tu réponds. Ta fenêtre devient verte.
-Puis il appelle Noé.
+{hp}« Deux mille quatre cent dix-sept. » C'est toi. Tu réponds.
+{hp}« Deux mille quatre cent dix-huit. » C'est Noé.
 Ils viennent d'entendre ta voix. Si tu réponds encore, ils pourraient la reconnaître.
 Alors, tu imites sa voix, ou tu te tais ? Dis-le en commentaire.
 

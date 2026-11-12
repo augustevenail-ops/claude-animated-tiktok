@@ -1,0 +1,1 @@
+{"sig": "[\"JBFqnCBsd6RMkjVDRZzb\", \"eleven_multilingual_v2\", {\"stability\": 0.6, \"similarity_boost\": 0.85, \"style\": 0.2, \"use_speaker_boost\": true}, \"\", \"C'est toi. Tu réponds.\", \"\"]", "words": [{"w": "C'est", "s": 0.035, "e": 0.232}, {"w": "toi.", "s": 0.255, "e": 0.615}, {"w": "Tu", "s": 0.824, "e": 0.952}, {"w": "réponds.", "s": 1.01, "e": 1.451}]}
