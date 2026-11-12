@@ -12,6 +12,7 @@ import { Pen, bodyFront, Outfit, Expr } from "../bridge/toon";
 import { FPS, YOU, FAKE, TV_Z, WINDOW, FATHER, LAMP, V3, shotAt, camAt, flashAt, phoneAt, smooth, clamp01 } from "./story";
 import { NIGHT } from "./look";
 import { HERO_OUTFIT, heroBehind, heroFront } from "../shared/hero";
+import { fatherHair } from "../shared/hair";
 
 const FONT = "DejaVu Sans, Liberation Sans, sans-serif";
 const FURN = ["loungeSofa", "lampRoundFloor", "cabinetTelevision", "tableCoffee", "pottedPlant", "bookcaseClosed", "lampSquareTable", "books", "rugRectangle"];
@@ -49,7 +50,7 @@ const plank = () => ctex("dr_plank", 512, 512, (g) => {
     const x0 = hash(i, 9) * 480; g.strokeStyle = "rgba(0,0,0,0.5)"; g.lineWidth = 3; g.beginPath(); g.moveTo(x0, y); g.lineTo(x0, y + 64); g.stroke(); }
 });
 const wallpaper = () => ctex("dr_wall", 256, 256, (g) => {
-  g.fillStyle = "#39455c"; g.fillRect(0, 0, 256, 256);
+  g.fillStyle = "#363b63"; g.fillRect(0, 0, 256, 256);
   for (let x = 0; x < 256; x += 32) { g.fillStyle = "rgba(255,255,255,0.045)"; g.fillRect(x, 0, 16, 256); }
   for (let i = 0; i < 70; i++) { g.fillStyle = `rgba(0,0,0,${0.03 + hash(i) * 0.05})`; g.beginPath(); g.arc(hash(i, 1) * 256, hash(i, 2) * 256, 10 + hash(i, 3) * 26, 0, 7); g.fill(); }
 });
@@ -112,8 +113,9 @@ const drawPhone = (g: CanvasRenderingContext2D, w: number, h: number, p: ReturnT
 };
 
 // ---------------- personnages ----------------
-const FATHER_OUTFIT: Outfit = { jacket: "#5b4a3b", pants: "#2a2d36", boots: "#1c1a1f", hat: "hair", hair: "#a3a3a3", skin: "#e6c29e", build: "adult" };
-const FATHER_PALE: Outfit = { ...FATHER_OUTFIT, jacket: "#46505c", skin: "#cdd3d6" };
+const FATHER_OUTFIT: Outfit = { jacket: "#5b4a3b", pants: "#2a2d36", boots: "#1c1a1f", hat: null, skin: "#efe9f0", build: "adult" };      // visage pâle (références), coupe créée par fatherHair
+const FATHER_PALE: Outfit = { ...FATHER_OUTFIT, jacket: "#46505c", skin: "#d4d9e7" };                                                   // le vrai père, blême sous la pluie
+const FATHER_SHADOW: Outfit = { jacket: "#07070b", pants: "#07070b", boots: "#07070b", hat: null, skin: "#08080d", build: "adult" };   // silhouette noire du reflet
 const YOU_OUTFIT: Outfit = HERO_OUTFIT;   // personnage principal (shared/hero.ts)
 const tierOf = (d: number): [number, number, number] => (d < 3.5 ? [1080, 1800, 1.8] : d < 12 ? [600, 1000, 1] : [300, 500, 0.5]);
 
@@ -215,7 +217,9 @@ export class World {
     }
     // personnages (cartes face à la caméra)
     const yaw = (p: V3) => Math.atan2(cam.position.x - p[0], cam.position.z - p[2]);
-    const drawCard = (key: string, o: Outfit, fo: object) => (pen: Pen) => { const hero = key === "Y", fm = fo as { mode: string; seed: number }; if (hero) heroBehind(pen, fm.mode, fm.seed); bodyFront(pen, o, fo as never); if (hero) heroFront(pen, fm.mode, fm.seed); };
+    const drawCard = (key: string, o: Outfit, fo: object) => (pen: Pen) => { const hero = key === "Y", fm = fo as { mode: string; seed: number };
+      if (hero) heroBehind(pen, fm.mode, fm.seed); bodyFront(pen, o, fo as never); if (hero) heroFront(pen, fm.mode, fm.seed);
+      if (key === "F") fatherHair(pen, fm.mode, fm.seed); if (key === "D") fatherHair(pen, fm.mode, fm.seed, "#a3a3b0", "#74747f"); };
     const place = (A: Actor, key: string, o: Outfit, p: V3, fo: object, extra = 0, visible = true) => {
       const d = cam.position.distanceTo(V(p[0], 1.1, p[2])), [w, h, k] = tierOf(d);
       A.r = this.pool.req(`${key}|${JSON.stringify(fo)}`, w, h, k, drawCard(key, o, fo));
@@ -223,12 +227,12 @@ export class World {
     };
     const slump = id === 5 ? smooth((f - SHOT_A(5)) / 20) : 1, youP: V3 = [YOU[0], YOU[1] + 0.1 * (1 - slump), YOU[2]];
     const youVisible = ![1, 2, 3, 11, 12, 17].includes(id), nervous = id >= 13 && id !== 18;
-    const youFo = { mode: "sit", expr: (nervous ? "nervous" : "calm") as Expr, blink: (f % 95) < 4, light: -2.4, seed: 3, facing: 0 as const, look: id >= 18 && id <= 22 ? 0.9 : 0 };
-    const fakeFo = { mode: "sit", expr: "creepy" as Expr, blink: false, light: -2.4, seed: 5, facing: 0 as const, look: 0 };
+    const youFo = { mode: "sit", expr: (nervous ? "worry" : "calm") as Expr, blink: (f % 95) < 4, light: -2.4, seed: 3, facing: 0 as const, look: id >= 18 && id <= 22 ? 0.9 : 0 };
+    const fakeFo = { mode: "sit", expr: (id <= 25 ? "smile_fixed" : "creepy") as Expr, blink: false, light: -2.4, seed: 5, facing: 0 as const, look: 0 };
     const turn = id === 23 ? 0.55 * smooth((f - SHOT_A(23)) / 60) : id >= 24 && id <= 34 ? 0.55 : 0;
     place(this.you, "Y", YOU_OUTFIT, youP, youFo, 0, youVisible);
     place(this.fake, "F", FATHER_OUTFIT, FAKE, fakeFo, turn, ![1, 2, 3, 6, 11, 12, 17].includes(id) && !(id >= 26 && id <= 30) && id !== 5 ? true : id === 5);
-    place(this.dad, "D", FATHER_PALE, FATHER, { mode: "stand", expr: "nervous" as Expr, blink: false, light: -2.4, seed: 8, facing: 0 as const, look: 0, wave: id >= 22 && id <= 22 ? 0.7 : 0.1 }, 0, id >= 19 && id <= 22 || id >= 33);
+    place(this.dad, "D", FATHER_PALE, FATHER, { mode: "stand", expr: "worry" as Expr, blink: false, light: -2.4, seed: 8, facing: 0 as const, look: 0, wave: id >= 22 && id <= 22 ? 0.7 : 0.1 }, 0, id >= 19 && id <= 22 || id >= 33);
     // reflet dans la télé : copies des cartes projetées sur le plan de l'écran (miroir de profondeur)
     const reflOn = [2, 6, 26, 27, 28, 29, 30].includes(id);
     const proj = (p: V3, dimY = 0): { q: V3; s: number } => { const pz = 2 * TV_Z - p[2], tt = (TV_Z - cam.position.z) / (pz - cam.position.z); return { q: [cam.position.x + (p[0] - cam.position.x) * tt, cam.position.y + (p[1] + dimY - cam.position.y) * tt, TV_Z + 0.012], s: tt }; };
@@ -237,12 +241,12 @@ export class World {
       const { q, s } = proj(p); A.mesh.position.set(q[0], q[1], q[2]); A.mesh.rotation.set(0, 0, 0); A.mesh.scale.setScalar(s);
       A.mat.color.setRGB(dim * 0.62, dim * 0.76, dim); A.mesh.visible = reflOn;
     };
-    const dimYou = id === 2 ? 0.5 : 0.26, dimFake = id === 2 ? 0.6 : id === 6 ? 0.07 : id === 26 ? 0.1 + 0.25 * smooth((f - SHOT_A(26)) / 40) : 0.3;
+    const dimYou = id === 2 ? 0.5 : 0.26, dimFake = id === 2 ? 0.95 : id === 6 ? 0.12 : id === 26 ? 0.15 + 0.45 * smooth((f - SHOT_A(26)) / 40) : 0.6;
     reflect(this.rYou, "Y", YOU_OUTFIT, youFo, YOU, dimYou);
-    reflect(this.rFake, "F", FATHER_OUTFIT, fakeFo, FAKE, dimFake);
+    reflect(this.rFake, "S", FATHER_SHADOW, { ...fakeFo, expr: "shadow" as Expr }, FAKE, dimFake);                       // dans le reflet : silhouette noire, yeux lumineux, grand sourire
     const sp = proj([0, 0.45, SOFA_Z_()]); const m0 = this.mirror[0]; m0.visible = reflOn; m0.position.set(sp.q[0], sp.q[1], TV_Z + 0.006); m0.scale.set(2.1 * sp.s, 0.85 * sp.s, 1);
     // main sur ton épaule (plans 31-33)
-    this.hand.mesh.visible = id >= 31 && id <= 33; if (this.hand.mesh.visible) { this.hand.mesh.position.set(YOU[0] - 0.22, 1.0, YOU[2] - 0.05); this.hand.mesh.quaternion.copy(cam.quaternion); this.hand.mesh.scale.setScalar(0.9); }
+    this.hand.mesh.visible = id >= 31 && id <= 33; if (this.hand.mesh.visible) { this.hand.mesh.position.set(YOU[0] - 0.3, 0.84, YOU[2] - 0.1); this.hand.mesh.quaternion.copy(cam.quaternion); this.hand.mesh.scale.set(-0.75, 0.75, 1); }
     const tP = performance.now(); this.pool.flush(); void tP;
     for (const a of [this.you, this.fake, this.dad]) a.bind();
     for (const a of [this.rYou, this.rFake]) { const tx = a.r?.tex; if (tx) { a.mat.map = tx; a.dmat.map = tx; } }

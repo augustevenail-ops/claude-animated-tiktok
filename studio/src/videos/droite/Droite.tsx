@@ -100,7 +100,7 @@ const Choice: React.FC<{ t: number }> = ({ t }) => {
     <div style={{ position: "absolute", left: x, top: y, transform: `scale(${0.8 + 0.2 * k})`, opacity: k, padding: "10px 20px", borderRadius: 12, background: "rgba(10,10,14,0.82)",
       border: `4px solid ${col}`, fontFamily: "'Liberation Sans', 'DejaVu Sans', sans-serif", fontWeight: 900, fontSize: 32, color: "#fff" }}>{txt}</div>
   );
-  return <>{pill("A · LE REGARDER", "#ff4a3d", 60, 560)}{pill("B · COURIR VERS LA PORTE", "#7ee08a", 340, 780)}</>;
+  return <>{pill("A · LE REGARDER", "#ff4a3d", 70, 330)}{pill("B · COURIR VERS LA PORTE", "#7ee08a", 70, 440)}</>;
 };
 
 const useKit = () => {

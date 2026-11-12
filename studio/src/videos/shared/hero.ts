@@ -2,17 +2,12 @@
 // cheveux châtains en mèches avec une mèche entre les yeux, regard mi-clos (expression « neutral » du style bridge),
 // sweat à capuche bleu nuit, peau claire. Le corps est dessiné par bodyFront ; ce module ajoute la capuche (derrière),
 // les cheveux et les cordons (devant). Utilisation : pen => { heroBehind(pen, mode, seed); bodyFront(pen, HERO_OUTFIT, fo); heroFront(pen, mode, seed); }
-import { Pen, Outfit, INK, headBlob } from "../bridge/toon";
+import { Pen, Outfit, INK } from "../bridge/toon";
+import { headC } from "./head";
 
 export const HERO_OUTFIT: Outfit = { jacket: "#1b2142", pants: "#1b1e2e", boots: "#15141a", hat: null, skin: "#f7c9a2", build: "adult", buttons: "#1b2142" };
 const HAIR = "#4d2c1b", HAIR_D = "#2f190c";
 
-/** repères de la tête dans l'espace de dessin 600 x 1000 (mêmes formules que bodyFront, constitution « adult ») */
-const headC = (mode: string, seed: number) => {
-  const H = headBlob(seed, 118, 0), HH = 2 * H.b, sole = 975;
-  const torsoBot = mode === "sit" ? sole - 0.2 * HH : sole - 1.4 * HH, chin = torsoBot - 1.1 * HH;
-  return { hc: chin - H.b, chin, HH, u: (2 * H.a) / 100 };
-};
 /** capuche posée derrière la tête et sur les épaules (dessinée AVANT bodyFront) */
 export const heroBehind = (p: Pen, mode: string, seed: number) => {
   const { chin, HH, u } = headC(mode, seed), g = p.g;

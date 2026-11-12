@@ -227,14 +227,18 @@ const DEF_LIGHT = rad(-120);
 
 // ---------------- faces ----------------
 export type Expr = "neutral" | "stern" | "grin" | "laugh" | "whistle" | "nervous" | "shock" | "relief" | "relief_open" | "dazed"
-  | "pained" | "smile" | "smile_closed" | "lick" | "calm" | "creepy";
-type EyeK = "stare" | "dot" | "small" | "lid" | "slit" | "happy" | "dash" | "squeeze" | "shock" | "shockHalf" | "spiral";
-type MouthK = "creep" | "dash" | "frown" | "smirk" | "smile" | "smileWide" | "grin" | "laugh" | "o" | "O" | "wave" | "teeth" | "lick";
+  | "pained" | "smile" | "smile_closed" | "lick" | "calm" | "creepy" | "worry" | "smile_fixed" | "shadow";
+type EyeK = "gloss" | "glow" | "stare" | "dot" | "small" | "lid" | "slit" | "happy" | "dash" | "squeeze" | "shock" | "shockHalf" | "spiral";
+type MouthK = "creep2" | "creepW" | "smileFix" | "creep" | "dash" | "frown" | "smirk" | "smile" | "smileWide" | "grin" | "laugh" | "o" | "O" | "wave" | "teeth" | "lick";
 /** eyes [back, front], brows [inner, outer] offsets in u (+ = down), mouth kind */
-const FACE: Record<Expr, { eye: [EyeK, EyeK]; brow: [number, number]; mouth: MouthK }> = {
+const FACE: Record<Expr, { eye: [EyeK, EyeK]; brow: [number, number]; mouth: MouthK; thin?: boolean }> = {
   neutral: { eye: ["lid", "lid"], brow: [0, -1], mouth: "dash" },
-  calm: { eye: ["dot", "dot"], brow: [0, -1], mouth: "dash" },                       // regard normal, sans agacement
-  creepy: { eye: ["dot", "dot"], brow: [-1, -1], mouth: "creep" },               // sourire inquiétant, yeux grands ouverts
+  // style « visage pâle, yeux noirs luisants, sourcils fins » (références utilisateur du 2026-11-12) : droite-ep01 et suivants
+  calm: { eye: ["gloss", "gloss"], brow: [0, -1], mouth: "dash", thin: true },                 // regard normal
+  worry: { eye: ["gloss", "gloss"], brow: [-3, 2], mouth: "wave", thin: true },                // inquiet, sans colère
+  smile_fixed: { eye: ["gloss", "gloss"], brow: [0, -1], mouth: "smileFix", thin: true },      // sourire trop figé
+  creepy: { eye: ["gloss", "gloss"], brow: [-1, -1], mouth: "creep2", thin: true },            // large sourire à dents pointues
+  shadow: { eye: ["glow", "glow"], brow: [2, -2], mouth: "creepW", thin: true },               // silhouette noire, yeux lumineux, grand sourire blanc
   stern: { eye: ["lid", "lid"], brow: [3, -2], mouth: "frown" },
   grin: { eye: ["happy", "happy"], brow: [-3, -3], mouth: "grin" },
   laugh: { eye: ["squeeze", "squeeze"], brow: [-4, -4], mouth: "laugh" },
@@ -258,6 +262,8 @@ const eye = (p: Pen, kind: EyeK, x: number, ey: number, u: number, side: number,
   const lx = x + look * 3 * u, lw = 3.8 * u;
   switch (kind) {
     case "dot": p.ell(lx, ey, 3.8 * u, 5.5 * u, INK, 0); break;
+    case "gloss": p.ell(lx, ey, 4.6 * u, 6.6 * u, INK, 0); p.dot(lx - 1.5 * u, ey - 2.4 * u, 1.7 * u, WHITE); p.dot(lx + 1.7 * u, ey + 2.5 * u, 0.85 * u, WHITE); break;
+    case "glow": { const g = p.g; g.save(); g.shadowColor = "rgba(255,255,255,0.95)"; g.shadowBlur = 9 * u; g.fillStyle = "#ffffff"; g.beginPath(); g.ellipse(x, ey, 10.5 * u, 5.4 * u, side * 0.13, 0, 7); g.fill(); g.restore(); p.dot(lx, ey + 0.5 * u, 1.5 * u, INK); break; }
     case "stare": p.ell(x, ey, 9.5 * u, 9.5 * u, WHITE, 2.6 * u); p.dot(lx, ey, 1.9 * u); break;      // regard fixe : grands yeux, minuscule pupille
     case "small": p.ell(lx, ey, 3 * u, 4.4 * u, INK, 0); break;
     case "lid": p.ell(lx, ey - u, 7 * u, 6 * u, INK, 0, 0, 180); p.stroke([[x - 9 * u, ey - u], [x + 9 * u, ey - u]], lw); break;
@@ -294,6 +300,17 @@ const mouth = (p: Pen, kind: MouthK, mx: number, my: number, u: number, k = 1) =
     case "smile": p.arc(mx, my - 3 * u, 8 * u * k, 4.5 * u, 20, 160, mw); break;
     case "smileWide": p.arc(mx, my - 4 * u, 11 * u * k, 6 * u, 15, 165, mw); break;
     case "grin": dmouth(p, mx, my - u, 12 * u * k, 8 * u, u); break;
+    case "smileFix": p.arc(mx, my - 6 * u, 15 * u * k, 6.5 * u, 14, 166, 3.2 * u); break;
+    case "creep2": case "creepW": {
+      const g = p.g, w = 24 * u * k, y0 = my - 7 * u, cu = my + 4 * u, cl = my + 17 * u, W2 = kind === "creepW";
+      const up = (tt: number) => (1 - tt) * (1 - tt) * y0 + 2 * (1 - tt) * tt * cu + tt * tt * y0, lo = (tt: number) => (1 - tt) * (1 - tt) * y0 + 2 * (1 - tt) * tt * cl + tt * tt * y0;
+      g.save(); g.lineJoin = "round"; g.beginPath(); g.moveTo(mx - w, y0); g.quadraticCurveTo(mx, cu, mx + w, y0); g.quadraticCurveTo(mx, cl, mx - w, y0); g.closePath();
+      if (W2) { g.shadowColor = "rgba(255,255,255,0.9)"; g.shadowBlur = 7 * u; g.fillStyle = "#ffffff"; g.fill(); g.shadowBlur = 0; g.strokeStyle = "#ffffff"; g.lineWidth = 2 * u; g.stroke();
+        g.strokeStyle = INK; g.lineWidth = 1.4 * u; for (let i = -9; i <= 9; i++) { const tt = (i + 9.5) / 19, x = mx - w + 2 * w * tt; g.beginPath(); g.moveTo(x, up(tt) + 1.2 * u); g.lineTo(x, lo(tt) - 1.2 * u); g.stroke(); } }
+      else { g.fillStyle = "#14070c"; g.fill(); g.strokeStyle = INK; g.lineWidth = 3 * u; g.stroke();
+        g.fillStyle = "#ffffff"; for (let i = -8; i <= 8; i++) { const tt = (i + 8.5) / 17, x = mx - w + 2 * w * tt, yy = up(tt), h = 4.4 * u * Math.pow(Math.sin(Math.PI * tt), 0.6);
+          g.beginPath(); g.moveTo(x - 1.5 * u, yy - 0.2 * u); g.lineTo(x + 1.5 * u, yy - 0.2 * u); g.lineTo(x, yy + h); g.closePath(); g.fill(); } }
+      g.restore(); break; }
     case "creep": dmouth(p, mx, my - 4 * u, 20 * u * k, 5 * u, u); break;                                 // très large sourire fixe, rangée de dents
     case "laugh": dmouth(p, mx, my, 16 * u * k, 11 * u, u, true); break;
     case "o": p.ell(mx + 4 * u, my, 3.5 * u, 4 * u, MOUTH, 2.8 * u); break;
@@ -319,6 +336,7 @@ const faceFront = (p: Pen, cx: number, cy: number, W: number, expr: Expr, facing
     eye(p, kind, x, ey, u, side, look, skin);
     const [dI, dO] = F.brow, by = ey - (brim ? 17 : 20) * u;
     if (kind === "shock" || kind === "shockHalf") p.arc(x, by - 6 * u, 9 * u, 3 * u, 200, 340, 4 * u);
+    else if (F.thin) p.stroke([[x - side * 8.5 * u, by + dI * u], [x, by + (dI + dO) / 2 * u - 2.4 * u], [x + side * 8.5 * u, by + dO * u]], 2.4 * u);
     else taper(p, [x - side * 8.5 * u, by + dI * u], [x + side * 8.5 * u, by + dO * u], 5 * u, 2.5 * u);
   }
   const mx = cx + 8 * u * facing, my = cy + 20 * u;

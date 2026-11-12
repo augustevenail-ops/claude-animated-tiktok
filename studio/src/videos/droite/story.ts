@@ -66,7 +66,7 @@ const CAMS: Record<number, (u: number, f: number) => Cam> = {
   31: (u) => P(lerp3([0.4, 1.15, -1.3], [0.4, 1.1, -1.0], u), [0.4, 1.0, 0.55], 34, 0.03),
   32: (u) => P(lerp3([0.5, 1.22, -1.5], [0.5, 1.2, -1.15], u), [YOU[0], 1.17, YOU[2]], 26),
   33: (u) => { const th = -Math.PI / 2 + 2 * Math.PI * Math.pow(u, 1.8); return P([Math.cos(th) * 2.3, 1.25, 0.8 + Math.sin(th) * 2.3], [0, 1.0, 0.8], 56, 0.04); },
-  34: (u) => P(lerp3([0.3, 1.2, -2.6], [0.3, 1.2, -2.2], u), [0.85, 1.15, 0.7], 46),
+  34: (u) => P(lerp3([0.12, 1.28, -2.6], [0.1, 1.25, -2.15], u), [0.0, 1.1, 0.6], 48),
 };
 /** secousses de caméra à main levée (amplitude en mètres sur le point visé) */
 const SHAKE: Record<number, number> = { 3: 0.012, 4: 0.01, 5: 0.02, 12: 0.006, 31: 0.03, 32: 0.02, 33: 0.0 };

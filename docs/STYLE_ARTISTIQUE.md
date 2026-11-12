@@ -113,3 +113,12 @@ Presets `LIGHTS` (lights.ts) — soleil **relatif à la caméra** et figé par p
 ## 10. Pièges de lisibilité (à vérifier sur chaque nouveau plan) [SKILL.md §Readability traps]
 Balançoire = deux cordes ; aucun prop à < 2 m de l'objectif ; buisson coupé au bord = « boule verte » ;
 drapeaux d'époque ; panneaux en matériau non éclairé ; garde-corps qui traversent les jambes, pas les torses.
+
+## Visages « pâles, yeux luisants » (références utilisateur du 2026-11-12, droite-ep01 et suivants)
+- **Personnages normaux** : visage pâle, grands yeux noirs ovales avec 2 reflets blancs (`gloss`), sourcils fins, bouche en trait ; expressions
+  `calm` (regard normal), `worry` (inquiet, jamais en colère), `smile_fixed` (sourire trop figé). Plus de regards énervés (`stern`, `neutral` à paupières).
+- **Faux père / menace** : `creepy` = très large sourire à dents pointues ; `shadow` = silhouette noire, yeux blancs lumineux, grand sourire blanc
+  à fentes noires (utilisée pour le reflet dans la télé).
+- **Cheveux** : coupes simples dessinées par le projet (`shared/hair.ts`, `shared/hero.ts`), jamais de coupe au bol ; aucun accessoire repris des références.
+- **Couleurs** : nuit bleu-violet (ombres violacées, clair bleuté), accents ambre / cyan ; visages clairs.
+- Personnage principal (« tu ») : avatar de l'utilisateur, `studio/src/videos/shared/hero.ts` (peau claire chaude, cheveux châtains en mèches, sweat bleu nuit).
