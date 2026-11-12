@@ -3,7 +3,7 @@
 Apocalypse / épidémie. Règles données au fil de l'histoire. Voix : narrateur George ; haut-parleur = George + effet haut-parleur ;
 « Présente. » = voix de femme (Jessica, 1 mot). Noé n'a pas de voix (c'est le sujet). Aucune violence montrée.
 
-## Script v2 — mère descendue pour avoir menti, donc elle a toujours sa voix (≈ 245 mots ⇒ ≈ 80 s)
+## Script v3 (sans la voix de la mère) — v2 — mère descendue pour avoir menti, donc elle a toujours sa voix (≈ 245 mots ⇒ ≈ 80 s)
 Imagine… Tu vis dans la dernière tour encore habitée, et quand ce haut-parleur grésille, toute la ville retient son souffle.
 Dehors, une maladie a vidé le monde. Elle commence toujours de la même façon : la voix s'éteint.
 Alors chaque soir, c'est l'appel. Six mille fenêtres. Un numéro chacune.
@@ -16,8 +16,6 @@ Règle numéro deux : on ne répond jamais pour un autre. Celui qui ment descend
 Règle numéro trois : pendant l'appel, on ne regarde jamais en bas. Tu regardes.
 Dans la cour, les hommes en blanc attendent, le visage levé vers ta fenêtre.
 Le haut-parleur grésille. Pour la première fois depuis un an, il appelle le numéro de ta mère.
-Et quelqu'un répond. {mere}« Présente. »
-C'est sa voix. Elle vient d'en bas.
 Puis il appelle Noé.
 Alors, tu réponds avec sa voix, ou tu le laisses descendre la rejoindre ? Dis-le en commentaire.
 
