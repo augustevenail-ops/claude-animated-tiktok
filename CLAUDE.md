@@ -98,6 +98,7 @@ Points clés à retenir :
 | `docs/ARCHITECTURE_TECHNIQUE.md` | Pile technique, modules, chaîne de rendu et audio, commandes |
 | `docs/INVENTAIRE.md` | Inventaire des ressources et statut d'analyse |
 | `docs/REFERENCE_APOKALYPS.md` | Analyse de la vidéo de référence n° 2 et règles réutilisables |
+| `docs/STRATEGIE_SERIE.md` | Règle de décision suite/nouvelle histoire selon les stats + idées d histoires angoissantes |
 | `docs/VOIX.md` | **Réglages voix validés** (George, ElevenLabs, pauses, −1,5 demi-ton, tempo) : défaut de toutes les vidéos |
 | `README.md` | Présentation, installation, structure du dépôt |
 | `SKILL.md` | Pipeline complet, valeurs de look finales, boucle d'ajustement, pièges connus |
