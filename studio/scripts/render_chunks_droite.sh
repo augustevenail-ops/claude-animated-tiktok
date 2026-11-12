@@ -3,7 +3,7 @@
 # Usage : scripts/render_chunks_droite.sh <TOTAL images>   -> out/droite_final/chunks/c_NNNN.mp4
 cd "$(dirname "$0")/.." || exit 1
 D=out/droite_final/chunks; mkdir -p $D
-TOTAL=${1:?total d'images}
+TOTAL=${1:?donner le nombre total d images}
 for ((a=0; a<TOTAL; a+=300)); do
   b=$((a + 299)); [ $b -ge $TOTAL ] && b=$((TOTAL - 1))
   f=$D/c_$(printf %04d $a).mp4
