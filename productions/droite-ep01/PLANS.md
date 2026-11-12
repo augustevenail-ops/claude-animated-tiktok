@@ -2,7 +2,7 @@
 
 Script validé : voir `SCRIPT.md`. Ancienne version du découpage gardée : `PLANS_v1.md`.
 Retours utilisateur (2026-11-12) : montage **dynamique**, **aucun temps mort**, **premiers plans accrocheurs**, ambiance sombre.
-Résultat : **33 plans de 0,9 à 4,9 s** (moyenne 1,9 s ; seulement 2 plans au-dessus de 3,5 s) ; chaque phrase est coupée en 2-3 plans qui apportent
+Résultat : **34 plans de 0,9 à 4,9 s** (moyenne 1,9 s ; seulement 2 plans au-dessus de 3,5 s) ; chaque phrase est coupée en 2-3 plans qui apportent
 chacun une **information nouvelle** (un détail, un point de vue, un changement de mise au point) ; jamais deux plans de suite sur la même chose.
 
 Temps **estimés** (voix ≈ 2,75 mots/s), en temps vidéo ; à **recaler sur `words.json`** après la voix (réaction visuelle 0-3 images avant son mot).
