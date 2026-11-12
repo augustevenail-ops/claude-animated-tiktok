@@ -134,3 +134,10 @@ Module : `studio/src/videos/shared/chars.ts` (`drawChar`). Règles observées et
 - **Cheveux** : aplat avec contour et 2 traits foncés, coupe simple (jamais au bol). **Aucun accessoire** repris des références.
 - **Ambiance** : décors sombres désaturés (bleu-violet / gris-vert), visages et mains = points lumineux de l'image.
 - **Peau (décision 2026-11-12)** : blanc nacré pour **tous** les personnages ; le **noir** est réservé aux **monstres / silhouettes menaçantes** (les 2 prochains épisodes), pour faire vraiment peur.
+
+## Esthétique « Ne le regarde pas » = standard de toutes les vidéos (validé 2026-11-12)
+Style des personnages (`shared/chars.ts`), couleurs, lumière, textures, grain : à garder tels quels.
+**Seul ajustement pour les prochaines vidéos : moins de tremblements.**
+- Secousse/roulis de caméra : environ 1/2 de l'amplitude de l'ép. « Ne le regarde pas » (`camAt` : shake et roulis `0.004` → ~`0.002`), et seulement sur les plans de tension ; plans calmes quasi stables.
+- Inserts téléphone : vibration de l'écran bien plus faible (`shake` des notifs 1 → ~0,4) et texte lisible dès l'apparition.
+- Ne pas refaire l'ép. « Ne le regarde pas » (jugée parfaite).

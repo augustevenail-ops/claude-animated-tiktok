@@ -49,3 +49,12 @@ Commande : `python tools/voice_edit.py productions/<ep>/voice --tension "<mot>"`
 - **« Ne le regarde pas » (2026-11-12)** : narrateur = George réglage « B » (inchangé) ; faux père = **Daniel** (`onwK4e9ZLuTAKqWW03F9`, stability 0,55 / similarity 0,8 / style 0,2, tempo 0,975) ;
   `productions/droite-ep01/voices.json`, pauses : fin de phrase 0,3 s, virgule 0,1 s, mots liés (≤ 0,06 s), tension 0,5 s avant « Ce », « Presque », « glacée ».
   Règle d'économie : générer la voix **une seule fois** (les segments sont mis en cache dans `voice/_seg`) ; proposer **1 à 2** voix au plus pour un nouveau personnage.
+
+## Registre des voix (décision utilisateur 2026-11-12) — à réutiliser pour tous les futurs personnages du même type
+| Rôle | Voix | ID | Réglages |
+|---|---|---|---|
+| Narrateur (toujours) | George | `JBFqnCBsd6RMkjVDRZzb` | réglage « B » : stability 0.6 / similarity 0.85 / style 0.2, tempo 0.975, fins de phrase graves (`tools/voice_fall.py`) |
+| Homme adulte / père / « âgé » | Daniel | `onwK4e9ZLuTAKqWW03F9` | stability 0.55 / similarity 0.8 / style 0.2, tempo 0.975 |
+| Fille / femme | Jessica | `cgSgspJ2msm6clMCkdW9` | `eleven_v3`, préfixe `[whispers] ` si chuchotée |
+| Haut-parleur / annonces | George −1,5 demi-ton + effet haut-parleur | — | voir ci-dessus |
+Ne proposer une nouvelle voix que pour un type de personnage absent de ce tableau (monstre, enfant…), puis l'ajouter ici.
