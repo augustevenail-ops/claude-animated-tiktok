@@ -88,3 +88,10 @@ Valeurs de style : `docs/STYLE_ARTISTIQUE.md`. Code : `docs/ARCHITECTURE_TECHNIQ
 - [ ] Stills vérifiés vs références
 - [ ] Son mixé sur timings verrouillés
 - [ ] Rendu 2K + mux + QA propre
+
+## Grammaire d'ouverture (exemple utilisateur, 2026-11-12) — 10 plans en ~20 s
+1. Héros : geste brusque, 1 s. 2. Lieu entier (plan large, hauteur/échelle), 2 s. 3. Menace entrevue, 1 s. 4. Détail du lieu (façade), 1 s.
+5. Héros de profil, 1 s. 6. Fenêtre + menace qui passe, puis son œil arrive (même plan), 2 s. 7. Enjeu intime (proche qui allume la lampe), 2-3 s.
+8. Proche + menace qui tremble, 2 s. 9. **Plan monumental** : dézoom immense, tout le décor dans l'écran, menaces minuscules, une seule lumière allumée, 3-4 s.
+10. Panneau diégétique des règles, 1,5 s.
+Principe : plusieurs plans courts, puis UN grand plan qui explose l'échelle. Règles numérotées, chiffre, signal secret, règle enfreinte, dilemme (voir `productions/phare-ep01/SCRIPT.md`).
