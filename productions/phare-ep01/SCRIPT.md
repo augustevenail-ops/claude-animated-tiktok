@@ -62,3 +62,22 @@ C'est ton père. Il est vivant. Et il attend une réponse. Une lumière.
 Si tu rallumes la lanterne, tu partiras toi aussi, à l'aube, avec Lila.
 Si tu restes dans le noir, Lila partira seule.
 Alors, tu rallumes la lanterne, ou tu restes dans le noir ? Dis-le en commentaire.
+
+## Script v4 (2026-11-12) — nouvelle fin : les disparus sont les rameurs (remplace v3 ; début inchangé)
+Imagine… Tu vis dans une ville accrochée à une falaise, sous un phare qui ne guide aucun bateau. Il cherche.
+Chaque nuit, son faisceau balaie les maisons. Règle numéro un : la nuit, aucune lumière. Le phare cherche ce qui brille.
+Il y a un an, ton père est parti en mer. Il n'est jamais revenu. Depuis, c'est Gaspard, le vieux voisin, qui veille sur vous.
+Ton père t'avait confié un secret : quand Gaspard ment, il frappe deux coups sur la table.
+Ce soir, ta petite sœur, Lila, a rallumé la lanterne de papa. {lila}« Pour qu'il retrouve la maison. »
+Le faisceau s'arrête sur votre fenêtre. Les murs tremblent. La cloche sonne trois fois.
+Règle numéro deux : à l'aube, une barque vient chercher celui qui a allumé. Si personne ne monte, le phare prend toute la maison.
+Trois cent douze personnes sont parties. Aucune n'est revenue.
+Tu souffles la flamme. Trop tard. Le faisceau glisse vers la mer… et s'arrête sur une barque qui approche.
+Règle numéro trois : on ne regarde jamais celui qui rame. Tu regardes.
+C'est ton père.
+Ils reviennent tous. Simplement, personne ne les regarde.
+Il lève les yeux vers ta fenêtre, et il fait le geste de vos parties de cache-cache : cache-toi.
+{gaspard}« Ce n'est plus ton père. Il ne se souvient de rien. »
+Et sur la table… deux coups.
+Il se souvient. Il est venu chercher Lila… et il te supplie de la cacher.
+Alors, à l'aube, tu caches Lila, ou tu montes à sa place ? Dis-le en commentaire.
