@@ -1,17 +1,17 @@
-# « L'appel » — épisode 1 (script v1, à valider) — remplace « Le phare » (refusé par l'utilisateur)
+# « L'appel » — épisode 1 (script v2, à valider) — remplace « Le phare » (refusé par l'utilisateur)
 
 Apocalypse / épidémie. Règles données au fil de l'histoire. Voix : narrateur George ; haut-parleur = George + effet haut-parleur ;
 « Présente. » = voix de femme (Jessica, 1 mot). Noé n'a pas de voix (c'est le sujet). Aucune violence montrée.
 
-## Script v1 (≈ 230 mots ⇒ ≈ 80 s)
+## Script v2 — mère descendue pour avoir menti, donc elle a toujours sa voix (≈ 245 mots ⇒ ≈ 80 s)
 Imagine… Tu vis dans la dernière tour encore habitée, et quand ce haut-parleur grésille, toute la ville retient son souffle.
 Dehors, une maladie a vidé le monde. Elle commence toujours de la même façon : la voix s'éteint.
 Alors chaque soir, c'est l'appel. Six mille fenêtres. Un numéro chacune.
 Règle numéro un : quand on appelle ton numéro, tu réponds. À voix haute.
 Ceux qui se taisent, les hommes en blanc les descendent au sous-sol. Personne n'en est jamais remonté.
-Ta mère y est descendue l'an dernier. Depuis, tu veilles sur ton petit frère, Noé. Pour le faire rire, tu imites toutes les voix. Même la sienne.
+Ta mère y est descendue l'an dernier. Elle n'était même pas malade. Depuis, tu veilles sur ton petit frère, Noé. Pour le faire rire, tu imites toutes les voix. Même la sienne.
 Ce soir, Noé ouvre la bouche pour répondre… Rien. Plus un son.
-Règle numéro deux : on ne répond jamais pour un autre. Celui qui ment descend avec lui.
+Règle numéro deux : on ne répond jamais pour un autre. Celui qui ment descend avec lui. C'est ce qu'avait fait ta mère, pour un voisin.
 Étage après étage, les fenêtres s'allument en vert. De plus en plus près de la vôtre.
 Règle numéro trois : pendant l'appel, on ne regarde jamais en bas. Tu regardes.
 Dans la cour, les hommes en blanc attendent, le visage levé vers ta fenêtre.
