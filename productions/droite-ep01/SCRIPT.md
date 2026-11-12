@@ -1,46 +1,47 @@
-# « Ne regarde pas à ta droite » — one-shot (brouillon v1, à valider)
+# « Ne le regarde pas » — one-shot (brouillon v2, à valider ; ex-« Ne regarde pas à ta droite »)
 
-Histoire originale, 2ᵉ personne, un seul lieu (un salon), aucune violence montrée. Fin sur un choix A/B.
-Voix : narrateur George « B » (réglages validés, `docs/VOIX.md`) + {pere} : **voix d'homme adulte distincte du narrateur, à choisir**
-(effet « téléphone » : passe-haut 300 Hz, passe-bas 3,4 kHz, léger bruit).
-Remarque ressources : quota ElevenLabs épuisé ce mois-ci (~900 crédits nécessaires).
+Histoire originale, 2ᵉ personne, un seul lieu (un salon, la nuit, sous la pluie), aucune violence montrée. Fin sur un choix A/B.
+Idée de l'utilisateur (v2) : l'homme assis à côté de toi **n'est pas ton père** ; le vrai père est **dehors**, et te prévient par message.
+Voix : narrateur George « B » (`docs/VOIX.md`) + **{faux}** : voix d'homme adulte chaleureuse mais un peu trop calme, à choisir
+(distincte du narrateur). Le vrai père n'a **pas de voix** : il n'existe que par ses **messages à l'écran** (texte diégétique).
+Quota ElevenLabs épuisé ce mois-ci (~800 crédits nécessaires, une seule voix de personnage).
 
-## Script v1
+## Script v2
 Imagine… Tu rentres chez toi, épuisé. Tu t'écroules sur le canapé. La télé est éteinte.
-Ton père est assis à côté de toi. Il ne dit rien. Il fixe le mur.
-Ton téléphone vibre. Sur l'écran : **Papa**.
-Tu tournes la tête. Ton père tient son téléphone contre son oreille. Il te regarde. Ses lèvres ne bougent pas.
-Tu décroches. Sa voix, dans ton oreille, n'est qu'un souffle.
-{pere}« Surtout… ne regarde pas à ta **droite**. »
-Tu ne bouges plus. Dans l'écran noir de la télé, tu vois ton reflet. Ton père, à ta gauche.
-Et à ta droite… une silhouette. Immobile. Très proche.
-Elle n'était pas là quand tu es rentré.
-Ton père serre ton bras. Sa main est glacée.
-{pere}« Elle est entrée avec **toi**. »
-Dans le reflet, la silhouette penche la tête. Doucement. Vers toi.
-Ta gorge se serre. Ta main tremble.
-Alors, tu **regardes** à droite, ou tu **fermes les yeux** et tu serres la main de ton père ? Dis-le en commentaire.
+Ton père est assis à côté de toi. Il sourit. {faux}« Tu rentres tard, aujourd'hui. »
+Tu réponds sans l'écouter. Ton téléphone vibre. Un message. De **Papa**.
+« Ce n'est pas moi. Ne le regarde surtout pas. »
+Tu ne comprends pas. Ton père est juste là, à côté de toi.
+Un deuxième message arrive : « Je suis dehors. Devant la fenêtre. »
+Tu lèves les yeux, lentement. Dehors, sous la pluie… ton vrai père. Blême. Il te fait signe de ne pas bouger.
+À côté de toi, l'autre continue de sourire. {faux}« Qui t'écrit ? »
+Sa voix est la sienne. Presque.
+Dans l'écran noir de la télé, tu regardes son reflet. Il n'a pas bougé depuis que tu t'es assis. Pas un seul clignement.
+Sa main se pose sur ton épaule. Elle est **glacée**.
+{faux}« Tu ne regardes plus ton père ? »
+Alors, tu **le regardes**, ou tu **cours vers la porte** ? Dis-le en commentaire.
 
-(≈ 163 mots ⇒ ≈ 60 s au débit validé de 2,75 mots/s ; on peut ajouter une phrase d'ambiance pour atteindre ~65 s.
-Micro-pauses voulues avant « Ne regarde pas à ta droite », « Et à ta droite… » et « Elle est entrée avec toi ».)
+(≈ 150 mots ⇒ ≈ 55-60 s au débit validé ; on peut ajouter une phrase d'ambiance pour atteindre ~65 s.
+Micro-pauses voulues avant « Ce n'est pas moi », « Presque. » et « glacée ».)
 
-## Découpage visuel prévu (≈ 13 plans, 1-2 mouvements spectaculaires)
-1. **Accroche (0-2 s)** : plan fixe sur l'écran noir de la télé, ton reflet minuscule ; le salon est éteint ; un bip de téléphone.
-2. Plongée sur le canapé : toi qui t'écroules (lampe de sol chaude, ambiance bleue de nuit).
-3. Ton père assis à côté de toi, de face, immobile, regard fixe.
-4. Insert téléphone : « Papa » s'affiche (texte diégétique).
-5. Contrechamp : ton père, téléphone à l'oreille, lèvres closes.
-6. Gros plan sur toi qui décroches.
-7. **Plan signature n° 1** : lent travelling avant vers l'écran de télé, jusqu'à ce que le reflet remplisse le cadre.
-8. Le reflet (carte 2D dessinée dans l'écran noir) : toi, ton père à gauche, **une silhouette sombre** à droite.
-9. Insert : la main de ton père sur ton bras (manche + main pâle).
-10. Gros plan sur ton visage, regard fixe devant, une goutte de sueur.
-11. Le reflet : la silhouette penche la tête, la caméra recule lentement.
-12. **Plan signature n° 2** : caméra qui tourne à 360° autour du canapé, de plus en plus vite, sans jamais montrer le côté droit (la silhouette reste hors champ à chaque passage).
-13. Fin : toi de face, étiquettes **A · REGARDER** / **B · FERMER LES YEUX**.
+## Découpage visuel prévu (≈ 14 plans, 2 mouvements spectaculaires)
+1. **Accroche (0-2 s)** : écran noir de la télé, reflet de toi et de ton « père » côte à côte, lui souriant ; une vibration de téléphone.
+2. Plongée sur le canapé : tu t'écroules (lampe chaude, bleu de nuit, pluie sur la vitre).
+3. Ton « père » assis, de face, sourire fixe : « Tu rentres tard, aujourd'hui. »
+4. Toi, regard fatigué, qui réponds sans l'écouter.
+5. Insert téléphone : « Papa » puis le message **« Ce n'est pas moi. Ne le regarde surtout pas. »** (texte diégétique).
+6. Gros plan sur toi : tu te figes, tu fixes droit devant.
+7. Insert : second message **« Je suis dehors. Devant la fenêtre. »**
+8. **Plan signature n° 1** : lent travelling latéral vers la fenêtre, la pluie ruisselle, ton vrai père dehors en contre-jour, un éclair.
+9. Contrechamp : le vrai père, blême, la main levée (« ne bouge pas »).
+10. L'autre, au bord du cadre : on ne voit que sa silhouette de profil, le sourire jamais en gros plan.
+11. Reflet dans la télé : il n'a pas bougé, yeux ouverts fixes, aucun clignement.
+12. Insert : sa main pâle sur ton épaule (caméra qui tremble).
+13. **Plan signature n° 2** : tour à 360° de plus en plus rapide autour du canapé, qui passe devant la fenêtre où ton vrai père frappe à la vitre ; on ne voit jamais le visage de l'autre de face.
+14. Fin : toi de face, étiquettes **A · LE REGARDER** / **B · COURIR VERS LA PORTE**.
 
-Contraintes de fabrication : une seule pièce (salon) + une télé-miroir dessinée en Canvas2D ; personnages en cartes 2D du style bridge ;
-la silhouette = carte sombre sans visage, aucune violence.
+Contraintes de fabrication : une seule pièce (salon) ; pluie = traits animés en Canvas2D sur la vitre ; télé-miroir dessinée en Canvas2D ;
+personnages en cartes 2D du style bridge (le faux père = même dessin que le vrai, mais visage figé, jamais de clignement).
 
 ---
 
