@@ -1,7 +1,7 @@
 # « L'appel » — épisode 1 (script v2, à valider) — remplace « Le phare » (refusé par l'utilisateur)
 
 Apocalypse / épidémie. Règles données au fil de l'histoire. Voix : narrateur George ; haut-parleur = George + effet haut-parleur ;
-« Présente. » = voix de femme (Jessica, 1 mot). Noé n'a pas de voix (c'est le sujet). Aucune violence montrée.
+Noé n'a pas de voix (c'est le sujet). Aucune violence montrée.
 
 ## Script v3 (sans la voix de la mère) — v2 — mère descendue pour avoir menti, donc elle a toujours sa voix (≈ 245 mots ⇒ ≈ 80 s)
 Imagine… Tu vis dans la dernière tour encore habitée, et quand ce haut-parleur grésille, toute la ville retient son souffle.
