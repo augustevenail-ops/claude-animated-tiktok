@@ -11,6 +11,7 @@ import { Pool, Actor } from "../bridge/cast";
 import { Pen, bodyFront, Outfit, Expr } from "../bridge/toon";
 import { FPS, YOU, FAKE, TV_Z, WINDOW, FATHER, LAMP, V3, shotAt, camAt, flashAt, phoneAt, smooth, clamp01 } from "./story";
 import { NIGHT } from "./look";
+import { HERO_OUTFIT, heroBehind, heroFront } from "../shared/hero";
 
 const FONT = "DejaVu Sans, Liberation Sans, sans-serif";
 const FURN = ["loungeSofa", "lampRoundFloor", "cabinetTelevision", "tableCoffee", "pottedPlant", "bookcaseClosed", "lampSquareTable", "books", "rugRectangle"];
@@ -113,7 +114,7 @@ const drawPhone = (g: CanvasRenderingContext2D, w: number, h: number, p: ReturnT
 // ---------------- personnages ----------------
 const FATHER_OUTFIT: Outfit = { jacket: "#5b4a3b", pants: "#2a2d36", boots: "#1c1a1f", hat: "hair", hair: "#a3a3a3", skin: "#e6c29e", build: "adult" };
 const FATHER_PALE: Outfit = { ...FATHER_OUTFIT, jacket: "#46505c", skin: "#cdd3d6" };
-const YOU_OUTFIT: Outfit = { jacket: "#3a4458", pants: "#2b2f3a", boots: "#1d1a20", hat: "hair", hair: "#3a2a20", skin: "#f2c49c" };
+const YOU_OUTFIT: Outfit = HERO_OUTFIT;   // personnage principal (shared/hero.ts)
 const tierOf = (d: number): [number, number, number] => (d < 3.5 ? [1080, 1800, 1.8] : d < 12 ? [600, 1000, 1] : [300, 500, 0.5]);
 
 export class World {
@@ -212,8 +213,8 @@ export class World {
     // personnages (cartes face à la caméra)
     const yaw = (p: V3) => Math.atan2(cam.position.x - p[0], cam.position.z - p[2]);
     const place = (A: Actor, key: string, o: Outfit, p: V3, fo: object, extra = 0, visible = true) => {
-      const d = cam.position.distanceTo(V(p[0], 1.1, p[2])), [w, h, k] = tierOf(d);
-      A.r = this.pool.req(`${key}|${JSON.stringify(fo)}`, w, h, k, (pen: Pen) => bodyFront(pen, o, fo as never));
+      const d = cam.position.distanceTo(V(p[0], 1.1, p[2])), [w, h, k] = tierOf(d), hero = key === "Y", fm = fo as { mode: string; seed: number };
+      A.r = this.pool.req(`${key}|${JSON.stringify(fo)}`, w, h, k, (pen: Pen) => { if (hero) heroBehind(pen, fm.mode, fm.seed); bodyFront(pen, o, fo as never); if (hero) heroFront(pen, fm.mode, fm.seed); });
       A.mesh.position.set(p[0], p[1], p[2]); A.mesh.rotation.set(0, yaw(p) + extra, 0); A.mesh.visible = visible; A.mesh.scale.setScalar(1);
     };
     const slump = id === 5 ? smooth((f - SHOT_A(5)) / 20) : 1, youP: V3 = [YOU[0], YOU[1] + 0.1 * (1 - slump), YOU[2]];
