@@ -81,7 +81,7 @@ pad *= 1 / (np.sqrt(np.mean(pad ** 2)) + 1e-9); echo *= 1 / (np.sqrt(np.mean(ech
 mus = (pad * 0.8 + echo * 0.55) * lvl + pulse * pl * lvl
 duck = np.ones(N)
 for i in range(len(words)): duck[int(max(0, W(i) - 0.08) * SR):int(min(DUR, E(i) + 0.12) * SR)] = db(-3)
-mus *= smooth(duck, 2000); mus *= db(vref - 10 - rms(mus[mus != 0]))
+mus *= smooth(duck, 2000); mus *= db(vref - 13.5 - rms(mus[mus != 0]))
 
 mix = np.stack([voice + mus + sfx, voice + mus * 0.97 + sfx * 0.95], 1)
 pre = os.path.join(HERE, "_pre.wav")

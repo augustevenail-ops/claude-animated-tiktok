@@ -16,8 +16,9 @@ const shade = (c: string, k: number) => rgb(hex(c).map((v) => v * k));
 const mix = (a: string, b: string, t: number) => { const x = hex(a), y = hex(b); return rgb(x.map((v, i) => v + (y[i] - v) * t)); };
 
 export type CharSpec = {
-  mode: "stand" | "sit"; expr: "calm" | "worry" | "smile_fixed" | "creepy" | "shadow"; blink?: boolean; look?: number; wave?: number;
-  jacket: string; pants: string; shoes: string; skin?: string; hair?: "side" | "short" | "none"; hairColor?: string; hood?: boolean; shadow?: boolean;
+  mode: "stand" | "sit"; expr: "calm" | "worry" | "smile_fixed" | "creepy" | "shadow" | "mute" | "talk" | "laugh"; blink?: boolean; look?: number; wave?: number;
+  /** main sur la gorge (ne peut plus parler) ; masque intégral à visière (hommes en blanc) */ throat?: boolean; mask?: boolean;
+  jacket: string; pants: string; shoes: string; skin?: string; hair?: "side" | "short" | "long" | "none"; hairColor?: string; hood?: boolean; shadow?: boolean;
 };
 
 const tube = (g: CanvasRenderingContext2D, pts: number[][], w: number, fill: string | CanvasGradient) => {
@@ -90,11 +91,13 @@ export const drawChar = (p: Pen, s: CharSpec) => {
   const hand = s.shadow ? "#0a0a10" : "#f4f4f7", wave = s.wave ?? 0;
   for (const sx of [-1, 1]) {
     const sh = [cx + sx * 80, torsoTop + 30];
-    const raised = sx === 1 && wave > 0.4, end = raised ? [cx + 128, hy + 40] : sit ? [cx + sx * 74, hip - 8] : [cx + sx * 100, hip - 24], mid = raised ? [cx + 136, torsoTop + 90] : [cx + sx * 100, (sh[1] + end[1]) / 2];
+    const raised = sx === 1 && wave > 0.4, thr = sx === 1 && !!s.throat, end = thr ? [cx + 26, torsoTop - 4] : raised ? [cx + 128, hy + 40] : sit ? [cx + sx * 74, hip - 8] : [cx + sx * 100, hip - 24], mid = thr ? [cx + 118, torsoTop + 95] : raised ? [cx + 136, torsoTop + 90] : [cx + sx * 100, (sh[1] + end[1]) / 2];
     tube(g, [sh, mid, end], 46, vgrad(g, sh[1], end[1], jacket));
     if (!s.shadow) { g.save(); g.strokeStyle = sx < 0 ? "rgba(170,195,255,0.22)" : "rgba(255,185,120,0.16)"; g.lineWidth = 6; g.lineCap = "round"; g.beginPath(); g.moveTo(sh[0] + sx * 14, sh[1] + 8); g.quadraticCurveTo(mid[0] + sx * 14, mid[1], end[0] + sx * 14, end[1] - 12); g.stroke(); g.restore(); }
-    ball(g, end[0], end[1] + (raised ? -8 : 6), 27, hand);
+    if (!thr) ball(g, end[0], end[1] + (raised ? -8 : 6), 27, hand);
   }
+  if (s.hair === "long") { const hc = s.hairColor ?? "#3a2a22"; g.beginPath(); g.moveTo(cx - 98, torsoTop - 110); g.bezierCurveTo(cx - 118, torsoTop + 10, cx - 96, torsoTop + 70, cx - 70, torsoTop + 78); g.lineTo(cx + 70, torsoTop + 78);
+    g.bezierCurveTo(cx + 96, torsoTop + 70, cx + 118, torsoTop + 10, cx + 98, torsoTop - 110); g.closePath(); g.fillStyle = shade(hc, 0.85); g.fill(); g.lineWidth = OL; g.strokeStyle = INK; g.stroke(); }
   // cou + tête (sphère nacrée)
   g.beginPath(); g.rect(cx - 16, torsoTop - 20, 32, 30); g.fillStyle = s.shadow ? "#0a0a10" : "#e9eaee"; g.fill(); g.lineWidth = OL; g.strokeStyle = INK; g.stroke();
   const skin = s.skin ?? "#bfc4d2";
@@ -107,7 +110,7 @@ export const drawChar = (p: Pen, s: CharSpec) => {
     for (const sx of [-1, 1]) { g.beginPath(); g.ellipse(cx + sx * 27 * u, hy + 15 * u, 9 * u, 5 * u, 0, 0, 7); g.fill(); }
     g.beginPath(); g.arc(cx, hy, R - 4.5, 0.78 * Math.PI, 1.3 * Math.PI); g.strokeStyle = "rgba(165,190,255,0.62)"; g.lineWidth = 5; g.stroke();            // lumière de contour froide (fenêtre)
     g.beginPath(); g.arc(cx, hy, R - 4.5, -0.28 * Math.PI, 0.3 * Math.PI); g.strokeStyle = "rgba(255,175,105,0.42)"; g.lineWidth = 4.5; g.stroke(); g.restore(); }
-  if (s.hair && s.hair !== "none") hairShape(g, (x) => cx + x * u, (y) => hy + y * u, s.hair, s.hairColor ?? "#5a3a26", u);
+  if (s.hair && s.hair !== "none" && !s.mask) hairShape(g, (x) => cx + x * u, (y) => hy + y * u, s.hair === "long" ? "side" : s.hair, s.hairColor ?? "#5a3a26", u);
   // visage
   const ex = 19 * u, ey = hy + 2 * u, look = (s.look ?? 0) * 2.4 * u;
   if (s.shadow) {
@@ -127,7 +130,19 @@ export const drawChar = (p: Pen, s: CharSpec) => {
     if (s.expr === "calm") { g.beginPath(); g.moveTo(cx - 5 * u, hy + 25 * u); g.lineTo(cx + 5 * u, hy + 24.4 * u); g.stroke(); }
     else if (s.expr === "worry") { g.beginPath(); g.arc(cx, hy + 31 * u, 6 * u, 1.18 * Math.PI, 1.82 * Math.PI); g.stroke(); }
     else if (s.expr === "smile_fixed") { g.beginPath(); g.ellipse(cx, hy + 18 * u, 15 * u, 8 * u, 0, 0.12 * Math.PI, 0.88 * Math.PI); g.stroke(); }
+    else if (s.expr === "mute") { g.beginPath(); g.ellipse(cx, hy + 28 * u, 7.5 * u, 10 * u, 0, 0, 7); g.fillStyle = "#1a0c12"; g.fill(); g.stroke();
+      g.strokeStyle = "rgba(23,22,29,0.55)"; g.lineWidth = 1.4 * u; for (const sx of [-1, 1]) { g.beginPath(); g.moveTo(cx + sx * 12 * u, hy + 22 * u); g.lineTo(cx + sx * 15 * u, hy + 34 * u); g.stroke(); } }
+    else if (s.expr === "talk") { g.beginPath(); g.ellipse(cx, hy + 26 * u, 5.5 * u, 4 * u, 0, 0, 7); g.fillStyle = "#1a0c12"; g.fill(); g.stroke(); }
+    else if (s.expr === "laugh") { g.beginPath(); g.moveTo(cx - 11 * u, hy + 21 * u); g.quadraticCurveTo(cx, hy + 23 * u, cx + 11 * u, hy + 21 * u); g.quadraticCurveTo(cx, hy + 38 * u, cx - 11 * u, hy + 21 * u); g.closePath(); g.fillStyle = "#3a1220"; g.fill(); g.stroke(); }
     else grin(g, cx, hy + 22 * u, u, false);
   }
+  if (s.mask) {   // capuche de combinaison + visière sombre + filtres
+    const hood = g.createRadialGradient(cx - 20, hy - 30, 10, cx, hy, R * 1.2); hood.addColorStop(0, "#ffffff"); hood.addColorStop(1, "#b9c0cc");
+    g.beginPath(); g.ellipse(cx, hy + 6, R * 1.1, R * 1.12, 0, 0, 7); g.fillStyle = hood; g.fill(); g.lineWidth = OL; g.strokeStyle = INK; g.stroke();
+    g.beginPath(); g.roundRect(cx - 64, hy - 34, 128, 70, 30); const vz = g.createLinearGradient(0, hy - 34, 0, hy + 36); vz.addColorStop(0, "#1d2b33"); vz.addColorStop(1, "#05080b"); g.fillStyle = vz; g.fill(); g.lineWidth = OL; g.stroke();
+    g.strokeStyle = "rgba(150,255,210,0.45)"; g.lineWidth = 5; g.beginPath(); g.moveTo(cx - 44, hy - 18); g.quadraticCurveTo(cx - 10, hy - 28, cx + 30, hy - 22); g.stroke();
+    for (const sx of [-1, 1]) ball(g, cx + sx * 34, hy + 62, 17, "#6d7480");
+  }
+  if (s.throat) { ball(g, cx + 26, torsoTop - 6, 27, s.shadow ? "#0a0a10" : "#f4f4f7"); }
   g.restore();
 };
