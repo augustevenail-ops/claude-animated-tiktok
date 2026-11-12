@@ -1,0 +1,971 @@
+[
+{
+"w": "Imagine...",
+"s": 0.036,
+"e": 0.762,
+"role": "narrateur"
+},
+{
+"w": "Tu",
+"s": 1.012,
+"e": 1.155,
+"role": "narrateur"
+},
+{
+"w": "rentres",
+"s": 1.214,
+"e": 1.536,
+"role": "narrateur"
+},
+{
+"w": "chez",
+"s": 1.56,
+"e": 1.715,
+"role": "narrateur"
+},
+{
+"w": "toi,",
+"s": 1.751,
+"e": 2.12,
+"role": "narrateur"
+},
+{
+"w": "épuisé.",
+"s": 2.203,
+"e": 2.989,
+"role": "narrateur"
+},
+{
+"w": "Tu",
+"s": 3.322,
+"e": 3.466,
+"role": "narrateur"
+},
+{
+"w": "t'écroules",
+"s": 3.525,
+"e": 3.942,
+"role": "narrateur"
+},
+{
+"w": "sur",
+"s": 3.965,
+"e": 4.073,
+"role": "narrateur"
+},
+{
+"w": "le",
+"s": 4.108,
+"e": 4.179,
+"role": "narrateur"
+},
+{
+"w": "canapé.",
+"s": 4.215,
+"e": 4.846,
+"role": "narrateur"
+},
+{
+"w": "La",
+"s": 5.154,
+"e": 5.285,
+"role": "narrateur"
+},
+{
+"w": "télé",
+"s": 5.332,
+"e": 5.583,
+"role": "narrateur"
+},
+{
+"w": "est",
+"s": 5.618,
+"e": 5.69,
+"role": "narrateur"
+},
+{
+"w": "éteinte.",
+"s": 5.809,
+"e": 6.368,
+"role": "narrateur"
+},
+{
+"w": "Ton",
+"s": 6.702,
+"e": 6.892,
+"role": "narrateur"
+},
+{
+"w": "père",
+"s": 6.941,
+"e": 7.178,
+"role": "narrateur"
+},
+{
+"w": "est",
+"s": 7.202,
+"e": 7.274,
+"role": "narrateur"
+},
+{
+"w": "assis",
+"s": 7.345,
+"e": 7.595,
+"role": "narrateur"
+},
+{
+"w": "à",
+"s": 7.631,
+"e": 7.654,
+"role": "narrateur"
+},
+{
+"w": "côté",
+"s": 7.703,
+"e": 7.928,
+"role": "narrateur"
+},
+{
+"w": "de",
+"s": 7.976,
+"e": 8.059,
+"role": "narrateur"
+},
+{
+"w": "toi.",
+"s": 8.107,
+"e": 8.512,
+"role": "narrateur"
+},
+{
+"w": "Il",
+"s": 8.819,
+"e": 8.987,
+"role": "narrateur"
+},
+{
+"w": "sourit.",
+"s": 9.07,
+"e": 9.522,
+"role": "narrateur"
+},
+{
+"w": "Tu",
+"s": 9.826,
+"e": 9.909,
+"role": "faux",
+"q": 1
+},
+{
+"w": "rentres",
+"s": 9.968,
+"e": 10.278,
+"role": "faux"
+},
+{
+"w": "tard,",
+"s": 10.314,
+"e": 10.766,
+"role": "faux"
+},
+{
+"w": "aujourd'hui.",
+"s": 10.826,
+"e": 11.539,
+"role": "faux"
+},
+{
+"w": "Tu",
+"s": 11.843,
+"e": 11.962,
+"role": "narrateur"
+},
+{
+"w": "réponds",
+"s": 12.022,
+"e": 12.344,
+"role": "narrateur"
+},
+{
+"w": "sans",
+"s": 12.367,
+"e": 12.498,
+"role": "narrateur"
+},
+{
+"w": "l'écouter.",
+"s": 12.522,
+"e": 13.189,
+"role": "narrateur"
+},
+{
+"w": "Ton",
+"s": 13.367,
+"e": 13.534,
+"role": "narrateur"
+},
+{
+"w": "téléphone",
+"s": 13.582,
+"e": 14.023,
+"role": "narrateur"
+},
+{
+"w": "vibre.",
+"s": 14.058,
+"e": 14.534,
+"role": "narrateur"
+},
+{
+"w": "Un",
+"s": 14.689,
+"e": 14.808,
+"role": "narrateur"
+},
+{
+"w": "message.",
+"s": 14.844,
+"e": 15.534,
+"role": "narrateur"
+},
+{
+"w": "De",
+"s": 15.842,
+"e": 15.961,
+"role": "narrateur"
+},
+{
+"w": "Papa.",
+"s": 16.021,
+"e": 16.569,
+"role": "narrateur"
+},
+{
+"w": "Ce",
+"s": 17.082,
+"e": 17.213,
+"role": "narrateur"
+},
+{
+"w": "n'est",
+"s": 17.261,
+"e": 17.392,
+"role": "narrateur"
+},
+{
+"w": "pas",
+"s": 17.415,
+"e": 17.547,
+"role": "narrateur"
+},
+{
+"w": "moi.",
+"s": 17.57,
+"e": 18.01,
+"role": "narrateur"
+},
+{
+"w": "Ne",
+"s": 18.318,
+"e": 18.437,
+"role": "narrateur"
+},
+{
+"w": "le",
+"s": 18.472,
+"e": 18.52,
+"role": "narrateur"
+},
+{
+"w": "regarde",
+"s": 18.567,
+"e": 18.972,
+"role": "narrateur"
+},
+{
+"w": "surtout",
+"s": 19.021,
+"e": 19.354,
+"role": "narrateur"
+},
+{
+"w": "pas.",
+"s": 19.377,
+"e": 19.734,
+"role": "narrateur"
+},
+{
+"w": "Tu",
+"s": 20.042,
+"e": 20.197,
+"role": "narrateur"
+},
+{
+"w": "ne",
+"s": 20.245,
+"e": 20.316,
+"role": "narrateur"
+},
+{
+"w": "comprends",
+"s": 20.375,
+"e": 20.733,
+"role": "narrateur"
+},
+{
+"w": "pas.",
+"s": 20.757,
+"e": 21.222,
+"role": "narrateur"
+},
+{
+"w": "Ton",
+"s": 21.529,
+"e": 21.72,
+"role": "narrateur"
+},
+{
+"w": "père",
+"s": 21.779,
+"e": 22.041,
+"role": "narrateur"
+},
+{
+"w": "est",
+"s": 22.065,
+"e": 22.136,
+"role": "narrateur"
+},
+{
+"w": "juste",
+"s": 22.172,
+"e": 22.506,
+"role": "narrateur"
+},
+{
+"w": "là,",
+"s": 22.553,
+"e": 22.827,
+"role": "narrateur"
+},
+{
+"w": "à",
+"s": 22.886,
+"e": 22.934,
+"role": "narrateur"
+},
+{
+"w": "côté",
+"s": 23.005,
+"e": 23.244,
+"role": "narrateur"
+},
+{
+"w": "de",
+"s": 23.279,
+"e": 23.363,
+"role": "narrateur"
+},
+{
+"w": "toi.",
+"s": 23.41,
+"e": 23.863,
+"role": "narrateur"
+},
+{
+"w": "Un",
+"s": 24.17,
+"e": 24.313,
+"role": "narrateur"
+},
+{
+"w": "deuxième",
+"s": 24.361,
+"e": 24.707,
+"role": "narrateur"
+},
+{
+"w": "message",
+"s": 24.73,
+"e": 25.135,
+"role": "narrateur"
+},
+{
+"w": "arrive",
+"s": 25.159,
+"e": 25.588,
+"role": "narrateur"
+},
+{
+"w": "Je",
+"s": 25.649,
+"e": 25.781,
+"role": "narrateur"
+},
+{
+"w": "suis",
+"s": 25.816,
+"e": 25.995,
+"role": "narrateur"
+},
+{
+"w": "dehors.",
+"s": 26.031,
+"e": 26.649,
+"role": "narrateur"
+},
+{
+"w": "Devant",
+"s": 26.864,
+"e": 27.161,
+"role": "narrateur"
+},
+{
+"w": "la",
+"s": 27.186,
+"e": 27.245,
+"role": "narrateur"
+},
+{
+"w": "fenêtre.",
+"s": 27.305,
+"e": 27.948,
+"role": "narrateur"
+},
+{
+"w": "Tu",
+"s": 28.255,
+"e": 28.41,
+"role": "narrateur"
+},
+{
+"w": "lèves",
+"s": 28.457,
+"e": 28.672,
+"role": "narrateur"
+},
+{
+"w": "les",
+"s": 28.695,
+"e": 28.827,
+"role": "narrateur"
+},
+{
+"w": "yeux,",
+"s": 28.91,
+"e": 29.184,
+"role": "narrateur"
+},
+{
+"w": "lentement.",
+"s": 29.338,
+"e": 30.03,
+"role": "narrateur"
+},
+{
+"w": "Dehors,",
+"s": 30.337,
+"e": 30.79,
+"role": "narrateur"
+},
+{
+"w": "sous",
+"s": 30.838,
+"e": 31.016,
+"role": "narrateur"
+},
+{
+"w": "la",
+"s": 31.04,
+"e": 31.112,
+"role": "narrateur"
+},
+{
+"w": "pluie...",
+"s": 31.171,
+"e": 31.671,
+"role": "narrateur"
+},
+{
+"w": "ton",
+"s": 31.885,
+"e": 32.064,
+"role": "narrateur"
+},
+{
+"w": "vrai",
+"s": 32.123,
+"e": 32.29,
+"role": "narrateur"
+},
+{
+"w": "père.",
+"s": 32.326,
+"e": 32.85,
+"role": "narrateur"
+},
+{
+"w": "Blême.",
+"s": 33.158,
+"e": 33.729,
+"role": "narrateur"
+},
+{
+"w": "Il",
+"s": 33.908,
+"e": 34.051,
+"role": "narrateur"
+},
+{
+"w": "te",
+"s": 34.122,
+"e": 34.182,
+"role": "narrateur"
+},
+{
+"w": "fait",
+"s": 34.241,
+"e": 34.372,
+"role": "narrateur"
+},
+{
+"w": "signe",
+"s": 34.396,
+"e": 34.623,
+"role": "narrateur"
+},
+{
+"w": "de",
+"s": 34.646,
+"e": 34.706,
+"role": "narrateur"
+},
+{
+"w": "ne",
+"s": 34.753,
+"e": 34.825,
+"role": "narrateur"
+},
+{
+"w": "pas",
+"s": 34.861,
+"e": 34.979,
+"role": "narrateur"
+},
+{
+"w": "bouger.",
+"s": 35.003,
+"e": 35.587,
+"role": "narrateur"
+},
+{
+"w": "À",
+"s": 35.92,
+"e": 35.992,
+"role": "narrateur"
+},
+{
+"w": "côté",
+"s": 36.087,
+"e": 36.325,
+"role": "narrateur"
+},
+{
+"w": "de",
+"s": 36.372,
+"e": 36.444,
+"role": "narrateur"
+},
+{
+"w": "toi,",
+"s": 36.504,
+"e": 36.896,
+"role": "narrateur"
+},
+{
+"w": "l'autre",
+"s": 36.999,
+"e": 37.345,
+"role": "narrateur"
+},
+{
+"w": "continue",
+"s": 37.393,
+"e": 37.809,
+"role": "narrateur"
+},
+{
+"w": "de",
+"s": 37.833,
+"e": 37.916,
+"role": "narrateur"
+},
+{
+"w": "sourire.",
+"s": 37.964,
+"e": 38.548,
+"role": "narrateur"
+},
+{
+"w": "Qui",
+"s": 38.851,
+"e": 38.995,
+"role": "faux",
+"q": 1
+},
+{
+"w": "t'écrit",
+"s": 39.042,
+"e": 39.447,
+"role": "faux"
+},
+{
+"w": "Sa",
+"s": 39.751,
+"e": 39.882,
+"role": "narrateur"
+},
+{
+"w": "voix",
+"s": 39.942,
+"e": 40.179,
+"role": "narrateur"
+},
+{
+"w": "est",
+"s": 40.204,
+"e": 40.275,
+"role": "narrateur"
+},
+{
+"w": "la",
+"s": 40.298,
+"e": 40.37,
+"role": "narrateur"
+},
+{
+"w": "sienne.",
+"s": 40.453,
+"e": 41.037,
+"role": "narrateur"
+},
+{
+"w": "Presque.",
+"s": 41.287,
+"e": 41.93,
+"role": "narrateur"
+},
+{
+"w": "Dans",
+"s": 42.238,
+"e": 42.416,
+"role": "narrateur"
+},
+{
+"w": "l'écran",
+"s": 42.452,
+"e": 42.726,
+"role": "narrateur"
+},
+{
+"w": "noir",
+"s": 42.773,
+"e": 42.964,
+"role": "narrateur"
+},
+{
+"w": "de",
+"s": 43.012,
+"e": 43.072,
+"role": "narrateur"
+},
+{
+"w": "la",
+"s": 43.119,
+"e": 43.191,
+"role": "narrateur"
+},
+{
+"w": "télé,",
+"s": 43.25,
+"e": 43.654,
+"role": "narrateur"
+},
+{
+"w": "tu",
+"s": 43.774,
+"e": 43.905,
+"role": "narrateur"
+},
+{
+"w": "regardes",
+"s": 43.964,
+"e": 44.382,
+"role": "narrateur"
+},
+{
+"w": "son",
+"s": 44.405,
+"e": 44.512,
+"role": "narrateur"
+},
+{
+"w": "reflet.",
+"s": 44.56,
+"e": 45.191,
+"role": "narrateur"
+},
+{
+"w": "Il",
+"s": 45.498,
+"e": 45.641,
+"role": "narrateur"
+},
+{
+"w": "n'a",
+"s": 45.677,
+"e": 45.76,
+"role": "narrateur"
+},
+{
+"w": "pas",
+"s": 45.819,
+"e": 45.927,
+"role": "narrateur"
+},
+{
+"w": "bougé",
+"s": 45.963,
+"e": 46.237,
+"role": "narrateur"
+},
+{
+"w": "depuis",
+"s": 46.284,
+"e": 46.522,
+"role": "narrateur"
+},
+{
+"w": "que",
+"s": 46.547,
+"e": 46.63,
+"role": "narrateur"
+},
+{
+"w": "tu",
+"s": 46.666,
+"e": 46.749,
+"role": "narrateur"
+},
+{
+"w": "t'es",
+"s": 46.796,
+"e": 46.915,
+"role": "narrateur"
+},
+{
+"w": "assis.",
+"s": 46.951,
+"e": 47.511,
+"role": "narrateur"
+},
+{
+"w": "Pas",
+"s": 47.844,
+"e": 48.058,
+"role": "narrateur"
+},
+{
+"w": "un",
+"s": 48.118,
+"e": 48.166,
+"role": "narrateur"
+},
+{
+"w": "seul",
+"s": 48.226,
+"e": 48.392,
+"role": "narrateur"
+},
+{
+"w": "clignement.",
+"s": 48.464,
+"e": 49.082,
+"role": "narrateur"
+},
+{
+"w": "Sa",
+"s": 49.39,
+"e": 49.568,
+"role": "narrateur"
+},
+{
+"w": "main",
+"s": 49.628,
+"e": 49.759,
+"role": "narrateur"
+},
+{
+"w": "se",
+"s": 49.806,
+"e": 49.902,
+"role": "narrateur"
+},
+{
+"w": "pose",
+"s": 49.973,
+"e": 50.223,
+"role": "narrateur"
+},
+{
+"w": "sur",
+"s": 50.247,
+"e": 50.377,
+"role": "narrateur"
+},
+{
+"w": "ton",
+"s": 50.426,
+"e": 50.556,
+"role": "narrateur"
+},
+{
+"w": "épaule.",
+"s": 50.628,
+"e": 51.175,
+"role": "narrateur"
+},
+{
+"w": "Elle",
+"s": 51.483,
+"e": 51.674,
+"role": "narrateur"
+},
+{
+"w": "est",
+"s": 51.697,
+"e": 51.769,
+"role": "narrateur"
+},
+{
+"w": "glacée.",
+"s": 51.793,
+"e": 52.389,
+"role": "narrateur"
+},
+{
+"w": "Tu",
+"s": 52.692,
+"e": 52.775,
+"role": "faux",
+"q": 1
+},
+{
+"w": "ne",
+"s": 52.823,
+"e": 52.871,
+"role": "faux"
+},
+{
+"w": "regardes",
+"s": 52.907,
+"e": 53.251,
+"role": "faux"
+},
+{
+"w": "plus",
+"s": 53.276,
+"e": 53.406,
+"role": "faux"
+},
+{
+"w": "ton",
+"s": 53.43,
+"e": 53.55,
+"role": "faux"
+},
+{
+"w": "père",
+"s": 53.609,
+"e": 53.871,
+"role": "faux"
+},
+{
+"w": "Alors,",
+"s": 54.169,
+"e": 54.622,
+"role": "narrateur"
+},
+{
+"w": "tu",
+"s": 54.741,
+"e": 54.872,
+"role": "narrateur"
+},
+{
+"w": "le",
+"s": 54.919,
+"e": 54.978,
+"role": "narrateur"
+},
+{
+"w": "regardes,",
+"s": 55.027,
+"e": 55.586,
+"role": "narrateur"
+},
+{
+"w": "ou",
+"s": 55.706,
+"e": 55.812,
+"role": "narrateur"
+},
+{
+"w": "tu",
+"s": 55.859,
+"e": 55.955,
+"role": "narrateur"
+},
+{
+"w": "cours",
+"s": 56.014,
+"e": 56.229,
+"role": "narrateur"
+},
+{
+"w": "vers",
+"s": 56.253,
+"e": 56.396,
+"role": "narrateur"
+},
+{
+"w": "la",
+"s": 56.419,
+"e": 56.491,
+"role": "narrateur"
+},
+{
+"w": "porte",
+"s": 56.551,
+"e": 56.991,
+"role": "narrateur"
+},
+{
+"w": "Dis-le",
+"s": 57.052,
+"e": 57.35,
+"role": "narrateur"
+},
+{
+"w": "en",
+"s": 57.397,
+"e": 57.456,
+"role": "narrateur"
+},
+{
+"w": "commentaire.",
+"s": 57.516,
+"e": 58.278,
+"role": "narrateur"
+}
+]

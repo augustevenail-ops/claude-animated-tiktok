@@ -12,9 +12,8 @@ import { LensBlurEffect } from "../bridge/lensblur";
 import { GradeEffect } from "../bridge/grade";
 import { Kit } from "../bridge/build";
 import { World, loadKit } from "./world";
-import { TOTAL, FPS, shotAt, dofAt } from "./story";
+import { TOTAL, FPS, SHOTS, WORDS, shotAt, dofAt } from "./story";
 import { GRADE_NIGHT } from "./look";
-import WORDS from "./words.json";
 
 export const DROITE_FRAMES = TOTAL;
 type Post = { ink: boolean; lens: boolean; bloom: boolean; grade: boolean; audio: boolean; shadow: boolean; smap: number; dpr?: number; lensTaps: number; lensNear: number };
@@ -92,7 +91,7 @@ const Captions: React.FC<{ t: number }> = ({ t }) => {
     </div>
   );
 };
-const CHOICE_AT = 59.0;
+const CHOICE_AT = SHOTS[33].a / FPS + 1.0;
 const Choice: React.FC<{ t: number }> = ({ t }) => {
   if (t < CHOICE_AT) return null;
   const k = Math.min(1, (t - CHOICE_AT) / 0.25);

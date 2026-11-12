@@ -133,3 +133,4 @@ Module : `studio/src/videos/shared/chars.ts` (`drawChar`). Règles observées et
 - **Vêtements** : aplats saturés (bleu marine / bleu vif, brun-orangé, gris-bleu) avec dégradé doux (clair en haut, sombre en bas) et un liseré clair.
 - **Cheveux** : aplat avec contour et 2 traits foncés, coupe simple (jamais au bol). **Aucun accessoire** repris des références.
 - **Ambiance** : décors sombres désaturés (bleu-violet / gris-vert), visages et mains = points lumineux de l'image.
+- **Peau (décision 2026-11-12)** : blanc nacré pour **tous** les personnages ; le **noir** est réservé aux **monstres / silhouettes menaçantes** (les 2 prochains épisodes), pour faire vraiment peur.

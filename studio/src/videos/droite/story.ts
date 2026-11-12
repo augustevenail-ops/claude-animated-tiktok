@@ -1,7 +1,6 @@
 // « Ne le regarde pas » : 34 plans (docs : productions/droite-ep01/PLANS.md v2), temps ESTIMÉS (voix décalée de 1,8 s) ;
 // à recaler sur words.json une fois la voix générée (règle n° 5 du projet).
 export const FPS = 30;
-export const TOTAL = 1890;
 export type V3 = [number, number, number];
 export const clamp01 = (x: number) => Math.max(0, Math.min(1, x));
 export const smooth = (x: number) => { const u = clamp01(x); return u * u * (3 - 2 * u); };
@@ -17,12 +16,18 @@ export const WINDOW: V3 = [3.2, 1.4, 0.8];
 export const FATHER: V3 = [5.0, 0, 0.8];             // le vrai père, dehors
 export const LAMP: V3 = [-2.5, 0, 0.5];
 
-const T: [number, number][] = [[0, 0.9], [0.9, 1.8], [1.8, 3.2], [3.2, 4.6], [4.6, 6.2], [6.2, 7.5], [7.5, 9.4], [9.4, 10.9], [10.9, 12.7], [12.7, 14.4], [14.4, 16.9],
-  [16.9, 18.6], [18.6, 20.4], [20.4, 22.0], [22.0, 23.6], [23.6, 25.3], [25.3, 27.0], [27.0, 29.2], [29.2, 33.0], [33.0, 34.3], [34.3, 35.5], [35.5, 37.0], [37.0, 39.3],
-  [39.3, 40.9], [40.9, 43.2], [43.2, 44.8], [44.8, 46.4], [46.4, 48.0], [48.0, 49.6], [49.6, 51.8], [51.8, 54.0], [54.0, 55.6], [55.6, 58.0], [58.0, 62.9]];
+// temps réels : chaque plan commence 2 images avant son premier mot (règle n° 5) ; la voix démarre à VOICE_AT (accroche muette avant)
+import RAW from "./words.json";
+import ANCH from "./anchors.json";
+export const VOICE_AT = ANCH.voiceAt;
+export type W = { w: string; s: number; e: number; q?: number; role?: string };
+export const WORDS: W[] = (RAW as W[]).map((w) => ({ ...w, s: w.s + VOICE_AT, e: w.e + VOICE_AT }));
+const A = ANCH.anchors as Record<string, number>;
+const starts: number[] = [0, 0.9, ...Array.from({ length: 32 }, (_, i) => Math.max(1.8, WORDS[A[String(i + 3)]].s - 2 / FPS))];
+const T: [number, number][] = starts.map((a, i) => [a, i + 1 < starts.length ? starts[i + 1] : WORDS[WORDS.length - 1].e + 0.9]);
 export type ShotDef = { id: number; a: number; b: number };
 export const SHOTS: ShotDef[] = T.map(([a, b], i) => ({ id: i + 1, a: Math.round(a * FPS), b: Math.round(b * FPS) }));
-SHOTS[SHOTS.length - 1].b = TOTAL;
+export const TOTAL = SHOTS[SHOTS.length - 1].b;
 export const shotAt = (f: number) => SHOTS.find((s) => f >= s.a && f < s.b) ?? SHOTS[SHOTS.length - 1];
 
 // ---------------- caméras ----------------
@@ -65,7 +70,7 @@ const CAMS: Record<number, (u: number, f: number) => Cam> = {
   30: (u) => { const c: V3 = lerp3([0.02, 1.05, 0.45], [0.0, 1.1, 0.2], u); return P(c, reflPoint(c, [FAKE[0], headY, FAKE[2]]), 18); },
   31: (u) => P(lerp3([0.4, 1.15, -1.3], [0.4, 1.1, -1.0], u), [0.4, 1.0, 0.55], 34, 0.03),
   32: (u) => P(lerp3([0.5, 1.22, -1.5], [0.5, 1.2, -1.15], u), [YOU[0], 1.17, YOU[2]], 26),
-  33: (u) => { const th = -Math.PI / 2 + 2 * Math.PI * Math.pow(u, 1.8); return P([Math.cos(th) * 2.3, 1.25, 0.8 + Math.sin(th) * 2.3], [0, 1.0, 0.8], 56, 0.04); },
+  33: (u) => { const th = -Math.PI / 2 + 1.15 * Math.PI * Math.pow(u, 1.6); return P([Math.cos(th) * 2.3, 1.25, 0.8 + Math.sin(th) * 2.3], [0, 1.0, 0.8], 56, 0.04); },
   34: (u) => P(lerp3([0.12, 1.28, -2.6], [0.1, 1.25, -2.15], u), [0.0, 1.1, 0.6], 48),
 };
 /** secousses de caméra à main levée (amplitude en mètres sur le point visé) */
@@ -91,8 +96,9 @@ export const dofAt = (id: number, f: number): Dof => {
 /** éclairs (0..1) : tonnerre de l'accroche, éclair sur le vrai père, stroboscope du tour à 360° */
 export const flashAt = (f: number) => {
   const t = f / FPS, k = (t0: number, d: number, g: number) => { const x = (t - t0) * FPS; return x >= 0 && x < d ? g * (1 - x / d) : 0; };
-  let v = k(0.0, 4, 0.7) + k(33.0, 4, 1) + k(32.6, 2, 0.4);
-  for (let q = 0; q < 6; q++) v += k(55.9 + q * 0.4, 3, 0.8);
+  const s20 = SHOTS[19].a / FPS, s33 = SHOTS[32].a / FPS;
+  let v = k(0.0, 4, 0.7) + k(s20, 4, 1) + k(s20 - 0.5, 2, 0.4);
+  for (let q = 0; q < 6; q++) v += k(s33 + 0.3 + q * 0.4, 3, 0.8);
   return Math.min(1, v);
 };
 export type Phone = { mode: "none" | "bubble" | "notif" | "typing"; text: string; chars: number; shake: number; first?: string };

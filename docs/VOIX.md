@@ -46,3 +46,6 @@ Commande : `python tools/voice_edit.py productions/<ep>/voice --tension "<mot>"`
   Leçon : pour ce type de scène, viser « l'attente avant le déclenchement » (pulsation, montée par couches), pas l'épique ni l'ouverture de film.
 - Correction de texte isolée sans tout régénérer : `python tools/voice_patch.py productions/<ep> <i_premier_mot> <i_dernier_mot> "<phrase>"`
   (même créneau, durée totale inchangée).
+- **« Ne le regarde pas » (2026-11-12)** : narrateur = George réglage « B » (inchangé) ; faux père = **Daniel** (`onwK4e9ZLuTAKqWW03F9`, stability 0,55 / similarity 0,8 / style 0,2, tempo 0,975) ;
+  `productions/droite-ep01/voices.json`, pauses : fin de phrase 0,3 s, virgule 0,1 s, mots liés (≤ 0,06 s), tension 0,5 s avant « Ce », « Presque », « glacée ».
+  Règle d'économie : générer la voix **une seule fois** (les segments sont mis en cache dans `voice/_seg`) ; proposer **1 à 2** voix au plus pour un nouveau personnage.

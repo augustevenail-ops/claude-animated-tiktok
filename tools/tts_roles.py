@@ -15,7 +15,7 @@ OUT = os.path.join(EP, "voice"); os.makedirs(OUT, exist_ok=True)
 CACHE = os.path.join(OUT, "_seg"); os.makedirs(CACHE, exist_ok=True)
 
 src = open(os.path.join(EP, "SCRIPT.md"), encoding="utf-8").read()
-body = src.split("## Script", 1)[1].split("\n", 1)[1].split("\n(Mots en gras")[0].split("\n## ")[0]
+body = re.split(r"\n\((?:Mots en gras|≈)", src.split("## Script", 1)[1].split("\n", 1)[1])[0].split("\n## ")[0]   # coupe aussi avant la note « (≈ N mots ... »
 text = re.sub(r"\s*\n\s*", " ", re.sub(r"\*\*", "", body)).strip()
 # segments : (rôle, texte) ; une réplique {role}« ... » devient un segment de ce rôle (guillemets retirés)
 segs, pos = [], 0
