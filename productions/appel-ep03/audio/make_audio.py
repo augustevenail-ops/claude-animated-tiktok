@@ -43,24 +43,24 @@ def echo(sig, d=0.21, k=0.45, n=4):
     for q in range(1, n + 1): out[int(d * SR * q):int(d * SR * q) + len(sig)] += sig * k ** q
     return out
 sfx = np.zeros(N)
-hum = smooth(rng.standard_normal(N), 900) * 40 * np.interp(t, [0, W(71) - 0.5, W(71) + 1.5, DUR], [0.3, 0.4, 1.0, 0.9]); sfx += hum * 0.12          # grondement sourd (sous-sol)
-neon = (np.sin(2 * np.pi * 100 * t) + 0.4 * np.sin(2 * np.pi * 200 * t)) * (t < W(40)); sfx += neon * 0.014
+hum = smooth(rng.standard_normal(N), 900) * 40 * np.interp(t, [0, W(120) - 0.5, W(120) + 1.5, DUR], [0.3, 0.4, 1.0, 0.9]); sfx += hum * 0.12          # grondement sourd (sous-sol)
+neon = (np.sin(2 * np.pi * 100 * t) + 0.4 * np.sin(2 * np.pi * 200 * t)) * (t < W(96)); sfx += neon * 0.014
 put(sfx, creak(1.4), 0.15, 0.9)                                                                                          # ta porte s'ouvre
-put(sfx, creak(1.0), W(13) + 0.2, 0.25); put(sfx, creak(0.9), W(15) + 0.4, 0.2)
-put(sfx, boom(0.8), W(33) - 0.05, 0.4)                                                                                   # lumière rouge
-tt = W(44)                                                                                                               # vos pas dans l'escalier, avec écho
-while tt < W(71) - 0.4: put(sfx, echo(step(0.7)), tt, 0.45); put(sfx, echo(step(0.5)), tt + 0.22, 0.3); tt += 0.58
-put(sfx, boom(), W(60) - 0.05, 0.6)                                                                                      # « Règle numéro cinq »
-put(sfx, boom(1.2), W(71) - 0.1, 0.5)                                                                                    # la salle immense
-for q in range(int((W(123) - W(118)) / 0.16)): put(sfx, smooth(rng.standard_normal(int(0.12 * SR)), 20) * np.hanning(int(0.12 * SR)) * 3, W(118) - 0.1 + q * 0.16, 0.25)   # doigt dans la paume
-for i in (128, 133): put(sfx, static(0.5), W(i) - 0.4, 0.3)
-put(sfx, static(1.0), W(142) - 0.5, 0.3); put(sfx, tone(110, 0.55, 0.01, 0.1) * 0.8, W(154), 0.25)                        # l'appel ; la prochaine voix
-tt = W(161) - 0.1; k = 0                                                                                                 # les pas, là-haut, qui descendent
+put(sfx, creak(1.0), W(75) + 0.2, 0.25); put(sfx, creak(0.9), W(77) + 0.4, 0.2)
+put(sfx, boom(0.8), W(94) - 0.05, 0.4)                                                                                   # lumière rouge
+tt = W(96)                                                                                                               # vos pas dans l'escalier, avec écho
+while tt < W(120) - 0.4: put(sfx, echo(step(0.7)), tt, 0.45); put(sfx, echo(step(0.5)), tt + 0.22, 0.3); tt += 0.58
+put(sfx, boom(), W(109) - 0.05, 0.6)                                                                                      # « Règle numéro cinq »
+put(sfx, boom(1.2), W(120) - 0.1, 0.5)                                                                                    # la salle immense
+for q in range(int((W(161) - W(157)) / 0.16)): put(sfx, smooth(rng.standard_normal(int(0.12 * SR)), 20) * np.hanning(int(0.12 * SR)) * 3, W(157) - 0.1 + q * 0.16, 0.25)   # doigt dans la paume
+for i in (165, 176): put(sfx, static(0.5), W(i) - 0.4, 0.3)
+put(sfx, static(1.0), W(190) - 0.5, 0.3); put(sfx, tone(110, 0.55, 0.01, 0.1) * 0.8, W(202), 0.25)                        # l'appel ; la prochaine voix
+tt = W(207) - 0.1; k = 0                                                                                                 # les pas, là-haut, qui descendent
 while tt < DUR - 0.6:
-    kk = np.clip((tt - W(161)) / (W(212) - W(161)), 0, 1); put(sfx, echo(step(1.0), 0.33, 0.55, 5), tt, 0.12 + 0.55 * kk ** 1.4); tt += 0.62 - 0.12 * kk
-air = smooth(rng.standard_normal(N), 30) * np.clip(np.interp(t, [W(188), W(197), W(202), W(208)], [0, 1, 1, 0.4]), 0, 1); sfx += air * 0.35   # l'air de la nuit
-tt = W(208)
-while tt < DUR - 0.8: k = np.clip((tt - W(208)) / 4, 0, 1); put(sfx, thump(), tt, 0.5); put(sfx, thump(52.0), tt + 0.26, 0.32); tt += 0.95 - 0.3 * k
+    kk = np.clip((tt - W(207)) / (W(244) - W(207)), 0, 1); put(sfx, echo(step(1.0), 0.33, 0.55, 5), tt, 0.12 + 0.55 * kk ** 1.4); tt += 0.62 - 0.12 * kk
+air = smooth(rng.standard_normal(N), 30) * np.clip(np.interp(t, [W(229), W(232), W(234), W(240)], [0, 1, 1, 0.4]), 0, 1); sfx += air * 0.35   # l'air de la nuit
+tt = W(240)
+while tt < DUR - 0.8: k = np.clip((tt - W(240)) / 4, 0, 1); put(sfx, thump(), tt, 0.5); put(sfx, thump(52.0), tt + 0.26, 0.32); tt += 0.95 - 0.3 * k
 sfx *= db(vref - 12 - rms(sfx[np.abs(sfx) > 1e-4]))
 
 # ---------- musique : petite musique d'ambiance (v2) — accords mineurs lents en nappe + motif de clochettes douces en écho
@@ -82,10 +82,10 @@ for c in range(int(DUR / SEG) + 1):
         put(bell, b, t0 + q * 0.5)
 dl = int(0.375 * SR); echo = bell.copy()
 for k in (1, 2, 3): echo[dl * k:] += bell[:-dl * k] * 0.45 ** k                # écho
-bpm = np.interp(t, [0, W(44), W(71), W(158), W(212), DUR], [58, 64, 56, 70, 88, 60]); ph = np.cumsum(bpm / 60 / SR)
+bpm = np.interp(t, [0, W(96), W(120), W(206), W(244), DUR], [58, 64, 56, 70, 88, 60]); ph = np.cumsum(bpm / 60 / SR)
 pulse = np.sin(2 * np.pi * 41.2 * t) * np.exp(-((ph % 1) * 6)) * 1.6
-lvl = np.interp(t, [0, 1.0, W(33), W(44), W(71) - 0.3, W(71), W(77), W(89), W(89) + 0.8, W(97), W(123), W(158) - 0.3, W(158), W(172), E(177), W(212), DUR - 1, DUR], [0.35, 0.7, 0.75, 0.8, 0.85, 0.1, 0.7, 0.75, 0.25, 0.8, 0.85, 0.8, 0.15, 0.1, 0.4, 0.7, 0.45, 0])
-pl = np.interp(t, [0, W(44), W(71), W(123), W(158), W(212), E(225), DUR], [0.2, 0.5, 0.3, 0.4, 0.8, 1.0, 0.2, 0.0])
+lvl = np.interp(t, [0, 1.0, W(94), W(96), W(120) - 0.3, W(120), W(126), W(138), W(138) + 0.8, W(146), W(161), W(206) - 0.3, W(206), W(217), E(222), W(244), DUR - 1, DUR], [0.35, 0.7, 0.75, 0.8, 0.85, 0.1, 0.7, 0.75, 0.25, 0.8, 0.85, 0.8, 0.15, 0.1, 0.4, 0.7, 0.45, 0])
+pl = np.interp(t, [0, W(96), W(120), W(161), W(206), W(244), E(257), DUR], [0.2, 0.5, 0.3, 0.4, 0.8, 1.0, 0.2, 0.0])
 pad *= 1 / (np.sqrt(np.mean(pad ** 2)) + 1e-9); echo *= 1 / (np.sqrt(np.mean(echo ** 2)) + 1e-9)
 mus = (pad * 0.8 + echo * 0.55) * lvl + pulse * pl * lvl
 duck = np.ones(N)

@@ -4,23 +4,24 @@ Suite de l'épisode 1 (choix A retenu : tu as imité la voix de Noé). Voix : na
 {mere} = voix de femme (Jessica) étouffée derrière la porte (ce n'est PAS la mère : quelqu'un parle avec sa voix volée).
 Règle 4 donnée par le haut-parleur. Aucune violence montrée. Fin A · OUVRIR LA PORTE / B · RESTER CACHÉ.
 
-## Script (≈ 240 mots ⇒ ≈ 80 s)
-Imagine… Hier soir, à l'appel, ton petit frère Noé n'avait plus de voix. Alors tu as répondu à sa place, avec sa voix.
+## Script v2 (résumé d'ouverture pour les nouveaux spectateurs ; ≈ 86 s)
+Imagine… Dans ta tour, chaque soir, un haut-parleur appelle tous les numéros. Celui qui ne répond pas, les hommes en blanc le descendent au sous-sol. Comme ta mère, il y a un an, quand sa voix s'est éteinte.
+Hier soir, c'est la voix de ton petit frère, Noé, qui s'est éteinte. Alors tu as répondu à sa place, en imitant sa voix.
 {hp}« Deux mille quatre cent dix-huit. Validé. »
-Ça a marché. Personne n'est monté.
-Mais cette nuit, le haut-parleur de ta chambre se rallume. Pas d'appel. Une seule phrase.
+Ça a marché.
+Mais cette nuit, le haut-parleur de ta chambre se rallume.
 {hp}« Règle numéro quatre : après l'appel, on n'ouvre sa porte à personne. »
-Une heure plus tard, on frappe. Trois coups.
-Puis une voix, derrière la porte.
+Une heure plus tard, on frappe. Trois coups. Puis une voix.
 {mere}« Noé… Ouvre, mon cœur. C'est maman. »
 Noé bondit vers la porte. Tu le rattrapes juste avant la poignée.
-Parce que ta mère n'a plus de voix. Depuis un an.
-Alors, qui parle avec sa voix ?
-Sous la porte, une ombre. Deux bottes blanches, immobiles.
-La voix continue, tout doucement. Elle connaît vos prénoms. Elle fredonne la chanson que ta mère vous chantait le soir.
-Puis elle se tait. Et quand elle revient, ce n'est plus sa voix. C'est la tienne. Exactement la tienne.
-À l'appel, ils l'ont entendue deux fois. Ils l'ont gardée.
-Dans toute la tour, des portes s'ouvrent. Des voisins qui ont reconnu une voix qu'ils aimaient. Et leurs fenêtres s'éteignent, une à une.
+Parce que ta mère n'a plus de voix. Alors, qui parle avec sa voix ?
+Sous la porte, deux bottes blanches, immobiles.
+Et la poignée se met à tourner. Lentement.
+Tu te jettes contre la porte. De l'autre côté, ça pousse.
+À côté, la porte du voisin s'ouvre. Un bruit sourd. Et le silence. Son voyant passe au rouge.
+Derrière ta porte, la voix revient. Mais cette fois, c'est la tienne.
+À l'appel, ils ont entendu ta voix deux fois : pour toi, puis pour Noé. Ils l'ont gardée.
+Dans toute la tour, des portes s'ouvrent. Et des fenêtres s'éteignent, une à une.
 Derrière la vôtre, ta propre voix murmure que ta mère est en bas. Vivante. Qu'il suffit d'ouvrir pour la revoir.
 Alors, tu ouvres la porte, ou tu restes caché avec Noé ? Dis-le en commentaire.
 

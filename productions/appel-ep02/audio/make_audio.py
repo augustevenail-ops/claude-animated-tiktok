@@ -38,27 +38,26 @@ def creak(d=1.2):
     x = np.arange(int(d * SR)) / SR; f = 180 + 90 * np.sin(2 * np.pi * 0.7 * x) + 40 * rng.standard_normal(len(x)).cumsum() / SR
     return np.sign(np.sin(2 * np.pi * np.cumsum(f) / SR)) * np.exp(-((x - d / 2) / (d / 2.5)) ** 2) * 0.25
 sfx = np.zeros(N)
+def squeak(d=1.6): x = np.arange(int(d * SR)) / SR; f = 700 + 500 * x / d + 80 * np.sin(2 * np.pi * 3 * x); return np.sin(2 * np.pi * np.cumsum(f) / SR) * np.clip(np.minimum(x / 0.2, (d - x) / 0.3), 0, 1) * (0.5 + 0.5 * np.sin(2 * np.pi * 9 * x) ** 2)
 wind = smooth(rng.standard_normal(N), 400) * 30; wind *= 0.6 + 0.4 * np.sin(2 * np.pi * 0.07 * t) ** 2; sfx += wind * 0.12
 neon = (np.sin(2 * np.pi * 100 * t) + 0.4 * np.sin(2 * np.pi * 200 * t)) * (1 - 0.7 * (np.sin(2 * np.pi * 0.31 * t) > 0.97)); sfx += neon * 0.012
-for i in (23, 50): put(sfx, static(0.5), W(i) - 0.55, 0.4); put(sfx, click(), W(i) - 0.08, 0.5)
-put(sfx, tone(880, 0.12, 0.005, 0.08), E(28) + 0.05, 0.14); put(sfx, tone(1320, 0.1, 0.005, 0.08), E(28) + 0.2, 0.1)   # « Validé »
-put(sfx, static(0.6), W(38) - 0.1, 0.3); put(sfx, click(), W(44), 0.4)                                                 # le haut-parleur se rallume
-put(sfx, boom(), W(50) - 0.05, 0.55)                                                                                    # « Règle numéro quatre »
-for k in (W(66) - 0.25, W(66) + 0.1, W(68) - 0.15): put(sfx, knock(), k, 0.9)                                           # trois coups
-put(sfx, thump(70.0), W(82), 0.3); put(sfx, thump(60.0), W(88), 0.35)                                                    # Noé bondit, tu le rattrapes
-put(sfx, click(), W(91) + 0.1, 0.3)                                                                                      # poignée
-# fredonnement étouffé derrière la porte (berceuse, sinus vibrato, filtré)
-mel = [69, 72, 71, 69, 67, 69, 64, 67]; h0 = W(128); hum = np.zeros(N)
-for q, m in enumerate(mel):
-    x = np.arange(int(0.62 * SR)) / SR; f = 440 * 2 ** ((m - 12 - 69) / 12) * (1 + 0.006 * np.sin(2 * np.pi * 5.2 * x))
-    e = np.clip(np.minimum(x / 0.08, (0.62 - x) / 0.2), 0, 1); put(hum, (np.sin(2 * np.pi * np.cumsum(f) / SR) + 0.3 * np.sin(4 * np.pi * np.cumsum(f) / SR)) * e, h0 + q * 0.55)
-hum = smooth(hum, 12); sfx += hum * 0.10
-for q in range(7): put(sfx, creak(1.0), W(172) + q * 0.32 + 0.1 * q * q / 7, 0.18 + 0.05 * (q % 2))   # portes qui s'ouvrent
-k0, k1 = W(187), W(190) + 0.5
+for i in (62, 81): put(sfx, static(0.5), W(i) - 0.55, 0.4); put(sfx, click(), W(i) - 0.08, 0.5)                       # haut-parleur
+put(sfx, tone(880, 0.12, 0.005, 0.08), E(67) + 0.05, 0.14); put(sfx, tone(1320, 0.1, 0.005, 0.08), E(67) + 0.2, 0.1)   # « Validé »
+put(sfx, static(0.6), W(75) - 0.1, 0.3); put(sfx, click(), W(80), 0.4)                                                 # le haut-parleur se rallume
+put(sfx, boom(), W(81) - 0.05, 0.55)                                                                                    # « Règle numéro quatre »
+for k in (W(97) - 0.25, W(97) + 0.12, W(98) - 0.05): put(sfx, knock(), k, 0.9)                                          # trois coups
+put(sfx, thump(70.0), W(110), 0.3); put(sfx, thump(60.0), W(116), 0.35); put(sfx, click(), W(120) + 0.1, 0.3)           # Noé bondit, tu le rattrapes
+put(sfx, squeak(1.8), W(144) - 0.1, 0.12); put(sfx, click(), W(148), 0.35)                                              # la poignée tourne
+put(sfx, thump(55.0), W(152), 0.8); put(sfx, knock(), W(152) + 0.02, 0.6)                                               # tu te jettes contre la porte
+for q in range(3): put(sfx, thump(48.0), W(159) + q * 0.45, 0.45); put(sfx, creak(0.5), W(159) + q * 0.45, 0.15)          # ça pousse
+put(sfx, creak(1.1), W(164), 0.3); put(sfx, boom(0.6), W(169), 0.45)                                                     # porte du voisin, bruit sourd
+bz = tone(110, 0.55, 0.01, 0.1) * (0.6 + 0.4 * np.sign(np.sin(2 * np.pi * 30 * np.arange(int(0.55 * SR)) / SR))); put(sfx, bz, W(176), 0.2)   # voyant rouge
+for q in range(7): put(sfx, creak(1.0), W(212) + q * 0.32 + 0.1 * q * q / 7, 0.18 + 0.05 * (q % 2))                    # portes qui s'ouvrent
+k0, k1 = W(217), W(221) + 0.5
 for q in range(16): uq = q / 15; put(sfx, click(), k0 + (k1 - k0) * uq ** 1.2, 0.35 - 0.2 * uq)                       # fenêtres qui s'éteignent
-tt = W(139) + 0.3
-while tt < DUR - 0.8:                                                                                                    # cœur : du silence de la voix à la fin
-    k = np.clip((tt - W(139)) / (W(211) - W(139)), 0, 1); put(sfx, thump(), tt, 0.5); put(sfx, thump(52.0), tt + 0.26, 0.32); tt += 1.15 - 0.4 * k
+tt = W(171)
+while tt < DUR - 0.8:                                                                                                    # cœur : du silence à la fin
+    k = np.clip((tt - W(171)) / (W(242) - W(171)), 0, 1); put(sfx, thump(), tt, 0.5); put(sfx, thump(52.0), tt + 0.26, 0.32); tt += 1.15 - 0.4 * k
 sfx *= db(vref - 12 - rms(sfx[np.abs(sfx) > 1e-4]))
 
 # ---------- musique : petite musique d'ambiance (v2) — accords mineurs lents en nappe + motif de clochettes douces en écho
@@ -80,10 +79,10 @@ for c in range(int(DUR / SEG) + 1):
         put(bell, b, t0 + q * 0.5)
 dl = int(0.375 * SR); echo = bell.copy()
 for k in (1, 2, 3): echo[dl * k:] += bell[:-dl * k] * 0.45 ** k                # écho
-bpm = np.interp(t, [0, W(61), W(139), W(211), DUR], [60, 62, 70, 84, 60]); ph = np.cumsum(bpm / 60 / SR)
+bpm = np.interp(t, [0, W(92), W(142), W(242), DUR], [60, 62, 72, 86, 60]); ph = np.cumsum(bpm / 60 / SR)
 pulse = np.sin(2 * np.pi * 41.2 * t) * np.exp(-((ph % 1) * 6)) * 1.6
-lvl = np.interp(t, [0, 1.0, W(35), W(65) - 0.2, W(65), W(75), W(93), W(128) - 0.3, W(128), E(138), W(139), W(152), W(152) + 1.5, W(184), W(211), DUR - 1, DUR], [0.35, 0.8, 0.85, 0.7, 0.1, 0.3, 0.7, 0.6, 0.15, 0.15, 0.05, 0.05, 0.7, 0.9, 0.6, 0.45, 0])
-pl = np.interp(t, [0, W(35), W(61), W(139), W(152), W(211), E(224), DUR], [0.3, 0.3, 0.4, 0.0, 0.7, 1.0, 0.2, 0.0])
+lvl = np.interp(t, [0, 1.0, W(71), W(96) - 0.2, W(96), W(103), W(121), W(142) - 0.3, W(142), W(161), W(171), W(179), W(179) + 1.5, W(208), W(242), DUR - 1, DUR], [0.35, 0.8, 0.85, 0.7, 0.1, 0.3, 0.7, 0.6, 0.1, 0.15, 0.05, 0.05, 0.7, 0.9, 0.6, 0.45, 0])
+pl = np.interp(t, [0, W(71), W(92), W(142), W(161), W(242), E(255), DUR], [0.3, 0.3, 0.4, 0.0, 0.7, 1.0, 0.2, 0.0])
 pad *= 1 / (np.sqrt(np.mean(pad ** 2)) + 1e-9); echo *= 1 / (np.sqrt(np.mean(echo ** 2)) + 1e-9)
 mus = (pad * 0.8 + echo * 0.55) * lvl + pulse * pl * lvl
 duck = np.ones(N)
