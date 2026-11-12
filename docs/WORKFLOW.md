@@ -95,3 +95,8 @@ Valeurs de style : `docs/STYLE_ARTISTIQUE.md`. Code : `docs/ARCHITECTURE_TECHNIQ
 8. Proche + menace qui tremble, 2 s. 9. **Plan monumental** : dézoom immense, tout le décor dans l'écran, menaces minuscules, une seule lumière allumée, 3-4 s.
 10. Panneau diégétique des règles, 1,5 s.
 Principe : plusieurs plans courts, puis UN grand plan qui explose l'échelle. Règles numérotées, chiffre, signal secret, règle enfreinte, dilemme (voir `productions/phare-ep01/SCRIPT.md`).
+
+## Mouvement de caméra et vie dans l'image (retour utilisateur 2026-11-12)
+- Gros mouvements de caméra, surtout de **grands dézooms** (de la fenêtre à toute la ville), mais **3-4 par vidéo au plus** pour rester crédible.
+- **Toujours du mouvement dans l'image**, même sans action : lampe qui se balance, poussière qui tombe, vitre qui craque, plafond qui tremble, rideau, flamme, pluie.
+- Tremblements de caméra eux-mêmes : légers (voir docs/STYLE_ARTISTIQUE.md).
