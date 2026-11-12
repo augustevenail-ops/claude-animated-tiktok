@@ -227,12 +227,14 @@ const DEF_LIGHT = rad(-120);
 
 // ---------------- faces ----------------
 export type Expr = "neutral" | "stern" | "grin" | "laugh" | "whistle" | "nervous" | "shock" | "relief" | "relief_open" | "dazed"
-  | "pained" | "smile" | "smile_closed" | "lick";
-type EyeK = "dot" | "small" | "lid" | "slit" | "happy" | "dash" | "squeeze" | "shock" | "shockHalf" | "spiral";
-type MouthK = "dash" | "frown" | "smirk" | "smile" | "smileWide" | "grin" | "laugh" | "o" | "O" | "wave" | "teeth" | "lick";
+  | "pained" | "smile" | "smile_closed" | "lick" | "calm" | "creepy";
+type EyeK = "stare" | "dot" | "small" | "lid" | "slit" | "happy" | "dash" | "squeeze" | "shock" | "shockHalf" | "spiral";
+type MouthK = "creep" | "dash" | "frown" | "smirk" | "smile" | "smileWide" | "grin" | "laugh" | "o" | "O" | "wave" | "teeth" | "lick";
 /** eyes [back, front], brows [inner, outer] offsets in u (+ = down), mouth kind */
 const FACE: Record<Expr, { eye: [EyeK, EyeK]; brow: [number, number]; mouth: MouthK }> = {
   neutral: { eye: ["lid", "lid"], brow: [0, -1], mouth: "dash" },
+  calm: { eye: ["dot", "dot"], brow: [0, -1], mouth: "dash" },                       // regard normal, sans agacement
+  creepy: { eye: ["dot", "dot"], brow: [-1, -1], mouth: "creep" },               // sourire inquiétant, yeux grands ouverts
   stern: { eye: ["lid", "lid"], brow: [3, -2], mouth: "frown" },
   grin: { eye: ["happy", "happy"], brow: [-3, -3], mouth: "grin" },
   laugh: { eye: ["squeeze", "squeeze"], brow: [-4, -4], mouth: "laugh" },
@@ -256,6 +258,7 @@ const eye = (p: Pen, kind: EyeK, x: number, ey: number, u: number, side: number,
   const lx = x + look * 3 * u, lw = 3.8 * u;
   switch (kind) {
     case "dot": p.ell(lx, ey, 3.8 * u, 5.5 * u, INK, 0); break;
+    case "stare": p.ell(x, ey, 9.5 * u, 9.5 * u, WHITE, 2.6 * u); p.dot(lx, ey, 1.9 * u); break;      // regard fixe : grands yeux, minuscule pupille
     case "small": p.ell(lx, ey, 3 * u, 4.4 * u, INK, 0); break;
     case "lid": p.ell(lx, ey - u, 7 * u, 6 * u, INK, 0, 0, 180); p.stroke([[x - 9 * u, ey - u], [x + 9 * u, ey - u]], lw); break;
     case "slit": p.ell(lx, ey, 7 * u, 2.6 * u, INK, 0, 0, 180); p.stroke([[x - 9 * u, ey], [x + 9 * u, ey]], lw); break;
@@ -291,6 +294,7 @@ const mouth = (p: Pen, kind: MouthK, mx: number, my: number, u: number, k = 1) =
     case "smile": p.arc(mx, my - 3 * u, 8 * u * k, 4.5 * u, 20, 160, mw); break;
     case "smileWide": p.arc(mx, my - 4 * u, 11 * u * k, 6 * u, 15, 165, mw); break;
     case "grin": dmouth(p, mx, my - u, 12 * u * k, 8 * u, u); break;
+    case "creep": dmouth(p, mx, my - 4 * u, 20 * u * k, 5 * u, u); break;                                 // très large sourire fixe, rangée de dents
     case "laugh": dmouth(p, mx, my, 16 * u * k, 11 * u, u, true); break;
     case "o": p.ell(mx + 4 * u, my, 3.5 * u, 4 * u, MOUTH, 2.8 * u); break;
     case "O": p.ell(mx, my + 2 * u, 9 * u * k, 11 * u, MOUTH, 3.2 * u); break;

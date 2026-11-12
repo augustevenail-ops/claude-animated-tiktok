@@ -156,6 +156,9 @@ export class World {
     b.add(new THREE.BoxGeometry(1.28, 0.76, 0.07).translate(0, 1.0, TV_Z - 0.05), solid("tv", "#0c0d11"));
     b.build(R, true);
     const scr = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 0.68), new THREE.MeshBasicMaterial({ color: "#05060a", fog: false })); scr.position.set(0, 1.0, TV_Z); scr.layers.set(NOINK); R.add(scr);
+    const sheen = new Screen(256, 256, 1.2, 0.68); sheen.mesh.position.set(0, 1.0, TV_Z + 0.022); sheen.mesh.renderOrder = 3; R.add(sheen.mesh);
+    sheen.draw("sheen", (g, w, h) => { const d = g.createLinearGradient(0, 0, w, h); d.addColorStop(0, "rgba(160,190,255,0)"); d.addColorStop(0.38, "rgba(170,195,255,0.12)"); d.addColorStop(0.5, "rgba(170,195,255,0.03)"); d.addColorStop(1, "rgba(160,190,255,0)");
+      g.fillStyle = d; g.fillRect(0, 0, w, h); const r = g.createRadialGradient(w * 0.86, h * 0.78, 0, w * 0.86, h * 0.78, w * 0.4); r.addColorStop(0, "rgba(255,160,70,0.08)"); r.addColorStop(1, "rgba(255,160,70,0)"); g.fillStyle = r; g.fillRect(0, 0, w, h); });
     // halos ambre du lampadaire (additifs) : mur, sol, ampoule ; halo cyan faible de la fenêtre
     const addGlow = (rgb: string, w: number, h: number, pos: V3, rot: [number, number, number], op: number) => {
       const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: glowTex(rgb), transparent: true, opacity: op, blending: THREE.AdditiveBlending, depthWrite: false, fog: false }));
@@ -212,31 +215,31 @@ export class World {
     }
     // personnages (cartes face à la caméra)
     const yaw = (p: V3) => Math.atan2(cam.position.x - p[0], cam.position.z - p[2]);
+    const drawCard = (key: string, o: Outfit, fo: object) => (pen: Pen) => { const hero = key === "Y", fm = fo as { mode: string; seed: number }; if (hero) heroBehind(pen, fm.mode, fm.seed); bodyFront(pen, o, fo as never); if (hero) heroFront(pen, fm.mode, fm.seed); };
     const place = (A: Actor, key: string, o: Outfit, p: V3, fo: object, extra = 0, visible = true) => {
-      const d = cam.position.distanceTo(V(p[0], 1.1, p[2])), [w, h, k] = tierOf(d), hero = key === "Y", fm = fo as { mode: string; seed: number };
-      A.r = this.pool.req(`${key}|${JSON.stringify(fo)}`, w, h, k, (pen: Pen) => { if (hero) heroBehind(pen, fm.mode, fm.seed); bodyFront(pen, o, fo as never); if (hero) heroFront(pen, fm.mode, fm.seed); });
+      const d = cam.position.distanceTo(V(p[0], 1.1, p[2])), [w, h, k] = tierOf(d);
+      A.r = this.pool.req(`${key}|${JSON.stringify(fo)}`, w, h, k, drawCard(key, o, fo));
       A.mesh.position.set(p[0], p[1], p[2]); A.mesh.rotation.set(0, yaw(p) + extra, 0); A.mesh.visible = visible; A.mesh.scale.setScalar(1);
     };
     const slump = id === 5 ? smooth((f - SHOT_A(5)) / 20) : 1, youP: V3 = [YOU[0], YOU[1] + 0.1 * (1 - slump), YOU[2]];
     const youVisible = ![1, 2, 3, 11, 12, 17].includes(id), nervous = id >= 13 && id !== 18;
-    const youFo = { mode: "sit", expr: (nervous ? "nervous" : "neutral") as Expr, blink: (f % 95) < 4, light: -2.4, seed: 3, facing: 0 as const, look: id >= 18 && id <= 22 ? 0.9 : 0 };
-    const fakeFo = { mode: "sit", expr: "smile" as Expr, blink: false, light: -2.4, seed: 5, facing: 0 as const, look: 0 };
+    const youFo = { mode: "sit", expr: (nervous ? "nervous" : "calm") as Expr, blink: (f % 95) < 4, light: -2.4, seed: 3, facing: 0 as const, look: id >= 18 && id <= 22 ? 0.9 : 0 };
+    const fakeFo = { mode: "sit", expr: "creepy" as Expr, blink: false, light: -2.4, seed: 5, facing: 0 as const, look: 0 };
     const turn = id === 23 ? 0.55 * smooth((f - SHOT_A(23)) / 60) : id >= 24 && id <= 34 ? 0.55 : 0;
     place(this.you, "Y", YOU_OUTFIT, youP, youFo, 0, youVisible);
     place(this.fake, "F", FATHER_OUTFIT, FAKE, fakeFo, turn, ![1, 2, 3, 6, 11, 12, 17].includes(id) && !(id >= 26 && id <= 30) && id !== 5 ? true : id === 5);
-    place(this.dad, "D", FATHER_PALE, FATHER, { mode: "stand", expr: "stern" as Expr, blink: false, light: -2.4, seed: 8, facing: 0 as const, look: 0, wave: id >= 22 && id <= 22 ? 0.7 : 0.1 }, 0, id >= 19 && id <= 22 || id >= 33);
+    place(this.dad, "D", FATHER_PALE, FATHER, { mode: "stand", expr: "nervous" as Expr, blink: false, light: -2.4, seed: 8, facing: 0 as const, look: 0, wave: id >= 22 && id <= 22 ? 0.7 : 0.1 }, 0, id >= 19 && id <= 22 || id >= 33);
     // reflet dans la télé : copies des cartes projetées sur le plan de l'écran (miroir de profondeur)
     const reflOn = [2, 6, 26, 27, 28, 29, 30].includes(id);
     const proj = (p: V3, dimY = 0): { q: V3; s: number } => { const pz = 2 * TV_Z - p[2], tt = (TV_Z - cam.position.z) / (pz - cam.position.z); return { q: [cam.position.x + (p[0] - cam.position.x) * tt, cam.position.y + (p[1] + dimY - cam.position.y) * tt, TV_Z + 0.012], s: tt }; };
-    const reflect = (A: Actor, src: Actor, p: V3, dim: number, show: boolean) => {
-      A.r = src.r; const { q, s } = proj(p); A.mesh.position.set(q[0], q[1], q[2]); A.mesh.rotation.set(0, 0, 0); A.mesh.scale.setScalar(s);
-      A.mat.color.setScalar(dim); A.mesh.visible = reflOn && show;
+    const reflect = (A: Actor, key: string, o: Outfit, fo: object, p: V3, dim: number) => {
+      A.r = this.pool.req(`${key}|R|${JSON.stringify(fo)}`, 300, 500, 0.5, drawCard(key, o, fo));            // basse définition : le reflet est doux, pas net
+      const { q, s } = proj(p); A.mesh.position.set(q[0], q[1], q[2]); A.mesh.rotation.set(0, 0, 0); A.mesh.scale.setScalar(s);
+      A.mat.color.setRGB(dim * 0.62, dim * 0.76, dim); A.mesh.visible = reflOn;
     };
-    const dimYou = id === 2 ? 0.55 : id === 6 ? 0.4 : 0.5, dimFake = id === 2 ? 0.85 : id === 6 ? 0.1 : id === 26 ? 0.12 + 0.45 * smooth((f - SHOT_A(26)) / 40) : 0.7;
-    // les reflets n'ont besoin d'une carte réelle que pour la texture : on force sa demande même si la carte réelle est cachée
-    if (!this.you.r) place(this.you, "Y", YOU_OUTFIT, youP, youFo, 0, false);
-    reflect(this.rYou, this.you, YOU, dimYou, id !== 29 || true);
-    reflect(this.rFake, this.fake, FAKE, dimFake, true);
+    const dimYou = id === 2 ? 0.5 : 0.26, dimFake = id === 2 ? 0.6 : id === 6 ? 0.07 : id === 26 ? 0.1 + 0.25 * smooth((f - SHOT_A(26)) / 40) : 0.3;
+    reflect(this.rYou, "Y", YOU_OUTFIT, youFo, YOU, dimYou);
+    reflect(this.rFake, "F", FATHER_OUTFIT, fakeFo, FAKE, dimFake);
     const sp = proj([0, 0.45, SOFA_Z_()]); const m0 = this.mirror[0]; m0.visible = reflOn; m0.position.set(sp.q[0], sp.q[1], TV_Z + 0.006); m0.scale.set(2.1 * sp.s, 0.85 * sp.s, 1);
     // main sur ton épaule (plans 31-33)
     this.hand.mesh.visible = id >= 31 && id <= 33; if (this.hand.mesh.visible) { this.hand.mesh.position.set(YOU[0] - 0.22, 1.0, YOU[2] - 0.05); this.hand.mesh.quaternion.copy(cam.quaternion); this.hand.mesh.scale.setScalar(0.9); }
