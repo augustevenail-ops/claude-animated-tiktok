@@ -79,7 +79,7 @@ const CAMS: Record<number, (u: number, f: number) => Cam> = {
   13: (u) => P(lerp3([-0.25, CY + 1.42, -11.6], [-0.15, CY + 1.42, -11.9], u), [0.95, CY + 1.42, -13], 36),
   14: (u) => P(lerp3([0.35, CY + 1.42, -14.5], [0.22, CY + 1.42, -15.0], smooth(u)), [-0.95, CY + 1.42, -16], 32),
   15: (u) => P(lerp3(C(-11.5), C(-12.5), u), [0, CY + 1.2, -26], 30),
-  16: (u) => P(lerp3([-0.2, CY + 1.75, -29.3], [-0.1, CY + 1.7, -29.75], smooth(u)), [1.5, CY - 0.9, -32.3], 50),
+  16: (u) => P(lerp3([-1.55, CY + 2.45, -30.35], [-0.35, CY + 0.6, -31.5], glide(u)), lerp3([1.0, CY - 5.5, -33.0], [0.05, CY - 36, -32.3], smooth(u * 1.1)), 66, 0.25 * u),   // plongée depuis le palier : on voit la file descendre, puis on bascule à la verticale vers le rouge
   17: (u) => P([0.02, CY + 2.2, -32.2], [0.0, CY - 40, -32.21], 62, 0.9 * u),
   18: (u) => P(lerp3([2.1, Y0 + 1.42, -3.3], [1.95, Y0 + 1.42, -2.9], smooth(u)), yH(YOU_WIN, 1.38), 38),
   19: (u) => P(lerp3([0.95, CY + 1.5, -6.4], [0.9, CY + 1.5, -6.9], u), [0, CY + 1.0, -27], 28),
@@ -125,5 +125,11 @@ export const dofAt = (id: number, f: number): Dof => {
   if (id === 29) return { cInf: DOFS[29], focus: lerp3([1.3, Y0 + 1.8, 0], [50, Y0 + 6, 45], smooth(u * 1.5)) };   // la mise au point passe de la vitre à la façade d'en face
   if (id === 38) return { cInf: DOFS[38], focus: lerp3(yH(YOU, 0.84), yH(NOE, 0.6), smooth(u * 1.6)) };
   return { cInf: DOFS[id] ?? 10 };
+};
+/** point sur l'escalier en colimaçon carré, d = nombre de volées descendues depuis la porte (4 volées par niveau de 3 m) */
+export const stairAt = (d: number): V3 => {
+  const lv = Math.floor(d / 4), s = Math.floor(d) % 4, t = d - Math.floor(d);
+  const [x, z] = s === 0 ? [1.5, -30.6 - t * 3.2] : s === 1 ? [1.5 - t * 3.0, -33.8] : s === 2 ? [-1.5, -33.8 + t * 3.2] : [-1.5 + t * 3.0, -30.6];
+  return [x, CY - lv * 3 - (s * 5 + t * 5) * 0.15 + 0.02, z];
 };
 export const CHOICE_AT = SHOTS[40].a / FPS + 0.8;

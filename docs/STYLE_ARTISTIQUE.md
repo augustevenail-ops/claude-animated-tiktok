@@ -141,3 +141,7 @@ Style des personnages (`shared/chars.ts`), couleurs, lumière, textures, grain :
 - Secousse/roulis de caméra : environ 1/2 de l'amplitude de l'ép. « Ne le regarde pas » (`camAt` : shake et roulis `0.004` → ~`0.002`), et seulement sur les plans de tension ; plans calmes quasi stables.
 - Inserts téléphone : vibration de l'écran bien plus faible (`shake` des notifs 1 → ~0,4) et texte lisible dès l'apparition.
 - Ne pas refaire l'ép. « Ne le regarde pas » (jugée parfaite).
+
+## Flou de profondeur : supprimé (décision utilisateur du 2026-11-12)
+Plus **aucun flou** de profondeur dans les vidéos (plans larges, couloirs, personnages) : `post.lens = false` par défaut
+(`appel/Appel.tsx`), et `scripts/render_chunks_ep.sh` force `"lens": false`. Le reste de la chaîne (encre, bloom, étalonnage, grain) est inchangé.

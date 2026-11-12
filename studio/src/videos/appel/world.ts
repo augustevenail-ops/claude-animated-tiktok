@@ -12,7 +12,7 @@ import { drawChar, CharSpec } from "../shared/chars";
 import { painted } from "../shared/painted";
 import {
   FPS, V3, COLS, FLOORS, COLW, FLH, HALFW, B_X, TOWER_H, colX, MY_COL, MY_FLOOR, Y0, WIN, WIN_W, WIN_H, YOU, NOE, YOU_WIN, SPK_IN, SPK_OUT,
-  CY, DOOR_Z, SHOTS, camAt, winState, greenIn, smooth, clamp01, hash, uOf, tW,
+  CY, DOOR_Z, SHOTS, camAt, winState, greenIn, smooth, clamp01, hash, uOf, tW, stairAt,
 } from "./story";
 import { NIGHT, FOG_IN, FOG_OUT } from "./look";
 
@@ -399,7 +399,10 @@ export class World {
     if (id === 13) place("A", [0.95, CY, -13], { mode: "stand", expr: u < 0.6 ? "talk" : "calm", blink: blink(4) });
     if (id === 14) place("B", [-0.95, CY, -16], { mode: "stand", expr: "mute", throat: u > 0.25 });
     if (id === 15) { const z = -25 + 3.2 * u; place("H", [-0.45, CY, z], { mode: "stand", expr: "calm" }); place("H", [0.5, CY, z - 0.8], { mode: "stand", expr: "calm" }); place("B", [-0.95, CY, -16], { mode: "stand", expr: "mute", throat: true }); }
-    if (id === 16) { const sy = (z: number) => CY - 0.05 - clamp01((-30.6 - z) / 3.2) * 0.75, s = 0.9 * u; for (const [key, z0] of [["H", -30.9], ["B", -31.7], ["H", -32.5]] as [string, number][]) { const z = z0 - s; place(key, [1.45, sy(z), z], key === "B" ? { mode: "stand", expr: "mute", throat: true } : { mode: "stand", expr: "calm" }); } }
+    if (id === 16) { const lead = 2.6 + 2.4 * u; for (const [key, dd] of [["H", 0], ["B", 0.6], ["H", 1.2], ["H", 3.4], ["M", 4.1]] as [string, number][]) {   // file qui descend la spirale
+      const p = stairAt(Math.max(0, lead - dd + (dd > 2 ? 1.2 : 0))), dx = cam.position.x - p[0], dz = cam.position.z - p[2], dy = cam.position.y - p[1] - 1;
+      const pitch = Math.min(1.1, Math.max(0, Math.atan2(dy, Math.hypot(dx, dz)) - 0.15));
+      place(key, p, key === "H" ? { mode: "stand", expr: "calm" } : { mode: "stand", expr: "mute", throat: true }, key === "M" ? 0.98 : 1); void pitch; const m = this.actors[k - 1].mesh; m.up.set(0, 1, 0).applyQuaternion(cam.quaternion); m.lookAt(cam.position); m.up.set(0, 1, 0); } }
     if (id === 19) { const z = -26.6 - 2.2 * u; place("H", [-0.5, CY, z], { mode: "stand", expr: "calm" }); place("M", [0.02, CY, z - 0.5], { mode: "stand", expr: "mute", throat: true }); place("H", [0.52, CY, z - 0.2], { mode: "stand", expr: "calm" }); }
     // cour : les hommes en blanc
     if ([2, 4, 9, 32, 33, 34, 39, 40].includes(id)) MEN.forEach((p, i) => place("H", p, { mode: "stand", expr: "calm", wave: id === 39 && i === 1 && u > 0.35 ? 1 : 0 }));

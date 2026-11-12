@@ -17,7 +17,7 @@ import { GRADE_NIGHT } from "./look";
 
 export const APPEL_FRAMES = TOTAL;
 type Post = { ink: boolean; lens: boolean; bloom: boolean; grade: boolean; audio: boolean; shadow: boolean; smap: number; dpr?: number; lensTaps: number; lensNear: number };
-const post = (): Post => ({ ink: true, lens: true, bloom: true, grade: true, audio: true, shadow: true, smap: 2048, lensTaps: 32, lensNear: 16, ...((getInputProps() as { post?: Partial<Post> }).post ?? {}) });
+const post = (): Post => ({ ink: true, lens: false, bloom: true, grade: true, audio: true, shadow: true, smap: 2048, lensTaps: 32, lensNear: 16, ...((getInputProps() as { post?: Partial<Post> }).post ?? {}) });
 const makeBloom = () => {
   const b = new BloomEffect({ blendFunction: BlendFunction.ADD, intensity: 0.7, luminanceThreshold: 0.9, luminanceSmoothing: 0.2, mipmapBlur: true, levels: 5, radius: 0.6 });
   const mip = b.mipmapBlurPass, setSize = mip.setSize.bind(mip);
