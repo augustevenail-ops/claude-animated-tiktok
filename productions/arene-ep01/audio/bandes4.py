@@ -39,3 +39,46 @@ def band_L(dur, c):
     y = pre * (g_mel * nz(mel) + g_str * nz(strg) + g_trem * nz(trem) + g_ped * nz(lp(ped, 200))) + post * (0.5 * nz(frag) + 0.14 * nz(lp(ped, 200)))
     y *= 1 - ramp(t, c["end"] - 0.6, c["end"])
     return nz(reverb(y, 2.6, 0.36))
+
+
+# ---------------------------------------------------------------------------------------------------------------------------------
+# « Tension » : musique STRESSANTE, dissonante, sans mélodie consolante (demande utilisateur du 2026-11-12 : « plus stressant »).
+# Ostinato grave en croches sur un demi-ton (mi–fa) qui martèle sans fin, cordes aiguës staccato qui frottent (mi–fa, triton), cluster
+# grave, tic-tac qui s'accélère, coup de cordes sur le message et sur l'éclair, montée de bruit avant l'éclair. Silence net sur « glacée »,
+# puis une note aiguë dissonante tenue (battements) et quelques pulsations jusqu'à la fin.
+from bandes3 import saw, swell
+
+def band_M(dur, c):
+    T = Track(dur, 71); t = T.t; w, s, dip = c["welcome"], c["sixty"], c["dip"]; beat = 60 / 104; e8 = beat / 2
+    low, hi, tick, stab, riser, hold = T.buf(), T.buf(), T.buf(), T.buf(), T.buf(), T.buf()
+    LOW = [28, 28, 29, 28, 28, 29, 28, 34]                                  # mi mi fa mi mi fa mi si♭ : demi-ton + triton
+    HI = [76, 77, 76, 77, 76, 77, 83, 77]                                    # mi fa mi fa mi fa si fa : frottement aigu
+    k = 0
+    while k * e8 < dip - 0.05:
+        t0 = k * e8
+        xl = T.x(e8 * 1.5); T.put(low, saw(midi(LOW[k % 8]), xl, 7) * np.exp(-xl * 9) * np.clip(xl / 0.004, 0, 1), t0, 1.0 if k % 4 == 0 else 0.7)
+        if t0 > w - 1.0:
+            xh = T.x(e8 * 0.9); T.put(hi, saw(midi(HI[k % 8]), xh, 6) * np.exp(-xh * 18) * np.clip(xh / 0.003, 0, 1), t0 + (e8 / 2 if k % 2 else 0), 1.0)
+        k += 1
+    q = 0.0                                                                  # tic-tac : 2 par seconde, puis jusqu'à 6 par seconde vers « glacée »
+    while q < dip - 0.1:
+        xk = T.x(0.03); T.put(tick, np.convolve(T.rng.standard_normal(len(xk)), [1, -0.9], "same") * np.exp(-xk * 150) + np.sin(2 * np.pi * 2600 * xk) * np.exp(-xk * 200), q, 1.0)
+        q += max(0.16, 0.5 - 0.34 * ramp(np.array([q]), w, dip)[0])
+    def hit(t1, g):                                                          # coup de cordes : cluster mi-fa-fa♯-si♭, attaque dure
+        xs = T.x(1.6); sig = sum(saw(midi(m), xs, 10) * a for m, a in ((52, 1), (53, 0.9), (54, 0.8), (58, 0.7), (64, 0.5))) * np.exp(-xs * 2.2) * np.clip(xs / 0.006, 0, 1)
+        T.put(stab, lp(sig, 2600), t1, g)
+    hit(w - 0.02, 0.8); hit(s - 0.02, 1.0)
+    xr = T.x(3.0); gl = np.cumsum(260 * np.exp(1.6 * xr / 3.0)) / SR; T.put(riser, saw(1.0, gl, 8) * (xr / 3.0) ** 2.5, s - 3.0, 1.0)      # montée avant l'éclair
+    drone = (np.sin(2 * np.pi * midi(25) * t) + 0.8 * np.sin(2 * np.pi * midi(26) * t) + 0.6 * np.sin(2 * np.pi * midi(27) * t)) * (0.7 + 0.3 * np.sin(2 * np.pi * 0.17 * t))
+    beat_hi = (np.sin(2 * np.pi * midi(88) * t) + np.sin(2 * np.pi * (midi(88) * 1.018) * t)) * (0.5 + 0.5 * np.sin(2 * np.pi * 0.35 * t))      # note aiguë dissonante qui bat
+    p = dip + 2.3
+    T.put(hold, lp(np.sin(2 * np.pi * midi(88) * T.x(dur - p)) + np.sin(2 * np.pi * midi(88) * 1.02 * T.x(dur - p)), 4000) * ramp(T.x(dur - p), 0, 1.2), p, 1.0)
+    pul = T.buf(); xk = T.x(0.4); th = np.sin(2 * np.pi * np.cumsum(55 + 40 * np.exp(-xk * 25)) / SR) * np.exp(-xk * 12)
+    q = dip + 2.0
+    while q < dur - 0.4: T.put(pul, th, q, 0.7); q += 0.95
+    cut = 1 - ramp(t, dip - 0.05, dip); pre = np.where(t < dip, cut, 0.0)
+    I = 0.35 + 0.25 * ramp(t, 3, w) + 0.4 * ramp(t, s - 4, dip - 0.3)
+    y = pre * (I * 0.9 * nz(lp(low, 500)) + (0.15 + 0.35 * ramp(t, w, s)) * nz(lp(hi, 3200)) + 0.16 * (0.5 + I) * nz(tick) + 0.55 * nz(stab) + 0.5 * nz(riser) * ramp(t, s - 3, s)
+                + 0.28 * nz(lp(drone, 180)) + 0.07 * ramp(t, w, s) * nz(beat_hi)) + ramp(t, dip + 2.2, dip + 2.8) * (0.30 * nz(hold) + 0.5 * nz(pul))
+    y *= 1 - ramp(t, c["end"] - 0.6, c["end"])
+    return nz(reverb(y, 1.5, 0.2))
