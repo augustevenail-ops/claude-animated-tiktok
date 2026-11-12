@@ -8,7 +8,7 @@ Quota ElevenLabs épuisé ce mois-ci (~800 crédits nécessaires, une seule voix
 
 ## Script v2
 Imagine… Tu rentres chez toi, épuisé. Tu t'écroules sur le canapé. La télé est éteinte.
-Ton père est assis à côté de toi. Il sourit. {faux}« Tu rentres tard, aujourd'hui. »
+Ton père est assis à côté de toi. Il sourit. {faux}« Tu rentres tard aujourd'hui. »
 Tu réponds sans l'écouter. Ton téléphone vibre. Un message. De **Papa**.
 « Ce n'est pas moi. Ne le regarde surtout pas. »
 Tu ne comprends pas. Ton père est juste là, à côté de toi.

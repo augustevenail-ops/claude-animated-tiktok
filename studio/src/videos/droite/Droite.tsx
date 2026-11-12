@@ -102,6 +102,8 @@ const Choice: React.FC<{ t: number }> = ({ t }) => {
   return <>{pill("A · LE REGARDER", "#ff4a3d", 70, 330)}{pill("B · COURIR VERS LA PORTE", "#7ee08a", 70, 440)}</>;
 };
 
+const GRAIN = "data:image/svg+xml;utf8," + encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 1.4 -0.2'/></filter><rect width='100%' height='100%' filter='url(#n)'/></svg>");
+
 const useKit = () => {
   const [kit, setKit] = useState<Kit | null>(null);
   const [handle] = useState(() => delayRender("droite kit"));
@@ -118,6 +120,7 @@ export const DroiteEp1: React.FC = () => {
       <ThreeCanvas width={1080} height={1920} frameloop="demand" {...(on.dpr ? { dpr: on.dpr } : {})} shadows gl={{ antialias: false, stencil: false, powerPreference: "high-performance" }} camera={{ fov: 44, near: 0.05, far: 200 }}>
         <Inner kit={kit} />
       </ThreeCanvas>
+      <div style={{ position: "absolute", inset: 0, mixBlendMode: "overlay", opacity: 0.13, backgroundImage: `url("${GRAIN}")`, backgroundSize: "260px 260px", backgroundPosition: `${(f * 53) % 260}px ${(f * 97) % 260}px` }} />
       <Choice t={t} />
       <Captions t={t} />
       {on.audio ? <Audio src={staticFile("droite/mix.wav")} /> : null}

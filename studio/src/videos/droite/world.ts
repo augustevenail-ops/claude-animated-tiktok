@@ -12,6 +12,7 @@ import { Pen, Outfit, Expr } from "../bridge/toon";
 import { FPS, YOU, FAKE, TV_Z, WINDOW, FATHER, LAMP, V3, shotAt, camAt, flashAt, phoneAt, smooth, clamp01 } from "./story";
 import { NIGHT } from "./look";
 import { drawChar, CharSpec } from "../shared/chars";
+import { painted } from "../shared/painted";
 
 const FONT = "DejaVu Sans, Liberation Sans, sans-serif";
 const FURN = ["loungeSofa", "lampRoundFloor", "cabinetTelevision", "tableCoffee", "pottedPlant", "bookcaseClosed", "lampSquareTable", "books", "rugRectangle"];
@@ -37,7 +38,7 @@ const put = (b: Batch, kit: Kit, name: string, x: number, y: number, z: number, 
   const bx = boxOf(o), s = h / Math.max(0.01, bx.max.y - bx.min.y), cx = (bx.min.x + bx.max.x) / 2, cz = (bx.min.z + bx.max.z) / 2;
   const m = M4(x, y - bx.min.y * s, z, yaw, s); m.multiply(new THREE.Matrix4().makeTranslation(-cx, 0, -cz)); b.addObject(o, m);
 };
-const solid = (key: string, color: string, extra: THREE.MeshLambertMaterialParameters = {}) => lam("dr_" + key, () => ({ color, ...extra }));
+const solid = (key: string, color: string, extra: THREE.MeshLambertMaterialParameters = {}) => { const m = lam("dr_" + key, () => ({ color, ...extra })); m.name = "dr_" + key; return m; };
 const hash = (i: number, s = 0) => { const v = Math.sin(i * 127.1 + s * 311.7) * 43758.5453; return v - Math.floor(v); };
 
 // ---------------- textures peintes ----------------
@@ -52,6 +53,13 @@ const wallpaper = () => ctex("dr_wall", 256, 256, (g) => {
   g.fillStyle = "#363b63"; g.fillRect(0, 0, 256, 256);
   for (let x = 0; x < 256; x += 32) { g.fillStyle = "rgba(255,255,255,0.045)"; g.fillRect(x, 0, 16, 256); }
   for (let i = 0; i < 70; i++) { g.fillStyle = `rgba(0,0,0,${0.03 + hash(i) * 0.05})`; g.beginPath(); g.arc(hash(i, 1) * 256, hash(i, 2) * 256, 10 + hash(i, 3) * 26, 0, 7); g.fill(); }
+});
+const artTex = (n: number) => ctex("dr_art" + n, 256, 192, (g) => {
+  const bg = g.createLinearGradient(0, 0, 256, 192); bg.addColorStop(0, ["#241c3a", "#2a2236", "#1d2a3a"][n - 1]); bg.addColorStop(1, ["#0f1424", "#161324", "#0d1320"][n - 1]); g.fillStyle = bg; g.fillRect(0, 0, 256, 192);
+  for (let i = 0; i < 6; i++) { g.fillStyle = `hsla(${[28, 330, 200][n - 1] + i * 7},${50 + hash(i, n) * 25}%,${22 + hash(i, n + 3) * 22}%,${0.35 + hash(i, n + 5) * 0.3})`;
+    g.beginPath(); g.ellipse(30 + hash(i, n + 1) * 200, 24 + hash(i, n + 2) * 150, 20 + hash(i, n + 4) * 50, 12 + hash(i, n + 6) * 38, hash(i, n + 8) * 3, 0, 7); g.fill(); }
+  g.strokeStyle = "rgba(255,200,140,0.28)"; g.lineWidth = 3; g.beginPath(); g.moveTo(10, 150 - n * 8); g.bezierCurveTo(80, 90 + n * 10, 170, 190, 250, 70 + n * 12); g.stroke();
+  g.fillStyle = "#e8d9bd"; g.fillRect(0, 0, 256, 6); g.fillRect(0, 186, 256, 6); g.fillRect(0, 0, 6, 192); g.fillRect(250, 0, 6, 192);
 });
 const glowTex = (rgb: string) => ctex("dr_glow" + rgb, 256, 256, (g) => {
   const r = g.createRadialGradient(128, 128, 0, 128, 128, 128); r.addColorStop(0, `rgba(${rgb},0.95)`); r.addColorStop(0.35, `rgba(${rgb},0.38)`); r.addColorStop(1, `rgba(${rgb},0)`);
@@ -129,6 +137,7 @@ export class World {
   root = new THREE.Group();
   sun: THREE.DirectionalLight; private hemi: THREE.HemisphereLight; private fog: THREE.Fog;
   private pool = new Pool(); private you: Actor; private fake: Actor; private dad: Actor; private rYou: Actor; private rFake: Actor;
+  private dust!: Float32Array; private dustBase!: Float32Array; private dustPts!: THREE.Points;
   private rain: Screen; private phone: Screen; private hand: Screen; private glows: THREE.Mesh[] = []; private mirror: THREE.Mesh[] = [];
   constructor(kit: Kit) {
     const R = this.root;
@@ -162,7 +171,23 @@ export class World {
     b.add(new THREE.BoxGeometry(0.07, 0.015, 0.025).translate(-1.15, 0.86, 3.3), solid("keys", "#c9a24a"));
     // télé : cadre sombre + écran noir (le reflet est simulé par des cartes projetées sur le plan de l'écran)
     b.add(new THREE.BoxGeometry(1.28, 0.76, 0.07).translate(0, 1.0, TV_Z - 0.05), solid("tv", "#0c0d11"));
+    // plinthes, cadres au mur (tableaux peints), horloge
+    const plinth = solid("plinth", "#1c1b25");
+    for (const [w, h, d, x, y, z] of [[6.4, 0.14, 0.04, 0, 0.07, 3.58], [6.4, 0.14, 0.04, 0, 0.07, -3.58], [0.04, 0.14, 7.2, -3.18, 0.07, 0]] as number[][]) b.add(new THREE.BoxGeometry(w, h, d).translate(x, y, z), plinth);
+    const frame = solid("frame2", "#141319"), arts = [artTex(1), artTex(2), artTex(3)];
+    const hang = (i: number, x: number, y: number, w: number, h: number) => { b.add(new THREE.BoxGeometry(w + 0.1, h + 0.1, 0.05).translate(x, y, 3.55), frame);
+      b.add(new THREE.PlaneGeometry(w, h).rotateY(Math.PI).translate(x, y, 3.52), solid("art" + i, "#ffffff", { map: arts[i] })); };
+    hang(0, 0.1, 1.62, 1.5, 0.92); hang(1, -1.75, 1.55, 0.5, 0.7); hang(2, 1.95, 1.5, 0.45, 0.6);
+    b.add(new THREE.CylinderGeometry(0.2, 0.2, 0.05, 28).rotateX(Math.PI / 2).translate(-1.0, 2.05, -3.57), solid("clock", "#ddd7c8"));
     b.build(R, true);
+    R.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh || Array.isArray(m.material)) return; const mt = m.material as THREE.MeshLambertMaterial, hex = "#" + mt.color.getHexString();       // textures fines peintes
+      if (mt.name === "dr_wall") painted(mt, 0.2, 1.4, 0);
+      else if (mt.name === "dr_floor") painted(mt, 0.16, 5.5, 0);
+      else if (mt.name === "dr_ceil") painted(mt, 0.2, 1.0, 0);
+      else if (mt.name === "dr_rug") painted(mt, 0.3, 16, 0);
+      else if (hex === "#4a3b33") painted(mt, 0.24, 26, 0);                      // tissu du canapé (grain fin)
+      else if (hex === "#2b2420") painted(mt, 0.22, 9, 0);                       // bois du meuble télé
+    });
     const scr = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 0.68), new THREE.MeshBasicMaterial({ color: "#05060a", fog: false })); scr.position.set(0, 1.0, TV_Z); scr.layers.set(NOINK); R.add(scr);
     const sheen = new Screen(256, 256, 1.2, 0.68); sheen.mesh.position.set(0, 1.0, TV_Z + 0.022); sheen.mesh.renderOrder = 3; R.add(sheen.mesh);
     sheen.draw("sheen", (g, w, h) => { const d = g.createLinearGradient(0, 0, w, h); d.addColorStop(0, "rgba(160,190,255,0)"); d.addColorStop(0.38, "rgba(170,195,255,0.12)"); d.addColorStop(0.5, "rgba(170,195,255,0.03)"); d.addColorStop(1, "rgba(160,190,255,0)");
@@ -176,6 +201,22 @@ export class World {
     addGlow("255,150,60", 3.6, 3.6, [LAMP[0] + 0.4, 0.02, LAMP[2]], [-Math.PI / 2, 0, 0], 0.45);
     addGlow("255,190,110", 0.9, 0.9, [LAMP[0], 1.5, LAMP[2]], [0, 0, 0], 0.9);
     addGlow("255,170,80", 1.2, 1.2, [-1.7, 1.15, 3.3], [0, 0, 0], 0.7);
+    // faisceaux de lumière froide qui entrent par la fenêtre (volume), poussière en suspension, ombres de contact, assombrissement des angles
+    const d = V(-18, -7, -3).normalize(), beamTex = ctex("dr_beam", 128, 256, (g) => { const v = g.createLinearGradient(0, 0, 0, 256); v.addColorStop(0, "rgba(255,255,255,0)"); v.addColorStop(0.5, "rgba(255,255,255,0.55)"); v.addColorStop(1, "rgba(255,255,255,0.95)");
+      g.fillStyle = v; g.fillRect(0, 0, 128, 256); g.globalCompositeOperation = "destination-in"; const h = g.createLinearGradient(0, 0, 128, 0); h.addColorStop(0, "rgba(0,0,0,0)"); h.addColorStop(0.5, "rgba(0,0,0,1)"); h.addColorStop(1, "rgba(0,0,0,0)"); g.fillStyle = h; g.fillRect(0, 0, 128, 256); });
+    for (const [z, y, w, op] of [[0.1, 1.15, 0.55, 0.1], [0.8, 1.5, 0.7, 0.12], [1.5, 1.2, 0.5, 0.09]] as number[][]) for (const rot of [0, Math.PI / 2]) {
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(w, 4.2).rotateY(rot), new THREE.MeshBasicMaterial({ map: beamTex, color: "#9fbfff", transparent: true, opacity: op, blending: THREE.AdditiveBlending, depthWrite: false, fog: false, side: THREE.DoubleSide }));
+      m.quaternion.setFromUnitVectors(V(0, 1, 0), d); m.position.set(3.1, y, z).addScaledVector(d, 2.1); m.layers.set(NOINK); R.add(m);
+    }
+    const NP = 90, pp = new Float32Array(NP * 3); this.dust = pp; this.dustBase = Float32Array.from({ length: NP * 3 }, (_, i) => i % 3 === 0 ? -1.6 + hash(i, 1) * 4.6 : i % 3 === 1 ? 0.3 + hash(i, 2) * 1.9 : -1.2 + hash(i, 3) * 3.4);
+    const pg = new THREE.BufferGeometry(); pg.setAttribute("position", new THREE.BufferAttribute(pp, 3));
+    this.dustPts = new THREE.Points(pg, new THREE.PointsMaterial({ map: glowTex("200,220,255"), size: 0.05, transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true, fog: false })); this.dustPts.frustumCulled = false; this.dustPts.layers.set(NOINK); R.add(this.dustPts);
+    const shadowTex = ctex("dr_cshadow", 128, 128, (g) => { const r = g.createRadialGradient(64, 64, 0, 64, 64, 64); r.addColorStop(0, "rgba(0,0,0,0.75)"); r.addColorStop(0.6, "rgba(0,0,0,0.35)"); r.addColorStop(1, "rgba(0,0,0,0)"); g.fillStyle = r; g.fillRect(0, 0, 128, 128); });
+    const aoTex = ctex("dr_ao", 8, 128, (g) => { const v = g.createLinearGradient(0, 128, 0, 0); v.addColorStop(0, "rgba(0,0,0,0.7)"); v.addColorStop(1, "rgba(0,0,0,0)"); g.fillStyle = v; g.fillRect(0, 0, 8, 128); });
+    const decal = (map: THREE.Texture, w: number, h: number, pos: V3, rot: [number, number, number]) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map, transparent: true, depthWrite: false, fog: false })); m.position.set(...pos); m.rotation.set(...rot); m.layers.set(NOINK); R.add(m); };
+    for (const [w, h, x, z] of [[3.2, 1.7, 0, 0.95], [1.7, 1.2, 0, -1.0], [1.0, 1.0, LAMP[0], LAMP[2]], [2.1, 0.9, 0, -3.15], [0.9, 2.4, -3.0, -1.6], [1.1, 1.1, 2.7, -3.0]]) decal(shadowTex, w, h, [x, 0.02, z], [-Math.PI / 2, 0, 0]);
+    decal(aoTex, 6.4, 0.9, [0, 0.45, 3.59], [0, Math.PI, 0]); decal(aoTex, 6.4, 0.9, [0, 0.45, -3.59], [0, 0, 0]); decal(aoTex, 7.2, 0.9, [-3.19, 0.45, 0], [0, Math.PI / 2, 0]);
+    decal(aoTex, 6.4, 0.7, [0, 2.25, 3.59], [Math.PI, Math.PI, 0]); decal(aoTex, 6.4, 0.7, [0, 2.25, -3.59], [Math.PI, 0, 0]);
     // dehors : ville floue derrière, pluie derrière le père et sur la vitre
     const city = new THREE.Mesh(new THREE.PlaneGeometry(16, 8), new THREE.MeshBasicMaterial({ map: cityTex(), fog: false })); city.position.set(8.5, 2.2, 0.8); city.rotation.y = -Math.PI / 2; city.layers.set(NOINK); R.add(city);
     const ground = new THREE.Mesh(new THREE.PlaneGeometry(14, 16).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: "#0b111d", fog: false })); ground.position.set(10, -0.01, 0); ground.layers.set(NOINK); R.add(ground);
@@ -209,6 +250,8 @@ export class World {
     CHAR.uCharTint.value.set(L.charTint[0] * (1 + flash), L.charTint[1] * (1 + flash), L.charTint[2] * (1 + flash)); CHAR.uCharShade.value = 0.72; CHAR.uGrad.value = 0.09; CHAR.uBodyGrad.value = 0.22; CHAR.uSideTint.value.set(0.8, 0.82, 1.0);
     untone(L.fog, this.fog.color); this.fog.near = L.fogNear; this.fog.far = L.fogFar; scene.fog = this.fog; scene.background = new THREE.Color("#04050a");
     for (const g of this.glows) (g.material as THREE.MeshBasicMaterial).opacity = Math.min(1, ((g.material as THREE.MeshBasicMaterial).userData.base ??= (g.material as THREE.MeshBasicMaterial).opacity) * (1 - 0.35 * flash) + 0 * t);
+    for (let i = 0; i < this.dust.length; i += 3) { const k = i / 3; this.dust[i] = this.dustBase[i] + 0.12 * Math.sin(f * 0.011 + k) + 0.04 * f / 60 % 0.5; this.dust[i + 1] = this.dustBase[i + 1] + 0.1 * Math.sin(f * 0.017 + k * 1.7); this.dust[i + 2] = this.dustBase[i + 2] + 0.12 * Math.cos(f * 0.013 + k * 0.6); }
+    (this.dustPts.geometry.attributes.position as THREE.BufferAttribute).needsUpdate = true;
     this.rain.draw("r" + f, (g, w, h) => drawRain(g, w, h, f, flash));
 
     // téléphone (insert devant l'objectif, comme l'insert du bracelet de l'épisode 1)

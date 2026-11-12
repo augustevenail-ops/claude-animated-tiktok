@@ -10,7 +10,7 @@ export const NIGHT = {
 };
 export const GRADE_NIGHT: GradeParams = {
   ky: [0.012, 0.06, 0.19, 0.47, 0.78, 0.94, 1],
-  sat: [0.95, 1.12, 1.15],
-  tintS: [0.014, 0.024], tintM: [0, 0.004], tintH: [-0.01, 0.012],
-  vig: [0.42, 0.45],
+  sat: [0.98, 1.16, 1.18],
+  tintS: [0.014, 0.024], tintM: [0, 0.004], tintH: [-0.016, 0.014],
+  vig: [0.38, 0.5],
 };
