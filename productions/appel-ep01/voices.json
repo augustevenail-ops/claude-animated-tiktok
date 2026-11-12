@@ -9,7 +9,7 @@
       "use_speaker_boost": true
     },
     "pitch": 0,
-    "tempo": 0.975,
+    "tempo": 1.07,
     "fx": "equalizer=f=140:t=q:w=1.1:g=4,equalizer=f=320:t=q:w=1.4:g=1.5,highshelf=f=6500:g=-2.5"
   },
   "hp": {
@@ -22,14 +22,14 @@
       "use_speaker_boost": true
     },
     "pitch": -1.0,
-    "tempo": 0.975,
+    "tempo": 1.07,
     "fx": "highpass=f=280,lowpass=f=4200,acompressor=threshold=-18dB:ratio=4,aecho=0.8:0.6:180|420:0.35|0.2,volume=1.4"
   },
   "pauses": {
-    "end": 0.3,
+    "end": 0.27,
     "comma": 0.1,
     "inner": 0.06,
-    "tension": 0.5,
+    "tension": 0.45,
     "tension_words": [
       "rien"
     ],

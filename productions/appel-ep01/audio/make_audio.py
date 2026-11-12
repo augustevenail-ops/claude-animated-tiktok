@@ -54,19 +54,34 @@ while tt < DUR - 0.8:
     put(sfx, thump(), tt, 0.55); put(sfx, thump(52.0), tt + 0.26, 0.35); tt += per
 sfx *= db(vref - 12 - rms(sfx[np.abs(sfx) > 1e-4]))
 
-# ---------- musique : nappe grave + basse pulsée, légère, qui suit la tension
-def saw(f): return 2 * ((t * f) % 1) - 1
-pad = sum(saw(f) for f in (55.0, 55.4, 82.4, 65.4)) ; pad = smooth(smooth(pad, 90), 90)          # La-Do-Mi grave filtré, sombre
-pad *= 0.75 + 0.25 * np.sin(2 * np.pi * 0.09 * t)
-air = smooth(rng.standard_normal(N), 6) - smooth(rng.standard_normal(N), 40); air *= 0.15 * (0.5 + 0.5 * np.sin(2 * np.pi * 0.05 * t + 2))
-bpm = np.interp(t, [0, W(VERT), W(NOE2), DUR], [58, 62, 84, 60]); ph = np.cumsum(bpm / 60 / SR)
-pulse = np.sin(2 * np.pi * 41.2 * t) * np.exp(-((ph % 1) * 6)) * 1.6                              # basse pulsée (mi grave)
-lvl = np.interp(t, [0, 1.2, W(RIEN) - 0.2, W(RIEN), W(RIEN) + 2.2, W(VERT), W(NOE2), E(NOE2) + 0.3, W(226), DUR - 1, DUR], [0.2, 0.8, 0.85, 0.15, 0.7, 0.85, 1.0, 0.35, 0.55, 0.4, 0])
-pl = np.interp(t, [0, W(RIEN), W(RIEN) + 0.01, W(VERT), W(NOE2), E(NOE2), DUR], [0.35, 0.5, 0, 0.6, 1.0, 0.0, 0.0])
-mus = (pad * 1.0 + air) * lvl + pulse * pl * lvl
+# ---------- musique : petite musique d'ambiance (v2) — accords mineurs lents en nappe + motif de clochettes douces en écho
+# (pas de piano), basse pulsée qui accélère quand le vert se rapproche ; coupée sur « Rien », suspendue après le 2e numéro.
+nt = lambda m: 440 * 2 ** ((m - 69) / 12)
+CH = [(57, 60, 64), (53, 57, 60), (50, 53, 57), (52, 56, 59)]          # Lam, Fa, Rém, Mi  (4 s chacun)
+SEG = 4.0
+pad = np.zeros(N); bell = np.zeros(N)
+def saw(f, x): return 2 * ((x * f) % 1) - 1
+for c in range(int(DUR / SEG) + 1):
+    t0 = c * SEG; ch = CH[c % 4]; x, e = env(SEG + 1.0, 1.2, 1.2)
+    sig = sum(saw(nt(m), x) + saw(nt(m) * 1.004, x) for m in ch) + saw(nt(ch[0] - 12), x) * 1.2
+    put(pad, smooth(smooth(sig, 40), 40) * e, t0)
+    arp = [ch[0] + 12, ch[1] + 12, ch[2] + 12, ch[1] + 12, ch[0] + 24, ch[2] + 12, ch[1] + 12, ch[2]]
+    for q, m in enumerate(arp):                                         # croches lentes (2 / s), timbre de clochette douce
+        if q % 2 and c % 2: continue
+        xb = np.arange(int(1.6 * SR)) / SR; f = nt(m)
+        b = (np.sin(2 * np.pi * f * xb) + 0.3 * np.sin(2 * np.pi * 2.76 * f * xb) * np.exp(-xb * 6)) * np.exp(-xb * 2.6) * np.minimum(xb / 0.004, 1)
+        put(bell, b, t0 + q * 0.5)
+dl = int(0.375 * SR); echo = bell.copy()
+for k in (1, 2, 3): echo[dl * k:] += bell[:-dl * k] * 0.45 ** k                # écho
+bpm = np.interp(t, [0, W(VERT), W(NOE2), DUR], [60, 64, 86, 60]); ph = np.cumsum(bpm / 60 / SR)
+pulse = np.sin(2 * np.pi * 41.2 * t) * np.exp(-((ph % 1) * 6)) * 1.6
+lvl = np.interp(t, [0, 1.0, W(RIEN) - 0.2, W(RIEN), W(RIEN) + 2.0, W(VERT), W(NOE2), E(NOE2) + 0.3, W(226), DUR - 1, DUR], [0.35, 0.8, 0.85, 0.08, 0.7, 0.85, 1.0, 0.3, 0.6, 0.45, 0])
+pl = np.interp(t, [0, W(RIEN), W(RIEN) + 0.01, W(VERT), W(NOE2), E(NOE2), DUR], [0.3, 0.45, 0, 0.6, 1.0, 0.0, 0.0])
+pad *= 1 / (np.sqrt(np.mean(pad ** 2)) + 1e-9); echo *= 1 / (np.sqrt(np.mean(echo ** 2)) + 1e-9)
+mus = (pad * 0.8 + echo * 0.55) * lvl + pulse * pl * lvl
 duck = np.ones(N)
 for i in range(len(words)): duck[int(max(0, W(i) - 0.08) * SR):int(min(DUR, E(i) + 0.12) * SR)] = db(-3)
-mus *= smooth(duck, 2000); mus *= db(vref - 13 - rms(mus[mus != 0]))
+mus *= smooth(duck, 2000); mus *= db(vref - 10 - rms(mus[mus != 0]))
 
 mix = np.stack([voice + mus + sfx, voice + mus * 0.97 + sfx * 0.95], 1)
 pre = os.path.join(HERE, "_pre.wav")
