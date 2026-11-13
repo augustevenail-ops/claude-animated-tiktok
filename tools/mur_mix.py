@@ -40,12 +40,16 @@ cue("sting_hit", W(82) - 0.05, -10); cue("sting_hit", W(95) - 0.05, -10)        
 cue("heartbeat", W(100), -10, 3.0)                                                       # « ne bouge plus »
 cue("whisper_voice", W(113), -18)                                                        # les noms gravés
 cue("footstep_one", W(129), -14); cue("footstep_one", W(131), -15); cue("wind_city", W(134), -18)
-cue("siren_far", W(138) - 0.1, -1)                                                       # la sirène hurle
+cue("siren_far", W(138) - 0.1, -7)                                                       # la sirène hurle
 cue("run_steps_room", W(141), -8); cue("heart_fast", W(143), -9)
 cue("tower_groan", W(152), -6); cue("steel_door", W(155), -10)                           # l'entrée se referme
 cue("metal_creak_far", W(162), -8); k.impact(W(163), 0.7, 42.0, 2.0)                     # un Long se déplie
 cue("breath_nervous", W(167), -10); cue("sting_hit", W(170), -8)                          # il tourne la tête
 cue("heartbeat", W(179), -9, 6.0); cue("tower_groan", W(183), -10)
+HISS = np.zeros((2, N))                                                                  # signature des Longs à chaque apparition
+for a, b in [(0.0, W(4) - 0.1), (W(45), W(66) - 0.3), (W(157) - 0.5, TITLE_AT - 0.2)]: HISS += Kit(N, SR).long_hiss(a, b, seed=int(a * 10) + 1)
+act = np.abs(HISS[0]) > 1e-5
+if act.any(): HISS *= db(vref - 15 + SFX_DB - rms(HISS[0][act]))
 k.stinger(TITLE_AT, 0.5)
 FLIP = TITLE_AT + 0.9                                                                     # le 1 devient 2 sur le carton (FLIP_AFTER, overlay.tsx)
 k.reverse(FLIP, 0.35, 0.5); cue("lock_click", FLIP - 0.01, -6); cue("sting_hit", FLIP, -12)
@@ -61,7 +65,7 @@ for i in range(len(words)): duck[int(max(0, W(i) - 0.08) * SR):int(min(DUR, E(i)
 mus *= np.convolve(duck, np.ones(2000) / 2000, "same")
 hs = k.hit + 0.8 * k.air; hit = lvl(hs, vref - 13)
 o = dec(os.path.join(VD, "outro.wav")); j0 = int((TITLE_AT + 0.05) * SR); voice[j0:j0 + len(o)] += o[: max(0, N - j0)] * db(vref - rms(o[np.abs(o) > 1e-3]))
-mix = np.stack([voice + mus + hit + sfx, voice + mus * 0.97 + hit + sfx * 0.92], 1)
+mix = np.stack([voice + mus + hit + sfx + HISS[0], voice + mus * 0.97 + hit + sfx * 0.92 + HISS[1]], 1)
 pre = os.path.join(VD, "_pre.wav")
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "f64le", "-ar", str(SR), "-ac", "2", "-i", "-", pre], input=mix.tobytes(), check=True)
 m = subprocess.run(["ffmpeg", "-i", pre, "-af", "loudnorm=I=-15:TP=-1.2:LRA=7:print_format=json", "-f", "null", "-"], capture_output=True, text=True).stderr

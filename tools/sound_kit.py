@@ -165,6 +165,21 @@ class Kit:
 
     # ---------- musique v4 (2026-11-13, consigne utilisateur : « inquiétante mais légère, quelques notes qui changent de temps en temps,
     # des notes assez longues, pas trop fortes ») ----------
+    def long_hiss(self, t0, t1, seed=3):
+        """signature sonore des Longs (série « Le Mur ») : sifflement de serpent qui rôde — bruit filtré 3-9 kHz, souffle irrégulier
+        (vagues lentes, petites saccades « sss-sss »), fondu d'entrée et de sortie. Renvoie (gauche, droite) : le son se balade."""
+        SR = self.SR; n = int((t1 - t0) * SR); x = np.arange(n) / SR; rng = np.random.default_rng(seed)
+        w = rng.standard_normal(n + 64)
+        hp = w - np.convolve(w, np.ones(5) / 5, "same"); bp = np.convolve(hp, np.ones(2) / 2, "same")[:n]
+        lfo = 0.55 + 0.45 * np.sin(2 * np.pi * (0.35 + 0.15 * np.sin(2 * np.pi * 0.07 * x)) * x + rng.random() * 6)
+        chop = 0.65 + 0.35 * (np.sin(2 * np.pi * 2.6 * x + 1.3 * np.sin(2 * np.pi * 0.4 * x)) > -0.2)
+        chop = np.convolve(chop, np.ones(int(0.03 * SR)) / int(0.03 * SR), "same")
+        env = np.clip(np.minimum(x / 0.8, (t1 - t0 - x) / 0.8), 0, 1)
+        sig = bp * lfo * chop * env
+        pan = 0.5 + 0.4 * np.sin(2 * np.pi * 0.11 * x + rng.random() * 6)
+        out = np.zeros((2, self.N)); i = int(t0 * SR); j = min(self.N, i + n)
+        out[0, i:j] = (sig * np.sqrt(1 - pan))[: j - i]; out[1, i:j] = (sig * np.sqrt(pan))[: j - i]
+        return out
     def tension_layer(self, dur, reveals, final_from, final_to, seed=9, transpose=0):
         """couche de tension qui suit l'histoire : basse pulsée (cœur) qui accélère, nappe dissonante aiguë qui monte avant chaque révélation,
         se coupe juste avant le mot (silence), retombe après ; montée continue vers la question finale. Renvoie (signal, courbe 0-1)."""
