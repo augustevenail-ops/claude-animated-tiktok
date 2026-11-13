@@ -14,7 +14,7 @@ ap = argparse.ArgumentParser()
 ap.add_argument("ep"); ap.add_argument("prise"); ap.add_argument("trans"); ap.add_argument("out")
 ap.add_argument("--cut", default=""); ap.add_argument("--tempo", type=float, default=1.0); ap.add_argument("--lufs", type=float, default=-22.5)
 ap.add_argument("--end", type=float, default=0.42); ap.add_argument("--comma", type=float, default=0.14)
-ap.add_argument("--pitch", type=float, default=-1.0)   # demi-tons ; formants préservés (timbre naturel, pas d'effet robot)
+ap.add_argument("--pitch", type=float, default=0.0)    # demi-tons ; formants préservés (timbre naturel, pas d'effet robot)
 ap.add_argument("--outro", default="")   # texte de la phrase de fin (ex. « Abonne-toi pour l'épisode deux. »), lu à la fin de la prise
 A = ap.parse_args()
 SR = 48000; os.makedirs(A.out, exist_ok=True)
