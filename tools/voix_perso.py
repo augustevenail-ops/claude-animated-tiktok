@@ -24,6 +24,9 @@ ap.add_argument("--body", action="store_true")         # un peu plus de poitrine
 ap.add_argument("--range", type=float, default=1.0)    # intonation : > 1 = mélodie plus ample (conteur)
 ap.add_argument("--enddrop", type=float, default=0.0)  # fins de phrase qui retombent (demi-tons sur le dernier mot)
 ap.add_argument("--slow", type=float, default=1.0)     # débit : > 1 = plus posé (change le minutage)
+ap.add_argument("--onepass", action="store_true")      # hauteur + mélodie + fins de phrase en UNE resynthèse (moins de grain), sans décalage de formants
+ap.add_argument("--fmax", type=float, default=400)     # plafond de détection de hauteur (250 pour une voix grave : moins d'erreurs -> moins de grésillement)
+ap.add_argument("--soft", action="store_true")         # aigus lissés (highshelf 6,5 kHz -1,5 dB, passe-bas 11 kHz)
 ap.add_argument("--outro", default="")   # texte de la phrase de fin (ex. « Abonne-toi pour l'épisode deux. »), lu à la fin de la prise
 A = ap.parse_args()
 SR = 48000; os.makedirs(A.out, exist_ok=True)
@@ -187,21 +190,40 @@ TONE = ("equalizer=f=110:t=q:w=0.9:g=2,lowshelf=f=160:g=2.5,equalizer=f=260:t=q:
 if A.tempo != 1 or A.pitch: TONE = f"rubberband=tempo={A.tempo}:pitch={2 ** (A.pitch / 12):.5f}:formant=preserved:pitchq=quality:transients=smooth," + TONE
 TONE = TONE.replace("volume=3dB,asoftclip=type=tanh,volume=-3dB", f"volume={A.sat}dB,asoftclip=type=tanh,volume=-{A.sat}dB") if A.sat else TONE.replace(",volume=3dB,asoftclip=type=tanh,volume=-3dB", "")
 if A.body: TONE = "lowshelf=f=130:g=2,equalizer=f=320:t=q:w=1.2:g=-1," + TONE
+if A.soft: TONE += ",highshelf=f=6500:g=-1.5,lowpass=f=11000"
 F0 = None
 if A.st or A.formant != 1:
     import parselmouth
     from parselmouth.praat import call
-    F0 = call(parselmouth.Sound(x, SR).to_pitch(time_step=0.01, pitch_floor=60, pitch_ceiling=400), "Get quantile", 0, 0, 0.5, "Hertz")
+    F0 = call(parselmouth.Sound(x, SR).to_pitch(time_step=0.01, pitch_floor=60, pitch_ceiling=A.fmax), "Get quantile", 0, 0, 0.5, "Hertz")
 if F0 is None and (A.range != 1 or A.enddrop or A.slow != 1):
     import parselmouth
     from parselmouth.praat import call
-    F0 = call(parselmouth.Sound(x, SR).to_pitch(time_step=0.01, pitch_floor=60, pitch_ceiling=400), "Get quantile", 0, 0, 0.5, "Hertz")
+    F0 = call(parselmouth.Sound(x, SR).to_pitch(time_step=0.01, pitch_floor=60, pitch_ceiling=A.fmax), "Get quantile", 0, 0, 0.5, "Hertz")
 def fit(z, n): return z[:n] if len(z) >= n else np.pad(z, (0, n - len(z)))
+def onepass(y, Wt):
+    """une seule resynthèse PSOLA : f' = F0·2^(st/12)·(f/F0)^range, puis chute progressive sur le dernier mot de chaque phrase"""
+    snd = parselmouth.Sound(y, SR); dur = len(y) / SR
+    man = call(snd, "To Manipulation", 0.01, 60, A.fmax)
+    pt = call(man, "Extract pitch tier"); npt = call(pt, "Get number of points")
+    ends = [(w["s"], w["e"]) for w in (Wt or []) if re.search(r"[.?!…]$", w["w"])]
+    new = call("Create PitchTier", "p", 0, dur)
+    for i in range(1, npt + 1):
+        t, v = call(pt, "Get time from index", i), call(pt, "Get value at index", i)
+        v = F0 * 2 ** (A.st / 12) * (v / F0) ** A.range
+        for a, b in ends:
+            if a <= t <= b + 0.05: v *= 2 ** (-A.enddrop * min(1, (t - a) / max(0.05, b - a)) / 12)
+        call(new, "Add point", t, v)
+    call([new, man], "Replace pitch tier")
+    if A.slow != 1:
+        dt = call("Create DurationTier", "d", 0, dur); call(dt, "Add point", 0, A.slow); call([dt, man], "Replace duration tier")
+    return call(man, "Get resynthesis (overlap-add)").values[0].astype(np.float64)
 def grave(y, Wt=None):
     """PSOLA (Praat) : hauteur, formants, amplitude de la mélodie ; puis fins de phrase retombantes et débit (2e passe)"""
     if F0 is None: return y
+    if A.onepass: return onepass(y, Wt)
     if A.st or A.formant != 1 or A.range != 1:
-        y = fit(call(parselmouth.Sound(y, SR), "Change gender", 60, 400, A.formant, F0 * 2 ** (A.st / 12), A.range, 1.0).values[0].astype(np.float64), len(y))
+        y = fit(call(parselmouth.Sound(y, SR), "Change gender", 60, A.fmax, A.formant, F0 * 2 ** (A.st / 12), A.range, 1.0).values[0].astype(np.float64), len(y))
     if not (A.enddrop or A.slow != 1): return y
     snd = parselmouth.Sound(y, SR); dur = len(y) / SR
     man = call(snd, "To Manipulation", 0.01, 60, 400)
