@@ -12,7 +12,7 @@ import { drawChar, CharSpec } from "../shared/chars";
 import { painted } from "../shared/painted";
 import {
   FPS, V3, COLS, FLOORS, COLW, FLH, HALFW, B_X, TOWER_H, colX, MY_COL, MY_FLOOR, Y0, WIN, WIN_W, WIN_H, YOU, NOE, YOU_WIN, SPK_IN, SPK_OUT,
-  CY, DOOR_Z, SHOTS, camAt, winState, greenAt, smooth, clamp01, hash, uOf, tW, KNOCKS, HANDLE, MY_DOOR_Z,
+  CY, DOOR_Z, SHOTS, camAt, winState, greenAt, smooth, clamp01, hash, uOf, tW, KNOCKS, HANDLE, MY_DOOR_Z, ROLE, T_HANDLE, T_PUSH, T_NEIGH, T_RED, T_BOOTS, stairAt,
 } from "./story";
 import { NIGHT, FOG_IN, FOG_OUT } from "./look";
 
@@ -125,7 +125,7 @@ const LOOK: Record<string, Partial<CharSpec>> = {
   B: { jacket: "#a0522d", pants: "#2e3040", shoes: "#1b1a22", hair: "short", hairColor: "#24201f" },
   C: { jacket: "#5b4f8a", pants: "#34304a", shoes: "#1b1a22", hair: "long", hairColor: "#c9c3b8" },
 };
-type Fo = { mode: "stand" | "sit"; expr: CharSpec["expr"]; blink?: boolean; look?: number; wave?: number; throat?: boolean };
+type Fo = { mode: "stand" | "sit"; expr: CharSpec["expr"]; blink?: boolean; look?: number; wave?: number; throat?: boolean; back?: boolean };
 const tierOf = (d: number): [number, number, number] => (d < 3.5 ? [1080, 1800, 1.8] : d < 14 ? [600, 1000, 1] : [300, 500, 0.5]);
 const MEN: V3[] = [[-3.2, 0, 10.5], [1.0, 0, 11], [4.6, 0, 9.8], [-1.2, 0, 14.2], [3.0, 0, 15], [-5.6, 0, 15.5], [7.0, 0, 13.5]];
 
@@ -146,7 +146,7 @@ export class World {
   private neons: THREE.Mesh[] = []; private neonGlow: THREE.Mesh[] = []; private lamps: { m: THREE.Mesh; side: number; z: number }[] = [];
   private greens: THREE.Mesh[] = []; private traffic!: THREE.Mesh; private ledIn!: THREE.Mesh; private spkOut!: THREE.Group; private door!: THREE.Group;
   private fogs: THREE.Mesh[] = []; private ash: THREE.Points; private ashBase: Float32Array; private stairRed!: THREE.Mesh; private sodium!: THREE.Mesh; private sodiumBulb!: THREE.Mesh;
-  private rdoor!: THREE.Group; private boots!: THREE.Group; private cdoors: { g: THREE.Group; side: number; z: number }[] = [];
+  private rdoor!: THREE.Group; private handle!: THREE.Mesh; private rwall!: THREE.Mesh; private section!: THREE.Group; private bulb!: THREE.Group; private boots!: THREE.Group; private cdoors: { g: THREE.Group; side: number; z: number }[] = [];
   constructor() {
     const R = this.root;
     this.hemi = new THREE.HemisphereLight("#7f9ac0", "#20242a", 0.22); R.add(this.hemi);
@@ -231,7 +231,7 @@ export class World {
     const rw = solid("roomwall", "#ffffff", { map: roomWall() }); (rw.map as THREE.Texture).wrapS = (rw.map as THREE.Texture).wrapT = THREE.RepeatWrapping;
     const X0 = -0.85, X1 = 3.35, Z0 = -4.5;
     box(b, solid("roomfloor", "#ffffff", { map: lino() }), X0, Y0 - 0.1, Z0, X1, Y0, -0.3); box(b, solid("roomceil", "#2b3330"), X0, Y0 + 2.6, Z0, X1, Y0 + 2.7, -0.3);
-    box(b, rw, X0 - 0.1, Y0, Z0, X0, Y0 + 2.6, -0.3); box(b, rw, X1, Y0, Z0, X1 + 0.1, Y0 + 2.6, -0.3); box(b, rw, X0, Y0, Z0 - 0.1, X1, Y0 + 2.6, Z0);
+    box(b, rw, X0 - 0.1, Y0, Z0, X0, Y0 + 2.6, -0.3); box(b, rw, X0, Y0, Z0 - 0.1, X1, Y0 + 2.6, Z0);
     box(b, rw, X0, Y0, -0.42, wx0, Y0 + 2.6, -0.3); box(b, rw, wx1, Y0, -0.42, X1, Y0 + 2.6, -0.3); box(b, rw, wx0, Y0, -0.42, wx1, wy0 - 0.12, -0.3); box(b, rw, wx0, wy1 + 0.08, -0.42, wx1, Y0 + 2.6, -0.3);
     const bedFrame = solid("bedframe", "#3b3f45"), mattress = solid("mattress", "#c9c6bb");
     box(b, bedFrame, 1.9, Y0, -3.4, 3.25, Y0 + 0.32, -1.6); box(b, mattress, 1.95, Y0 + 0.32, -3.35, 3.2, Y0 + 0.44, -1.65); box(b, solid("blanketA", "#ffffff", { map: blanket("#7a3b3b") }), 1.95, Y0 + 0.44, -2.9, 3.2, Y0 + 0.5, -1.62);
@@ -240,7 +240,23 @@ export class World {
     const wood = solid("wood", "#4a3628"); box(b, wood, -0.7, Y0 + 0.72, -2.4, 0.3, Y0 + 0.77, -1.2); for (const [x, z] of [[-0.65, -2.35], [0.25, -2.35], [-0.65, -1.25], [0.25, -1.25]]) box(b, wood, x - 0.03, Y0, z - 0.03, x + 0.03, Y0 + 0.72, z + 0.03);
     b.add(new THREE.CylinderGeometry(0.04, 0.035, 0.1, 12).translate(-0.3, Y0 + 0.82, -1.8), solid("cup", "#c8ccd2"));
     this.rdoor = new THREE.Group(); this.rdoor.add(new THREE.Mesh(new THREE.BoxGeometry(0.9, 2.02, 0.05).translate(-0.45, 1.04, 0.04), solid("roomdoor", "#5a4a38")));
-    const hd = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.035, 0.05).translate(HANDLE[0] - 3.25 + 0.05, HANDLE[1] - Y0, 0.1), solid("handle", "#b9b2a0")); this.rdoor.add(hd);
+    const hd = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.035, 0.05).translate(0.05, 0, 0), solid("handle", "#b9b2a0")); hd.position.set(HANDLE[0] - 3.25, HANDLE[1] - Y0, 0.1); this.rdoor.add(hd); this.handle = hd;
+    { const rose = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.02, 14).rotateX(Math.PI / 2), solid("handle", "#b9b2a0")); rose.position.set(HANDLE[0] - 3.25, HANDLE[1] - Y0, 0.075); this.rdoor.add(rose); }
+    this.rwall = new THREE.Mesh(new THREE.BoxGeometry(0.1, 2.6, Z0 * -1 - 0.3).translate(X1 + 0.05, Y0 + 1.3, (Z0 - 0.3) / 2), rw); R.add(this.rwall);
+    // décor en coupe : couloir derrière ta porte + tranches noires (vue « maison de poupée »)
+    this.section = new THREE.Group(); R.add(this.section);
+    { const sm = (w: number, h: number, d: number, x: number, y: number, z: number, m: THREE.Material) => { const o = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); o.position.set(x, y, z); this.section.add(o); return o; };
+      const til = solid("tiles", "#ffffff", { map: tiles() }), black = basic("#060608");
+      sm(2.9, 0.1, 2.0, 1.95, Y0 - 0.05, Z0 - 1.1, solid("lino3", "#ffffff", { map: lino() })); sm(2.9, 0.1, 2.0, 1.95, Y0 + 2.65, Z0 - 1.1, solid("ceil2", "#2b302d")); sm(2.9, 2.6, 0.1, 1.95, Y0 + 1.3, Z0 - 2.15, til);
+      sm(0.06, 3.05, 0.24, X1 + 0.13, Y0 + 1.3, Z0 - 0.04, black);                                                                   // mur coupé (porte) en noir
+      sm(0.06, 0.45, 6.6, X1 + 0.13, Y0 - 0.22, Z0 + 2.0, black); sm(0.06, 0.45, 6.6, X1 + 0.13, Y0 + 2.82, Z0 + 2.0, black);              // dalles coupées
+      const ng = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.05, 0.08), basic("#d9f2ff")); ng.position.set(1.9, Y0 + 2.57, Z0 - 1.2); ng.layers.set(NOINK); this.section.add(ng); }
+    // ampoule qui pend (la nuit, dans la chambre)
+    this.bulb = new THREE.Group(); R.add(this.bulb);
+    { const w = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.45, 4), basic("#111")); w.position.set(1.25, Y0 + 2.38, -2.4); this.bulb.add(w);
+      const bl = new THREE.Mesh(new THREE.SphereGeometry(0.055, 14, 10), basic("#ffe2b0")); bl.position.set(1.25, Y0 + 2.12, -2.4); bl.layers.set(NOINK); this.bulb.add(bl);
+      const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex("255,205,140"), transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending, depthWrite: false })); sp.scale.set(1.3, 1.3, 1); sp.position.copy(bl.position); sp.layers.set(NOINK); this.bulb.add(sp);
+      const pool = new THREE.Mesh(new THREE.PlaneGeometry(3.2, 3.2).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ map: glowTex("255,200,140"), transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending, depthWrite: false })); pool.position.set(1.25, Y0 + 0.012, -2.4); pool.layers.set(NOINK); this.bulb.add(pool); }
     this.rdoor.position.set(3.25, Y0, Z0); R.add(this.rdoor);
     { const st = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 0.7).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ map: glowTex("190,215,255"), transparent: true, opacity: 0.75, blending: THREE.AdditiveBlending, depthWrite: false }));
       st.position.set(2.8, Y0 + 0.006, Z0 + 0.05); st.layers.set(NOINK); R.add(st);
@@ -301,7 +317,8 @@ export class World {
     this.stairRed.position.set(0, CY - 37, -32.2); this.stairRed.layers.set(NOINK); R.add(this.stairRed);
     for (let lv = 1; lv < 12; lv += 3) { const r = new THREE.Mesh(new THREE.PlaneGeometry(3.6, 3.6).rotateX(-Math.PI / 2), this.stairRed.material); r.position.set(0, CY - lv * 3 - 0.3, -32.2); r.scale.setScalar(0.4 + lv * 0.05); r.layers.set(NOINK); R.add(r); }
     b.build(R, true);
-    R.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh || Array.isArray(m.material)) return; const mt = m.material as THREE.MeshLambertMaterial;   // textures fines peintes
+    const seenMat = new Set<THREE.Material>();
+    R.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh || Array.isArray(m.material) || seenMat.has(m.material)) return; seenMat.add(m.material); const mt = m.material as THREE.MeshLambertMaterial;   // textures fines peintes
       if (["ap_facade", "ap_deadwin", "ap_concrete"].includes(mt.name)) painted(mt, 0.18, 0.35, 0);
       else if (["ap_asphalt", "ap_court", "ap_road"].includes(mt.name)) painted(mt, 0.3, 0.6, 0);
       else if (["ap_roomwall", "ap_tiles", "ap_lino2", "ap_roomfloor"].includes(mt.name)) painted(mt, 0.16, 4, 0);
@@ -328,8 +345,8 @@ export class World {
   }
 
   /** pose le monde pour le plan id à l'image f ; renvoie le point visé */
-  update(id: number, f: number, cam: THREE.PerspectiveCamera, scene: THREE.Scene) {
-    const t = f / FPS, c = camAt(id, f), u = uOf(id, f);
+  update(sid: number, f: number, cam: THREE.PerspectiveCamera, scene: THREE.Scene) {
+    const t = f / FPS, c = camAt(sid, f), u = uOf(sid, f), id = ROLE[sid];
     cam.position.set(...c.pos); cam.up.set(0, 1, 0); cam.lookAt(...c.look); cam.rotateZ(c.roll);
     if (cam.fov !== c.fov || cam.near !== c.near || cam.far !== c.far) { cam.fov = c.fov; cam.near = c.near; cam.far = c.far; cam.updateProjectionMatrix(); }
     cam.layers.enable(NOINK); cam.updateMatrixWorld();
@@ -363,15 +380,19 @@ export class World {
     this.traffic.visible = Math.floor(t * 1.4) % 2 === 0;
     { const on = hash(Math.floor(f / 3), 5) > 0.12; (this.sodium.material as THREE.MeshBasicMaterial).opacity = on ? 0.55 : 0.15; this.sodiumBulb.lookAt(cam.position); }
     const spk = (id === 6 || id === 33) ? 1 : 0; this.spkOut.position.set(SPK_OUT[0] + spk * 0.006 * Math.sin(f * 2.1), SPK_OUT[1] + spk * 0.005 * Math.sin(f * 2.7), SPK_OUT[2]);
-    this.ledIn.visible = (id === 11 && u > 0.4) || (id >= 12 && id <= 14);
-    this.neons.forEach((n, k) => { const fl = (k === 2 || k === 5 || k === 7) && hash(Math.floor(f / 2), k) < 0.18; const off = (id >= 12 && k === 7) || fl; n.visible = !off; });
+    this.ledIn.visible = id === 11 || (id === 112 && u > 0.4) || id === 12 || id === 13 || id === 110;
+    this.neons.forEach((n, k) => { const fl = (k === 2 || k === 5 || k === 7) && hash(Math.floor(f / 2), k) < 0.18; const off = (t > tW(71) && k === 7) || fl; n.visible = !off; });
     this.neonGlow.forEach((n, k) => { const src = this.neons[Math.min(this.neons.length - 1, Math.floor(k / 2))]; n.visible = k === this.neonGlow.length - 1 ? this.neons[this.neons.length - 1].visible : src.visible; });
-    for (const lp of this.lamps) (lp.m.material as THREE.MeshBasicMaterial).color.set(hash(lp.z * 7 + lp.side, 2) < 0.2 ? "#ff2418" : "#28ff6a");   // voyants d'hier soir
-    this.door.rotation.y = id === 23 || id === 38 ? -1.35 : 0; this.stairRed.visible = true;
-    { let dz = 0; for (const k of KNOCKS) { const d = t - k; if (d > 0 && d < 0.4) dz += 0.012 * Math.exp(-d * 20) * Math.sin(d * 110); } this.rdoor.position.z = -4.5 + dz; }
-    this.boots.visible = t > tW(111);
-    for (const d of this.cdoors) { const mine = d.side > 0 && d.z === MY_DOOR_Z, to = tW(170) + hash(d.z * 3 + d.side, 9) * 2.2;
-      const a = mine ? 0 : (id === 34 || id === 35) ? smooth((t - to) / 0.7) * 1.35 : 0; d.g.rotation.y = d.side > 0 ? a : -a; }
+    for (const lp of this.lamps) { const neigh = lp.side < 0 && lp.z === -16; (lp.m.material as THREE.MeshBasicMaterial).color.set(neigh ? (t > T_RED + 0.2 ? "#ff2418" : "#28ff6a") : hash(lp.z * 7 + lp.side, 2) < 0.2 ? "#ff2418" : "#28ff6a"); }   // voyants (celui du voisin passe au rouge)
+    this.door.rotation.y = id === 23 || id === 38 || id === 100 ? -1.35 : 0; this.stairRed.visible = true;
+    { let dz = 0; for (const k of KNOCKS) { const d = t - k; if (d > 0 && d < 0.4) dz += 0.012 * Math.exp(-d * 20) * Math.sin(d * 110); }
+      if (t > T_PUSH && t < T_PUSH + 1.6) dz += 0.008 * Math.sin((t - T_PUSH) * 14) * Math.sin(Math.PI * (t - T_PUSH) / 1.6);           // ça pousse
+      this.rdoor.position.z = -4.5 + dz; this.rdoor.rotation.y = t > T_PUSH && t < T_PUSH + 1.6 ? 0.012 * Math.max(0, Math.sin((t - T_PUSH) * 14)) : 0;
+      this.handle.rotation.z = t > T_HANDLE && t < T_PUSH + 1.6 ? -0.55 * smooth((t - T_HANDLE) / 2.0) : 0; }
+    this.rwall.visible = id !== 106; this.section.visible = id === 106; this.bulb.visible = t > tW(71) && c.pos[1] > 70 && c.pos[1] < 90;
+    this.boots.visible = t > T_BOOTS;
+    for (const d of this.cdoors) { const mine = d.side > 0 && d.z === MY_DOOR_Z, neigh = d.side < 0 && d.z === -16, to = tW(210) + hash(d.z * 3 + d.side, 9) * 2.2;
+      const a = mine ? 0 : id === 34 ? smooth((t - to) / 0.7) * 1.35 : neigh && id === 107 ? smooth((t - T_NEIGH) / 0.8) * 1.2 : 0; d.g.rotation.y = d.side > 0 ? a : -a; }
     for (const m of this.fogs) { m.quaternion.copy(cam.quaternion); m.position.x += 0; }
     this.fogs.forEach((m, i) => { m.position.x = -40 + hash(i, 21) * 120 + 6 * Math.sin(t * 0.05 + i); m.visible = outside; });
     const pa = this.ash.geometry.attributes.position as THREE.BufferAttribute, box = outside ? (c.pos[1] > 150 || id === 36 || id === 2 ? 0 : id === 10 || id === 15 ? 60 : 14) : 0;
@@ -388,19 +409,28 @@ export class World {
       const A = this.actors[k++]; if (!A) return;
       const d = cam.position.distanceTo(V(p[0], p[1] + 1.1 * scale, p[2])), [w, h, kk] = tierOf(d / scale);
       A.r = this.pool.req(`${key}|${JSON.stringify(fo)}`, w, h, kk, (pen: Pen) => drawChar(pen, { ...(LOOK[key] as CharSpec), ...fo, blink: !!fo.blink, look: fo.look ?? 0, wave: fo.wave ?? 0, throat: !!fo.throat }));
-      A.mesh.position.set(...p); A.mesh.rotation.set(lean, yaw(p), 0); A.mesh.scale.setScalar(scale); A.mesh.visible = true;
+      A.mesh.position.set(...p); A.mesh.up.set(0, 1, 0); A.mesh.rotation.set(lean, yaw(p), 0); A.mesh.scale.setScalar(scale); A.mesh.visible = true;
     };
     const blink = (seed: number) => (f + seed * 37) % 97 < 4;
     const lerpV = (a: V3, b: V3, w: number): V3 => [a[0] + (b[0] - a[0]) * w, a[1] + (b[1] - a[1]) * w, a[2] + (b[2] - a[2]) * w];
     // chambre : assis sur les lits
-    if ([1, 3, 12, 17, 20].includes(id)) {
+    if ([1, 3, 12, 17, 20, 112].includes(id)) {
       place("Y", YOU, { mode: "sit", expr: "worry", blink: blink(1), look: id === 17 ? 0.9 : 0 });
-      const nE: Fo["expr"] = id === 3 ? "mute" : id === 20 ? "talk" : id === 12 ? "calm" : "worry";
-      place("N", NOE, { mode: "sit", expr: nE, blink: id === 12 ? (f % 60 < 40) : blink(2), throat: id === 3, look: id === 17 ? 0.9 : id === 20 ? 0.6 : 0 }, 0.72);
+      const nE: Fo["expr"] = id === 3 ? "mute" : id === 20 ? "talk" : id === 12 || id === 112 ? "calm" : "worry";
+      place("N", NOE, { mode: "sit", expr: nE, blink: id === 12 || id === 112 ? (f % 60 < 40) : blink(2), throat: id === 3, look: id === 17 ? 0.9 : id === 20 ? 0.6 : 0 }, 0.72);
     }
     if (id === 4 || id === 5) { place("Y", YOU_WIN, { mode: "stand", expr: "talk", blink: blink(3) }); if (id === 5) place("N", NOE, { mode: "sit", expr: "mute", throat: true }, 0.72); }
     if (id === 21) { const w = smooth(u * 1.5), w2 = smooth((u - 0.25) * 1.6);
       place("N", lerpV([1.6, Y0, -2.3], [2.62, Y0, -3.95], w), { mode: "stand", expr: "talk" }, 0.72); place("Y", lerpV([2.4, Y0, -2.2], [2.3, Y0, -3.6], w2), { mode: "stand", expr: "worry" }); }
+    const onStair = (key: string, d: number, fo: Fo, sc = 1) => { place(key, stairAt(Math.max(0, d)), fo, sc); const m = this.actors[k - 1]?.mesh; if (m) { m.up.set(0, 1, 0).applyQuaternion(cam.quaternion); m.lookAt(cam.position); m.up.set(0, 1, 0); } };
+    if (id === 100) { const lead = 2.6 + 2.4 * u; for (const [key, dd] of [["H", 0], ["B", 0.6], ["H", 1.2], ["H", 3.4], ["M", 4.1]] as [string, number][]) onStair(key, lead - dd + (dd > 2 ? 1.2 : 0), key === "H" ? { mode: "stand", expr: "calm" } : { mode: "stand", expr: "mute", throat: true }, key === "M" ? 0.98 : 1); }
+    if (id === 102) { place("Y", [2.3, Y0, -3.75], { mode: "stand", expr: "worry", back: true }); place("N", [2.62, Y0, -3.98], { mode: "stand", expr: "talk", back: true }, 0.72); }
+    if (id === 103) place("M", YOU_WIN, { mode: "stand", expr: "mute", throat: true }, 0.98);
+    if (id === 105) { place("Y", [2.72, Y0, -4.3], { mode: "stand", expr: "worry", back: true }); place("N", [1.75, Y0, -3.0], { mode: "stand", expr: "mute", blink: blink(9) }, 0.72); }
+    if (id === 106) { place("Y", [2.8, Y0, -4.22], { mode: "stand", expr: "worry", blink: blink(10) }); place("H", [2.8, Y0, -4.98], { mode: "stand", expr: "calm" }); }
+    if (id === 107) place("H", [-0.55, CY, -16.6], { mode: "stand", expr: "calm" });
+    if (id === 108) place("H", [0.25, CY, -23 - 3 * u], { mode: "stand", expr: "calm" });
+    if (id === 111) { place("Y", [2.2, Y0, -3.55], { mode: "stand", expr: "worry", back: true }); place("N", [2.6, Y0, -3.72], { mode: "stand", expr: "mute", back: true }, 0.72); }
     if (id === 22) { place("Y", [2.3, Y0, -3.7], { mode: "stand", expr: "worry" }); place("N", [2.66, Y0, -4.02], { mode: "stand", expr: "talk", look: 0.8 }, 0.72); }
     if ([24, 27, 31].includes(id)) { place("Y", [1.6, Y0, -3.2], { mode: "stand", expr: "worry", blink: blink(4), look: id === 24 ? 0.6 : 0 }); place("N", [1.92, Y0, -3.28], { mode: "stand", expr: "mute", blink: blink(5) }, 0.72); }
     if (id === 40) { place("Y", [2.15, Y0, -3.55], { mode: "stand", expr: "worry", blink: blink(6) }); place("N", [2.5, Y0, -3.68], { mode: "stand", expr: "mute" }, 0.72); }

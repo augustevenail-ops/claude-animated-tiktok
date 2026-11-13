@@ -13,7 +13,7 @@ import { drawChar, CharSpec } from "../shared/chars";
 import { painted } from "../shared/painted";
 import {
   FPS, V3, COLS, FLOORS, COLW, FLH, HALFW, B_X, TOWER_H, colX, MY_COL, MY_FLOOR, Y0, WIN, WIN_W, WIN_H, YOU, NOE, YOU_WIN, SPK_IN, SPK_OUT,
-  CY, DOOR_Z, SHOTS, camAt, winState, greenAt, smooth, clamp01, hash, uOf, tW, KNOCKS, HANDLE, MY_DOOR_Z, HY, HALL, GRILLE, PALM, STAGE_Z, stairAt,
+  CY, DOOR_Z, SHOTS, camAt, winState, greenAt, smooth, clamp01, hash, uOf, tW, KNOCKS, HANDLE, MY_DOOR_Z, ROLE, HY, HALL, GRILLE, PALM, STAGE_Z, stairAt,
 } from "./story";
 import { NIGHT, FOG_IN, FOG_OUT } from "./look";
 
@@ -135,7 +135,7 @@ const LOOK: Record<string, Partial<CharSpec>> = {
   B: { jacket: "#a0522d", pants: "#2e3040", shoes: "#1b1a22", hair: "short", hairColor: "#24201f" },
   C: { jacket: "#5b4f8a", pants: "#34304a", shoes: "#1b1a22", hair: "long", hairColor: "#c9c3b8" },
 };
-type Fo = { mode: "stand" | "sit"; expr: CharSpec["expr"]; blink?: boolean; look?: number; wave?: number; throat?: boolean };
+type Fo = { mode: "stand" | "sit"; expr: CharSpec["expr"]; blink?: boolean; look?: number; wave?: number; throat?: boolean; back?: boolean };
 const tierOf = (d: number): [number, number, number] => (d < 3.5 ? [1080, 1800, 1.8] : d < 14 ? [600, 1000, 1] : [300, 500, 0.5]);
 const MEN: V3[] = [[-3.2, 0, 10.5], [1.0, 0, 11], [4.6, 0, 9.8], [-1.2, 0, 14.2], [3.0, 0, 15], [-5.6, 0, 15.5], [7.0, 0, 13.5]];
 
@@ -339,8 +339,8 @@ export class World {
       hb(x0, 0, z1, -0.75, h, z1 + 0.4, tw, 0.4); hb(0.75, 0, z1, x1, h, z1 + 0.4, tw, 0.4); hb(-0.75, 2.3, z1, 0.75, h, z1 + 0.4, tw, 0.4);
       for (let px = -24; px <= 24; px += 12) for (let pz = -72; pz >= -136; pz -= 12) hb(px - 0.4, 0, pz - 0.4, px + 0.4, h, pz + 0.4, conc, 0.3);
       hb(-11, 0, STAGE_Z - 4, 11, 3, STAGE_Z, solid("stage", "#2a2d31")); hb(-11, 3, STAGE_Z - 0.05, 11, 4.1, STAGE_Z, solid("rail", "#1e2124"));
-      for (let k = -2; k <= 2; k++) { const x = k * 3; b.add(new THREE.CylinderGeometry(0.02, 0.02, 1.4, 6).translate(x, HY + 3.7, STAGE_Z + 0.45), dark); b.add(new THREE.SphereGeometry(0.06, 10, 8).translate(x, HY + 4.45, STAGE_Z + 0.5), dark);
-        b.add(new THREE.CylinderGeometry(0.9, 0.2, 1.4, 18, 1, true).rotateX(Math.PI / 2 + 0.25).translate(x * 2.2, HY + 8.2, z0 + 0.9), metal); }
+      for (let k = -2; k <= 2; k++) { const x = k * 1.5; b.add(new THREE.CylinderGeometry(0.02, 0.02, 1.4, 6).translate(x, HY + 3.7, STAGE_Z + 0.45), dark); b.add(new THREE.SphereGeometry(0.06, 10, 8).translate(x, HY + 4.45, STAGE_Z + 0.5), dark);
+        b.add(new THREE.CylinderGeometry(0.9, 0.2, 1.4, 18, 1, true).rotateX(Math.PI / 2 + 0.25).translate(x * 4.4, HY + 8.2, z0 + 0.9), metal); }
       for (let lx = -24; lx <= 24; lx += 16) for (let lz = -78; lz >= -142; lz -= 16) {
         b.add(new THREE.CylinderGeometry(0.015, 0.015, 3, 4).translate(lx, HY + h - 1.5, lz), dark);
         const bulb = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.18, 0.5), basic("#ff3a2a")); bulb.position.set(lx, HY + h - 3.1, lz); bulb.layers.set(NOINK); R.add(bulb);
@@ -355,7 +355,8 @@ export class World {
     // lueur derrière la porte de ta chambre (le couloir)
     { const m = new THREE.Mesh(new THREE.PlaneGeometry(2.0, 2.6), new THREE.MeshBasicMaterial({ map: glowTex("200,225,255"), transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false })); m.position.set(2.8, Y0 + 1.1, -5.4); m.layers.set(NOINK); R.add(m); }
     b.build(R, true);
-    R.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh || Array.isArray(m.material)) return; const mt = m.material as THREE.MeshLambertMaterial;   // textures fines peintes
+    const seenMat = new Set<THREE.Material>();
+    R.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh || Array.isArray(m.material) || seenMat.has(m.material)) return; seenMat.add(m.material); const mt = m.material as THREE.MeshLambertMaterial;   // textures fines peintes
       if (["ap_facade", "ap_deadwin", "ap_concrete"].includes(mt.name)) painted(mt, 0.18, 0.35, 0);
       else if (["ap_asphalt", "ap_court", "ap_road"].includes(mt.name)) painted(mt, 0.3, 0.6, 0);
       else if (["ap_roomwall", "ap_tiles", "ap_lino2", "ap_roomfloor"].includes(mt.name)) painted(mt, 0.16, 4, 0);
@@ -398,8 +399,8 @@ export class World {
   }
 
   /** pose le monde pour le plan id à l'image f ; renvoie le point visé */
-  update(id: number, f: number, cam: THREE.PerspectiveCamera, scene: THREE.Scene) {
-    const t = f / FPS, c = camAt(id, f), u = uOf(id, f);
+  update(sid: number, f: number, cam: THREE.PerspectiveCamera, scene: THREE.Scene) {
+    const t = f / FPS, c = camAt(sid, f), u = uOf(sid, f), id = ROLE[sid];
     cam.position.set(...c.pos); cam.up.set(0, 1, 0); cam.lookAt(...c.look); cam.rotateZ(c.roll);
     if (cam.fov !== c.fov || cam.near !== c.near || cam.far !== c.far) { cam.fov = c.fov; cam.near = c.near; cam.far = c.far; cam.updateProjectionMatrix(); }
     cam.layers.enable(NOINK); cam.updateMatrixWorld();
@@ -417,13 +418,13 @@ export class World {
     TONE.uShadeCol.value.set(L.shade[0], L.shade[1] + 0.12 * g, L.shade[2]); if (hall || deep) TONE.uShadeCol.value.set(0.3, 0.13, 0.16);
     TONE.uShadeLift.value.set(...L.lift); TONE.uLambert.value = 0.35; TONE.uSideK.value = 0.84; TONE.uTerm.value = 0.2; TONE.uBounce.value.set(0, 0, 0); TONE.uSat.value = L.sat;
     CHAR.uCharTint.value.set(L.charTint[0] * (1 - 0.25 * g), L.charTint[1] * (1 + 0.35 * g), L.charTint[2] * (1 - 0.1 * g)); if (hall || deep) CHAR.uCharTint.value.set(1.15, 0.72, 0.72); CHAR.uCharShade.value = 0.72; CHAR.uGrad.value = 0.09; CHAR.uBodyGrad.value = 0.22; CHAR.uSideTint.value.set(0.8, 0.86, 1.0);
-    const F = outside ? FOG_OUT : FOG_IN; untone(F.col, this.fog.color); this.fog.near = F.near; this.fog.far = id === 28 ? 4500 : F.far; if (hall) { this.fog.color.set("#160506"); this.fog.near = 12; this.fog.far = 110; } scene.fog = this.fog; scene.background = new THREE.Color(outside ? "#0b1014" : "#05070a");
+    const F = outside ? FOG_OUT : FOG_IN; untone(F.col, this.fog.color); this.fog.near = F.near; this.fog.far = id === 28 || id === 200 ? 4500 : F.far; if (hall) { this.fog.color.set("#160506"); this.fog.near = 12; this.fog.far = 110; } scene.fog = this.fog; scene.background = new THREE.Color(outside ? "#0b1014" : "#05070a");
     for (const m of this.greens) (m.material as THREE.MeshBasicMaterial).opacity = g * 0.9;
     // fenêtres de la tour
     if (outside) {
       for (let face = 0; face < 2; face++) for (let fl = 0; fl < FLOORS; fl++) for (let cc = 0; cc < COLS; cc++) {
         const st = winState(face, cc, fl, t), h = hash(cc * 31 + fl, face);
-        const far = id === 28 ? 1.8 : 1; if ((st as number) === 4) this.winCol.setRGB(1.7 * far, 1.15 * far, 0.6 * far); else if (st === 1) this.winCol.setRGB(0.25 * far, (1.5 + 0.25 * h) * far, 0.55 * far); else if (st === 2) this.winCol.setRGB(1.9 * far, 0.16, 0.12);
+        const far = id === 28 || id === 200 ? 1.8 : 1; if ((st as number) === 4) this.winCol.setRGB(1.7 * far, 1.15 * far, 0.6 * far); else if (st === 1) this.winCol.setRGB(0.25 * far, (1.5 + 0.25 * h) * far, 0.55 * far); else if (st === 2) this.winCol.setRGB(1.9 * far, 0.16, 0.12);
         else if (st === 3) this.winCol.setRGB(0.55, 0.3, 0.12); else this.winCol.setRGB(0.05 + 0.03 * h, 0.06 + 0.03 * h, 0.08 + 0.04 * h);
         this.wins.setColorAt((face * FLOORS + fl) * COLS + cc, this.winCol);
       }
@@ -447,12 +448,12 @@ export class World {
       cr.pts.forEach((p, i) => { const yw = Math.atan2(cam.position.x - p[0], cam.position.z - p[2]); mmx.compose(V(...p), qy.setFromAxisAngle(V(0, 1, 0), yw), V(1, 1, 1)); cr.m.setMatrixAt(i, mmx); });
       cr.m.instanceMatrix.needsUpdate = true; }
     this.palm.mesh.visible = id === 23 || id === 24;
-    if (this.palm.mesh.visible) { const k = id === 23 ? 0 : clamp01((t - tW(118)) / (tW(122) + 0.5 - tW(118))); this.palm.draw("p" + Math.round(k * 60), (g2, w, h) => drawPalm(g2, w, h, k, id === 23 ? u : 1)); }
+    if (this.palm.mesh.visible) { const k = id === 23 ? 0 : clamp01((t - tW(157)) / (tW(160) + 0.5 - tW(157))); this.palm.draw("p" + Math.round(k * 60), (g2, w, h) => drawPalm(g2, w, h, k, id === 23 ? u : 1)); }
     { const pa = this.dust.geometry.attributes.position as THREE.BufferAttribute; for (let i = 0; i < pa.count; i++) { const z0 = -60.1 - hash(i, 73) * 1.4; pa.setZ(i, -60.1 - (((-z0 - 60.1) + t * 0.25 * (0.5 + hash(i, 74))) % 1.4)); pa.setX(i, GRILLE[0] + (hash(i, 71) - 0.5) * 0.9 + 0.05 * Math.sin(t + i)); } pa.needsUpdate = true; this.dust.visible = id >= 33 && id <= 38; }
     for (const gl of this.hallGlows) (gl.material as THREE.MeshBasicMaterial).opacity = 0.5 + 0.08 * Math.sin(t * 3 + gl.position.x);
     for (const m of this.fogs) { m.quaternion.copy(cam.quaternion); m.position.x += 0; }
     this.fogs.forEach((m, i) => { m.position.x = -40 + hash(i, 21) * 120 + 6 * Math.sin(t * 0.05 + i); m.visible = outside; });
-    const pa = this.ash.geometry.attributes.position as THREE.BufferAttribute, box = outside ? (c.pos[1] > 150 || id === 28 ? 0 : id === 25 ? 60 : 14) : 0;
+    const pa = this.ash.geometry.attributes.position as THREE.BufferAttribute, box = outside ? (c.pos[1] > 150 || id === 28 || id === 200 ? 0 : id === 25 ? 60 : 14) : 0;
     this.ash.visible = box > 0;
     if (box > 0) { for (let i = 0; i < pa.count; i++) { const bx = this.ashBase[i * 3], by = this.ashBase[i * 3 + 1], bz = this.ashBase[i * 3 + 2];
       const wrap = (v: number) => ((v % 1) + 1) % 1 - 0.5;
@@ -466,12 +467,19 @@ export class World {
       const A = this.actors[k++]; if (!A) return;
       const d = cam.position.distanceTo(V(p[0], p[1] + 1.1 * scale, p[2])), [w, h, kk] = tierOf(d / scale);
       A.r = this.pool.req(`${key}|${JSON.stringify(fo)}`, w, h, kk, (pen: Pen) => drawChar(pen, { ...(LOOK[key] as CharSpec), ...fo, blink: !!fo.blink, look: fo.look ?? 0, wave: fo.wave ?? 0, throat: !!fo.throat }));
-      A.mesh.position.set(...p); A.mesh.rotation.set(lean, yaw(p), 0); A.mesh.scale.setScalar(scale); A.mesh.visible = true;
+      A.mesh.position.set(...p); A.mesh.up.set(0, 1, 0); A.mesh.rotation.set(lean, yaw(p), 0); A.mesh.scale.setScalar(scale); A.mesh.visible = true;
     };
     const blink = (seed: number) => (f + seed * 37) % 97 < 4;
     const lerpV = (a: V3, b: V3, w: number): V3 => [a[0] + (b[0] - a[0]) * w, a[1] + (b[1] - a[1]) * w, a[2] + (b[2] - a[2]) * w];
     const onStair = (key: string, d: number, fo: Fo, sc = 1) => { const p = stairAt(Math.max(0, d)); place(key, p, fo, sc); const m = this.actors[k - 1]?.mesh; if (m) { m.up.set(0, 1, 0).applyQuaternion(cam.quaternion); m.lookAt(cam.position); m.up.set(0, 1, 0); } };
     const Hp = (x: number, z: number, y = 0): V3 => [x, HY + y, z];
+    if (id === 201) { const lead = 2.6 + 2.4 * u; for (const [key, dd] of [["H", 0], ["B", 0.6], ["H", 1.2], ["H", 3.4], ["C", 4.1]] as [string, number][]) onStair(key, lead - dd + (dd > 2 ? 1.2 : 0), key === "H" ? { mode: "stand", expr: "calm" } : { mode: "stand", expr: "mute", throat: true }); }
+    if (id === 202) { const z = -26.6 - 2.2 * u; place("H", [-0.5, CY, z], { mode: "stand", expr: "calm" }); place("M", [0.02, CY, z - 0.5], { mode: "stand", expr: "mute", throat: true }, 0.98); place("H", [0.52, CY, z - 0.2], { mode: "stand", expr: "calm" }); }
+    if (id === 203) { place("Y", YOU, { mode: "sit", expr: "talk", blink: blink(11) }); place("N", NOE, { mode: "sit", expr: "mute", throat: true }, 0.72); }
+    if (id === 204) place("H", [0.85, CY, MY_DOOR_Z + 0.15], { mode: "stand", expr: "calm" });
+    if (id === 205) place("H", Hp(1.5, -136), { mode: "stand", expr: "calm", throat: true });
+    if (id === 206) { for (let q = -2; q <= 2; q++) place("H", Hp(q * 1.5 - 0.12, STAGE_Z + 0.2, 3), { mode: "stand", expr: "calm" }); }
+    if (id === 207) place("N", Hp(-8.0, -60.6), { mode: "stand", expr: "worry", back: true }, 0.72);
     if (id === 2) { const w = smooth(u * 1.4); place("Y", lerpV([1.3, CY, -12.8], [0.55, CY, -12.6], w), { mode: "stand", expr: "worry", blink: blink(1) }); place("N", lerpV([1.35, CY, -13.3], [0.75, CY, -13.25], smooth(u * 1.4 - 0.2)), { mode: "stand", expr: "worry" }, 0.72); }
     if (id === 9) { place("Y", [-0.25, CY, -29.3], { mode: "stand", expr: "worry", blink: blink(2) }); place("N", [0.2, CY, -29.4], { mode: "stand", expr: "worry", look: -0.7 }, 0.72); }
     if (id === 10) { onStair("Y", 1.5 + 1.0 * u, { mode: "stand", expr: "worry" }); onStair("N", 1.1 + 1.0 * u, { mode: "stand", expr: "worry" }, 0.72); }
@@ -480,7 +488,7 @@ export class World {
     if (id === 19) place("C", Hp(-4.75, -92.5), { mode: "stand", expr: "calm", blink: u > 0.45 && u < 0.6 });
     if (id >= 20 && id <= 22) { place("M", [3.0, HY, -99.2], { mode: "stand", expr: id === 20 ? "worry" : "calm", blink: blink(4), look: id === 20 ? -0.5 * (1 - smooth(u * 2)) : 0 }, 0.98);
       if (id === 22) { place("Y", Hp(2.35, -98.75), { mode: "stand", expr: "worry" }); place("N", Hp(2.75, -98.6), { mode: "stand", expr: "calm" }, 0.72); } }
-    if (id === 27) for (let q = -2; q <= 2; q++) place("H", Hp(q * 3, STAGE_Z + 0.2, 3), { mode: "stand", expr: "calm" });
+    if (id === 27) for (let q = -2; q <= 2; q++) place("H", Hp(q * 1.5 - 0.12, STAGE_Z + 0.2, 3), { mode: "stand", expr: "calm" });
     if (id === 30) { onStair("H", 38.6 + 0.8 * u, { mode: "stand", expr: "calm" }); onStair("H", 37.9 + 0.8 * u, { mode: "stand", expr: "calm" }); onStair("H", 37.2 + 0.8 * u, { mode: "stand", expr: "calm" }); }
     if (id === 31 || id === 38) { place("Y", Hp(-8.5, -61.35), { mode: "stand", expr: "worry", blink: blink(5) }); place("N", Hp(-7.95, -60.75), { mode: "stand", expr: "worry" }, 0.72); place("M", Hp(-7.25, -61.55), { mode: "stand", expr: "worry", blink: blink(6) }, 0.98); }
     if (id === 32) { onStair("H", 41.6 + 0.7 * u, { mode: "stand", expr: "calm" }); onStair("H", 40.9 + 0.7 * u, { mode: "stand", expr: "calm" }); }

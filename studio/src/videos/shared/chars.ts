@@ -18,6 +18,7 @@ const mix = (a: string, b: string, t: number) => { const x = hex(a), y = hex(b);
 export type CharSpec = {
   mode: "stand" | "sit"; expr: "calm" | "worry" | "smile_fixed" | "creepy" | "shadow" | "mute" | "talk" | "laugh"; blink?: boolean; look?: number; wave?: number;
   /** main sur la gorge (ne peut plus parler) ; masque intégral à visière (hommes en blanc) */ throat?: boolean; mask?: boolean;
+  /** vu de dos (tête = cheveux / capuche, pas de visage) */ back?: boolean;
   jacket: string; pants: string; shoes: string; skin?: string; hair?: "side" | "short" | "long" | "none"; hairColor?: string; hood?: boolean; shadow?: boolean;
 };
 
@@ -85,7 +86,7 @@ export const drawChar = (p: Pen, s: CharSpec) => {
     const rim = g.createLinearGradient(cx - tw / 2, 0, cx + tw / 2, 0); rim.addColorStop(0, "rgba(160,185,255,0.36)"); rim.addColorStop(0.16, "rgba(160,185,255,0)"); rim.addColorStop(0.86, "rgba(255,170,100,0)"); rim.addColorStop(1, "rgba(255,170,100,0.26)");
     g.fillStyle = rim; g.fillRect(cx - tw / 2, torsoTop, tw, hip - torsoTop); g.restore(); }
   g.lineWidth = OL; g.strokeStyle = INK; g.stroke();
-  if (s.hood && !s.shadow) { g.strokeStyle = "#aab2d0"; g.lineWidth = 3.4; g.lineCap = "round"; for (const sx of [-1, 1]) { g.beginPath(); g.moveTo(cx + sx * 12, torsoTop + 6); g.lineTo(cx + sx * 12, torsoTop + 66); g.stroke(); g.fillStyle = "#dfe4f4"; g.beginPath(); g.arc(cx + sx * 12, torsoTop + 70, 4.2, 0, 7); g.fill(); }
+  if (s.hood && !s.shadow && !s.back) { g.strokeStyle = "#aab2d0"; g.lineWidth = 3.4; g.lineCap = "round"; for (const sx of [-1, 1]) { g.beginPath(); g.moveTo(cx + sx * 12, torsoTop + 6); g.lineTo(cx + sx * 12, torsoTop + 66); g.stroke(); g.fillStyle = "#dfe4f4"; g.beginPath(); g.arc(cx + sx * 12, torsoTop + 70, 4.2, 0, 7); g.fill(); }
     g.strokeStyle = shade(jacket, 0.6); g.lineWidth = 3.2; g.beginPath(); g.moveTo(cx - 44, hip - 70); g.quadraticCurveTo(cx, hip - 52, cx + 44, hip - 70); g.stroke(); }
   // bras (tubes) + mains (ronds blancs)
   const hand = s.shadow ? "#0a0a10" : "#f4f4f7", wave = s.wave ?? 0;
@@ -106,14 +107,17 @@ export const drawChar = (p: Pen, s: CharSpec) => {
     const rg = g.createRadialGradient(cx - 6, hy + 10, 6, cx, hy, R * 1.04); rg.addColorStop(0, "#ffffff"); rg.addColorStop(0.55, mix("#ffffff", skin, 0.12)); rg.addColorStop(0.86, mix("#ffffff", skin, 0.55)); rg.addColorStop(1, skin);
     g.beginPath(); g.arc(cx, hy, R, 0, 7); g.fillStyle = rg; g.fill(); g.lineWidth = OL; g.strokeStyle = INK; g.stroke();
   }
-  if (!s.shadow) { g.save(); g.lineCap = "round"; g.strokeStyle = "rgba(255,150,160,0.13)"; g.lineWidth = 1; g.fillStyle = "rgba(255,150,160,0.12)";
+  if (!s.shadow && !s.back) { g.save(); g.lineCap = "round"; g.strokeStyle = "rgba(255,150,160,0.13)"; g.lineWidth = 1; g.fillStyle = "rgba(255,150,160,0.12)";
     for (const sx of [-1, 1]) { g.beginPath(); g.ellipse(cx + sx * 27 * u, hy + 15 * u, 9 * u, 5 * u, 0, 0, 7); g.fill(); }
     g.beginPath(); g.arc(cx, hy, R - 4.5, 0.78 * Math.PI, 1.3 * Math.PI); g.strokeStyle = "rgba(165,190,255,0.62)"; g.lineWidth = 5; g.stroke();            // lumière de contour froide (fenêtre)
     g.beginPath(); g.arc(cx, hy, R - 4.5, -0.28 * Math.PI, 0.3 * Math.PI); g.strokeStyle = "rgba(255,175,105,0.42)"; g.lineWidth = 4.5; g.stroke(); g.restore(); }
-  if (s.hair && s.hair !== "none" && !s.mask) hairShape(g, (x) => cx + x * u, (y) => hy + y * u, s.hair === "long" ? "side" : s.hair, s.hairColor ?? "#5a3a26", u);
+  if (s.back && !s.mask) { const hc = s.hair && s.hair !== "none" ? s.hairColor ?? "#5a3a26" : "#c9ccd6"; g.beginPath(); g.arc(cx, hy, R + 2, 0, 7); g.fillStyle = vgrad(g, hy - R, hy + R, hc); g.fill(); g.lineWidth = OL; g.strokeStyle = INK; g.stroke();
+    g.strokeStyle = "rgba(0,0,0,0.18)"; g.lineWidth = 3; for (const k of [-1, 0, 1]) { g.beginPath(); g.moveTo(cx + k * 30, hy - R + 20); g.quadraticCurveTo(cx + k * 38, hy, cx + k * 26, hy + R - 10); g.stroke(); } }
+  else if (s.hair && s.hair !== "none" && !s.mask) hairShape(g, (x) => cx + x * u, (y) => hy + y * u, s.hair === "long" ? "side" : s.hair, s.hairColor ?? "#5a3a26", u);
   // visage
   const ex = 19 * u, ey = hy + 2 * u, look = (s.look ?? 0) * 2.4 * u;
-  if (s.shadow) {
+  if (s.back) { /* de dos : pas de visage */ }
+  else if (s.shadow) {
     g.save(); for (const sx of [-1, 1]) { g.shadowColor = "rgba(255,255,255,0.95)"; g.shadowBlur = 9 * u; g.fillStyle = "#ffffff"; g.beginPath(); g.ellipse(cx + sx * ex, ey, 10.5 * u, 5.6 * u, sx * 0.13, 0, 7); g.fill(); }
     g.restore(); g.fillStyle = INK; for (const sx of [-1, 1]) { g.beginPath(); g.arc(cx + sx * ex + look, ey + 0.5 * u, 1.5 * u, 0, 7); g.fill(); }
     grin(g, cx, hy + 22 * u, u, true);
@@ -139,10 +143,12 @@ export const drawChar = (p: Pen, s: CharSpec) => {
   if (s.mask) {   // capuche de combinaison + visière sombre + filtres
     const hood = g.createRadialGradient(cx - 20, hy - 30, 10, cx, hy, R * 1.2); hood.addColorStop(0, "#ffffff"); hood.addColorStop(1, "#b9c0cc");
     g.beginPath(); g.ellipse(cx, hy + 6, R * 1.1, R * 1.12, 0, 0, 7); g.fillStyle = hood; g.fill(); g.lineWidth = OL; g.strokeStyle = INK; g.stroke();
+    if (!s.back) {
     g.beginPath(); g.roundRect(cx - 64, hy - 34, 128, 70, 30); const vz = g.createLinearGradient(0, hy - 34, 0, hy + 36); vz.addColorStop(0, "#1d2b33"); vz.addColorStop(1, "#05080b"); g.fillStyle = vz; g.fill(); g.lineWidth = OL; g.stroke();
     g.strokeStyle = "rgba(150,255,210,0.45)"; g.lineWidth = 5; g.beginPath(); g.moveTo(cx - 44, hy - 18); g.quadraticCurveTo(cx - 10, hy - 28, cx + 30, hy - 22); g.stroke();
     for (const sx of [-1, 1]) ball(g, cx + sx * 34, hy + 62, 17, "#6d7480");
+    }
   }
-  if (s.throat) { ball(g, cx + 26, torsoTop - 6, 27, s.shadow ? "#0a0a10" : "#f4f4f7"); }
+  if (s.throat && !s.back) { ball(g, cx + 26, torsoTop - 6, 27, s.shadow ? "#0a0a10" : "#f4f4f7"); }
   g.restore();
 };

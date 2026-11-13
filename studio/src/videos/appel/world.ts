@@ -12,7 +12,7 @@ import { drawChar, CharSpec } from "../shared/chars";
 import { painted } from "../shared/painted";
 import {
   FPS, V3, COLS, FLOORS, COLW, FLH, HALFW, B_X, TOWER_H, colX, MY_COL, MY_FLOOR, Y0, WIN, WIN_W, WIN_H, YOU, NOE, YOU_WIN, SPK_IN, SPK_OUT,
-  CY, DOOR_Z, SHOTS, camAt, winState, greenIn, smooth, clamp01, hash, uOf, tW, stairAt,
+  CY, DOOR_Z, SHOTS, camAt, winState, greenIn, smooth, clamp01, hash, uOf, tW, stairAt, ROLE,
 } from "./story";
 import { NIGHT, FOG_IN, FOG_OUT } from "./look";
 
@@ -316,8 +316,8 @@ export class World {
   }
 
   /** pose le monde pour le plan id à l'image f ; renvoie le point visé */
-  update(id: number, f: number, cam: THREE.PerspectiveCamera, scene: THREE.Scene) {
-    const t = f / FPS, c = camAt(id, f), u = uOf(id, f);
+  update(sid: number, f: number, cam: THREE.PerspectiveCamera, scene: THREE.Scene) {
+    const t = f / FPS, c = camAt(sid, f), u = uOf(sid, f), id = ROLE[sid];
     cam.position.set(...c.pos); cam.up.set(0, 1, 0); cam.lookAt(...c.look); cam.rotateZ(c.roll);
     if (cam.fov !== c.fov || cam.near !== c.near || cam.far !== c.far) { cam.fov = c.fov; cam.near = c.near; cam.far = c.far; cam.updateProjectionMatrix(); }
     cam.layers.enable(NOINK); cam.updateMatrixWorld();

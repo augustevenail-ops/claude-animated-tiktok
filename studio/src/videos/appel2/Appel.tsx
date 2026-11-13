@@ -12,7 +12,9 @@ import { LensBlurEffect } from "../bridge/lensblur";
 import { GradeEffect } from "../bridge/grade";
 
 import { World } from "./world";
-import { TOTAL, FPS, WORDS, shotAt, dofAt, CHOICE_AT } from "./story";
+import { TOTAL, FPS, WORDS, shotAt, dofAt, CHOICE_AT, TITLE_AT, camAt, CY, OPEN_TIMES, T_NEIGH } from "./story";
+import { Captions, captionGroups, Hud, ChoiceCards, TitleCard, useFonts } from "../shared/overlay";
+const GROUPS = captionGroups(WORDS);
 import { GRADE_NIGHT } from "./look";
 
 export const APPEL2_FRAMES = TOTAL;
@@ -65,46 +67,12 @@ const Inner: React.FC = () => {
   return (<><primitive object={world.root} dispose={null} />{chain}</>);
 };
 
-// ---------------- sous-titres : 1-3 mots, MAJUSCULES, tout en blanc, contour noir, 56 px, centre à 73 % ----------------
-type W = { w: string; s: number; e: number; q?: number };
-const clean = (w: string) => w.replace(/[«»"“”]/g, "").replace(/\.\.\.|…/g, "").replace(/[.,:;!?]+$/g, "").toUpperCase();
-const GROUPS: { s: number; e: number; text: string }[] = (() => {
-  const out: { s: number; e: number; text: string }[] = []; let cur: W[] = [];
-  const flush = () => { if (cur.length) out.push({ s: cur[0].s, e: cur[cur.length - 1].e, text: cur.map((x) => clean(x.w)).join(" ") }); cur = []; };
-  for (const w of WORDS as W[]) {
-    if (w.q) flush();
-    cur.push(w);
-    const len = cur.map((x) => clean(x.w)).join(" ").length;
-    if (/[.,:;!?…»]$|\.\.\.$/.test(w.w) || cur.length >= 3 || len > 14) flush();
-  }
-  flush();
-  for (let i = 0; i < out.length - 1; i++) out[i].e = out[i + 1].s;
-  return out;
-})();
-const Captions: React.FC<{ t: number }> = ({ t }) => {
-  const g = GROUPS.find((x) => t >= x.s - 0.03 && t < x.e);
-  if (!g) return null;
-  return (
-    <div style={{ position: "absolute", left: 0, right: 0, top: "73%", transform: "translateY(-50%)", textAlign: "center", padding: "0 90px" }}>
-      <span style={{ fontFamily: "'Liberation Sans', 'DejaVu Sans', Arial, sans-serif", fontWeight: 900, fontSize: 56, letterSpacing: 0.5, color: "#ffffff",
-        WebkitTextStroke: "8px #000", paintOrder: "stroke fill", textShadow: "0 3px 6px rgba(0,0,0,0.55)" }}>{g.text}</span>
-    </div>
-  );
-};
-
-const Choice: React.FC<{ t: number }> = ({ t }) => {
-  if (t < CHOICE_AT) return null;
-  const k = Math.min(1, (t - CHOICE_AT) / 0.25);
-  const pill = (txt: string, col: string, x: number, y: number) => (
-    <div style={{ position: "absolute", left: x, top: y, transform: `scale(${0.8 + 0.2 * k})`, opacity: k, padding: "10px 20px", borderRadius: 12, background: "rgba(10,10,14,0.82)",
-      border: `4px solid ${col}`, fontFamily: "'Liberation Sans', 'DejaVu Sans', sans-serif", fontWeight: 900, fontSize: 32, color: "#fff" }}>{txt}</div>
-  );
-  return <>{pill("A · OUVRIR LA PORTE", "#7ee08a", 70, 330)}{pill("B · RESTER CACHÉ", "#ff4a3d", 70, 440)}</>;
-};
-
 const GRAIN = "data:image/svg+xml;utf8," + encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 1.4 -0.2'/></filter><rect width='100%' height='100%' filter='url(#n)'/></svg>");
 
+const doorsAt = (t: number) => (t > T_NEIGH + 0.5 ? 1 : 0) + OPEN_TIMES.filter((x) => x < t).length;
+const placeOf = (f: number) => { const y = camAt(shotAt(f).id, f).pos[1]; return y < CY - 1.5 ? { place: `SOUS-SOL -${Math.min(12, Math.max(1, Math.ceil((CY - y) / 3)))}`, of: undefined } : { place: "ÉTAGE 24", of: "75" }; };
 export const AppelEp2: React.FC = () => {
+  useFonts();
   const f = useCurrentFrame(), t = f / FPS;
   const on = post();
   return (
@@ -113,8 +81,10 @@ export const AppelEp2: React.FC = () => {
         <Inner />
       </ThreeCanvas>
       <div style={{ position: "absolute", inset: 0, mixBlendMode: "overlay", opacity: 0.13, backgroundImage: `url("${GRAIN}")`, backgroundSize: "260px 260px", backgroundPosition: `${(f * 53) % 260}px ${(f * 97) % 260}px` }} />
-      <Choice t={t} />
-      <Captions t={t} />
+      {t < TITLE_AT ? <Hud episode={2} {...placeOf(f)} label="PORTES OUVERTES" count={doorsAt(t)} alert={doorsAt(t) > 0} /> : null}
+      {t < TITLE_AT ? <ChoiceCards t={t} at={CHOICE_AT} a="OUVRIR LA PORTE" b="RESTER CACHÉ" /> : null}
+      {t < CHOICE_AT ? <Captions t={t} groups={GROUPS} /> : null}
+      <TitleCard t={t} at={TITLE_AT} title="L'APPEL" episode={2} />
       {on.audio ? <Audio src={staticFile("appel2/mix.wav")} /> : null}
     </AbsoluteFill>
   );

@@ -33,9 +33,15 @@ export const VOICE_AT = 0.35;
 export type W = { w: string; s: number; e: number; q?: number; role?: string };
 export const WORDS: W[] = (RAW as W[]).map((w) => ({ ...w, s: w.s + VOICE_AT, e: w.e + VOICE_AT }));
 /** premier mot de chaque plan (indice dans words.json) */
-const ANCH = [0, 1, 9, 14, 20, 27, 34, 37, 42, 45, 48, 53, 56, 66, 70, 74, 78, 83, 95, 101, 109, 118, 121, 129, 133, 136, 149, 157, 164, 170, 173, 181, 183, 191, 197, 202, 206, 211, 213, 218, 226];
+const OLD_ANCH = [0, 1, 9, 14, 20, 27, 34, 37, 42, 45, 48, 53, 56, 66, 70, 74, 78, 83, 95, 101, 109, 118, 121, 129, 133, 136, 149, 157, 164, 170, 173, 181, 183, 191, 197, 202, 206, 211, 213, 218, 226];
+/** affiches des règles tenues pendant toute la phrase (consigne du 2026-11-13) : on retire les plans 13, 26 et 31 de l'ancien découpage */
+const PLAN: [number, number][] = OLD_ANCH.map((a, i) => [a, i + 1] as [number, number]).filter((p) => ![13, 26, 31].includes(p[1]));
+const ANCH = PLAN.map((p) => p[0]);
+export const ROLE: Record<number, number> = Object.fromEntries(PLAN.map((p, i) => [i + 1, p[1]]));
 const starts = ANCH.map((wi, i) => (i === 0 ? 0 : WORDS[wi].s - 2 / FPS));
-export const END_T = WORDS[WORDS.length - 1].e + 1.6;
+export const TITLE_DUR = 2.0;
+export const END_T = WORDS[WORDS.length - 1].e + 1.6 + TITLE_DUR;
+export const TITLE_AT = END_T - TITLE_DUR;
 export type ShotDef = { id: number; a: number; b: number };
 export const SHOTS: ShotDef[] = starts.map((a, i) => ({ id: i + 1, a: Math.round(a * FPS), b: Math.round((i + 1 < starts.length ? starts[i + 1] : END_T) * FPS) }));
 export const TOTAL = SHOTS[SHOTS.length - 1].b;
@@ -63,7 +69,7 @@ const P = (pos: V3, look: V3, fov = 40, roll = 0, near = 0.05, far = 400): Cam =
 const X = (pos: V3, look: V3, fov = 45, roll = 0): Cam => P(pos, look, fov, roll, 0.6, 7000);       // extérieur (grandes distances)
 const C = (dz: number): V3 => [0, CY + 1.55, dz];
 const yH = (p: V3, h: number): V3 => [p[0], p[1] + h, p[2]];
-const CAMS: Record<number, (u: number, f: number) => Cam> = {
+const OLD: Record<number, (u: number, f: number) => Cam> = {
   1: (u) => P(lerp3([YOU[0] + 0.05, YOU[1] + 0.63, YOU[2] + 1.35] as V3, [YOU[0] + 0.03, YOU[1] + 0.78, YOU[2] + 1.25] as V3, smooth(u * 3)), yH(YOU, 0.82 + 0.06 * smooth(u * 4)), 36),
   2: (u) => X(lerp3([30, 1.6, 178], [27, 3, 170], glide(u)), lerp3([12, 8, 130], [0, 220, 10], glide(u)), 60),
   3: (u) => X(lerp3([7.9, Y0 + 4.1, 4.2], [7.2, Y0 + 4.3, 3.0], smooth(u)), SPK_OUT, 38),
@@ -75,7 +81,7 @@ const CAMS: Record<number, (u: number, f: number) => Cam> = {
   9: (u) => X(lerp3([-42, 5, 62], [-36, 8, 56], u), [30, 150, 22], 58),
   10: (u) => X(lerp3([30, 128, 18], [30, 124, 42], u), lerp3([50, 133, 20], [50, 131, 44], u), 46),
   11: (u) => P(lerp3([2.55, Y0 + 1.95, -3.55], [2.7, Y0 + 2.02, -3.9], smooth(u)), [2.8, Y0 + 2.2, -4.43], 30),
-  12: (u) => P(lerp3([-0.15, CY + 1.5, -1.85], [-0.5, CY + 1.5, -2.3], smooth(u)), [-1.29, CY + 1.5, -2.9], 34),
+  12: (u) => P(lerp3([0.45, CY + 1.42, -2.0], [0.3, CY + 1.42, -2.3], smooth(u)), [-1.29, CY + 1.3, -2.9], 46),   // affiche 1 : cadre large, tenue toute la règle, au-dessus du sous-titre
   13: (u) => P(lerp3([-0.25, CY + 1.42, -11.6], [-0.15, CY + 1.42, -11.9], u), [0.95, CY + 1.42, -13], 36),
   14: (u) => P(lerp3([0.35, CY + 1.42, -14.5], [0.22, CY + 1.42, -15.0], smooth(u)), [-0.95, CY + 1.42, -16], 32),
   15: (u) => P(lerp3(C(-11.5), C(-12.5), u), [0, CY + 1.2, -26], 30),
@@ -88,12 +94,12 @@ const CAMS: Record<number, (u: number, f: number) => Cam> = {
   22: (u) => P(lerp3([NOE[0] + -0.12, NOE[1] + 0.56, NOE[2] + 1.25] as V3, [NOE[0] + -0.1, NOE[1] + 0.56, NOE[2] + 1.1] as V3, u), yH(NOE, 0.6), 32),
   23: (u) => P(lerp3([NOE[0] + -0.03, NOE[1] + 0.58, NOE[2] + 1.05] as V3, [NOE[0] + -0.01, NOE[1] + 0.58, NOE[2] + 0.8] as V3, smooth(u)), yH(NOE, 0.6), 28),
   24: (u) => P(lerp3([NOE[0] + 0, NOE[1] + 0.56, NOE[2] + 0.5] as V3, [NOE[0] + 0, NOE[1] + 0.56, NOE[2] + 0.38] as V3, u), yH(NOE, 0.55), 22),
-  25: (u) => P(lerp3([2.6, Y0 + 1.5, -3.35], [2.72, Y0 + 1.5, -3.8], smooth(u)), [2.8, Y0 + 1.5, -4.47], 36),
+  25: (u) => P(lerp3([2.78, Y0 + 1.42, -2.55], [2.79, Y0 + 1.41, -2.75], smooth(u)), [2.8, Y0 + 1.28, -4.47], 46),
   26: (u) => P(lerp3([0.55, CY + 1.4, -23.6], [0.45, CY + 1.4, -24.4], u), [0, CY + 1.2, -30], 42),
   27: (_u, f) => { const y = waveY(f / FPS) + 6; return X([31, y + 2, 28], [50, y - 7, 33], 50, 0.02); },
   28: (u) => X(lerp3([30, 127, 38], [31.5, 126, 40], u), [50, 123, 52], 44),
   29: (u) => P(lerp3([0.5, Y0 + 1.6, -1.1], [0.62, Y0 + 1.62, -0.6], smooth(u)), [50, Y0 + 6, 45], 52, 0, 0.05, 3000),
-  30: (u) => P(lerp3([2.35, Y0 + 1.7, -1.35], [2.5, Y0 + 1.7, -0.95], smooth(u)), [2.62, Y0 + 1.7, -0.32], 34),
+  30: (u) => P(lerp3([2.62, Y0 + 1.66, -2.15], [2.62, Y0 + 1.66, -2.0], smooth(u)), [2.62, Y0 + 1.5, -0.32], 46),
   31: (u) => P(lerp3([1.0, Y0 + 1.5, 3.2], [1.12, Y0 + 1.5, 2.2], smooth(u)), yH(YOU_WIN, 1.42), 40, 0, 0.1, 3000),
   32: (u) => P([1.25, Y0 + 2.2, 0.6], lerp3([1.25, Y0 - 30, 3.5], [1.15, 0, 9.5], glide(u)), 55, 0, 0.1, 3000),
   33: (u) => X(lerp3([8, 1.3, 32], [7, 1.4, 30], smooth(u)), [1, 5, 12], 36),
@@ -106,13 +112,14 @@ const CAMS: Record<number, (u: number, f: number) => Cam> = {
   40: (u) => { const k = glide(u); return X(lerp3([1.25, Y0 + 1.9, 3.5], [-95, 175, 640], k), lerp3(WIN, [0, 112, 30], smooth(u * 1.4)), 40 + 8 * k); },
   41: (u) => P(lerp3([YOU[0] + -0.04, YOU[1] + 0.84, YOU[2] + 1.1] as V3, [YOU[0] + -0.02, YOU[1] + 0.84, YOU[2] + 0.8] as V3, u), yH(YOU, 0.84), 38),
 };
+const CAMS: Record<number, (u: number, f: number) => Cam> = Object.fromEntries(PLAN.map((p, i) => [i + 1, OLD[p[1]]]));
 /** légère respiration de caméra (tremblements réduits : consigne utilisateur du 2026-11-12) */
 const SHAKE: Record<number, number> = { 1: 0.006, 14: 0.004, 24: 0.002, 36: 0.003 };
 export const camAt = (id: number, f: number): Cam => {
-  const u = uOf(id, f), c = CAMS[id](u, f), a = SHAKE[id] ?? 0.0015, n = f * 0.9 + id * 3.1;
-  const big = c.far > 1000 && !(id === 29 || id === 31 || id === 32 || id === 34 || id === 39) ? 30 : 1;      // en extérieur lointain, la même respiration en proportion
+  const u = uOf(id, f), c = CAMS[id](u, f), role = ROLE[id], a = SHAKE[role] ?? 0.0015, n = f * 0.9 + id * 3.1;
+  const big = c.far > 1000 && !(role === 29 || role === 31 || role === 32 || role === 34 || role === 39) ? 30 : 1;      // en extérieur lointain, la même respiration en proportion
   let look: V3 = [c.look[0] + a * big * Math.sin(n * 2.3), c.look[1] + a * big * Math.sin(n * 1.7 + 1), c.look[2] + a * big * Math.sin(n * 1.1)];
-  if (id === 1 && f - SHOTS[0].a < 9) look = [look[0], look[1] - 0.25 * (1 - (f - SHOTS[0].a) / 9), look[2]];      // sursaut : la tête se relève d'un coup
+  if (role === 1 && f - SHOTS[0].a < 9) look = [look[0], look[1] - 0.25 * (1 - (f - SHOTS[0].a) / 9), look[2]];      // sursaut : la tête se relève d'un coup
   return { ...c, look, roll: c.roll + 0.002 * Math.sin(f * 0.045 + id) };
 };
 
@@ -120,8 +127,8 @@ export const camAt = (id: number, f: number): Cam => {
 export type Dof = { cInf: number; focus?: V3 };
 const DOFS: Record<number, number> = { 1: 14, 2: 3, 3: 10, 4: 4, 5: 5, 6: 10, 7: 14, 8: 12, 9: 2, 10: 3, 11: 14, 12: 14, 13: 14, 14: 14, 15: 8, 16: 10, 17: 8, 18: 12, 19: 8,
   20: 12, 21: 14, 22: 14, 23: 14, 24: 14, 25: 14, 26: 10, 27: 3, 28: 4, 29: 6, 30: 14, 31: 10, 32: 4, 33: 6, 34: 14, 35: 14, 36: 14, 37: 14, 38: 12, 39: 6, 40: 1, 41: 14 };
-export const dofAt = (id: number, f: number): Dof => {
-  const u = uOf(id, f);
+export const dofAt = (sid: number, f: number): Dof => {
+  const u = uOf(sid, f), id = ROLE[sid];
   if (id === 29) return { cInf: DOFS[29], focus: lerp3([1.3, Y0 + 1.8, 0], [50, Y0 + 6, 45], smooth(u * 1.5)) };   // la mise au point passe de la vitre à la façade d'en face
   if (id === 38) return { cInf: DOFS[38], focus: lerp3(yH(YOU, 0.84), yH(NOE, 0.6), smooth(u * 1.6)) };
   return { cInf: DOFS[id] ?? 10 };
@@ -132,4 +139,7 @@ export const stairAt = (d: number): V3 => {
   const [x, z] = s === 0 ? [1.5, -30.6 - t * 3.2] : s === 1 ? [1.5 - t * 3.0, -33.8] : s === 2 ? [-1.5, -33.8 + t * 3.2] : [-1.5 + t * 3.0, -30.6];
   return [x, CY - lv * 3 - (s * 5 + t * 5) * 0.15 + 0.02, z];
 };
-export const CHOICE_AT = SHOTS[40].a / FPS + 0.8;
+export const CHOICE_AT = SHOTS[SHOTS.length - 1].a / FPS + 0.8;
+/** instants où une fenêtre devient rouge (compteur « SILENCES CE SOIR ») */
+export const RED_TIMES: number[] = (() => { const o: number[] = []; for (let face = 0; face < 2; face++) for (let fl = MY_FLOOR; fl < FLOORS; fl++) for (let c = 0; c < COLS; c++) {
+  if (hash(c * 97 + fl * 13, face + 3) >= 0.035 || (face === 0 && c === MY_COL && fl === MY_FLOOR)) continue; o.push((FLOORS - 1 - fl) * DT_FLOOR + T_CALL + (face ? (COLS - 1 - c) : c) / COLS * DT_FLOOR * 0.9); } return o.sort((a, b) => a - b); })();
