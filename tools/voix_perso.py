@@ -15,6 +15,8 @@ ap.add_argument("ep"); ap.add_argument("prise"); ap.add_argument("trans"); ap.ad
 ap.add_argument("--cut", default=""); ap.add_argument("--tempo", type=float, default=1.0); ap.add_argument("--lufs", type=float, default=-22.5)
 ap.add_argument("--end", type=float, default=0.42); ap.add_argument("--comma", type=float, default=0.14)
 ap.add_argument("--pitch", type=float, default=0.0)    # demi-tons ; formants préservés (timbre naturel, pas d'effet robot)
+ap.add_argument("--text", default="")   # texte balisé à utiliser à la place de voice/text.txt (ex. réplique {merepaume}« … » ajoutée)
+ap.add_argument("--sub", default="")    # écarts de lecture assumés : « ancien>nouveau|… » appliqués au texte du narrateur
 ap.add_argument("--outro", default="")   # texte de la phrase de fin (ex. « Abonne-toi pour l'épisode deux. »), lu à la fin de la prise
 A = ap.parse_args()
 SR = 48000; os.makedirs(A.out, exist_ok=True)
@@ -54,7 +56,8 @@ tw = []
 for w in TW:                                                    # « s » + « 'éteint » -> « s'éteint », « haut » + « -parleur »
     if tw and w["w"][:1] in "'’-" : tw[-1] = {**tw[-1], "w": tw[-1]["w"] + w["w"], "e": w["e"]}
     else: tw.append(dict(w))
-text = open(os.path.join(A.ep, "voice", "text.txt"), encoding="utf-8").read()
+text = open(A.text or os.path.join(A.ep, "voice", "text.txt"), encoding="utf-8").read()
+for pair in filter(None, A.sub.split("|")): o_, n_ = pair.split(">"); text = text.replace(o_, n_)
 segs, p0 = [], 0
 for m in re.finditer(r"\{(\w+)\}«\s*(.*?)\s*»", text):
     if text[p0:m.start()].strip(): segs.append(("narrateur", text[p0:m.start()].strip()))
@@ -192,6 +195,8 @@ narr = {kk: (desib(v[0]), v[1], v[2]) for kk, v in narr.items()}
 # ---------- 7. assemblage avec les répliques d'origine (haut-parleur, mère...) ----------
 def role_seg(k, role):
     c = os.path.join(A.ep, "voice", "_seg"); base = f"{k:02d}_{role}"
+    if not os.path.exists(os.path.join(c, base + ".json")):        # numérotation différente (voix montée à la main) : 1er fichier de ce rôle
+        base = sorted(f[:-5] for f in os.listdir(c) if f.endswith(f"_{role}.json"))[0]
     Wr = json.load(open(os.path.join(c, base + ".json"), encoding="utf-8"))["words"]
     y, Wt, core = tighten(decode(os.path.join(c, base + ".mp3")), Wr, 0.5)
     cf = CFG[role]; af = []
