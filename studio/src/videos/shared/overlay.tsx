@@ -82,7 +82,7 @@ export const ChoiceCards: React.FC<{ t: number; at: number; a: string; b: string
 // ---------------- carton final ----------------
 export const TITLE_DUR = 2.8;
 /** instant (après le début du carton) où « ÉPISODE N » devient « ÉPISODE N+1 » en rouge, calé sur le mot « épisode » de la phrase de fin */
-export const FLIP_AFTER = 1.0;
+export const FLIP_AFTER = 0.9;
 export const TitleCard: React.FC<{ t: number; at: number; title: string; episode: number }> = ({ t, at, title, episode }) => {
   if (t < at) return null;
   const k = Math.min(1, (t - at) / 0.2);

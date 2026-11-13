@@ -11,7 +11,7 @@ ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 EPN = int(sys.argv[1]); EP = os.path.join(ROOT, "productions", f"appel-ep0{EPN}"); SDIR = ["appel", "appel2", "appel3"][EPN - 1]
 SR = 48000; OFF = 0.35; TITLE = 2.8
 words = json.load(open(os.path.join(EP, "voice", "words.json"), encoding="utf-8"))
-POST = 0.9                                                                 # blanc naturel entre la dernière phrase et le carton
+POST = 0.35                                                                 # blanc naturel entre la dernière phrase et le carton
 DUR = round(words[-1]["e"] + OFF + POST + TITLE, 2); N = int(DUR * SR); t = np.arange(N) / SR
 W = lambda i: words[i]["s"] + OFF
 E = lambda i: words[i]["e"] + OFF
@@ -182,7 +182,7 @@ mus *= np.convolve(duck, np.ones(2000) / 2000, "same")
 ou = os.path.join(EP, "voice", "outro.wav")                               # « Abonne-toi pour l'épisode N+1 »
 if os.path.exists(ou):
     o = np.frombuffer(subprocess.run(["ffmpeg", "-v", "error", "-i", ou, "-ac", "1", "-ar", str(SR), "-f", "f32le", "-"], capture_output=True).stdout, np.float32).astype(float)
-    i0 = int((TITLE_AT + 0.15) * SR); voice[i0:i0 + len(o)] += o[: max(0, N - i0)] * db(vref - rms(o[np.abs(o) > 1e-3]))
+    i0 = int((TITLE_AT + 0.05) * SR); voice[i0:i0 + len(o)] += o[: max(0, N - i0)] * db(vref - rms(o[np.abs(o) > 1e-3]))
 tone = sw = hb = ru = fol_l = mus
 if os.environ.get('STEMS'):
     for nm, x in (('voice', voice), ('tone', tone), ('sw', sw), ('hb', hb), ('ru', ru), ('fol', fol_l), ('mus', mus)):

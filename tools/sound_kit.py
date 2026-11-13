@@ -182,9 +182,9 @@ class Kit:
         up = [m + transpose for m in (54, 50, 55, 52, 54, 49, 50, 54)]         # tierces / quintes au-dessus
         mus = np.zeros(N); tt = 0.0; q = 0
         while tt < dur:
-            d = 5.5 + 2.5 * rng.random()
-            put(mus, voice(low[q % 8], d), tt, 0.8); put(mus, voice(up[q % 8], d * 0.9, 2.2, 2.6), tt + 0.8, 0.45)
-            if q % 2 == 1: put(mus, voice(up[q % 8] + 12 + (3 if q % 4 == 3 else 0), 3.5, 1.2, 3.0), tt + 2.5, 0.22)   # note aiguë lointaine
+            d = 3.0                                                         # une note toutes les 3 s (consigne utilisateur)
+            put(mus, voice(low[q % 8], d, 0.6, 1.6), tt, 0.8); put(mus, voice(up[q % 8], d * 0.85, 0.8, 1.6), tt + 0.4, 0.45)
+            if q % 2 == 1: put(mus, voice(up[q % 8] + 12 + (3 if q % 4 == 3 else 0), 2.4, 0.5, 2.0), tt + 1.2, 0.22)   # note aiguë lointaine
             tt += d; q += 1
         lvl = np.ones(N)
         for c in dips: lvl *= 1 - 0.75 * np.clip(1 - np.abs(t - c) / 0.5, 0, 1)
