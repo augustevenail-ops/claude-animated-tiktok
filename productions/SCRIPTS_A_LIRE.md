@@ -8,7 +8,8 @@ Quand tu arrives à l'une d'elles, **marque un silence d'environ 2 secondes**, p
 - Laisse 2 s de silence au début et à la fin. Format WAV ou m4a, les deux vont.
 - Garde un ton constant de conteur, grave et posé, ni joué ni crié : la tension vient des mots et des pauses.
 - Vise un rythme régulier, un peu rapide, avec une petite pause aux « … » et avant chaque révélation.
-- Si tu te trompes, reprends simplement la phrase : je couperai.
+- **Code erreur** : si tu te trompes, **tape une fois dans tes mains**, dis « erreur », laisse **1 seconde de silence**,
+  puis **reprends la phrase depuis son début**. Je couperai tout, du début de la phrase ratée jusqu'au clap.
 
 ---
 
