@@ -19,6 +19,7 @@ export type CharSpec = {
   mode: "stand" | "sit"; expr: "calm" | "worry" | "smile_fixed" | "creepy" | "shadow" | "mute" | "talk" | "laugh"; blink?: boolean; look?: number; wave?: number;
   /** main sur la gorge (ne peut plus parler) ; masque intégral à visière (hommes en blanc) */ throat?: boolean; mask?: boolean;
   /** vu de dos (tête = cheveux / capuche, pas de visage) */ back?: boolean;
+  /** de profil, tourné vers la droite (1) ou la gauche (-1) ; reach = bras tendu vers l'avant (0..1) */ side?: 1 | -1; reach?: number;
   jacket: string; pants: string; shoes: string; skin?: string; hair?: "side" | "short" | "long" | "none"; hairColor?: string; hood?: boolean; shadow?: boolean;
 };
 
@@ -69,7 +70,59 @@ const grin = (g: CanvasRenderingContext2D, mx: number, my: number, u: number, wh
   g.restore();
 };
 
+/** personnage de profil (d'après la référence utilisateur du 2026-11-13) : un œil et la bouche vers l'avant, cheveux sur l'arrière du crâne,
+ *  oreille, torse étroit, un seul bras visible (pendant ou tendu vers l'avant), pieds tournés vers l'avant. */
+const drawSide = (p: Pen, s: CharSpec) => {
+  const g = p.g, cx = 300, d = s.side ?? 1, R = 95, u = R / 50, hip = 675, torsoTop = hip - 240, hy = torsoTop - 12 - R;
+  const jacket = s.jacket, pants = s.pants, hand = "#f4f4f7", reach = s.reach ?? 0;
+  g.save(); g.lineCap = "round"; g.lineJoin = "round";
+  // jambe arrière puis jambe avant, pieds vers l'avant
+  for (const [dx, k] of [[-14, 0.82], [12, 1]] as [number, number][]) {
+    tube(g, [[cx + d * dx, hip - 10], [cx + d * (dx + 4), 950]], 52, vgrad(g, hip, 950, k < 1 ? shade(pants, 0.8) : pants));
+    g.beginPath(); g.ellipse(cx + d * (dx + 22), 962, 42, 16, 0, 0, 7); g.fillStyle = k < 1 ? shade(s.shoes, 0.8) : s.shoes; g.fill(); g.lineWidth = OL; g.strokeStyle = INK; g.stroke();
+  }
+  // torse (étroit), bras arrière masqué
+  const tw = 108, x0 = cx - tw / 2; g.beginPath(); g.roundRect(x0, torsoTop, tw, hip - torsoTop, [44, 44, 6, 6]); g.fillStyle = vgrad(g, torsoTop, hip, jacket); g.fill();
+  g.save(); g.clip(); hatch(g, x0, torsoTop, x0 + tw, hip, "rgba(0,0,0,0.07)", 16, -1); g.restore(); g.lineWidth = OL; g.strokeStyle = INK; g.stroke();
+  if (s.hood && !s.mask) { g.beginPath(); g.ellipse(cx - d * 40, torsoTop + 10, 30, 26, 0, 0, 7); g.fillStyle = shade(jacket, 0.82); g.fill(); g.lineWidth = OL; g.stroke(); }
+  // cou + tête
+  g.beginPath(); g.rect(cx - 14, torsoTop - 20, 28, 30); g.fillStyle = "#e9eaee"; g.fill(); g.lineWidth = OL; g.strokeStyle = INK; g.stroke();
+  const skin = s.skin ?? "#bfc4d2", rg = g.createRadialGradient(cx + d * 10, hy + 10, 6, cx, hy, R * 1.04); rg.addColorStop(0, "#ffffff"); rg.addColorStop(0.6, mix("#ffffff", skin, 0.15)); rg.addColorStop(1, skin);
+  g.beginPath(); g.arc(cx, hy, R, 0, 7); g.fillStyle = s.mask ? "#e8ebf0" : rg; g.fill(); g.lineWidth = OL; g.strokeStyle = INK; g.stroke();
+  if (s.mask) {          // casque : visière et filtre sur l'avant
+    g.save(); g.beginPath(); g.arc(cx, hy, R - 2, 0, 7); g.clip();
+    g.beginPath(); g.roundRect(cx + (d > 0 ? 10 : -R - 6), hy - 34, R - 4, 68, 26); const vz = g.createLinearGradient(0, hy - 34, 0, hy + 34); vz.addColorStop(0, "#1d2b33"); vz.addColorStop(1, "#05080b"); g.fillStyle = vz; g.fill(); g.lineWidth = OL; g.strokeStyle = INK; g.stroke();
+    g.strokeStyle = "rgba(150,255,210,0.45)"; g.lineWidth = 5; g.beginPath(); g.moveTo(cx + d * 24, hy - 18); g.quadraticCurveTo(cx + d * 50, hy - 26, cx + d * 76, hy - 18); g.stroke(); g.restore();
+    ball(g, cx + d * 62, hy + 64, 17, "#6d7480");
+  } else {
+    const hc = s.hairColor ?? "#5a3a26", kind = s.hair ?? "short";
+    if (kind !== "none") {                                                     // cheveux : arrière et dessus du crâne
+      g.save(); g.beginPath(); g.arc(cx, hy, R + 1, 0, 7); g.clip();
+      g.beginPath(); g.ellipse(cx - d * R * 0.32, hy - R * 0.22, R * 0.98, R * (kind === "long" ? 1.2 : 0.92), 0, 0, 7); g.fillStyle = vgrad(g, hy - R, hy + R, hc); g.fill(); g.lineWidth = OL; g.strokeStyle = INK; g.stroke(); g.restore();
+      if (kind === "long") { g.beginPath(); g.moveTo(cx - d * 30, hy + 40); g.quadraticCurveTo(cx - d * 110, hy + 130, cx - d * 70, torsoTop + 70); g.lineTo(cx - d * 20, torsoTop + 20); g.closePath(); g.fillStyle = shade(hc, 0.85); g.fill(); g.lineWidth = OL; g.strokeStyle = INK; g.stroke(); }
+      g.beginPath(); g.arc(cx, hy, R, 0, 7); g.lineWidth = OL; g.strokeStyle = INK; g.stroke();
+    }
+    g.beginPath(); g.arc(cx - d * 8, hy + 8, 15, d > 0 ? -1.9 : -1.2, d > 0 ? 1.9 : 4.3, d < 0); g.lineWidth = 3 * u; g.strokeStyle = INK; g.stroke();     // oreille
+    const ex = cx + d * R * 0.56, ey = hy + 2 * u;                                // œil, sourcil, cerne, joue, bouche (vers l'avant)
+    if (s.blink) { g.beginPath(); g.moveTo(ex - 5 * u, ey); g.lineTo(ex + 5 * u, ey + 0.6 * u); g.lineWidth = 2.6 * u; g.stroke(); }
+    else { g.fillStyle = INK; g.beginPath(); g.ellipse(ex, ey, 3.8 * u, 5.7 * u, 0, 0, 7); g.fill(); g.fillStyle = "#fff"; g.beginPath(); g.arc(ex - 1.2 * u, ey - 2.2 * u, 1.25 * u, 0, 7); g.fill(); }
+    g.strokeStyle = INK; g.lineWidth = 2 * u; const by = hy - 12 * u, wor = s.expr === "worry" ? 1 : 0;
+    g.beginPath(); g.moveTo(ex - d * 7 * u, by + (wor ? 1.5 : -1) * u); g.lineTo(ex + d * 7 * u, by - (wor ? 4 : 0) * u); g.stroke();
+    g.fillStyle = "rgba(255,150,160,0.13)"; g.beginPath(); g.ellipse(ex - d * 8 * u, hy + 15 * u, 9 * u, 5 * u, 0, 0, 7); g.fill();
+    const mx = cx + d * R * 0.66, my = hy + 26 * u; g.strokeStyle = INK; g.lineWidth = 2.3 * u;
+    if (s.expr === "mute" || s.expr === "talk") { g.beginPath(); g.ellipse(mx, my, 4 * u, (s.expr === "mute" ? 7 : 4) * u, 0, 0, 7); g.fillStyle = "#1a0c12"; g.fill(); g.stroke(); }
+    else if (s.expr === "worry") { g.beginPath(); g.arc(mx, my + 5 * u, 5 * u, 1.2 * Math.PI, 1.8 * Math.PI); g.stroke(); }
+    else { g.beginPath(); g.moveTo(mx - 5 * u, my); g.lineTo(mx + 3 * u, my - 0.5 * u); g.stroke(); }
+  }
+  // bras avant : pendant, tendu vers l'avant (pousse), ou main à la gorge
+  const sh = [cx + d * 6, torsoTop + 36];
+  const end = s.throat ? [cx + d * 40, torsoTop - 6] : [cx + d * (20 + 150 * reach), hip - 30 - 190 * reach], mid = s.throat ? [cx + d * 70, torsoTop + 90] : [cx + d * (14 + 70 * reach), (sh[1] + end[1]) / 2 + 30 * (1 - reach)];
+  tube(g, [sh, mid, end], 44, vgrad(g, sh[1], end[1], jacket)); ball(g, end[0], end[1] + 4, 26, hand);
+  g.restore();
+};
+
 export const drawChar = (p: Pen, s: CharSpec) => {
+  if (s.side) { drawSide(p, s); return; }
   const g = p.g, cx = 300, sit = s.mode === "sit", R = 95, u = R / 50;
   const hip = sit ? 929 : 675, torsoTop = hip - 240, hy = torsoTop - 12 - R, jacket = s.shadow ? "#10101a" : s.jacket, pants = s.shadow ? "#0c0c14" : s.pants;
   g.save(); g.lineCap = "round"; g.lineJoin = "round";

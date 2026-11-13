@@ -125,7 +125,7 @@ const LOOK: Record<string, Partial<CharSpec>> = {
   B: { jacket: "#a0522d", pants: "#2e3040", shoes: "#1b1a22", hair: "short", hairColor: "#24201f" },
   C: { jacket: "#5b4f8a", pants: "#34304a", shoes: "#1b1a22", hair: "long", hairColor: "#c9c3b8" },
 };
-type Fo = { mode: "stand" | "sit"; expr: CharSpec["expr"]; blink?: boolean; look?: number; wave?: number; throat?: boolean; back?: boolean };
+type Fo = { mode: "stand" | "sit"; expr: CharSpec["expr"]; blink?: boolean; look?: number; wave?: number; throat?: boolean; back?: boolean; side?: 1 | -1; reach?: number };
 const tierOf = (d: number): [number, number, number] => (d < 3.5 ? [1080, 1800, 1.8] : d < 14 ? [600, 1000, 1] : [300, 500, 0.5]);
 const MEN: V3[] = [[-3.2, 0, 10.5], [1.0, 0, 11], [4.6, 0, 9.8], [-1.2, 0, 14.2], [3.0, 0, 15], [-5.6, 0, 15.5], [7.0, 0, 13.5]];
 
@@ -422,8 +422,8 @@ export class World {
       place("N", NOE, { mode: "sit", expr: nE, blink: id === 12 || id === 112 ? (f % 60 < 40) : blink(2), throat: id === 3, look: id === 17 ? 0.9 : id === 20 ? 0.6 : 0 }, 0.72);
     }
     if (id === 4 || id === 5) { place("Y", YOU_WIN, { mode: "stand", expr: "talk", blink: blink(3) }); if (id === 5) place("N", NOE, { mode: "sit", expr: "mute", throat: true }, 0.72); }
-    if (id === 113) { place("Y", [2.75, Y0, -3.8], { mode: "stand", expr: "worry", blink: blink(12), look: -0.7 }); place("N", [2.95, Y0, -3.42], { mode: "stand", expr: "mute", look: -0.7 }, 0.72);
-      place("H", [2.7, Y0, -5.12], { mode: "stand", expr: "calm" }); place("H", [1.9, Y0, -5.6], { mode: "stand", expr: "calm" }); place("H", [3.0, Y0, -5.95], { mode: "stand", expr: "calm" }); }
+    if (id === 113) { place("Y", [2.75, Y0, -3.8], { mode: "stand", expr: "worry", blink: blink(12), side: 1, reach: 0.25 }); place("N", [2.95, Y0, -3.4], { mode: "stand", expr: "mute", side: 1 }, 0.72);
+      place("H", [2.7, Y0, -5.12], { mode: "stand", expr: "calm", side: -1 }); place("H", [1.9, Y0, -5.6], { mode: "stand", expr: "calm", side: -1 }); place("H", [3.0, Y0, -5.95], { mode: "stand", expr: "calm", side: -1 }); }
     if (id === 21 || id === 115) { const w = smooth(u * 1.5), w2 = smooth((u - 0.25) * 1.6);
       place("N", lerpV([1.6, Y0, -2.3], [2.62, Y0, -3.95], w), { mode: "stand", expr: "talk" }, 0.72); place("Y", lerpV([2.4, Y0, -2.2], [2.3, Y0, -3.6], w2), { mode: "stand", expr: "worry" }); }
     const onStair = (key: string, d: number, fo: Fo, sc = 1) => { place(key, stairAt(Math.max(0, d)), fo, sc); const m = this.actors[k - 1]?.mesh; if (m) { m.up.set(0, 1, 0).applyQuaternion(cam.quaternion); m.lookAt(cam.position); m.up.set(0, 1, 0); } };
@@ -431,7 +431,7 @@ export class World {
     if (id === 102) { place("Y", [2.3, Y0, -3.75], { mode: "stand", expr: "worry", back: true }); place("N", [2.62, Y0, -3.98], { mode: "stand", expr: "talk", back: true }, 0.72); }
     if (id === 103) place("M", YOU_WIN, { mode: "stand", expr: "mute", throat: true }, 0.98);
     if (id === 105) { place("Y", [2.72, Y0, -4.3], { mode: "stand", expr: "worry", back: true }); place("N", [1.75, Y0, -3.0], { mode: "stand", expr: "mute", blink: blink(9) }, 0.72); }
-    if (id === 106) { place("Y", [2.8, Y0, -4.22], { mode: "stand", expr: "worry", blink: blink(10) }); place("H", [2.8, Y0, -4.98], { mode: "stand", expr: "calm" }); }
+    if (id === 106) { place("Y", [2.8, Y0, -4.08], { mode: "stand", expr: "worry", blink: blink(10), side: 1, reach: 0.85 }); place("H", [2.8, Y0, -5.02], { mode: "stand", expr: "calm", side: -1, reach: 0.85 }); }
     if (id === 107) place("H", [-0.55, CY, -16.6], { mode: "stand", expr: "calm" });
     if (id === 108) place("H", [0.25, CY, -23 - 3 * u], { mode: "stand", expr: "calm" });
     if (id === 111) { place("Y", [2.2, Y0, -3.55], { mode: "stand", expr: "worry", back: true }); place("N", [2.6, Y0, -3.72], { mode: "stand", expr: "mute", back: true }, 0.72); }
