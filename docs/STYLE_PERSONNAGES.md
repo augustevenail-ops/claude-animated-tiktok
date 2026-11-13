@@ -29,3 +29,13 @@ fissure qui progresse, feuille qui frémit, débris qui tombent, clignements, re
 
 ## Sous-titres des références
 Blancs, contour/ombre sombres, **un mot clé en jaune (#f2c14e)** par groupe. (Notre règle actuelle = tout blanc : à trancher par l'utilisateur.)
+
+## Compléments (3ᵉ série de 16 captures)
+- **Âge / caractère par 2-3 détails** : vieil homme = crâne chauve + 2 touffes blanches sur les côtés, moustache ondulée, bouche tremblante
+  (vague), veste grise à col en V, épaulettes rondes ; même tête-cercle et mêmes yeux-ovales.
+- **Gestes d'émotion** : main (rond blanc) devant la bouche = choc ; cernes violets + yeux mi-clos = épuisement ; bras tendu = appel.
+- **Plan coupé en deux** (split-screen vertical, bande noire au milieu) : deux personnages de part et d'autre d'un mur.
+- Vitres brisées : bords en dents de scie, contour blanc, fissures noires fines ; trous noirs déchiquetés dans les façades.
+- **Monstres et échelle** : main géante qui agrippe l'arête d'un immeuble (doigts épais, articulations en angle, 2 tons + traits fins de plis),
+  géant à quatre pattes qui passe la tête au coin d'une tour, fenêtre dorée lumineuse au milieu d'une façade froide.
+- Vue d'en bas d'une tour dans la brume avec un soleil-halo ; contre-jours. Escalier derrière une grille cadenassée.
