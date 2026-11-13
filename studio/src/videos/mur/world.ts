@@ -65,7 +65,7 @@ const glowTex = (rgb: string) => ctex("mu_glow" + rgb, 128, 128, (g) => {
 
 // ---------------- personnages ----------------
 const LOOK: Record<string, Partial<Person>> = {
-  Y: { jacket: "#c4523e", pants: "#4a5066", shoes: "#2a2a30", hair: "bob", hairColor: "#3a2c26", hood: true },      // toi : sweat rouge brique, capuche
+  Y: { jacket: "#d4533e", pants: "#4b5165", shoes: "#3a2a24", hair: "bob", hairColor: "#3b2b25", hood: true },      // toi : sweat rouge brique, capuche
   A: { jacket: "#5a7d6a", pants: "#3f4458", shoes: "#2a2a30", hair: "spiky", hairColor: "#2a2220" },
   B: { jacket: "#c9b48e", pants: "#4a5066", shoes: "#2a2a30", hair: "ponytail", hairColor: "#a07850" },
   C: { jacket: "#8fa7c4", pants: "#3f4458", shoes: "#2a2a30", hair: "bun", hairColor: "#c9c3b8" },

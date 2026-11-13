@@ -76,7 +76,7 @@ const CAMS: Record<number, (u: number) => Cam> = {
   15: (u) => P(lerp3([7, 1.1, -7], [8.4, 1.3, -10.5], smooth(u)), [SIREN[0], 10.5, SIREN[2]], 44 - 8 * smooth(u)),
   16: (u) => P(lerp3([-4, 1.4, 4], [-3, 1.3, 1.5], smooth(u)), [0, 1.0, -4], 40),                                           // nuit : jeunes figés
   17: (u) => P(lerp3([0, 1.1, NAMES_Z + 7], [0, 6.6, NAMES_Z + 7], glide(u)), lerp3([0, 1.2, NAMES_Z], [0, 7.4, NAMES_Z], glide(u)), 46),
-  18: (u) => P(lerp3([0.12, 1.47, 21.35], [0.08, 1.45, 21.1], smooth(u)), [0, 1.43, 20], 34),                                 // gros plan : ton visage décidé
+  18: (u) => P(lerp3([0.15, 1.6, 22.3], [0.1, 1.58, 21.9], smooth(u)), [0, 1.48, 20], 34),                                 // gros plan : ton visage décidé
   19: (u) => XL(lerp3([40, 26, 128], [52, 70, 160], smooth(u)), lerp3([0, 0, 118], [0, 0, 80], smooth(u)), 46),               // toi minuscule, loin de la clairière
   20: (u) => P([SIREN[0] - 2.6, 9.2, SIREN[2] + 3.4], [SIREN[0], 10.8, SIREN[2]], 40 - 4 * u),
   21: (u) => { const z = 98 - 26 * u; return P([0.25, 0.95 + 0.05 * Math.sin(u * 40), z + 3.4], [0, 1.4, z - 14], 56); },    // caméra basse qui te suit en courant
@@ -84,7 +84,7 @@ const CAMS: Record<number, (u: number) => Cam> = {
   23: (u) => P([0.6, 1.45, YOU_RUN_Z + 0.4], lerp3([0, 2.5, LONG_RUN[2]], [0, 8.8, LONG_RUN[2]], smooth(u)), 62),
   24: (u) => P(lerp3([0.8, 9.0, LONG_RUN[2] - 5.6], [0.6, 9.0, LONG_RUN[2] - 5.0], smooth(u)), [0, 9.1, LONG_RUN[2]], 36),   // la tête qui pivote vers toi
   25: (u) => P(lerp3([-2.3, 4.5, 74], [-2.2, 4.8, 72], smooth(u)), [0.5, 3.4, 44], 52),
-  26: (u) => P(lerp3([0.25, 1.5, YOU_RUN_Z + 1.2], [0.2, 1.48, YOU_RUN_Z + 1.0], smooth(u)), [0, 1.42, YOU_RUN_Z], 34),
+  26: (u) => P(lerp3([0.25, 1.62, YOU_RUN_Z + 2.3], [0.2, 1.6, YOU_RUN_Z + 1.9], smooth(u)), [0, 1.46, YOU_RUN_Z], 34),
   27: (u) => P(lerp3([0.0, 1.7, YOU_RUN_Z + 3.4], [0.0, 1.8, YOU_RUN_Z + 2.8], smooth(u)), [0, 3.6, LONG_RUN[2] - 4], 54),
 };
 export const camAt = (sid: number, f: number): Cam => {
