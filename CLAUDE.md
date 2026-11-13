@@ -38,7 +38,7 @@ zones sombres désaturées + accents saturés (lumières pratiques chaudes, roug
    scènes ou visuels reconnaissables. Les références (`references/`, vidéo Apokalyps) servent à l'étude du style
    uniquement : ne jamais les publier, les envoyer ni copier leurs scripts, personnages ou plans ; ne jamais citer
    les chaînes étudiées.
-4. **Français** uniquement ; **sous-titres à l'écran tout en blanc** (aucun mot coloré, taille ~46 px à 1920) comme la vidéo Apokalyps (spec dans
+4. **Français** uniquement ; **sous-titres karaoké** : blancs, et le mot en train d'être prononcé en **orange sable #FF9A3C** (toutes les séries, décision du 2026-11-13 ; `KARAOKE` dans `shared/overlay.tsx`) comme la vidéo Apokalyps (spec dans
    `docs/REFERENCE_APOKALYPS.md` §9) ; textes diégétiques autorisés (SMS, post-it, badges) ; voix au ton constant de
    conteur, la tension vient des mots et des pauses. Ces règles **priment sur** « English only » et « no captions »
    de `SKILL.md`/`STYLE_BIBLE.md` et sur la formule humoristique (« Luckily / Unluckily », faits réels).

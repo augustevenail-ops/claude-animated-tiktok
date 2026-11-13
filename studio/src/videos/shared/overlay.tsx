@@ -1,5 +1,5 @@
 // Habillage commun des séries (décision utilisateur du 2026-11-13, d'après ses images de référence) :
-// sous-titres gros, police grasse arrondie (Montserrat 900), contour noir fin + ombre douce, TOUT EN BLANC ;
+// sous-titres gros, police grasse arrondie (Montserrat 900), contour noir fin + ombre douce, blancs ; mot prononcé en orange (karaoké, KARAOKE) ;
 // compteurs en haut (épisode + étage à gauche, compteur de l'épisode à droite) ; grandes cartes de choix A/B ;
 // carton final (titre de la série + numéro d'épisode) pendant les ~2 dernières secondes.
 import React, { useEffect, useState } from "react";
@@ -24,8 +24,8 @@ const MONT = "'Montserrat', 'Liberation Sans', sans-serif", BEBAS = "'Bebas Neue
 export type Word = { w: string; s: number; e: number; q?: number };
 const clean = (w: string) => w.replace(/[«»"“”]/g, "").replace(/\.\.\.|…/g, "").replace(/[.,:;!?]+$/g, "").toUpperCase();
 export const captionGroups = (words: Word[]) => {
-  const out: { s: number; e: number; text: string }[] = []; let cur: Word[] = [];
-  const flush = () => { if (cur.length) out.push({ s: cur[0].s, e: cur[cur.length - 1].e, text: cur.map((x) => clean(x.w)).join(" ") }); cur = []; };
+  const out: { s: number; e: number; text: string; ws: { t: string; s: number }[] }[] = []; let cur: Word[] = [];
+  const flush = () => { if (cur.length) out.push({ s: cur[0].s, e: cur[cur.length - 1].e, text: cur.map((x) => clean(x.w)).join(" "), ws: cur.map((x) => ({ t: clean(x.w), s: x.s })) }); cur = []; };
   for (const w of words) {
     if (w.q) flush();
     cur.push(w);
@@ -36,13 +36,20 @@ export const captionGroups = (words: Word[]) => {
   for (let i = 0; i < out.length - 1; i++) out[i].e = Math.min(out[i + 1].s, out[i].e + 0.6);
   return out;
 };
-export const Captions: React.FC<{ t: number; groups: { s: number; e: number; text: string }[] }> = ({ t, groups }) => {
+/** couleur du mot prononcé (karaoké) : orange sable, pour toutes les séries (décision utilisateur du 2026-11-13) */
+export const KARAOKE = "#FF9A3C";
+export const Captions: React.FC<{ t: number; groups: { s: number; e: number; text: string; ws?: { t: string; s: number }[] }[]; karaoke?: string }> = ({ t, groups, karaoke }) => {
   const g = groups.find((x) => t >= x.s - 0.03 && t < x.e);
   if (!g) return null;
+  const base = { fontFamily: MONT, fontWeight: 900, fontSize: 84, lineHeight: 1.05, letterSpacing: 0.5, color: "#ffffff",
+    WebkitTextStroke: "5px #0b0b0d", paintOrder: "stroke fill", textShadow: "0 5px 12px rgba(0,0,0,0.65), 0 0 2px rgba(0,0,0,0.9)" } as React.CSSProperties;
+  const ws = g.ws ?? [];
+  let cur = -1; ws.forEach((w, i) => { if (t >= w.s - 0.03) cur = i; });
   return (
     <div style={{ position: "absolute", left: 0, right: 0, top: "64%", transform: "translateY(-50%)", textAlign: "center", padding: "0 120px" }}>
-      <span style={{ fontFamily: MONT, fontWeight: 900, fontSize: 84, lineHeight: 1.05, letterSpacing: 0.5, color: "#ffffff",
-        WebkitTextStroke: "5px #0b0b0d", paintOrder: "stroke fill", textShadow: "0 5px 12px rgba(0,0,0,0.65), 0 0 2px rgba(0,0,0,0.9)" }}>{g.text}</span>
+      {karaoke && ws.length ? ws.map((w, i) => { const on = i === cur, pop = on ? 1 + 0.08 * Math.exp(-(t - w.s) * 10) : 1;
+        return <span key={i} style={{ ...base, color: on ? karaoke : "#ffffff", display: "inline-block", transform: `scale(${pop})`, margin: "0 0.12em" }}>{w.t}</span>; })
+        : <span style={base}>{g.text}</span>}
     </div>
   );
 };

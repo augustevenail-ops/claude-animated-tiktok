@@ -12,7 +12,7 @@ import { GradeEffect } from "../bridge/grade";
 
 import { World } from "./world";
 import { TOTAL, FPS, WORDS, shotAt, dofAt, CHOICE_AT, TITLE_AT, LIGHT, ROLE } from "./story";
-import { Captions, captionGroups, Hud, ChoiceCards, TitleCard, useFonts } from "../shared/overlay";
+import { Captions, captionGroups, Hud, ChoiceCards, TitleCard, useFonts, KARAOKE } from "../shared/overlay";
 const GROUPS = captionGroups(WORDS);
 import { GRADES } from "./look";
 
@@ -80,7 +80,7 @@ export const MurEp1: React.FC = () => {
       <div style={{ position: "absolute", inset: 0, mixBlendMode: "overlay", opacity: 0.13, backgroundImage: `url("${GRAIN}")`, backgroundSize: "260px 260px", backgroundPosition: `${(f * 53) % 260}px ${(f * 97) % 260}px` }} />
       {t < TITLE_AT ? <Hud episode={1} place={LIGHT[ROLE[shotAt(f).id]] === 2 ? "NUIT 1" : "JOUR 1"} label="NOMS SUR LE MUR" count={347} alert={LIGHT[ROLE[shotAt(f).id]] > 0} /> : null}
       {t < TITLE_AT ? <ChoiceCards t={t} at={CHOICE_AT} a="COURIR" b="NE PAS BOUGER" /> : null}
-      {t < CHOICE_AT ? <Captions t={t} groups={GROUPS} /> : null}
+      {t < CHOICE_AT ? <Captions t={t} groups={GROUPS} karaoke={KARAOKE} /> : null}
       <TitleCard t={t} at={TITLE_AT} title="LE MUR" episode={1} />
       {on.audio ? <Audio src={staticFile("mur/mix.wav")} /> : null}
     </AbsoluteFill>
