@@ -147,6 +147,26 @@ else:
     cue("finger_skin", W(152), -8); cue("boom_low", W(161) - 0.05, -10); cue("pa_static", W(190) - 0.3, -14); cue("sting_hit", W(199), -12)
     cue("boots_approach", W(207), -15); cue("sting_soft", W(211), -14); cue("vent_air", W(229), -13)
     heart(W(234), TITLE_AT, -14); cue("boots_approach", W(240), -8); cue("gasp_boy", W(243), -10)
+# ---- bruits supplémentaires, variés (consigne utilisateur : « plein de bruits différents selon les situations »)
+X = []
+if EPN == 1:
+    X = [("bed_creak", 0.1, -10), ("cloth_rustle", W(1), -14), ("glass_rattle", W(13), -16), ("tower_groan", W(5), -17), ("metal_creak_far", W(20), -16), ("siren_far", W(22), -21),
+         ("elec_hum", W(27), -21), ("pa_feedback", W(42) - 1.5, -17), ("suit_rustle", W(66), -14), ("mask_breath", W(71), -14), ("door_close_soft", W(95), -14), ("lock_click", W(100), -14),
+         ("breath_nervous", W(124), -13), ("curtain", W(181), -15), ("glass_rattle", W(182), -16), ("mask_breath", W(186), -14), ("suit_rustle", W(188), -15),
+         ("breath_nervous", W(213), -13), ("heart_fast", W(218), -14)]
+elif EPN == 2:
+    X = [("metal_creak_far", W(0) + 0.3, -18), ("siren_far", W(4), -22), ("mask_breath", W(14), -15), ("suit_rustle", W(17), -15), ("cloth_rustle", W(40), -15),
+         ("curtain", W(72), -16), ("glass_rattle", W(93), -18), ("bed_creak", W(98) + 0.3, -10), ("cloth_rustle", W(99), -13), ("run_steps_room", W(110) + 0.1, -9),
+         ("struggle", W(116), -9), ("breath_nervous", W(129), -13), ("footstep_one", W(139), -10), ("mask_breath", W(140), -12), ("cloth_rustle", W(150), -12),
+         ("mask_breath", W(156), -12), ("lock_click", W(162), -14), ("mask_breath", W(186), -11), ("pa_feedback", W(192), -16), ("lock_click", W(209), -15),
+         ("door_close_soft", W(210), -18), ("tower_groan", W(216), -16), ("light_off", W(217) + 0.2, -12), ("light_off", W(218) + 0.5, -13), ("light_off", W(219) + 0.4, -14),
+         ("breath_nervous", W(223), -13), ("heart_fast", W(236), -13), ("cloth_rustle", W(243), -15)]
+else:
+    X = [("siren_far", W(0) + 0.5, -22), ("mask_breath", W(15), -15), ("suit_rustle", W(17), -15), ("bed_creak", W(41), -14), ("mask_breath", W(56), -14),
+         ("lock_click", W(69) - 0.4, -12), ("elec_hum", W(74), -20), ("breath_nervous", W(97), -14), ("drip", W(122), -16), ("drip", W(125), -17),
+         ("crowd_shuffle", W(127), -14), ("cloth_rustle", W(141), -14), ("mic_tap", W(162), -12), ("mask_breath", W(166), -12), ("pa_feedback", W(176), -16),
+         ("siren_far", W(190), -20), ("mask_breath", W(219), -14), ("cloth_rustle", W(224), -14), ("heart_fast", W(236), -12), ("breath_nervous", W(237), -12), ("struggle", W(245), -12)]
+for nm, t0, g in X: cue(nm, t0, g)
 k.stinger(TITLE_AT, 0.5)
 def lvl(x, target):
     act = np.abs(x) > 1e-4
