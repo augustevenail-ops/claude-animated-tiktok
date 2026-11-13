@@ -192,7 +192,7 @@ k.stinger(TITLE_AT, 0.5)
 def lvl(x, target):
     act = np.abs(x) > 1e-4
     return x * db(target - rms(x[act])) if act.any() else x
-mus = lvl(mus, vref - 6)                                                  # musique nettement audible (retour utilisateur)
+mus = lvl(mus, vref - 6) * (0.75 if VDIR != "voice" else 1.0)          # musique nettement audible ; voix perso : -1/4 (retour utilisateur 2026-11-13)
 hit = lvl(k.hit, vref - 12); air = sfx                                    # coup final du titre + bruitages déjà calés en niveau
 duck = np.ones(N)
 for w in words: duck[int(max(0, W(words.index(w)) - 0.08) * SR):int(min(DUR, E(words.index(w)) + 0.12) * SR)] = db(-2.5)
