@@ -140,22 +140,36 @@ const tierOf = (d: number): [number, number, number] => (d < 3.5 ? [1080, 1800, 
 const MEN: V3[] = [[-3.2, 0, 10.5], [1.0, 0, 11], [4.6, 0, 9.8], [-1.2, 0, 14.2], [3.0, 0, 15], [-5.6, 0, 15.5], [7.0, 0, 13.5]];
 
 const mmx = new THREE.Matrix4(), qy = new THREE.Quaternion();
-/** la paume : main ouverte, le doigt de ta mère trace « ILS PRENNENT LES VOIX » (k = 0..1 de l'écriture ; a = arrivée du doigt) */
+/** la paume (style « main plate » de la référence utilisateur : gris clair, gros contour noir, doigts arrondis séparés par des traits,
+ *  petits ongles beiges) : ta main ouverte vue de face ; la main de ta mère (manche bordeaux, index tendu, autres doigts repliés)
+ *  trace « ILS PRENNENT LES VOIX » ; k = 0..1 de l'écriture ; a = arrivée du doigt. Canevas 768 x 1024. */
 const drawPalm = (g: CanvasRenderingContext2D, w: number, h: number, k: number, a: number) => {
-  const bg = g.createRadialGradient(w / 2, h / 2, 50, w / 2, h / 2, w * 0.7); bg.addColorStop(0, "#3a1214"); bg.addColorStop(1, "#0c0405"); g.fillStyle = bg; g.fillRect(0, 0, w, h);
-  g.save(); g.translate(w / 2, h * 0.58); g.lineWidth = 9; g.strokeStyle = "#241726"; g.fillStyle = "#e9b9a0"; g.lineJoin = "round";
-  const fing = [[-190, -250, 70], [-70, -320, 72], [55, -310, 70], [170, -250, 64]];
-  for (const [x, y, r] of fing) { g.beginPath(); g.roundRect(x - r / 2, y, r, -y + 40, r / 2); g.fill(); g.stroke(); }
-  g.beginPath(); g.ellipse(0, 90, 270, 230, 0, 0, Math.PI * 2); g.fill(); g.stroke();
-  g.beginPath(); g.ellipse(-300, 120, 70, 150, -0.9, 0, Math.PI * 2); g.fill(); g.stroke();
-  g.strokeStyle = "rgba(120,60,50,0.45)"; g.lineWidth = 5; g.beginPath(); g.moveTo(-200, 40); g.quadraticCurveTo(0, 0, 200, 60); g.moveTo(-180, 140); g.quadraticCurveTo(-20, 110, 150, 170); g.stroke();
-  const lines = ["ILS PRENNENT", "LES VOIX"], total = lines.join("").length, nShow = Math.floor(k * total + 0.001); let shown = 0, tipX = -150, tipY = 60;
-  g.font = `bold 86px ${FONT}`; g.textAlign = "left"; g.fillStyle = "rgba(150,30,30,0.85)";
-  lines.forEach((ln, li) => { const y = 60 + li * 110, x0 = -g.measureText(ln).width / 2; let x = x0; for (const ch of ln) { if (shown >= nShow) break; g.fillText(ch, x, y); x += g.measureText(ch).width; shown++; tipX = x; tipY = y - 30; } });
+  const bg = g.createRadialGradient(w / 2, h * 0.5, 40, w / 2, h * 0.5, h * 0.75); bg.addColorStop(0, "#3c1416"); bg.addColorStop(1, "#0d0405"); g.fillStyle = bg; g.fillRect(0, 0, w, h);
+  g.save(); g.translate(w / 2, h * 0.42); g.scale(0.7, 0.7); g.translate(-384, -640);                      // main plus petite, au-dessus du sous-titre
+  const OUT = "#19171c", SKIN = "#dcdde2", SHADE = "rgba(60,60,70,0.28)", NAIL = "#efe2c8";
+  const cap = (x0: number, y0: number, x1: number, y1: number, r: number) => { g.beginPath(); const an = Math.atan2(y1 - y0, x1 - x0); g.arc(x0, y0, r, an + Math.PI / 2, an + 1.5 * Math.PI); g.arc(x1, y1, r, an - Math.PI / 2, an + Math.PI / 2); g.closePath(); };
+  const union = (shapes: (() => void)[], fill: string, lw = 16) => { g.lineJoin = "round"; g.strokeStyle = OUT; g.lineWidth = lw * 2; for (const s of shapes) { s(); g.stroke(); } g.fillStyle = fill; for (const s of shapes) { s(); g.fill(); } };
+  // ta main : manche bleue + paume ouverte, doigts vers le haut
+  union([() => cap(384, 1120, 384, 905, 118)], "#2b3f93");
+  const fingers: [number, number, number][] = [[300, 380, 34], [358, 345, 35], [416, 352, 34], [470, 400, 31]];
+  const palm = () => { g.beginPath(); g.roundRect(268, 520, 236, 300, 95); };
+  union([...fingers.map(([x, top, r]) => () => cap(x, top, x - 4 + (x - 384) * 0.04, 640, r)), () => cap(282, 700, 205, 585, 36), palm], SKIN);
+  g.strokeStyle = SHADE; g.lineWidth = 7; g.lineCap = "round";
+  for (const [x] of fingers.slice(0, 3)) { g.beginPath(); g.moveTo(x + 29, 470); g.lineTo(x + 29, 560); g.stroke(); }                    // séparations des doigts
+  g.beginPath(); g.moveTo(300, 640); g.quadraticCurveTo(380, 610, 470, 650); g.moveTo(296, 720); g.quadraticCurveTo(370, 700, 440, 760); g.stroke();   // lignes de la main
+  // écriture (rouge sombre) qui apparaît sous le doigt
+  const lines = ["ILS PRENNENT", "LES VOIX"], total = lines.join("").length, nShow = Math.floor(k * total + 0.001); let shown = 0, tipX = 300, tipY = 600;
+  g.font = `bold 39px ${FONT}`; g.textAlign = "left"; g.fillStyle = "rgba(140,22,24,0.9)";
+  lines.forEach((ln, li) => { const y = 640 + li * 60, x0 = 386 - g.measureText(ln).width / 2; let x = x0; for (const ch of ln) { if (shown >= nShow) break; g.fillText(ch, x, y); x += g.measureText(ch).width; shown++; tipX = x; tipY = y - 14; } });
+  // main de ta mère : poing replié + index tendu, manche bordeaux (vient d'en haut à droite)
+  const fx = tipX + 200 * (1 - a), fy = tipY + 330 * (1 - a), bx = fx + 95, by = fy + 125;                                   // le poing reste sous la ligne écrite
+  union([() => cap(bx + 60, by + 50, bx + 330, by + 360, 82)], "#8a3b4f");
+  const fist = () => { g.beginPath(); g.roundRect(bx - 60, by - 70, 150, 125, 50); };
+  union([fist, () => cap(bx - 30, by + 10, fx, fy, 22)], SKIN);
+  g.strokeStyle = SHADE; g.lineWidth = 6; for (const dy of [-35, -5, 25]) { g.beginPath(); g.moveTo(bx - 10, by + dy); g.lineTo(bx + 70, by + dy + 3); g.stroke(); }   // doigts repliés
+  g.fillStyle = NAIL; for (const dy of [-38, -8, 22]) { g.beginPath(); g.ellipse(bx + 76, by + dy + 4, 9, 11, 0, 0, 7); g.fill(); }
+  g.beginPath(); g.ellipse(fx + 8, fy - 4, 10, 8, Math.atan2(fy - by, fx - bx), 0, 7); g.fill();                                            // ongle de l'index
   g.restore();
-  const fx = w / 2 + tipX + 40 * (1 - a), fy = h * 0.58 + tipY - 400 * (1 - a);                                   // doigt + manche de ta mère
-  g.lineWidth = 9; g.strokeStyle = "#241726"; g.fillStyle = "#8a3b4f"; g.beginPath(); g.moveTo(fx + 60, fy + 20); g.lineTo(fx + 420, fy - 260); g.lineTo(fx + 520, fy - 120); g.lineTo(fx + 120, fy + 120); g.closePath(); g.fill(); g.stroke();
-  g.fillStyle = "#e9b9a0"; g.beginPath(); g.roundRect(fx - 20, fy - 10, 140, 64, 30); g.fill(); g.stroke();
 };
 class Screen {
   cv = document.createElement("canvas"); tex: THREE.CanvasTexture; mesh: THREE.Mesh; last = "";
@@ -393,6 +407,7 @@ export class World {
       const geo = new THREE.PlaneGeometry(600 * 0.00216, 1000 * 0.00216).translate(0, (975 - 500) * 0.00216, 0);
       const m = new THREE.InstancedMesh(geo, mat, Math.max(1, pts[i].length)); m.count = pts[i].length; m.layers.set(NOINK); m.frustumCulled = false; R.add(m); this.crowd.push({ m, pts: pts[i] }); });
     this.palm = new Screen(768, 1024, 0.75, 1.0); this.palm.mesh.position.set(...PALM); R.add(this.palm.mesh);
+    { const pm = this.palm.mesh.material as THREE.MeshBasicMaterial; pm.transparent = false; pm.depthWrite = true; pm.fog = false; }   // opaque : rien ne transparaît
     { const NB = 160, pp = new Float32Array(NB * 3); for (let i = 0; i < NB; i++) pp.set([GRILLE[0] + (hash(i, 71) - 0.5) * 0.9, HY + 0.05 + hash(i, 72) * 0.6, -60.1 - hash(i, 73) * 1.4], i * 3);
       const dg = new THREE.BufferGeometry(); dg.setAttribute("position", new THREE.BufferAttribute(pp, 3));
       this.dust = new THREE.Points(dg, new THREE.PointsMaterial({ map: glowTex("170,200,255"), size: 0.03, transparent: true, opacity: 0.8, depthWrite: false, blending: THREE.AdditiveBlending })); this.dust.layers.set(NOINK); R.add(this.dust); }
@@ -448,7 +463,8 @@ export class World {
       cr.pts.forEach((p, i) => { const yw = Math.atan2(cam.position.x - p[0], cam.position.z - p[2]); mmx.compose(V(...p), qy.setFromAxisAngle(V(0, 1, 0), yw), V(1, 1, 1)); cr.m.setMatrixAt(i, mmx); });
       cr.m.instanceMatrix.needsUpdate = true; }
     this.palm.mesh.visible = id === 23 || id === 24;
-    if (this.palm.mesh.visible) { const k = id === 23 ? 0 : clamp01((t - tW(157)) / (tW(160) + 0.5 - tW(157))); this.palm.draw("p" + Math.round(k * 60), (g2, w, h) => drawPalm(g2, w, h, k, id === 23 ? u : 1)); }
+    if (this.palm.mesh.visible) { const k = id === 23 ? 0 : clamp01((t - tW(157)) / (tW(160) + 0.5 - tW(157))), ar = id === 23 ? smooth(u * 1.3) : 1 - smooth((t - tW(160) - 0.7) / 0.5);
+      this.palm.draw("p" + Math.round(k * 60) + "_" + Math.round(ar * 30), (g2, w, h) => drawPalm(g2, w, h, k, ar)); }
     { const pa = this.dust.geometry.attributes.position as THREE.BufferAttribute; for (let i = 0; i < pa.count; i++) { const z0 = -60.1 - hash(i, 73) * 1.4; pa.setZ(i, -60.1 - (((-z0 - 60.1) + t * 0.25 * (0.5 + hash(i, 74))) % 1.4)); pa.setX(i, GRILLE[0] + (hash(i, 71) - 0.5) * 0.9 + 0.05 * Math.sin(t + i)); } pa.needsUpdate = true; this.dust.visible = id >= 33 && id <= 38; }
     for (const gl of this.hallGlows) (gl.material as THREE.MeshBasicMaterial).opacity = 0.5 + 0.08 * Math.sin(t * 3 + gl.position.x);
     for (const m of this.fogs) { m.quaternion.copy(cam.quaternion); m.position.x += 0; }
