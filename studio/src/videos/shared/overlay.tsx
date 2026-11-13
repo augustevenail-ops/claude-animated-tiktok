@@ -40,7 +40,7 @@ export const Captions: React.FC<{ t: number; groups: { s: number; e: number; tex
   const g = groups.find((x) => t >= x.s - 0.03 && t < x.e);
   if (!g) return null;
   return (
-    <div style={{ position: "absolute", left: 0, right: 0, top: "64%", transform: "translateY(-50%)", textAlign: "center", padding: "0 40px" }}>
+    <div style={{ position: "absolute", left: 0, right: 0, top: "64%", transform: "translateY(-50%)", textAlign: "center", padding: "0 120px" }}>
       <span style={{ fontFamily: MONT, fontWeight: 900, fontSize: 84, lineHeight: 1.05, letterSpacing: 0.5, color: "#ffffff",
         WebkitTextStroke: "5px #0b0b0d", paintOrder: "stroke fill", textShadow: "0 5px 12px rgba(0,0,0,0.65), 0 0 2px rgba(0,0,0,0.9)" }}>{g.text}</span>
     </div>
@@ -48,13 +48,14 @@ export const Captions: React.FC<{ t: number; groups: { s: number; e: number; tex
 };
 
 // ---------------- compteurs du haut ----------------
+// marges latérales de 120 px : TikTok remplit les écrans 19,5:9 en rognant ~9 % de chaque côté (retour utilisateur 2026-11-13)
 export const Hud: React.FC<{ episode: number; place: string; of?: string; label: string; count: number; alert?: boolean }> = ({ episode, place, of, label, count, alert }) => (
   <>
-    <div style={{ position: "absolute", left: 22, top: 150, color: "#fff", textShadow: "0 3px 8px rgba(0,0,0,0.7)" }}>
+    <div style={{ position: "absolute", left: 120, top: 150, color: "#fff", textShadow: "0 3px 8px rgba(0,0,0,0.7)" }}>
       <div style={{ fontFamily: MONT, fontWeight: 800, fontSize: 25, letterSpacing: 3.5, opacity: 0.92 }}>● ÉPISODE {episode}</div>
       <div style={{ fontFamily: BEBAS, fontSize: 104, lineHeight: 0.95, marginTop: 2 }}>{place}{of ? <span style={{ fontSize: 46, color: "#c9d2e6", marginLeft: 12 }}>/ {of}</span> : null}</div>
     </div>
-    <div style={{ position: "absolute", right: 24, top: 150, textAlign: "right", textShadow: "0 3px 8px rgba(0,0,0,0.7)" }}>
+    <div style={{ position: "absolute", right: 120, top: 150, textAlign: "right", textShadow: "0 3px 8px rgba(0,0,0,0.7)" }}>
       <div style={{ fontFamily: MONT, fontWeight: 800, fontSize: 25, letterSpacing: 3.5, color: alert ? "#ffb0a6" : "#dfe6f2" }}>{label}</div>
       <div style={{ fontFamily: BEBAS, fontSize: 104, lineHeight: 0.95, marginTop: 2, color: alert ? "#ff5a48" : "#ffffff" }}>{count}</div>
     </div>
@@ -63,19 +64,19 @@ export const Hud: React.FC<{ episode: number; place: string; of?: string; label:
 
 // ---------------- cartes de choix ----------------
 const Card: React.FC<{ tag: string; text: string; top: string; bot: string; edge: string; glow: string; x: number; k: number }> = ({ tag, text, top, bot, edge, glow, x, k }) => (
-  <div style={{ position: "absolute", left: x, top: 455, width: 476, height: 290, borderRadius: 26, background: `linear-gradient(180deg, ${top} 0%, ${bot} 100%)`,
+  <div style={{ position: "absolute", left: x, top: 455, width: 410, height: 290, borderRadius: 26, background: `linear-gradient(180deg, ${top} 0%, ${bot} 100%)`,
     border: `5px solid ${edge}`, boxShadow: `0 0 34px ${glow}, inset 0 2px 0 rgba(255,255,255,0.25)`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
     transform: `scale(${0.85 + 0.15 * k})`, opacity: k }}>
     <div style={{ fontFamily: MONT, fontWeight: 800, fontSize: 30, letterSpacing: 6, color: "rgba(255,255,255,0.8)", marginBottom: 6 }}>{tag}</div>
-    <div style={{ fontFamily: MONT, fontWeight: 900, fontSize: 70, lineHeight: 1.06, color: "#fff", textAlign: "center", padding: "0 18px", textShadow: "0 4px 10px rgba(0,0,0,0.45)" }}>{text}</div>
+    <div style={{ fontFamily: MONT, fontWeight: 900, fontSize: 62, lineHeight: 1.06, color: "#fff", textAlign: "center", padding: "0 14px", textShadow: "0 4px 10px rgba(0,0,0,0.45)" }}>{text}</div>
   </div>
 );
 export const ChoiceCards: React.FC<{ t: number; at: number; a: string; b: string }> = ({ t, at, a, b }) => {
   if (t < at) return null;
   const ka = Math.min(1, (t - at) / 0.25), kb = Math.min(1, (t - at - 0.15) / 0.25);
   return (<>
-    <Card tag="A" text={a} top="#2f8a5e" bot="#15422d" edge="#9af5bd" glow="rgba(120,255,170,0.55)" x={42} k={Math.max(0, ka)} />
-    <Card tag="B" text={b} top="#9a3030" bot="#4a1414" edge="#ff9a8a" glow="rgba(255,90,70,0.5)" x={562} k={Math.max(0, kb)} />
+    <Card tag="A" text={a} top="#2f8a5e" bot="#15422d" edge="#9af5bd" glow="rgba(120,255,170,0.55)" x={120} k={Math.max(0, ka)} />
+    <Card tag="B" text={b} top="#9a3030" bot="#4a1414" edge="#ff9a8a" glow="rgba(255,90,70,0.5)" x={550} k={Math.max(0, kb)} />
   </>);
 };
 
