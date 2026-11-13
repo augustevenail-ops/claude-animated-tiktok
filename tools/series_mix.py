@@ -95,29 +95,52 @@ else:
     QUIET = [(W(138) - 0.1, W(139) + 0.3), (W(206), W(211))]
     SWELL = [(W(120), 2.0)]
 
-# ---------- grammaire commune ----------
-# souffles : seulement sur les vrais changements de scène (coupe après une fin de phrase), un sur deux, discrets (retour utilisateur :
-# le souffle sur chaque coupe sonnait comme un « coup de balai » toutes les 1-2 s)
-swo = Kit(N, SR, seed=77); ends = [c for c, a in zip(CUTS, ANCH[1:]) if words[a - 1]["w"].rstrip().endswith((".", "…", "...", "?"))]
-for j, c in enumerate(ends):
-    if j % 2 == 0: swo.whoosh(c, 0.9, 0.5)
-IMPACT = [i for n_, i in enumerate(IMPACT) if n_ % 3 != 2]                                              # ~19/min au total (mesuré)
-for i in IMPACT: k.impact(W(i) - 0.02, 0.55 + 0.25 * rng.random(), 44 + 14 * rng.random())          # impacts graves
-for i in REVEAL: k.riser(W(i) - 0.05, 1.6 + 0.8 * rng.random(), 0.9); k.impact(W(i) - 0.02, 1.0, 40); k.sub_drop(W(i) - 0.02, 0.6)   # montée + coupure + impact
-k.stinger(TITLE_AT, 1.0)
-cuts_mus = [W(i) - 0.35 for i in REVEAL]
-mus = k.music2(DUR, cuts=cuts_mus, swells=SWELL, quiet=QUIET)
-
-# ---------- niveaux (mesurés sur la référence) ----------
+# ---------- grammaire de la référence (analysée image + son) ----------
+# moments forts par épisode : SIL = silence net juste avant (index de mot) ; SWL = montée d'accord (index) ; HRT = cœur (t0, t1) ; RMB = grondement (t0, t1)
+if EPN == 1:
+    SIL = [42, 129, 197, 206]; SWL = [45, 149, 197, 226]; HRT = [(W(129) + 0.4, W(149)), (W(181), W(226))]; RMB = [(W(66), W(78)), (W(183), W(197))]
+elif EPN == 2:
+    SIL = [62, 81, 97, 103, 121, 142, 185, 235]; SWL = [1, 81, 215, 242]; HRT = [(W(135), W(161)), (W(179), W(242))]; RMB = [(W(138), W(142)), (W(156), W(161))]
+else:
+    SIL = [74, 109, 120, 146, 157, 161, 217]; SWL = [98, 120, 190, 244]; HRT = [(W(206), W(244))]; RMB = [(W(120), W(126)), (W(161), W(175)), (W(240), TITLE_AT)]
+tone, sw, hb, ru = k.music3(DUR, silences=[W(i) - 0.2 for i in SIL], swells=[(W(i), 2.2) for i in SWL], glides=[(W(i) - 0.7, (-2 if n_ % 2 else 3)) for n_, i in enumerate(SIL[::2])],
+                            hearts=HRT, rumbles=RMB, title_at=TITLE_AT)
 def lvl(x, target):
     act = np.abs(x) > 1e-4
     return x * db(target - rms(x[act])) if act.any() else x
-hit = lvl(k.hit, vref - 7); air = lvl(k.air + fol, vref - 8); air += lvl(swo.air, vref - 20); mus = lvl(mus, vref - 9)
-ph = (t * 43 / 60) % 1; sub = (np.sin(2 * np.pi * 61.74 * t) * (0.55 + 0.45 * np.exp(-ph * 3)) + 0.7 * np.sin(2 * np.pi * 30.87 * t)) * np.clip(t / 2, 0, 1) * np.clip((DUR - t) / 1.5, 0, 1)
-mus += sub * db(vref - 20 - rms(sub))                                                                    # sous-graves continus (mesurés)
+# niveaux relevés sur la référence : note tenue ~15 dB sous la voix, accords ~8 dB sous (crête), cœur ~12 dB sous, grondement ~14 dB sous,
+# bruitages d'objets ~12 dB sous ; plus d'impacts ni de souffles systématiques (absents de la référence)
+mus = lvl(tone, vref - 9) + lvl(sw, vref - 6) + lvl(hb, vref - 8) + lvl(ru, vref - 9)
+k.hit[:] = 0; k.air[:] = 0
+k_obj = Kit(N, SR, seed=5)
+if EPN == 1:
+    for i in (42, 197, 206): k_obj.click(W(i) - 0.08, 0.7)
+    for q in range(22): u = q / 21; k_obj.click(W(149) + (W(169) - W(149)) * u ** 0.8, 0.2 + 0.5 * u)
+    k_obj.tick(E(205) + 0.05, 1.0)
+elif EPN == 2:
+    for i in (62, 81): k_obj.click(W(i) - 0.08, 0.7)
+    k_obj.tick(E(67) + 0.05, 1.0); k_obj.click(W(80), 0.6)
+    k_obj.thud(W(152), 0.8, 60)
+    k_obj.thud(W(169), 0.9, 45); k_obj.tick(W(176), 1.0)
+    for q in range(16): u = q / 15; k_obj.click(W(217) + (W(221) + 0.5 - W(217)) * u ** 1.2, 0.6 - 0.4 * u)
+else:
+    tt = W(96)
+    while tt < W(120) - 0.4:
+        for e in range(3): k_obj.thud(tt + e * 0.21, 0.5 * 0.45 ** e, 95)
+        tt += 0.58
+    tt = W(207)
+    while tt < TITLE_AT - 0.3:
+        q = np.clip((tt - W(207)) / (W(244) - W(207)), 0, 1)
+        for e in range(4): k_obj.thud(tt + e * 0.33, (0.15 + 0.7 * q ** 1.4) * 0.5 ** e, 90)
+        tt += 0.62 - 0.12 * q
+fol_l = lvl(fol + k_obj.air + k_obj.hit, vref - 12)
 duck = np.ones(N)
-for w in words: duck[int(max(0, W(words.index(w)) - 0.08) * SR):int(min(DUR, E(words.index(w)) + 0.12) * SR)] = db(-3)
+for w in words: duck[int(max(0, W(words.index(w)) - 0.08) * SR):int(min(DUR, E(words.index(w)) + 0.12) * SR)] = db(-2)
 mus *= np.convolve(duck, np.ones(2000) / 2000, "same")
+hit = np.zeros(N); air = fol_l
+if os.environ.get('STEMS'):
+    for nm, x in (('voice', voice), ('tone', tone), ('sw', sw), ('hb', hb), ('ru', ru), ('fol', fol_l), ('mus', mus)):
+        lo_ = np.convolve(x, np.ones(400) / 400, 'same'); print(nm, 'rms', round(rms(x), 1), 'graves<60Hz', round(rms(lo_), 1))
 mix = np.stack([voice + mus + hit + air * 1.0, voice + mus * 0.97 + hit + air * 0.92], 1)
 out = os.path.join(EP, "audio"); os.makedirs(out, exist_ok=True); pre = os.path.join(out, "_pre.wav")
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "f64le", "-ar", str(SR), "-ac", "2", "-i", "-", pre], input=mix.tobytes(), check=True)
@@ -128,4 +151,4 @@ subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", pre, "-af", af, "-c:a", "pc
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", os.path.join(out, "mix.wav"), "-b:a", "192k", os.path.join(out, "mix_ecoute.mp3")])
 pub = os.path.join(ROOT, "studio", "public", SDIR); os.makedirs(pub, exist_ok=True); shutil.copy(os.path.join(out, "mix.wav"), os.path.join(pub, "mix.wav"))
 e = subprocess.run(["ffmpeg", "-i", os.path.join(out, "mix.wav"), "-af", "ebur128=peak=true", "-f", "null", "-"], capture_output=True, text=True).stderr
-print(f"ép. {EPN} : durée {DUR} s, {len(CUTS)} coupes, {len(IMPACT) + len(REVEAL)} impacts, {len(REVEAL)} montées |", " | ".join(l.strip() for l in e[e.rfind('Summary:'):].splitlines() if l.strip().startswith(("I:", "Peak:"))))
+print(f"ép. {EPN} : durée {DUR} s, {len(SIL)} silences, {len(SWL)} montées d'accords, cœur {len(HRT)}, grondements {len(RMB)} |", " | ".join(l.strip() for l in e[e.rfind('Summary:'):].splitlines() if l.strip().startswith(("I:", "Peak:"))))

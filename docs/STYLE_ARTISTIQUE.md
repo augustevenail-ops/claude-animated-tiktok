@@ -145,3 +145,14 @@ Style des personnages (`shared/chars.ts`), couleurs, lumière, textures, grain :
 ## Flou de profondeur : supprimé (décision utilisateur du 2026-11-12)
 Plus **aucun flou** de profondeur dans les vidéos (plans larges, couloirs, personnages) : `post.lens = false` par défaut
 (`appel/Appel.tsx`), et `scripts/render_chunks_ep.sh` force `"lens": false`. Le reste de la chaîne (encre, bloom, étalonnage, grain) est inchangé.
+
+## Son des séries : grammaire relevée sur la vidéo de référence de l'utilisateur (analyse image + son du 2026-11-13)
+(étude seulement, rien n'est copié ; code : `tools/sound_kit.py` → `music3`, `tools/series_mix.py`)
+- **Musique** : une note aiguë tenue en continu (fa# ≈ 740 Hz, doublée à l'octave grave, vibrato lent), environ 9-11 dB sous la voix ;
+  **montées d'accords** (2-3 s, harmoniques 300-1500 Hz) sur les moments visuels forts (lumière qui s'allume, dézoom monumental,
+  apparition de la menace) ; **glissandos** de la note sur les grandes transitions ; **accord final** sur le carton du titre.
+- **Silences nets** (tout coupe 0,3-0,5 s) juste avant les révélations.
+- **Cœur grave doux** (≈ 75 bpm, ≈ 85-95 Hz) pendant les passages de suspense ; **grondement sourd** (bruit très grave) quand la menace est là.
+- **Très peu d'impacts et de souffles** : pas de coup systématique, pas de souffle à chaque coupe (retour utilisateur : « coup de balai » désagréable).
+- Bruitages d'objets seulement sur les gestes visibles (déclics du haut-parleur, coups à la porte, poignée, pas), ≈ 12 dB sous la voix.
+- Fond (hors parole) ≈ 7-9 dB sous la voix ; volume final −15 LUFS / −1,2 dBTP.

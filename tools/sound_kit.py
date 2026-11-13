@@ -117,3 +117,48 @@ class Kit:
         for c in cuts: lvl *= 1 - 0.97 * np.clip(1 - np.abs(t - (c + 0.15)) / 0.3, 0, 1) ** 0.3   # coupure nette avant la révélation
         fade = np.clip(t / 1.5, 0, 1) * np.clip((dur - t) / 1.2, 0, 1)
         return mus * lvl * fade
+
+    # ---------- musique v3 (2026-11-13, calquée sur la vidéo de référence de l'utilisateur, analysée image + son) ----------
+    # note aiguë tenue en continu (fa# ~740 Hz, doublée à l'octave grave, vibrato lent) ; montées d'accords (2-3 s) sur les moments
+    # visuels forts ; glissandos de la note sur les grandes transitions ; silences nets avant les révélations ; cœur grave doux
+    # (~75 bpm, ~85 Hz) pendant le suspense ; grondement sourd quand la menace est là ; accord final sur le titre.
+    def music3(self, dur, silences=(), swells=(), glides=(), hearts=(), rumbles=(), title_at=None, seed=5):
+        SR, N = self.SR, self.N; t = np.arange(N) / SR; rng = np.random.default_rng(seed)
+        nt = lambda m: 440 * 2 ** ((m - 69) / 12)
+        def put(dst, sig, t0, g=1.0):
+            i = int(t0 * SR); j = min(N, i + len(sig))
+            if 0 <= i < N and j > i: dst[i:j] += sig[: j - i] * g
+        # note tenue (avec glissandos)
+        bend = np.zeros(N)
+        for (a, semis) in glides:                                              # glissando : la note glisse puis revient
+            k = np.clip((t - a) / 0.6, 0, 1); back = np.clip((t - a - 1.4) / 1.2, 0, 1); bend += semis * (np.sin(np.pi / 2 * k) - back * np.sin(np.pi / 2 * k))
+        f = nt(78) * 2 ** (bend / 12) * (1 + 0.004 * np.sin(2 * np.pi * 4.6 * t))
+        ph = np.cumsum(f) / SR
+        tone = np.sin(2 * np.pi * ph) + 0.08 * np.sin(4 * np.pi * ph) + 0.4 * np.sin(np.pi * ph) + 0.18 * np.sin(2 * np.pi * np.cumsum(nt(47) * np.ones(N)) / SR)
+        tone *= 0.8 + 0.2 * np.sin(2 * np.pi * 0.07 * t + 1) ** 2
+        # montées d'accords (si mineur, harmoniques 300-1500 Hz)
+        sw = np.zeros(N)
+        for (a, d) in swells:
+            x = np.arange(int((d + 1.8) * SR)) / SR; e = np.clip(x / d, 0, 1) ** 1.6 * np.clip((d + 1.8 - x) / 1.8, 0, 1)
+            sig = sum(np.sin(2 * np.pi * nt(m) * x * (1 + 0.003 * np.sin(2 * np.pi * 5 * x + m))) * w for m, w in ((59, 1), (62, 0.8), (66, 0.9), (71, 0.6), (74, 0.45), (78, 0.35)))
+            put(sw, sig * e, a - d * 0.6)
+        if title_at is not None:                                               # accord final (titre)
+            x = np.arange(int(2.6 * SR)) / SR; e = np.minimum(x / 0.04, 1) * np.exp(-x * 1.1)
+            put(sw, sum(np.sin(2 * np.pi * nt(m) * x) * w for m, w in ((47, 1), (54, 0.8), (59, 0.8), (62, 0.6), (66, 0.6), (71, 0.4))) * e, title_at, 1.6)
+        # cœur grave doux
+        hb = np.zeros(N)
+        for (a, b) in hearts:
+            tt = a
+            while tt < b:
+                x = np.arange(int(0.35 * SR)) / SR; beat = np.sin(2 * np.pi * np.cumsum(92 - 30 * x / 0.35) / SR) * np.exp(-x * 16) * np.minimum(x / 0.008, 1)
+                put(hb, beat, tt); put(hb, beat, tt + 0.27, 0.6); tt += 0.8
+        # grondement sourd
+        ru = np.zeros(N)
+        for (a, b) in rumbles:
+            n = rng.standard_normal(int((b - a + 1.0) * SR)); n = self._sm(self._sm(n, 160), 160); x = np.arange(len(n)) / SR
+            put(ru, n * np.clip(np.minimum(x / 0.8, (b - a + 1.0 - x) / 0.8), 0, 1), a - 0.3)
+        tone /= np.abs(tone).max() + 1e-9; sw /= np.abs(sw).max() + 1e-9; hb /= np.abs(hb).max() + 1e-9; ru /= np.abs(ru).max() + 1e-9
+        lvl = np.ones(N)
+        for c in silences: lvl *= 1 - np.clip(1 - np.abs(t - c) / 0.28, 0, 1) ** 0.25 * 0.97             # silence net autour de c
+        fade = np.clip(t / 1.2, 0, 1) * np.clip((dur - t) / 0.8, 0, 1)
+        return tone * lvl * fade, sw * lvl, hb * lvl, ru * lvl
