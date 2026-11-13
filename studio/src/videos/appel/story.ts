@@ -119,7 +119,6 @@ export const camAt = (id: number, f: number): Cam => {
   const u = uOf(id, f), c = CAMS[id](u, f), role = ROLE[id], a = SHAKE[role] ?? 0.0015, n = f * 0.9 + id * 3.1;
   const big = c.far > 1000 && !(role === 29 || role === 31 || role === 32 || role === 34 || role === 39) ? 30 : 1;      // en extérieur lointain, la même respiration en proportion
   let look: V3 = [c.look[0] + a * big * Math.sin(n * 2.3), c.look[1] + a * big * Math.sin(n * 1.7 + 1), c.look[2] + a * big * Math.sin(n * 1.1)];
-  if (role === 1 && f - SHOTS[0].a < 9) look = [look[0], look[1] - 0.25 * (1 - (f - SHOTS[0].a) / 9), look[2]];      // sursaut : la tête se relève d'un coup
   return { ...c, look, roll: c.roll + 0.002 * Math.sin(f * 0.045 + id) };
 };
 

@@ -115,7 +115,7 @@ def amb(name, a, b, gdb=-24.0):
         seg = x.copy(); seg[:fadeN] *= np.linspace(0, 1, fadeN); seg[-fadeN:] *= np.linspace(1, 0, fadeN); put(sfx, seg[: int((b - tt + 0.8) * SR)], tt); tt += L / SR - 0.8
 def heart(a, b, gdb=-15.0): amb("heartbeat", a, b, gdb)
 if EPN == 1:
-    amb("wind_city", 0.3, W(149), -27); cue("gasp_teen", 0.05, -7)
+    amb("wind_city", 0.3, W(149), -27)
     cue("pa_static", W(13) - 0.1, -11); cue("pa_chime", W(42) - 1.0, -11); cue("pa_click", W(42) - 0.15, -12)
     for i in (53, 133, 170): cue("boom_low", W(i) - 0.05, -11)
     cue("boots_approach", W(70), -15); cue("steel_door", W(74), -12); cue("sting_soft", W(78), -12)
@@ -150,7 +150,7 @@ else:
 # ---- bruits supplémentaires, variés (consigne utilisateur : « plein de bruits différents selon les situations »)
 X = []
 if EPN == 1:
-    X = [("bed_creak", 0.1, -10), ("cloth_rustle", W(1), -14), ("glass_rattle", W(13), -16), ("tower_groan", W(5), -17), ("metal_creak_far", W(20), -16), ("siren_far", W(22), -21),
+    X = [ ("glass_rattle", W(13), -16), ("tower_groan", W(5), -17), ("metal_creak_far", W(20), -16), ("siren_far", W(22), -21),
          ("elec_hum", W(27), -21), ("pa_feedback", W(42) - 1.5, -17), ("suit_rustle", W(66), -14), ("mask_breath", W(71), -14), ("door_close_soft", W(95), -14), ("lock_click", W(100), -14),
          ("breath_nervous", W(124), -13), ("curtain", W(181), -15), ("glass_rattle", W(182), -16), ("mask_breath", W(186), -14), ("suit_rustle", W(188), -15),
          ("breath_nervous", W(213), -13), ("heart_fast", W(218), -14)]

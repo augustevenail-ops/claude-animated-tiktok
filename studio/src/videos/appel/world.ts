@@ -387,7 +387,7 @@ export class World {
     const blink = (seed: number) => (f + seed * 37) % 97 < 4;
     const inRoom = [1, 20, 21, 22, 23, 24, 36, 37, 38, 41].includes(id);
     if (inRoom) {
-      const jolt = id === 1 && f - SHOTS[0].a < 8;
+      const jolt = false;   // plus de sursaut au début (consigne du 2026-11-13)
       const yExpr: Fo["expr"] = id === 21 || id === 36 ? "talk" : id === 20 ? "calm" : "worry";
       place("Y", jolt ? [YOU[0], YOU[1] - 0.12, YOU[2]] : YOU, { mode: "sit", expr: jolt ? "calm" : yExpr, blink: jolt || blink(1), look: id === 38 || id === 22 ? -0.9 : 0 }, 1, jolt ? -0.3 : 0);
       const nExpr: Fo["expr"] = id === 21 || id === 22 ? "laugh" : id === 23 || id === 24 ? "mute" : id === 20 ? "calm" : "worry";
