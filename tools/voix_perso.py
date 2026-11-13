@@ -21,6 +21,9 @@ ap.add_argument("--st", type=float, default=0.0)        # abaissement PSOLA (Pra
 ap.add_argument("--formant", type=float, default=1.0)  # < 1 : timbre plus ample
 ap.add_argument("--sat", type=float, default=3.0)      # attaque de la saturation douce (dB)
 ap.add_argument("--body", action="store_true")         # un peu plus de poitrine (réglage F)
+ap.add_argument("--range", type=float, default=1.0)    # intonation : > 1 = mélodie plus ample (conteur)
+ap.add_argument("--enddrop", type=float, default=0.0)  # fins de phrase qui retombent (demi-tons sur le dernier mot)
+ap.add_argument("--slow", type=float, default=1.0)     # débit : > 1 = plus posé (change le minutage)
 ap.add_argument("--outro", default="")   # texte de la phrase de fin (ex. « Abonne-toi pour l'épisode deux. »), lu à la fin de la prise
 A = ap.parse_args()
 SR = 48000; os.makedirs(A.out, exist_ok=True)
@@ -189,15 +192,39 @@ if A.st or A.formant != 1:
     import parselmouth
     from parselmouth.praat import call
     F0 = call(parselmouth.Sound(x, SR).to_pitch(time_step=0.01, pitch_floor=60, pitch_ceiling=400), "Get quantile", 0, 0, 0.5, "Hertz")
-def grave(y):
+if F0 is None and (A.range != 1 or A.enddrop or A.slow != 1):
+    import parselmouth
+    from parselmouth.praat import call
+    F0 = call(parselmouth.Sound(x, SR).to_pitch(time_step=0.01, pitch_floor=60, pitch_ceiling=400), "Get quantile", 0, 0, 0.5, "Hertz")
+def fit(z, n): return z[:n] if len(z) >= n else np.pad(z, (0, n - len(z)))
+def grave(y, Wt=None):
+    """PSOLA (Praat) : hauteur, formants, amplitude de la mélodie ; puis fins de phrase retombantes et débit (2e passe)"""
     if F0 is None: return y
-    z = call(parselmouth.Sound(y, SR), "Change gender", 60, 400, A.formant, F0 * 2 ** (A.st / 12), 1.0, 1.0).values[0].astype(np.float64)
-    return z[:len(y)] if len(z) >= len(y) else np.pad(z, (0, len(y) - len(z)))
+    if A.st or A.formant != 1 or A.range != 1:
+        y = fit(call(parselmouth.Sound(y, SR), "Change gender", 60, 400, A.formant, F0 * 2 ** (A.st / 12), A.range, 1.0).values[0].astype(np.float64), len(y))
+    if not (A.enddrop or A.slow != 1): return y
+    snd = parselmouth.Sound(y, SR); dur = len(y) / SR
+    man = call(snd, "To Manipulation", 0.01, 60, 400)
+    if A.enddrop and Wt:
+        pt = call(man, "Extract pitch tier"); npt = call(pt, "Get number of points")
+        pts = [(call(pt, "Get time from index", i), call(pt, "Get value at index", i)) for i in range(1, npt + 1)]
+        ends = [(w["s"], w["e"]) for w in Wt if re.search(r"[.?!…]$", w["w"])]
+        new = call("Create PitchTier", "p", 0, dur)
+        for t, v in pts:
+            for a, b in ends:
+                if a <= t <= b + 0.05: v *= 2 ** (-A.enddrop * min(1, (t - a) / max(0.05, b - a)) / 12)
+            call(new, "Add point", t, v)
+        call([new, man], "Replace pitch tier")
+    if A.slow != 1:
+        dt = call("Create DurationTier", "d", 0, dur); call(dt, "Add point", 0, A.slow); call([dt, man], "Replace duration tier")
+    return call(man, "Get resynthesis (overlap-add)").values[0].astype(np.float64)
 narr = {}
 for k in sorted({w["seg"] for w in W}):
     Wk = [w for w in W if w["seg"] == k]
     y, Wt, core = tighten(x, Wk, 0.15)
-    narr[k] = (ff(grave(y), TONE), Wt, core)
+    y = grave(y, Wt)
+    if A.slow != 1: Wt = [{**w, "s": w["s"] * A.slow, "e": w["e"] * A.slow} for w in Wt]; core *= A.slow
+    narr[k] = (ff(y, TONE), Wt, core)
 g = 10 ** ((A.lufs - lufs(np.concatenate([v[0] for kk, v in narr.items() if kk >= 0]))) / 20)
 narr = {kk: (v[0] * g, v[1], v[2]) for kk, v in narr.items()}
 from scipy.signal import butter, sosfiltfilt
