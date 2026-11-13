@@ -8,7 +8,7 @@ import { TONE, CHAR, untone } from "../bridge/shade";
 import { NOINK } from "../bridge/ink";
 import { Pool, Actor } from "../bridge/cast";
 import type { Pen } from "../bridge/toon";
-import { drawChar, CharSpec } from "../shared/chars";
+import { drawPerson, Person, Expr, Pose } from "./people";
 import { painted } from "../shared/painted";
 import { drawLong, LongSpec, PEEK_CUT } from "./longs";
 import { FPS, V3, CELL, H, TH, LONG_K, CLEAR, ENTRY_Z, ENTRY_W, WAKE_Z, YOU_WAKE, FIRE, SIREN, NAMES_Z, LONG_RUN, YOU_RUN_Z, LIGHT,
@@ -64,15 +64,15 @@ const glowTex = (rgb: string) => ctex("mu_glow" + rgb, 128, 128, (g) => {
 });
 
 // ---------------- personnages ----------------
-const LOOK: Record<string, Partial<CharSpec>> = {
-  Y: { jacket: "#2b3f93", pants: "#2a2f4a", shoes: "#16151c", hair: "side", hairColor: "#5a3a26", hood: true },
-  A: { jacket: "#3f6f5a", pants: "#2e3040", shoes: "#1b1a22", hair: "short", hairColor: "#24201f" },
-  B: { jacket: "#a0522d", pants: "#2e3040", shoes: "#1b1a22", hair: "short", hairColor: "#6a4630" },
-  C: { jacket: "#5b4f8a", pants: "#34304a", shoes: "#1b1a22", hair: "long", hairColor: "#c9c3b8" },
-  D: { jacket: "#8a3b4f", pants: "#3a3348", shoes: "#1b1a22", hair: "long", hairColor: "#3b2a24" },
-  E: { jacket: "#c8892a", pants: "#3a3f5a", shoes: "#1b1a22", hair: "short", hairColor: "#8d8d96" },
+const LOOK: Record<string, Partial<Person>> = {
+  Y: { jacket: "#c4523e", pants: "#4a5066", shoes: "#2a2a30", hair: "bob", hairColor: "#3a2c26", hood: true },      // toi : sweat rouge brique, capuche
+  A: { jacket: "#5a7d6a", pants: "#3f4458", shoes: "#2a2a30", hair: "spiky", hairColor: "#2a2220" },
+  B: { jacket: "#c9b48e", pants: "#4a5066", shoes: "#2a2a30", hair: "ponytail", hairColor: "#a07850" },
+  C: { jacket: "#8fa7c4", pants: "#3f4458", shoes: "#2a2a30", hair: "bun", hairColor: "#c9c3b8" },
+  D: { jacket: "#7b5a8a", pants: "#3a3348", shoes: "#2a2a30", hair: "fringe", hairColor: "#24201f" },
+  E: { jacket: "#d08a3a", pants: "#3f4458", shoes: "#2a2a30", hair: "bob", hairColor: "#6a4630" },
 };
-type Fo = { mode: "stand" | "sit"; expr: CharSpec["expr"]; blink?: boolean; look?: number; back?: boolean; side?: 1 | -1; reach?: number };
+type Fo = { mode?: "stand"; pose?: Pose; expr: Expr | "mute"; blink?: boolean; look?: number; back?: boolean; side?: 1 | -1; reach?: number; step?: number };
 const tierOf = (d: number): [number, number, number] => (d < 3.5 ? [1080, 1800, 1.8] : d < 14 ? [600, 1000, 1] : [300, 500, 0.5]);
 /** cercle autour du feu (jeunes de la clairière) */
 const RING: [string, number][] = [["A", 0.2], ["B", 0.95], ["C", 1.7], ["D", 2.45], ["E", 3.6], ["A", 4.3], ["C", 5.05], ["B", 5.6]];
@@ -195,7 +195,7 @@ export class World {
     const place = (key: string, p: V3, fo: Fo, scale = 1, lie = false) => {
       const A = this.actors[k++]; if (!A) return;
       const d = cam.position.distanceTo(V(p[0], p[1] + 1.1 * scale, p[2])), [w, h, kk] = tierOf(d / scale);
-      A.r = this.pool.req(`${key}|${JSON.stringify(fo)}`, w, h, kk, (pen: Pen) => drawChar(pen, { ...(LOOK[key] as CharSpec), ...fo, blink: !!fo.blink, look: fo.look ?? 0 }));
+      A.r = this.pool.req(`${key}|${JSON.stringify(fo)}`, w, h, kk, (pen: Pen) => drawPerson(pen, { ...(LOOK[key] as Person), pose: fo.pose ?? "stand", expr: (fo.expr === "mute" ? "fear" : fo.expr) as Expr, back: fo.back, blink: !!fo.blink, look: fo.look ?? 0, step: fo.step }));
       A.mesh.position.set(...p); A.mesh.up.set(0, 1, 0);
       if (lie) A.mesh.rotation.set(-Math.PI / 2, 0, 0, "YXZ"); else {
         A.mesh.rotation.set(0, yaw(p), 0);

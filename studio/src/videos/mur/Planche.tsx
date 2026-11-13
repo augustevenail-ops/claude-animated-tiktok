@@ -3,12 +3,12 @@ import React, { useEffect, useRef } from "react";
 import { AbsoluteFill, continueRender, delayRender } from "remotion";
 import { Pen } from "../bridge/toon";
 import { drawLong, LongSpec } from "./longs";
-import { drawChar, CharSpec } from "../shared/chars";
+import { drawPerson, Person } from "./people";
 
-const Y: Partial<CharSpec> = { jacket: "#2b3f93", pants: "#2a2f4a", shoes: "#16151c", hair: "side", hairColor: "#5a3a26", hood: true };
-const KIDS: Partial<CharSpec>[] = [
-  { jacket: "#3f6f5a", pants: "#2e3040", shoes: "#1b1a22", hair: "short", hairColor: "#24201f" }, { jacket: "#a0522d", pants: "#2e3040", shoes: "#1b1a22", hair: "short", hairColor: "#6a4630" },
-  { jacket: "#5b4f8a", pants: "#34304a", shoes: "#1b1a22", hair: "long", hairColor: "#c9c3b8" }, { jacket: "#8a3b4f", pants: "#3a3348", shoes: "#1b1a22", hair: "long", hairColor: "#3b2a24" },
+const Y: Partial<Person> = { jacket: "#c4523e", pants: "#4a5066", shoes: "#2a2a30", hair: "bob", hairColor: "#3a2c26", hood: true };
+const KIDS: Partial<Person>[] = [
+  { jacket: "#5a7d6a", pants: "#3f4458", shoes: "#2a2a30", hair: "spiky", hairColor: "#2a2220" }, { jacket: "#c9b48e", pants: "#4a5066", shoes: "#2a2a30", hair: "ponytail", hairColor: "#a07850" },
+  { jacket: "#8fa7c4", pants: "#3f4458", shoes: "#2a2a30", hair: "bun", hairColor: "#c9c3b8" }, { jacket: "#7b5a8a", pants: "#3a3348", shoes: "#2a2a30", hair: "fringe", hairColor: "#24201f" },
 ];
 export const MurPlanche: React.FC = () => {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -23,13 +23,15 @@ export const MurPlanche: React.FC = () => {
       g.fillStyle = "#e9e6dc"; g.fillText(lab, x + 180, y + 600);
     });
     // échelle : un jeune à côté d'un Long debout
-    g.fillStyle = "#a9adbf"; g.fillText("ÉCHELLE : UN LONG ≈ 5 PERSONNAGES", 540, 1370);
+    g.fillStyle = "#a9adbf"; g.fillText("ÉCHELLE : UN LONG ≈ 5 PERSONNAGES", 110, 1370);
     g.save(); g.translate(40, 1380); g.scale(0.26, 0.5); drawLong(new Pen(g), { pose: "stand" }); g.restore();
-    g.save(); g.translate(170, 1380 + 500 - 100); g.scale(0.052, 0.1); drawChar(new Pen(g), { ...(KIDS[0] as CharSpec), mode: "stand", expr: "worry" }); g.restore();
+    g.save(); g.translate(170, 1380 + 500 - 100); g.scale(0.052, 0.1); drawPerson(new Pen(g), { ...(KIDS[0] as Person), pose: "stand", expr: "worry" }); g.restore();
     // toi + les jeunes
-    const cards: [string, CharSpec][] = [["TOI", { ...(Y as CharSpec), mode: "stand", expr: "worry" }], ["TOI (DOS)", { ...(Y as CharSpec), mode: "stand", expr: "worry", back: true }],
-      ...KIDS.map((k, i) => [`JEUNE ${i + 1}`, { ...(k as CharSpec), mode: "stand", expr: i % 2 ? "worry" : "calm" }] as [string, CharSpec])];
-    cards.forEach(([lab, s], i) => { const x = 270 + (i % 3) * 270, y = 1390 + Math.floor(i / 3) * 260; g.save(); g.translate(x + 50, y); g.scale(0.28, 0.22); drawChar(new Pen(g), s); g.restore(); g.fillStyle = "#e9e6dc"; g.fillText(lab, x + 135, y + 250); });
+    const cards: [string, Person][] = [
+      ["TOI", { ...(Y as Person), pose: "stand", expr: "worry" }], ["TOI — PEUR", { ...(Y as Person), pose: "stand", expr: "fear" }], ["TOI — CHOC", { ...(Y as Person), pose: "handMouth", expr: "shock" }],
+      ["TOI — COURSE", { ...(Y as Person), pose: "run", expr: "fear", step: 0.25 }], ["TOI — DE DOS", { ...(Y as Person), pose: "stand", expr: "calm", back: true }], ["TOI — ÉPUISÉ", { ...(Y as Person), pose: "stand", expr: "tired" }],
+      ...KIDS.map((k, i) => [`JEUNE ${i + 1}`, { ...(k as Person), pose: i === 1 ? "reach" : i === 2 ? "armsUp" : "stand", expr: (["calm", "worry", "relief", "frown"] as const)[i] }] as [string, Person])];
+    cards.forEach(([lab, s], i) => { const x = 220 + (i % 5) * 172, y = 1390 + Math.floor(i / 5) * 270; g.save(); g.translate(x, y); g.scale(0.27, 0.23); drawPerson(new Pen(g), s); g.restore(); g.fillStyle = "#e9e6dc"; g.font = "bold 17px DejaVu Sans"; g.fillText(lab, x + 81, y + 250); });
     continueRender(h);
   }, []);
   return <AbsoluteFill><canvas ref={ref} width={1080} height={1920} /></AbsoluteFill>;

@@ -4,8 +4,9 @@
 // ombre douce d'un côté. Dessin dans l'espace 600 x 1000 (sol à y = 975), carte agrandie ~5x dans le monde (≈ 11 m).
 import type { Pen } from "../bridge/toon";
 
-const INK = "#15141b", OL = 5;
-const BODY = "#c9ccd8", LIT = "#e8eaf1", DARK = "#9094a8";
+const INK = "#2a2c40", OL = 3.5;
+// style v2 : cel-shading 2 tons (clair blanc-lavande / ombre bleu-violet), contour fin, aucun trait intérieur
+const BODY = "#e9eaf7", LIT = "#f6f6fc", DARK = "#9599cf";
 export type LongPose = "stand" | "lean" | "crouch" | "walk" | "peek";
 /** « peek » : vu de face, tête et épaules au-dessus du mur, bras qui pendent le long de la paroi ; le corps s'arrête net à PEEK_CUT (= arête du mur) */
 export const PEEK_CUT = 385;
@@ -41,11 +42,15 @@ const limbPath = (pts: P2[], ws: number[], tip = false) => {
 /** silhouette d'un seul tenant : toutes les formes d'abord en encre élargie (contour extérieur unique), puis remplies sans trait
  *  -> aucune ligne entre torse, bras et jambes (consigne utilisateur du 2026-11-13). Les formes « back » sont teintées plus sombres. */
 type Shape = { path: Path2D; back?: boolean };
-const paint = (g: CanvasRenderingContext2D, shapes: Shape[], cx: number) => {
+const paint = (g: CanvasRenderingContext2D, shapes: Shape[], _cx: number, band = 22) => {
   g.save(); g.lineJoin = "round"; g.lineCap = "round";
   for (const sh of shapes) { g.fillStyle = INK; g.fill(sh.path); g.lineWidth = OL * 2; g.strokeStyle = INK; g.stroke(sh.path); }
-  const grad = g.createLinearGradient(cx - 70, 0, cx + 70, 0); grad.addColorStop(0, DARK); grad.addColorStop(0.3, LIT); grad.addColorStop(0.75, BODY); grad.addColorStop(1, DARK);
-  for (const sh of shapes) { g.fillStyle = sh.back ? DARK : grad; g.fill(sh.path); if (sh.back) { g.globalAlpha = 0.35; g.fillStyle = grad; g.fill(sh.path); g.globalAlpha = 1; } }
+  // aplat clair puis bande d'ombre franche côté droit (= forme moins elle-même décalée vers la droite)
+  for (const sh of shapes) {
+    g.fillStyle = sh.back ? DARK : BODY; g.fill(sh.path);
+    if (sh.back) continue;
+    g.save(); g.clip(sh.path); g.fillStyle = DARK; g.fill(sh.path); g.translate(-band, 0); g.fillStyle = BODY; g.fill(sh.path); g.restore();
+  }
   g.restore();
 };
 const hand = (x: number, y: number, ang: number, len: number, back = false): Shape[] =>
@@ -54,15 +59,16 @@ const hand = (x: number, y: number, ang: number, len: number, back = false): Sha
 const headShape = (x: number, y: number, rx: number, ry: number, tilt: number): Shape => { const p = new Path2D(); p.ellipse(x, y, rx, ry, tilt, 0, Math.PI * 2); return { path: p }; };
 const head = (g: CanvasRenderingContext2D, x: number, y: number, rx: number, ry: number, tilt: number, turn: number) => {
   g.save(); g.translate(x, y); g.rotate(tilt);
-  const gr = g.createRadialGradient(-rx * 0.35, -ry * 0.4, 2, 0, 0, Math.max(rx, ry) * 1.1); gr.addColorStop(0, LIT); gr.addColorStop(0.8, BODY); gr.addColorStop(1, DARK);
-  g.beginPath(); g.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2); g.fillStyle = gr; g.fill();
-  const sx = turn * rx * 0.45, sw = rx * (0.6 - 0.25 * Math.abs(turn));       // la fente se décale quand la tête tourne
-  g.lineCap = "round"; g.strokeStyle = "#0d0c12"; g.lineWidth = 6.5; g.beginPath(); g.moveTo(sx - sw, ry * 0.08); g.lineTo(sx + sw, ry * 0.08); g.stroke();
+  g.beginPath(); g.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2); g.fillStyle = BODY; g.fill();
+  g.save(); g.clip(); g.fillStyle = DARK; g.beginPath(); g.ellipse(rx * 0.45, ry * 0.2, rx * 0.75, ry, 0, 0, Math.PI * 2); g.fill(); g.restore();
+  g.lineWidth = OL; g.strokeStyle = INK; g.beginPath(); g.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2); g.stroke();
+  const sx = turn * rx * 0.5;                                          // visage : 2 petits points + bouche « o » (style v2)
+  g.fillStyle = "#101018"; for (const d of [-1, 1]) { g.beginPath(); g.arc(sx + d * rx * 0.24, ry * 0.05, rx * 0.085, 0, 7); g.fill(); }
+  g.beginPath(); g.ellipse(sx, ry * 0.42, rx * 0.07, rx * 0.1, 0, 0, 7); g.fill();
   g.restore();
 };
-
 type Sk = { head: P2; neck: P2; chest: P2; waist: P2; hip: P2; shL: P2; elL: P2; haL: P2; shR: P2; elR: P2; haR: P2; knL: P2; ftL: P2; knR: P2; ftR: P2 };
-const STAND: Sk = { head: [300, 150], neck: [300, 215], chest: [302, 300], waist: [300, 420], hip: [300, 520], shL: [266, 262], elL: [236, 560], haL: [226, 905], shR: [334, 262], elR: [366, 560], haR: [376, 905],
+const STAND: Sk = { head: [300, 112], neck: [300, 230], chest: [302, 310], waist: [300, 420], hip: [300, 520], shL: [244, 272], elL: [222, 570], haL: [214, 915], shR: [356, 272], elR: [378, 570], haR: [386, 915],
   knL: [282, 745], ftL: [278, 972], knR: [318, 745], ftR: [324, 972] };
 const CROUCH: Sk = { head: [338, 640], neck: [320, 680], chest: [305, 730], waist: [292, 800], hip: [290, 860], shL: [282, 712], elL: [205, 840], haL: [160, 972], shR: [322, 712], elR: [405, 840], haR: [440, 972],
   knL: [240, 720], ftL: [235, 972], knR: [350, 715], ftR: [360, 972] };
@@ -77,10 +83,10 @@ export const drawLong = (p: Pen, s: LongSpec) => {
     const C = PEEK_CUT;
     paint(g, [{ back: true, path: limbPath([[350, 290], [392, C - 6], [404, 560], [396, 760], [388, 830]], [40, 30, 23, 18, 13]) }, ...hand(388, 830, 1.62, 50, true)], 300);
     g.save(); g.beginPath(); g.rect(0, 0, 600, C); g.clip();
-    paint(g, [{ path: limbPath([[300, 200], [302, 245], [303, 300], [300, 380], [300, 470]], [22, 70, 118, 90, 90]) }, headShape(300, 160, 40, 54, 0.12)], 300);
+    paint(g, [{ path: limbPath([[300, 170], [302, 245], [303, 300], [300, 380], [300, 470]], [16, 60, 118, 90, 90]) }, headShape(300, 140, 30, 40, 0.12)], 300);
     g.restore();
-    paint(g, [{ path: limbPath([[252, 290], [206, C - 6], [196, 560], [204, 760], [212, 840]], [42, 30, 24, 19, 14]) }, ...hand(212, 840, 1.52, 52)], 300);
-    head(g, 300, 160, 40, 54, 0.12, turn); g.restore(); return;
+    paint(g, [{ path: limbPath([[252, 290], [206, C - 6], [196, 560], [204, 760], [212, 840]], [52, 38, 30, 23, 16]) }, ...hand(212, 840, 1.52, 52)], 300);
+    head(g, 300, 140, 30, 40, 0.12, turn); g.restore(); return;
   }
   let k: Sk = STAND;
   if (s.pose === "crouch" || s.unfold !== undefined) k = mixSk(CROUCH, STAND, smoothT(s.unfold ?? 0));
@@ -91,15 +97,15 @@ export const drawLong = (p: Pen, s: LongSpec) => {
   const tilt = Math.atan2(k.head[1] - k.neck[1], k.head[0] - k.neck[0]) + Math.PI / 2, ht = s.pose === "lean" ? tilt * 0.55 : tilt * 0.3;
   // membres du fond (plus sombres), puis le corps d'un seul tenant : cou + torse + bassin + jambe avant + bras avant + tête
   paint(g, [
-    { back: true, path: limbPath([k.shR, bend(k.shR, k.elR, -10), k.elR, bend(k.elR, k.haR, -14), k.haR], [42, 30, 24, 19, 14]) }, ...hand(k.haR[0], k.haR[1], Math.atan2(k.haR[1] - k.elR[1], k.haR[0] - k.elR[0]), 50, true),
-    { back: true, path: limbPath([hR, bend(hR, k.knR, -8), k.knR, k.ftR], [66, 52, 36, 24], true) },
+    { back: true, path: limbPath([k.shR, bend(k.shR, k.elR, -10), k.elR, bend(k.elR, k.haR, -14), k.haR], [52, 38, 30, 23, 16]) }, ...hand(k.haR[0], k.haR[1], Math.atan2(k.haR[1] - k.elR[1], k.haR[0] - k.elR[0]), 50, true),
+    { back: true, path: limbPath([hR, bend(hR, k.knR, -8), k.knR, k.ftR], [80, 62, 42, 26], true) },
   ], k.chest[0]);
   paint(g, [
-    { path: limbPath([lp(k.neck, k.head, 0.55), k.neck, k.chest, k.waist, k.hip], [20, 30, 118, 84, 104]) },
-    { path: limbPath([hL, bend(hL, k.knL, 8), k.knL, k.ftL], [70, 54, 38, 24], true) },
-    { path: limbPath([k.shL, bend(k.shL, k.elL, 10), k.elL, bend(k.elL, k.haL, 14), k.haL], [44, 31, 25, 20, 15]) }, ...hand(k.haL[0], k.haL[1], Math.atan2(k.haL[1] - k.elL[1], k.haL[0] - k.elL[0]), 52),
-    headShape(k.head[0], k.head[1], 40, 54, ht),
+    { path: limbPath([lp(k.neck, k.head, 0.7), k.neck, k.chest, k.waist, k.hip], [18, 30, 150, 104, 132]) },
+    { path: limbPath([hL, bend(hL, k.knL, 8), k.knL, k.ftL], [86, 66, 44, 26], true) },
+    { path: limbPath([k.shL, bend(k.shL, k.elL, 10), k.elL, bend(k.elL, k.haL, 14), k.haL], [56, 40, 32, 24, 17]) }, ...hand(k.haL[0], k.haL[1], Math.atan2(k.haL[1] - k.elL[1], k.haL[0] - k.elL[0]), 52),
+    headShape(k.head[0], k.head[1], 30, 40, ht),
   ], k.chest[0]);
-  head(g, k.head[0], k.head[1], 40, 54, ht, turn);
+  head(g, k.head[0], k.head[1], 30, 40, ht, turn);
   g.restore();
 };
