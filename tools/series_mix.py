@@ -10,7 +10,8 @@ from sound_kit import Kit
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 EPN = int(sys.argv[1]); EP = os.path.join(ROOT, "productions", f"appel-ep0{EPN}"); SDIR = ["appel", "appel2", "appel3"][EPN - 1]
 SR = 48000; OFF = 0.35; TITLE = 2.8
-words = json.load(open(os.path.join(EP, "voice", "words.json"), encoding="utf-8"))
+VDIR = os.environ.get("VOICE_DIR", "voice")                               # ex. VOICE_DIR=voix_perso (voix de l'utilisateur) : mix écrit dans <VOICE_DIR>/, public/ intact
+words = json.load(open(os.path.join(EP, VDIR, "words.json"), encoding="utf-8"))
 POST = 0.35                                                                 # blanc naturel entre la dernière phrase et le carton
 DUR = round(words[-1]["e"] + OFF + POST + TITLE, 2); N = int(DUR * SR); t = np.arange(N) / SR
 W = lambda i: words[i]["s"] + OFF
@@ -25,7 +26,7 @@ else:
 CUTS = [W(a) - 2 / 30 for a in ANCH[1:]]
 TITLE_AT = DUR - TITLE
 
-raw = subprocess.run(["ffmpeg", "-v", "error", "-i", os.path.join(EP, "voice", "voice.wav"), "-ac", "1", "-ar", str(SR), "-f", "f32le", "-"], capture_output=True).stdout
+raw = subprocess.run(["ffmpeg", "-v", "error", "-i", os.path.join(EP, VDIR, "voice.wav"), "-ac", "1", "-ar", str(SR), "-f", "f32le", "-"], capture_output=True).stdout
 v = np.frombuffer(raw, np.float32).astype(float); voice = np.zeros(N); i0 = int(OFF * SR); voice[i0:i0 + len(v)] = v[: N - i0]
 sp = np.zeros(N, bool)
 for w in words: sp[int((w["s"] + OFF) * SR):min(N, int((w["e"] + OFF) * SR))] = True
@@ -196,7 +197,7 @@ hit = lvl(k.hit, vref - 12); air = sfx                                    # coup
 duck = np.ones(N)
 for w in words: duck[int(max(0, W(words.index(w)) - 0.08) * SR):int(min(DUR, E(words.index(w)) + 0.12) * SR)] = db(-2.5)
 mus *= np.convolve(duck, np.ones(2000) / 2000, "same")
-ou = os.path.join(EP, "voice", "outro.wav")                               # « Abonne-toi pour l'épisode N+1 »
+ou = os.path.join(EP, VDIR, "outro.wav")                               # « Abonne-toi pour l'épisode N+1 »
 if os.path.exists(ou):
     o = np.frombuffer(subprocess.run(["ffmpeg", "-v", "error", "-i", ou, "-ac", "1", "-ar", str(SR), "-f", "f32le", "-"], capture_output=True).stdout, np.float32).astype(float)
     i0 = int((TITLE_AT + 0.05) * SR); voice[i0:i0 + len(o)] += o[: max(0, N - i0)] * db(vref - rms(o[np.abs(o) > 1e-3]))
@@ -205,7 +206,7 @@ if os.environ.get('STEMS'):
     for nm, x in (('voice', voice), ('tone', tone), ('sw', sw), ('hb', hb), ('ru', ru), ('fol', fol_l), ('mus', mus)):
         lo_ = np.convolve(x, np.ones(400) / 400, 'same'); print(nm, 'rms', round(rms(x), 1), 'graves<60Hz', round(rms(lo_), 1))
 mix = np.stack([voice + mus + hit + air * 1.0, voice + mus * 0.97 + hit + air * 0.92], 1)
-out = os.path.join(EP, "audio"); os.makedirs(out, exist_ok=True); pre = os.path.join(out, "_pre.wav")
+out = os.path.join(EP, "audio" if VDIR == "voice" else VDIR); os.makedirs(out, exist_ok=True); pre = os.path.join(out, "_pre.wav")
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "f64le", "-ar", str(SR), "-ac", "2", "-i", "-", pre], input=mix.tobytes(), check=True)
 m = subprocess.run(["ffmpeg", "-i", pre, "-af", "loudnorm=I=-15:TP=-1.2:LRA=7:print_format=json", "-f", "null", "-"], capture_output=True, text=True).stderr
 j = json.loads(m[m.rfind("{"):])
@@ -216,6 +217,6 @@ if PREVIEW:
     print("aperçu", HOOK or "actuelle"); sys.exit(0)
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", pre, "-af", af, "-c:a", "pcm_s24le", os.path.join(out, "mix.wav")], check=True); os.remove(pre)
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", os.path.join(out, "mix.wav"), "-b:a", "192k", os.path.join(out, "mix_ecoute.mp3")])
-pub = os.path.join(ROOT, "studio", "public", SDIR); os.makedirs(pub, exist_ok=True); shutil.copy(os.path.join(out, "mix.wav"), os.path.join(pub, "mix.wav"))
+pub = os.path.join(ROOT, "studio", "public", SDIR); os.makedirs(pub, exist_ok=True); VDIR == "voice" and shutil.copy(os.path.join(out, "mix.wav"), os.path.join(pub, "mix.wav"))
 e = subprocess.run(["ffmpeg", "-i", os.path.join(out, "mix.wav"), "-af", "ebur128=peak=true", "-f", "null", "-"], capture_output=True, text=True).stderr
 print(f"ép. {EPN} : durée {DUR} s, bruitages réels |", " | ".join(l.strip() for l in e[e.rfind('Summary:'):].splitlines() if l.strip().startswith(("I:", "Peak:"))))
