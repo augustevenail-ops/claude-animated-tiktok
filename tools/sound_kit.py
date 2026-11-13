@@ -165,6 +165,36 @@ class Kit:
 
     # ---------- musique v4 (2026-11-13, consigne utilisateur : « inquiétante mais légère, quelques notes qui changent de temps en temps,
     # des notes assez longues, pas trop fortes ») ----------
+    def tension_layer(self, dur, reveals, final_from, final_to, seed=9, transpose=0):
+        """couche de tension qui suit l'histoire : basse pulsée (cœur) qui accélère, nappe dissonante aiguë qui monte avant chaque révélation,
+        se coupe juste avant le mot (silence), retombe après ; montée continue vers la question finale. Renvoie (signal, courbe 0-1)."""
+        SR, N = self.SR, self.N; t = np.arange(N) / SR; rng = np.random.default_rng(seed)
+        sm = lambda u: (lambda c: c * c * (3 - 2 * c))(np.clip(u, 0, 1))
+        c = np.full(N, 0.12)
+        for r in reveals:                                               # montée 7 s avant, puis traîne qui retombe en 4 s
+            c = np.maximum(c, np.where(t < r, sm((t - (r - 7)) / 6.6) * 0.85, 0.85 * np.exp(-(t - r) / 2.5) + 0.25 * (t < r + 6)))
+        c = np.maximum(c, sm((t - final_from) / max(1, final_to - final_from)))
+        c = np.minimum(c, np.clip((final_to + 0.4 - t) / 0.6, 0, 1))       # rien sur le carton titre
+        for r in reveals: c *= 1 - 0.95 * np.clip(1 - np.abs(t - (r - 0.22)) / 0.25, 0, 1)   # trou juste avant la révélation
+        c = np.convolve(c, np.ones(int(0.08 * SR)) / int(0.08 * SR), "same")
+        out = np.zeros(N)
+        # basse pulsée : double battement de cœur, 54 -> 96 bpm selon la tension
+        ph, tt = 0.0, 0.0
+        while tt < dur:
+            i = int(tt * SR)
+            if i >= N: break
+            lv = c[i]; bpm = 54 + 42 * lv
+            if lv > 0.08:
+                for e, g in ((0.0, 1.0), (0.24, 0.6)):
+                    x = np.arange(int(0.5 * SR)) / SR; f = (49 + transpose * 0) * (1 + 0.6 * np.exp(-x / 0.03))
+                    self._put(out, np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-x / 0.16) * g * lv, tt + e, 0.9)
+            tt += 60 / bpm
+        # nappe dissonante (seconde mineure aiguë + harmonique), tremolo qui accélère avec la tension
+        f1, f2 = 466.2 * 2 ** (transpose / 12) / 2, 493.9 * 2 ** (transpose / 12) / 2
+        trem = 0.75 + 0.25 * np.sin(2 * np.pi * np.cumsum(3 + 9 * c) / SR)
+        pad = (np.sin(2 * np.pi * f1 * t) + 0.8 * np.sin(2 * np.pi * f2 * t + 1.3) + 0.25 * np.sin(2 * np.pi * f1 * 2.003 * t)) / 2.05
+        out += pad * trem * np.clip((c - 0.35) / 0.65, 0, 1) ** 1.5 * 0.5
+        return out, c
     def music4(self, dur, dips=(), seed=4, transpose=0):
         """longues notes tenues (5-8 s) en si mineur, deux voix douces (sinus + triangle légèrement désaccordés, attaque lente),
         une note aiguë lointaine de temps en temps ; dips = instants où la musique s'efface brièvement (avant une révélation)."""

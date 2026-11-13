@@ -192,7 +192,11 @@ k.stinger(TITLE_AT, 0.5)
 def lvl(x, target):
     act = np.abs(x) > 1e-4
     return x * db(target - rms(x[act])) if act.any() else x
-mus = lvl(mus, vref - 6) * (0.75 if VDIR != "voice" else 1.0)          # musique nettement audible ; voix perso : -1/4 (retour utilisateur 2026-11-13)
+mus = lvl(mus, vref - 6) * (0.75 if VDIR != "voice" else 1.0)
+if os.environ.get("TENSION", "1") == "1":                                   # tension qui suit l'histoire (retour utilisateur 2026-11-13)
+    ten, TC = Kit(N, SR, seed=5).tension_layer(DUR, [W(i) for i in REVEAL], W(len(words) - 1) - 14, TITLE_AT)
+    act = np.abs(ten) > 1e-4
+    if act.any(): mus = mus + ten * db(vref - 5 - rms(ten[act])) * (0.75 if VDIR != "voice" else 1.0)          # musique nettement audible ; voix perso : -1/4 (retour utilisateur 2026-11-13)
 hit = lvl(k.hit, vref - 12); air = sfx                                    # coup final du titre + bruitages déjà calés en niveau
 duck = np.ones(N)
 for w in words: duck[int(max(0, W(words.index(w)) - 0.08) * SR):int(min(DUR, E(words.index(w)) + 0.12) * SR)] = db(-2.5)
