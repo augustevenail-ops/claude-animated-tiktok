@@ -285,7 +285,7 @@ export class World {
     this.stairRed = new THREE.Mesh(new THREE.PlaneGeometry(4.4, 4.4).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ map: glowTex("255,40,30"), transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false }));
     this.stairRed.position.set(0, CY - 37, -32.2); this.stairRed.layers.set(NOINK); R.add(this.stairRed);
     for (let lv = 1; lv < 12; lv += 3) { const r = new THREE.Mesh(new THREE.PlaneGeometry(3.6, 3.6).rotateX(-Math.PI / 2), this.stairRed.material); r.position.set(0, CY - lv * 3 - 0.3, -32.2); r.scale.setScalar(0.4 + lv * 0.05); r.layers.set(NOINK); R.add(r); }
-    this.halo = new THREE.Mesh(new THREE.PlaneGeometry(760, 900), new THREE.MeshBasicMaterial({ map: glowTex("255,175,95"), transparent: true, opacity: 0.3, fog: false, blending: THREE.AdditiveBlending, depthWrite: false }));
+    this.halo = new THREE.Mesh(new THREE.PlaneGeometry(420, 560), new THREE.MeshBasicMaterial({ map: glowTex("255,175,95"), transparent: true, opacity: 0.3, fog: false, blending: THREE.AdditiveBlending, depthWrite: false }));
     this.halo.position.set(25, 130, 45); this.halo.layers.set(NOINK); this.halo.visible = false; R.add(this.halo);   // halo chaud de la dernière tour (plan d'ouverture)
     b.build(R, true);
     R.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh || Array.isArray(m.material)) return; const mt = m.material as THREE.MeshLambertMaterial;   // textures fines peintes
@@ -335,7 +335,7 @@ export class World {
     CHAR.uCharTint.value.set(L.charTint[0] * (1 - 0.25 * g), L.charTint[1] * (1 + 0.35 * g), L.charTint[2] * (1 - 0.1 * g)); CHAR.uCharShade.value = 0.72; CHAR.uGrad.value = 0.09; CHAR.uBodyGrad.value = 0.22; CHAR.uSideTint.value.set(0.8, 0.86, 1.0);
     const F = outside ? FOG_OUT : FOG_IN; untone(F.col, this.fog.color); this.fog.near = F.near; this.fog.far = id === 60 ? 5200 : id === 40 ? 4500 : F.far; scene.fog = this.fog; scene.background = new THREE.Color(outside ? "#0b1014" : "#05070a");
     if (id === 60) { this.fog.color.set("#0a1222"); this.fog.near = 260; scene.background = new THREE.Color("#060a14"); }
-    this.halo.visible = id === 60; if (id === 60) { this.halo.lookAt(cam.position); (this.halo.material as THREE.MeshBasicMaterial).opacity = 0.32 * smooth(u * 2.5); }
+    this.halo.visible = id === 60; if (id === 60) { this.halo.lookAt(cam.position); (this.halo.material as THREE.MeshBasicMaterial).opacity = 0.13 * smooth(u * 2.5); }
     for (const m of this.greens) (m.material as THREE.MeshBasicMaterial).opacity = g * 0.9;
     // fenêtres de la tour
     if (outside || id === 29 || id === 31 || id === 32 || id === 39) {

@@ -14,7 +14,7 @@ const mixv = (a: V3, b: V3, u: number): V3 => [a[0] + (b[0] - a[0]) * u, a[1] + 
 /** grand recul : distance interpolée en log (vitesse perçue constante), hauteur qui monte d'abord le long de la façade */
 export const cityCam = (u: number): OpenCam => {
   const k = 0.35 * u + 0.65 * gl(u);
-  const d = 24 * Math.pow(950 / 24, k), yaw = 0.12 + 0.55 * sm(k), y = 1.6 + 430 * Math.pow(k, 0.8);
+  const d = 24 * Math.pow(950 / 24, k), yaw = -0.1 - 0.5 * sm(k), y = 1.6 + 430 * Math.pow(k, 0.8);
   const C: V3 = [12, 0, 32];
   const pos: V3 = [C[0] + d * Math.sin(yaw), y, C[2] + d * Math.cos(yaw)];
   const look = mixv([2, 190, 2], [14, 70, 26], sm(k * 1.15));

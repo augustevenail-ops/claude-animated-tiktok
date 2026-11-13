@@ -365,7 +365,7 @@ export class World {
     }
     // lueur derrière la porte de ta chambre (le couloir)
     { const m = new THREE.Mesh(new THREE.PlaneGeometry(2.0, 2.6), new THREE.MeshBasicMaterial({ map: glowTex("200,225,255"), transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false })); m.position.set(2.8, Y0 + 1.1, -5.4); m.layers.set(NOINK); R.add(m); }
-    this.halo = new THREE.Mesh(new THREE.PlaneGeometry(760, 900), new THREE.MeshBasicMaterial({ map: glowTex("255,175,95"), transparent: true, opacity: 0.3, fog: false, blending: THREE.AdditiveBlending, depthWrite: false }));
+    this.halo = new THREE.Mesh(new THREE.PlaneGeometry(420, 560), new THREE.MeshBasicMaterial({ map: glowTex("255,175,95"), transparent: true, opacity: 0.3, fog: false, blending: THREE.AdditiveBlending, depthWrite: false }));
     this.halo.position.set(25, 130, 45); this.halo.layers.set(NOINK); this.halo.visible = false; R.add(this.halo);   // halo chaud de la dernière tour (plan d'ouverture)
     b.build(R, true);
     const seenMat = new Set<THREE.Material>();
@@ -434,7 +434,7 @@ export class World {
     CHAR.uCharTint.value.set(L.charTint[0] * (1 - 0.25 * g), L.charTint[1] * (1 + 0.35 * g), L.charTint[2] * (1 - 0.1 * g)); if (hall || deep) CHAR.uCharTint.value.set(1.15, 0.72, 0.72); CHAR.uCharShade.value = 0.72; CHAR.uGrad.value = 0.09; CHAR.uBodyGrad.value = 0.22; CHAR.uSideTint.value.set(0.8, 0.86, 1.0);
     const F = outside ? FOG_OUT : FOG_IN; untone(F.col, this.fog.color); this.fog.near = F.near; this.fog.far = id === 60 ? 5200 : id === 28 || id === 200 ? 4500 : F.far; if (hall) { this.fog.color.set("#160506"); this.fog.near = 12; this.fog.far = 110; } scene.fog = this.fog; scene.background = new THREE.Color(outside ? "#0b1014" : "#05070a");
     if (id === 60) { this.fog.color.set("#0a1222"); this.fog.near = 260; scene.background = new THREE.Color("#060a14"); }
-    this.halo.visible = id === 60; if (id === 60) { this.halo.lookAt(cam.position); (this.halo.material as THREE.MeshBasicMaterial).opacity = 0.32 * smooth(u * 2.5); }
+    this.halo.visible = id === 60; if (id === 60) { this.halo.lookAt(cam.position); (this.halo.material as THREE.MeshBasicMaterial).opacity = 0.13 * smooth(u * 2.5); }
     for (const m of this.greens) (m.material as THREE.MeshBasicMaterial).opacity = g * 0.9;
     // fenêtres de la tour
     if (outside) {
