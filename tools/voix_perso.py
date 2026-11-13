@@ -14,6 +14,7 @@ ap = argparse.ArgumentParser()
 ap.add_argument("ep"); ap.add_argument("prise"); ap.add_argument("trans"); ap.add_argument("out")
 ap.add_argument("--cut", default=""); ap.add_argument("--tempo", type=float, default=1.0); ap.add_argument("--lufs", type=float, default=-22.5)
 ap.add_argument("--end", type=float, default=0.42); ap.add_argument("--comma", type=float, default=0.14)
+ap.add_argument("--pitch", type=float, default=-1.0)   # demi-tons ; formants préservés (timbre naturel, pas d'effet robot)
 ap.add_argument("--outro", default="")   # texte de la phrase de fin (ex. « Abonne-toi pour l'épisode deux. »), lu à la fin de la prise
 A = ap.parse_args()
 SR = 48000; os.makedirs(A.out, exist_ok=True)
@@ -120,11 +121,26 @@ for i, w in enumerate(W):
     if i == len(W) - 1 or W[i + 1]["s"] - w["e"] > 0.12: w["e"] = offset(w["e"], W[i + 1]["s"] - 0.1 if i + 1 < len(W) else w["e"] + 0.8)
 mask = np.zeros(len(x))
 for w in W: mask[max(0, int((w["s"] - 0.02) * SR)):int((w["e"] + 0.04) * SR)] = 1
+# Whisper se trompe parfois de 0,1-0,2 s : toute voix (ou sifflante) à moins de 0,25 s d'un mot est gardée, jamais coupée
+near = np.convolve(mask[:n * H].reshape(n, H).max(1), np.ones(int(0.5 * SR / H)), "same") > 0
+mask[:n * H] = np.maximum(mask[:n * H], np.repeat((voiced | (tail_ok & np.roll(voiced, 1) | tail_ok & np.roll(voiced, -1))) & near, H))
 k = int(0.008 * SR); mask = np.convolve(mask, np.ones(k) / k, "same")
 x = x * mask
 
 # ---------- 5. blancs ramenés aux cibles (même règle que tts_roles.py) ----------
 M, FADE = 0.03, int(0.010 * SR)
+def quiet_run(x, a, b, h=int(0.005 * SR)):
+    """plus long passage silencieux (< -55 dB) entre a et b -> (début, fin) en s"""
+    i0, i1 = max(0, int(a * SR) // h), min(len(x) // h, int(b * SR) // h)
+    if i1 <= i0: return None
+    q = 20 * np.log10(np.sqrt((x[i0 * h:i1 * h].reshape(-1, h) ** 2).mean(1)) + 1e-12) < -55
+    best, r0 = None, None
+    for i, v in enumerate(list(q) + [False]):
+        if v and r0 is None: r0 = i
+        if not v and r0 is not None:
+            if best is None or i - r0 > best[1] - best[0]: best = (r0, i)
+            r0 = None
+    return ((i0 + best[0]) * h / SR, (i0 + best[1]) * h / SR) if best else None
 def tighten(x, W, tail):
     pieces, seg0 = [], max(0.0, W[0]["s"] - 0.04)
     for i in range(len(W) - 1):
@@ -133,9 +149,10 @@ def tighten(x, W, tail):
         elif re.search(r"[.?!…]$", w["w"]): tgt = P["end"]
         elif re.search(r"[,:;]$", w["w"]) or w.get("pc"): tgt = P["comma"]
         else: tgt = P["inner"]
-        if gap > tgt + 2 * M:
-            half = max(0.0, tgt - 2 * M) / 2
-            pieces.append((seg0, w["e"] + M + half)); seg0 = nx["s"] - M - half
+        # on ne coupe QUE dans un vrai silence (signal déjà mis à zéro hors voix) : plus jamais de mot entamé
+        r = quiet_run(x, w["e"] - 0.15, nx["s"] + 0.15)
+        if r and r[1] - r[0] > tgt + 0.02:
+            pieces.append((seg0, r[0] + tgt / 2)); seg0 = r[1] - tgt / 2
     pieces.append((seg0, W[-1]["e"] + tail))
     out, mp, acc = [], [], 0.0
     for a, b in pieces:
@@ -152,7 +169,7 @@ def tighten(x, W, tail):
 # ---------- 6. réglages légers + volume calé sur la voix d'origine ----------
 TONE = ("equalizer=f=140:t=q:w=1.1:g=2.5,equalizer=f=380:t=q:w=1.3:g=-1.5,equalizer=f=3500:t=q:w=1.6:g=0.5,"
         "acompressor=threshold=-24dB:ratio=2.5:attack=8:release=160:makeup=1")
-if A.tempo != 1: TONE = f"rubberband=tempo={A.tempo}:pitchq=quality," + TONE
+if A.tempo != 1 or A.pitch: TONE = f"rubberband=tempo={A.tempo}:pitch={2 ** (A.pitch / 12):.5f}:formant=preserved:pitchq=quality:transients=smooth," + TONE
 narr = {}
 for k in sorted({w["seg"] for w in W}):
     Wk = [w for w in W if w["seg"] == k]
