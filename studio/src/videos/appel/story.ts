@@ -29,13 +29,16 @@ export const DOOR_Z = [-4, -7, -10, -13, -16, -19, -22, -25];       // portes de
 
 // ---------------- temps (voix réelle) ----------------
 import RAW from "./words.json";
+import { ROLE_CITY, ROLE_DIVE, cityCam, diveCam } from "../shared/opening";
 export const VOICE_AT = 0.35;
 export type W = { w: string; s: number; e: number; q?: number; role?: string };
 export const WORDS: W[] = (RAW as W[]).map((w) => ({ ...w, s: w.s + VOICE_AT, e: w.e + VOICE_AT }));
 /** premier mot de chaque plan (indice dans words.json) */
-const OLD_ANCH = [0, 1, 9, 14, 20, 27, 34, 37, 42, 45, 48, 53, 56, 66, 70, 74, 78, 83, 95, 101, 109, 118, 121, 129, 133, 136, 149, 157, 164, 170, 173, 181, 183, 191, 197, 202, 206, 211, 213, 218, 226];
+const OLD_ANCH = [0, 1, 11, 14, 20, 27, 34, 37, 42, 45, 48, 53, 56, 66, 70, 74, 78, 83, 95, 101, 109, 118, 121, 129, 133, 136, 149, 157, 164, 170, 173, 181, 183, 191, 197, 202, 206, 211, 213, 218, 226];
 /** affiches des règles tenues pendant toute la phrase (consigne du 2026-11-13) : on retire les plans 13, 26 et 31 de l'ancien découpage */
-const PLAN: [number, number][] = OLD_ANCH.map((a, i) => [a, i + 1] as [number, number]).filter((p) => ![13, 26, 31].includes(p[1]));
+/** ouverture et plongée refaites (consigne du 2026-11-13) : plan 2 -> ville (60), plans 15 + 16 -> plongée couloir/escalier (61) */
+const PLAN: [number, number][] = OLD_ANCH.map((a, i) => [a, i + 1] as [number, number]).filter((p) => ![13, 16, 26, 31].includes(p[1]))
+  .map((p) => [p[0], p[1] === 2 ? ROLE_CITY : p[1] === 15 ? ROLE_DIVE : p[1]] as [number, number]);
 const ANCH = PLAN.map((p) => p[0]);
 export const ROLE: Record<number, number> = Object.fromEntries(PLAN.map((p, i) => [i + 1, p[1]]));
 const starts = ANCH.map((wi, i) => (i === 0 ? 0 : WORDS[wi].s - 2 / FPS));
@@ -110,6 +113,8 @@ const OLD: Record<number, (u: number, f: number) => Cam> = {
   38: (u) => P(lerp3([1.98, Y0 + 1.12, -0.62], [1.98, Y0 + 1.1, -0.74], u), [1.98, Y0 + 1.0, -2.62], 58),
   39: (u) => P([1.25, Y0 + 2.3, 0.35], lerp3([1.0, 1.0, 12.0], [1.0, 1.3, 11.6], u), 10, 0, 0.1, 3000),
   40: (u) => { const k = glide(u); return X(lerp3([1.25, Y0 + 1.9, 3.5], [-95, 175, 640], k), lerp3(WIN, [0, 112, 30], smooth(u * 1.4)), 40 + 8 * k); },
+  [ROLE_CITY]: (u) => cityCam(u),
+  [ROLE_DIVE]: (u) => diveCam(u, CY),
   41: (u) => P(lerp3([YOU[0] + -0.04, YOU[1] + 0.84, YOU[2] + 1.1] as V3, [YOU[0] + -0.02, YOU[1] + 0.84, YOU[2] + 0.8] as V3, u), yH(YOU, 0.84), 38),
 };
 const CAMS: Record<number, (u: number, f: number) => Cam> = Object.fromEntries(PLAN.map((p, i) => [i + 1, OLD[p[1]]]));

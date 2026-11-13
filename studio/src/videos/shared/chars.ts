@@ -121,7 +121,58 @@ const drawSide = (p: Pen, s: CharSpec) => {
   g.restore();
 };
 
+
+/** homme en blanc (référence utilisateur du 2026-11-13) : grande cape trapézoïdale à pans facettés, col montant, capuche pointue,
+ *  visage = ovale noir avec un seul trait blanc lumineux, bouton sombre, deux jambes en blocs. Face, profil (side) et dos (back). */
+const drawCloak = (p: Pen, s: CharSpec) => {
+  const g = p.g, cx = 300, d = s.side ?? 0, back = !!s.back && !d;
+  const LIT = "#ecebf4", MID = "#c9c9da", DARK = "#9a9bb4", LEG = "#b9bacd";
+  const shape = (fn: () => void, fill: string | CanvasGradient, stroke = true) => { g.beginPath(); fn(); g.closePath(); g.fillStyle = fill; g.fill(); if (stroke) { g.lineWidth = OL; g.strokeStyle = INK; g.stroke(); } };
+  g.save(); g.lineCap = "round"; g.lineJoin = "round";
+  // jambes (blocs)
+  const legs: number[][] = d ? [[cx - 22 + d * 6, cx + 22 + d * 6]] : [[cx - 62, cx - 16], [cx + 16, cx + 62]];
+  for (const [a, b] of legs) shape(() => g.rect(a, 860, b - a, 108), LEG);
+  // cape
+  const wTop = d ? 78 : 98, wBot = d ? 150 : 205, yTop = 428, yBot = 890;
+  const capePath = () => { g.moveTo(cx - wTop, yTop); g.quadraticCurveTo(cx - wTop - 30, yTop + 160, cx - wBot, yBot); g.quadraticCurveTo(cx, yBot + 14, cx + wBot, yBot); g.quadraticCurveTo(cx + wTop + 30, yTop + 160, cx + wTop, yTop); };
+  const cg = g.createLinearGradient(cx - wBot, 0, cx + wBot, 0); cg.addColorStop(0, LIT); cg.addColorStop(0.5, MID); cg.addColorStop(1, DARK);
+  shape(capePath, cg);
+  g.save(); g.beginPath(); capePath(); g.closePath(); g.clip();
+  // facettes de papier plié (pans clairs / sombres)
+  g.fillStyle = "rgba(255,255,255,0.22)"; g.beginPath(); g.moveTo(cx - wTop, yTop); g.lineTo(cx - wBot - 10, yBot); g.lineTo(cx - wBot * 0.25, yBot); g.lineTo(cx - 10, yTop + 30); g.closePath(); g.fill();
+  g.fillStyle = "rgba(20,18,40,0.16)"; g.beginPath(); g.moveTo(cx + 30, yTop + 20); g.lineTo(cx + wBot + 10, yBot); g.lineTo(cx + wBot * 0.35, yBot); g.closePath(); g.fill();
+  hatch(g, cx - wBot, yTop, cx + wBot, yBot + 20, "rgba(0,0,0,0.05)", 18, -1);
+  if (!back) { const ox = d ? cx + d * (wTop - 18) : cx + 26;      // bord de la cape (rabat) depuis le bouton
+    g.strokeStyle = INK; g.lineWidth = 5; g.beginPath(); g.moveTo(ox, yTop + 20); g.quadraticCurveTo(ox + (d ? d * 18 : 6), yTop + 250, ox + (d ? d * 46 : 14), yBot + 10); g.stroke(); }
+  else { g.strokeStyle = "rgba(23,22,29,0.55)"; g.lineWidth = 4; g.beginPath(); g.moveTo(cx, yTop + 40); g.lineTo(cx - 8, yBot); g.stroke(); }
+  g.restore();
+  // bras levé (salut)
+  if (s.wave && !back) { const hx = cx + (d || 1) * 150, hy = 455 - 30 * Math.sin(s.wave * 2);
+    tube(g, [[cx + (d || 1) * 60, 600], [cx + (d || 1) * 130, 560], [hx, hy]], 44, MID); ball(g, hx, hy - 6, 24, LEG); }
+  // col montant
+  const colW = d ? 84 : 102; shape(() => { g.moveTo(cx - colW, 448); g.lineTo(cx - colW + 6, 396); g.quadraticCurveTo(cx, 384, cx + colW - 6, 396); g.lineTo(cx + colW, 448); g.quadraticCurveTo(cx, 462, cx - colW, 448); }, (() => { const k = g.createLinearGradient(cx - colW, 0, cx + colW, 0); k.addColorStop(0, LIT); k.addColorStop(1, DARK); return k; })());
+  // capuche pointue
+  const hw = d ? 112 : 128, peak = cx + (d ? -d * 30 : 12);
+  const hoodPath = () => { g.moveTo(cx - hw, 412); g.bezierCurveTo(cx - hw - 6, 300, peak - 70, 214, peak, 196); g.bezierCurveTo(peak + 70, 214, cx + hw + 6, 300, cx + hw, 412); g.quadraticCurveTo(cx, 430, cx - hw, 412); };
+  const hg = g.createLinearGradient(cx - hw, 200, cx + hw, 410); hg.addColorStop(0, "#f4f3fa"); hg.addColorStop(0.55, MID); hg.addColorStop(1, DARK);
+  shape(hoodPath, hg);
+  g.save(); g.beginPath(); hoodPath(); g.closePath(); g.clip();
+  g.fillStyle = "rgba(255,255,255,0.25)"; g.beginPath(); g.moveTo(peak, 196); g.lineTo(cx - hw, 420); g.lineTo(cx - hw * 0.45, 420); g.closePath(); g.fill();
+  g.restore();
+  if (!back) {           // ouverture noire + trait blanc lumineux
+    const fx = cx + d * 58, rx = d ? 46 : 74, ry = 62, fy = 338;
+    g.beginPath(); g.ellipse(fx, fy, rx, ry, 0, 0, 7); g.fillStyle = "#07070c"; g.fill(); g.lineWidth = OL; g.strokeStyle = INK; g.stroke();
+    const lw = d ? 30 : 50, lx = fx + d * 8;
+    g.save(); g.shadowColor = "rgba(190,215,255,0.95)"; g.shadowBlur = 18; g.strokeStyle = "#f2f6ff"; g.lineWidth = 9; g.lineCap = "round";
+    g.beginPath(); g.moveTo(lx - lw, fy - 2); g.lineTo(lx + lw, fy - 2); g.stroke(); g.stroke(); g.restore();
+    // bouton
+    g.beginPath(); g.arc(d ? cx + d * 64 : cx + 30, 470, 12, 0, 7); g.fillStyle = "#1d1c26"; g.fill();
+  } else { g.strokeStyle = "rgba(23,22,29,0.5)"; g.lineWidth = 4; g.beginPath(); g.moveTo(cx - 70, 420); g.quadraticCurveTo(cx, 436, cx + 70, 420); g.stroke(); }
+  g.restore();
+};
+
 export const drawChar = (p: Pen, s: CharSpec) => {
+  if (s.mask) { drawCloak(p, s); return; }
   if (s.side) { drawSide(p, s); return; }
   const g = p.g, cx = 300, sit = s.mode === "sit", R = 95, u = R / 50;
   const hip = sit ? 929 : 675, torsoTop = hip - 240, hy = torsoTop - 12 - R, jacket = s.shadow ? "#10101a" : s.jacket, pants = s.shadow ? "#0c0c14" : s.pants;

@@ -29,12 +29,13 @@ export const DOOR_Z = [-4, -7, -10, -13, -16, -19, -22, -25];       // portes de
 
 // ---------------- temps (voix réelle) ----------------
 import RAW from "./words.json";
+import { ROLE_CITY, ROLE_DIVE, ROLE_ROOM, cityCam, diveCam, roomCam } from "../shared/opening";
 export const VOICE_AT = 0.35;
 export type W = { w: string; s: number; e: number; q?: number; role?: string };
 export const WORDS: W[] = (RAW as W[]).map((w) => ({ ...w, s: w.s + VOICE_AT, e: w.e + VOICE_AT }));
 /** premier mot de chaque plan (indice dans words.json) */
 /** plans : [premier mot, rôle] (rôle = caméra/mise en place de l'ancien découpage, ou nouvelle ≥ 200) */
-const PLAN: [number, number][] = [[0, 200], [6, 26], [12, 201], [25, 202], [40, 203], [55, 204], [69, 1], [74, 3], [75, 5], [82, 7], [89, 8], [96, 10], [98, 11], [100, 12], [109, 14],
+const PLAN: [number, number][] = [[0, ROLE_ROOM], [1, ROLE_CITY], [6, 3], [12, ROLE_DIVE], [25, 202], [40, 203], [55, 204], [69, 1], [74, 3], [75, 5], [82, 7], [89, 8], [96, 10], [98, 11], [100, 12], [109, 14],
   [120, 15], [126, 16], [130, 17], [133, 18], [138, 19], [139, 208], [146, 21], [148, 23], [157, 24], [161, 27], [165, 205], [175, 16], [180, 206], [190, 28], [199, 29], [206, 30], [211, 31],
   [217, 32], [223, 33], [229, 34], [234, 207], [240, 37], [244, 38]];
 const ANCH = PLAN.map((p) => p[0]);
@@ -119,6 +120,9 @@ const OLD: Record<number, (u: number, f: number) => Cam> = {
   38: (u) => P(lerp3(Hh(-5.6, 1.0, -63.8), Hh(-5.9, 1.05, -63.3), smooth(u)), Hh(-7.8, 0.8, -61), 46, 0, 0.05, 600),
 };
 const NEW: Record<number, (u: number, f: number) => Cam> = {
+  [ROLE_CITY]: (u) => cityCam(u),
+  [ROLE_DIVE]: (u) => diveCam(u, CY),
+  [ROLE_ROOM]: (u) => roomCam(u, YOU),
   200: (u) => X(lerp3([-95, 175, 640], [-38, 118, 320], glide(u)), lerp3([0, 112, 30], [0, 92, 0], smooth(u)), 46),
   201: (u) => P(lerp3([-1.55, CY + 2.45, -30.35], [-0.35, CY + 0.6, -31.5], glide(u)), lerp3([1.0, CY - 5.5, -33.0], [0.05, CY - 36, -32.3], smooth(u * 1.1)), 66, 0.25 * u),
   202: (u) => P(lerp3([0.95, CY + 1.5, -6.4], [0.9, CY + 1.5, -6.9], u), [0, CY + 1.0, -27], 28),

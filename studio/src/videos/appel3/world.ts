@@ -9,6 +9,7 @@ import { NOINK } from "../bridge/ink";
 import { Pool, Actor } from "../bridge/cast";
 import { Pen } from "../bridge/toon";
 import { cardShade } from "../bridge/cardshade";
+import { cityBlocks } from "../shared/opening";
 import { drawChar, CharSpec } from "../shared/chars";
 import { painted } from "../shared/painted";
 import {
@@ -265,11 +266,7 @@ export class World {
     const bld = (x: number, z: number, w: number, d: number, h: number) => wallBox(x - w / 2, 0, z - d / 2, x + w / 2, h, z + d / 2, dead, 0.12);
     for (let k = 0; k < 18; k++) bld(-210 + k * 22, 152 + hash(k, 3) * 4, 16 + hash(k) * 4, 16, 14 + hash(k, 1) * 36);
     for (let k = 0; k < 8; k++) bld(-210 + k * 22, 108, 16, 14, 10 + hash(k, 5) * 24);
-    for (let i = 0; i < 220; i++) {
-      const a = hash(i, 11) * Math.PI * 2, r = 180 + hash(i, 12) * 1400, x = Math.cos(a) * r, z = Math.sin(a) * r * 0.9 + 40;
-      if (z > 90 && z < 175 && x > -230 && x < 160) continue;
-      bld(x, z, 18 + hash(i, 13) * 30, 18 + hash(i, 14) * 30, 12 + Math.pow(hash(i, 15), 2) * 140);
-    }
+    cityBlocks(bld, hash);                                             // ville en îlots, bien plus basse que la tour
     // ---------- ton appartement (derrière ta fenêtre) : x ∈ [-0,85 ; 3,35], z ∈ [-4,5 ; -0,3] ----------
     const rw = solid("roomwall", "#ffffff", { map: roomWall() }); (rw.map as THREE.Texture).wrapS = (rw.map as THREE.Texture).wrapT = THREE.RepeatWrapping;
     const X0 = -0.85, X1 = 3.35, Z0 = -4.5;
@@ -433,12 +430,14 @@ export class World {
     TONE.uShadeCol.value.set(L.shade[0], L.shade[1] + 0.12 * g, L.shade[2]); if (hall || deep) TONE.uShadeCol.value.set(0.3, 0.13, 0.16);
     TONE.uShadeLift.value.set(...L.lift); TONE.uLambert.value = 0.35; TONE.uSideK.value = 0.84; TONE.uTerm.value = 0.2; TONE.uBounce.value.set(0, 0, 0); TONE.uSat.value = L.sat;
     CHAR.uCharTint.value.set(L.charTint[0] * (1 - 0.25 * g), L.charTint[1] * (1 + 0.35 * g), L.charTint[2] * (1 - 0.1 * g)); if (hall || deep) CHAR.uCharTint.value.set(1.15, 0.72, 0.72); CHAR.uCharShade.value = 0.72; CHAR.uGrad.value = 0.09; CHAR.uBodyGrad.value = 0.22; CHAR.uSideTint.value.set(0.8, 0.86, 1.0);
-    const F = outside ? FOG_OUT : FOG_IN; untone(F.col, this.fog.color); this.fog.near = F.near; this.fog.far = id === 28 || id === 200 ? 4500 : F.far; if (hall) { this.fog.color.set("#160506"); this.fog.near = 12; this.fog.far = 110; } scene.fog = this.fog; scene.background = new THREE.Color(outside ? "#0b1014" : "#05070a");
+    const F = outside ? FOG_OUT : FOG_IN; untone(F.col, this.fog.color); this.fog.near = F.near; this.fog.far = id === 60 ? 6000 : id === 28 || id === 200 ? 4500 : F.far; if (hall) { this.fog.color.set("#160506"); this.fog.near = 12; this.fog.far = 110; } scene.fog = this.fog; scene.background = new THREE.Color(outside ? "#0b1014" : "#05070a");
     for (const m of this.greens) (m.material as THREE.MeshBasicMaterial).opacity = g * 0.9;
     // fenêtres de la tour
     if (outside) {
       for (let face = 0; face < 2; face++) for (let fl = 0; fl < FLOORS; fl++) for (let cc = 0; cc < COLS; cc++) {
         const st = winState(face, cc, fl, t), h = hash(cc * 31 + fl, face);
+        if (id === 60) { const r = hash(cc * 17 + fl * 7, face + 9); if (r < 0.36) this.winCol.setRGB(2.3 + 0.6 * h, 1.2 + 0.3 * h, 0.45); else if (r < 0.44) this.winCol.setRGB(0.45, 1.25, 2.3); else if (st === 2) this.winCol.setRGB(2.4, 0.2, 0.15); else this.winCol.setRGB(0.06, 0.07, 0.1);
+          this.wins.setColorAt((face * FLOORS + fl) * COLS + cc, this.winCol); continue; }   // plan d'ouverture : la dernière tour habitée, allumée
         const far = id === 28 || id === 200 ? 1.8 : 1; if ((st as number) === 4) this.winCol.setRGB(1.7 * far, 1.15 * far, 0.6 * far); else if (st === 1) this.winCol.setRGB(0.25 * far, (1.5 + 0.25 * h) * far, 0.55 * far); else if (st === 2) this.winCol.setRGB(1.9 * far, 0.16, 0.12);
         else if (st === 3) this.winCol.setRGB(0.55, 0.3, 0.12); else this.winCol.setRGB(0.05 + 0.03 * h, 0.06 + 0.03 * h, 0.08 + 0.04 * h);
         this.wins.setColorAt((face * FLOORS + fl) * COLS + cc, this.winCol);
@@ -513,6 +512,8 @@ export class World {
     if (id === 33) place("M", Hp(-7.4 + 0.05 * Math.sin(t * 13), -61.6), { mode: "stand", expr: "worry", blink: blink(7) }, 0.98);
     if (id === 36) place("N", Hp(-8.0, -60.55), { mode: "stand", expr: "worry", blink: blink(8) }, 0.72);
     if (id === 37) { onStair("H", 45.0 + 0.5 * u, { mode: "stand", expr: "calm" }); onStair("H", 44.3 + 0.5 * u, { mode: "stand", expr: "calm" }); }
+    if (id === 62) { place("Y", YOU, { mode: "sit", expr: "worry", blink: blink(1) }); place("N", NOE, { mode: "sit", expr: "mute" }, 0.72); }   // ouverture : toi sur le lit
+    if (id === 60) MEN.forEach((p) => place("H", p, { mode: "stand", expr: "calm" }));
     for (; k < this.actors.length; k++) this.actors[k].mesh.visible = false;
     this.pool.flush();
     for (const a of this.actors) if (a.mesh.visible) a.bind();

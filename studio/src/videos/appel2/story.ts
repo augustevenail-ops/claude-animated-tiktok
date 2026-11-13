@@ -29,12 +29,13 @@ export const DOOR_Z = [-4, -7, -10, -13, -16, -19, -22, -25];       // portes de
 
 // ---------------- temps (voix réelle) ----------------
 import RAW from "./words.json";
+import { ROLE_CITY, ROLE_DIVE, ROLE_ROOM, cityCam, diveCam, roomCam } from "../shared/opening";
 export const VOICE_AT = 0.35;
 export type W = { w: string; s: number; e: number; q?: number; role?: string };
 export const WORDS: W[] = (RAW as W[]).map((w) => ({ ...w, s: w.s + VOICE_AT, e: w.e + VOICE_AT }));
 /** premier mot de chaque plan (indice dans words.json) */
 /** plans : [premier mot, rôle] — le rôle reprend une caméra/mise en place existante (numéro de l'ancien découpage) ou une nouvelle (≥ 100) */
-const PLAN: [number, number][] = [[0, 2], [4, 6], [12, 100], [25, 23], [38, 3], [51, 4], [58, 5], [62, 11], [67, 7], [68, 8], [71, 10], [74, 112], [81, 13], [92, 15], [96, 16], [98, 17], [100, 18],
+const PLAN: [number, number][] = [[0, ROLE_ROOM], [1, ROLE_CITY], [6, 3], [12, ROLE_DIVE], [25, 23], [38, 3], [51, 4], [58, 5], [62, 11], [67, 7], [68, 8], [71, 10], [74, 112], [81, 13], [92, 15], [96, 16], [98, 17], [100, 18],
   [103, 114], [107, 20], [109, 115], [114, 102], [121, 103], [129, 24], [135, 25], [138, 26], [142, 104], [150, 105], [156, 106], [161, 107], [168, 108], [174, 109], [179, 30], [185, 32], [191, 33],
   [205, 110], [208, 34], [215, 36], [222, 37], [235, 38], [236, 39], [242, 113]];
 const ANCH = PLAN.map((p) => p[0]);
@@ -124,6 +125,9 @@ const OLD: Record<number, (u: number, f: number) => Cam> = {
 };
   // nouveaux plans
 const NEW: Record<number, (u: number, f: number) => Cam> = {
+  [ROLE_CITY]: (u) => cityCam(u),
+  [ROLE_DIVE]: (u) => diveCam(u, CY),
+  [ROLE_ROOM]: (u) => roomCam(u, YOU),
   100: (u) => P(lerp3([-1.55, CY + 2.45, -30.35], [-0.35, CY + 0.6, -31.5], glide(u)), lerp3([1.0, CY - 5.5, -33.0], [0.05, CY - 36, -32.3], smooth(u * 1.1)), 66, 0.25 * u),
   102: (u) => P(lerp3([1.95, Y0 + 1.6, -2.35], [2.05, Y0 + 1.55, -2.65], smooth(u)), [2.6, Y0 + 1.1, ZD], 50),
   103: (u) => P(lerp3([2.1, Y0 + 1.42, -3.3], [1.95, Y0 + 1.42, -2.9], smooth(u)), yH(YOU_WIN, 1.38), 38),
