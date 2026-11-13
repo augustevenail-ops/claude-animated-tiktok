@@ -54,8 +54,6 @@ zones sombres désaturées + accents saturés (lumières pratiques chaudes, roug
 ## Économie de tokens
 - Lire d'abord ce fichier, puis **seulement** la section utile de `SKILL.md` ou du rapport concerné ;
   utiliser `offset`/`limit` ou `grep` plutôt que de lire des fichiers entiers.
-- Ne pas ouvrir les images de `references/frames/` et `references/sheets/` sauf pour une comparaison
-  visuelle explicite ; préférer 1-3 images bien choisies.
 - Ne pas relire un fichier qu'on vient de modifier ; ne pas reformuler ce qui est déjà établi.
 - Réponses courtes : résultat, fichiers touchés, prochaine étape. Pas de récapitulatif exhaustif.
 - Modifier par petites éditions (`Edit`) plutôt que réécrire des fichiers complets.
@@ -90,6 +88,9 @@ Points clés à retenir :
 - La grammaire caméra de `STYLE_BIBLE.md` (« ease-out bursts ») est obsolète : suivre `SKILL.md` / `story.ts` (glissés smootherstep).
 - Le son reprend les timings d'image (`audio/timeline.py` miroir de `story.ts`) : verrouiller l'image avant le son.
 
+- Ménage du 2026-11-13 : images de référence (`references/frames`, `sheets`), essais audio et rendus intermédiaires supprimés ;
+  vidéos finales gardées dans `archives_videos/` (non versionnées).
+
 ## Documentation du projet
 | Fichier | Contenu |
 |---|---|
@@ -105,7 +106,6 @@ Points clés à retenir :
 | `references/STYLE_BIBLE.md` | Formule de script et de mise en image mesurée sur 20 shorts |
 | `references/reports/CONTEXT.md` | Contexte partagé pour les agents d'analyse |
 | `references/reports/{motion,depth,textures,characters,lighting,outlines,grade}.md` | Mesures chiffrées par thème |
-| `references/frames/`, `references/sheets/` | Images de référence (étude privée uniquement) |
 | `templates/SCRIPT_example.md` | Exemple de script avec faits et sources |
 | `templates/bridge/` | Code source complet de la vidéo exemple (monde, personnages, encre, flou, étalonnage, caméras) |
 | `templates/audio/` (`cues.md`) | Synthèse des SFX, musique, mixage avec ducking et loudness |

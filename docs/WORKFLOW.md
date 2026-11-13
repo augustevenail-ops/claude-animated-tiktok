@@ -62,7 +62,7 @@ Valeurs de style : `docs/STYLE_ARTISTIQUE.md`. Code : `docs/ARCHITECTURE_TECHNIQ
 
 ## Étape 9 — Contrôle du look
 - Stills à 0,5 : `node scripts/bridge-stills.mjs out/<nom>/x_ <images> 0.5`.
-- Planches : `python scripts/sbs_sheet.py out.jpg --ours … --ref references/frames/…`.
+- Planches comparatives : images de référence supprimées le 2026-11-13 (comparer aux vidéos de `archives_videos/`).
 - Vérificateur (sous-agent, 1-3 images, verdict ≤ 200 mots) : notes /10 couleur jour/golden, lumière, encre, textures,
   personnages, profondeur, composition + liste de corrections avec numéros d'image.
 - Option : sandboxes par propriétaire de fichiers (SKILL.md §Look-match loop) puis `bridge_merge.py`.

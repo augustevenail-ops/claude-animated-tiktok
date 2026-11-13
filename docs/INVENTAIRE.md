@@ -23,8 +23,6 @@ Statut : ✅ analysé en entier · 🔎 analysé par échantillon / sections cl�
 | `reports/lighting.md` (603 l.) | Lumière clé, ombres, cartes éclairées | Presets jour/golden, ombres violettes | 🔎 §0, plan |
 | `reports/outlines.md` (624 l.) | Encre sur la géométrie 3D | Largeurs, types d'arêtes, passe dédiée | 🔎 §1, plan |
 | `reports/grade.md` (380 l.) | Étalonnage | Courbes, noirs relevés, vignette | 🔎 §0, plan |
-| `frames/` | 38 JPEG 540×960 (`shortNN_0060/0180`, NN = 01-20 ; manquent 15_0180 et 17_0180) | Comparaison côte à côte avec `sbs_sheet.py` | 🔎 montage de 19 images + 1 plein format vus |
-| `sheets/` | 20 planches 1800×1920 (60 images = 2 s chacune) | Rythme, mouvement, expressions | 🔎 dimensions vérifiées ; contenu non parcouru en détail (16 Mo) |
 
 Observé sur les images : personnages à tête blanche/pêche en haricot, contour noir-prune, membres en trait,
 décors 3D très saturés (saloon, bateau, ville western, cuisine, salle de jeux, champ, tour), DOF marqué en gros plan,
