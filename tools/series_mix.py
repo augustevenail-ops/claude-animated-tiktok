@@ -11,7 +11,8 @@ ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 EPN = int(sys.argv[1]); EP = os.path.join(ROOT, "productions", f"appel-ep0{EPN}"); SDIR = ["appel", "appel2", "appel3"][EPN - 1]
 SR = 48000; OFF = 0.35; TITLE = 2.8
 words = json.load(open(os.path.join(EP, "voice", "words.json"), encoding="utf-8"))
-DUR = round(words[-1]["e"] + OFF + 1.6 + TITLE, 2); N = int(DUR * SR); t = np.arange(N) / SR
+POST = 0.9                                                                 # blanc naturel entre la dernière phrase et le carton
+DUR = round(words[-1]["e"] + OFF + POST + TITLE, 2); N = int(DUR * SR); t = np.arange(N) / SR
 W = lambda i: words[i]["s"] + OFF
 E = lambda i: words[i]["e"] + OFF
 db = lambda v: 10 ** (v / 20)
@@ -98,7 +99,7 @@ else:
 # ---------- musique v4 (plus forte) + bruitages réels (bibliothèque ElevenLabs, tools/sfx_gen.py) placés par situation ----------
 SIL = REVEAL
 k.hit[:] = 0; k.air[:] = 0; fol[:] = 0
-mus = k.music4(DUR, dips=[W(i) - 0.25 for i in SIL])
+mus = k.music4(DUR, dips=[W(i) - 0.25 for i in SIL], transpose=12)      # une octave plus haut : audible sur téléphone
 LIBD = os.path.join(ROOT, "productions", "sfx_lib"); _cache = {}
 def smp(name):
     if name not in _cache:
@@ -108,14 +109,16 @@ sfx = np.zeros(N)
 def cue(name, t0, gdb=-10.0):
     x = smp(name); act = np.abs(x) > 1e-3
     if not act.any(): return
+    gdb += SFX_TRIM + (PA_TRIM if name.startswith("pa_") else 0)
     put(sfx, x * db(vref + gdb - rms(x[act])), t0)
+SFX_TRIM, PA_TRIM = -3.0, -4.0                                            # tout le bruitage un peu plus bas ; haut-parleur encore plus bas
 def amb(name, a, b, gdb=-24.0):
-    x = smp(name); x = x * db(vref + gdb - rms(x[np.abs(x) > 1e-3])); L = len(x); fadeN = int(0.8 * SR); tt = a
+    gdb += SFX_TRIM; x = smp(name); x = x * db(vref + gdb - rms(x[np.abs(x) > 1e-3])); L = len(x); fadeN = int(0.8 * SR); tt = a
     while tt < b:
         seg = x.copy(); seg[:fadeN] *= np.linspace(0, 1, fadeN); seg[-fadeN:] *= np.linspace(1, 0, fadeN); put(sfx, seg[: int((b - tt + 0.8) * SR)], tt); tt += L / SR - 0.8
 def heart(a, b, gdb=-15.0): amb("heartbeat", a, b, gdb)
 if EPN == 1:
-    amb("wind_city", 0.3, W(149), -27)
+    amb("wind_city", W(1) + 1.2, W(149), -29)
     cue("pa_static", W(13) - 0.1, -11); cue("pa_chime", W(42) - 1.0, -11); cue("pa_click", W(42) - 0.15, -12)
     for i in (53, 133, 170): cue("boom_low", W(i) - 0.05, -11)
     cue("boots_approach", W(70), -15); cue("steel_door", W(74), -12); cue("sting_soft", W(78), -12)
@@ -171,7 +174,7 @@ k.stinger(TITLE_AT, 0.5)
 def lvl(x, target):
     act = np.abs(x) > 1e-4
     return x * db(target - rms(x[act])) if act.any() else x
-mus = lvl(mus, vref - 9)                                                  # musique nettement audible (retour utilisateur)
+mus = lvl(mus, vref - 6)                                                  # musique nettement audible (retour utilisateur)
 hit = lvl(k.hit, vref - 12); air = sfx                                    # coup final du titre + bruitages déjà calés en niveau
 duck = np.ones(N)
 for w in words: duck[int(max(0, W(words.index(w)) - 0.08) * SR):int(min(DUR, E(words.index(w)) + 0.12) * SR)] = db(-2.5)
@@ -179,7 +182,7 @@ mus *= np.convolve(duck, np.ones(2000) / 2000, "same")
 ou = os.path.join(EP, "voice", "outro.wav")                               # « Abonne-toi pour l'épisode N+1 »
 if os.path.exists(ou):
     o = np.frombuffer(subprocess.run(["ffmpeg", "-v", "error", "-i", ou, "-ac", "1", "-ar", str(SR), "-f", "f32le", "-"], capture_output=True).stdout, np.float32).astype(float)
-    i0 = int((TITLE_AT + 0.35) * SR); voice[i0:i0 + len(o)] += o[: max(0, N - i0)] * db(vref - rms(o[np.abs(o) > 1e-3]))
+    i0 = int((TITLE_AT + 0.15) * SR); voice[i0:i0 + len(o)] += o[: max(0, N - i0)] * db(vref - rms(o[np.abs(o) > 1e-3]))
 tone = sw = hb = ru = fol_l = mus
 if os.environ.get('STEMS'):
     for nm, x in (('voice', voice), ('tone', tone), ('sw', sw), ('hb', hb), ('ru', ru), ('fol', fol_l), ('mus', mus)):

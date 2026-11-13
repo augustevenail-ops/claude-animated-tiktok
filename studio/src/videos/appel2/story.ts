@@ -41,7 +41,7 @@ const ANCH = PLAN.map((p) => p[0]);
 export const ROLE: Record<number, number> = Object.fromEntries(PLAN.map((p, i) => [i + 1, p[1]]));
 const starts = ANCH.map((wi, i) => (i === 0 ? 0 : WORDS[wi].s - 2 / FPS));
 export const TITLE_DUR = 2.8;
-export const END_T = WORDS[WORDS.length - 1].e + 1.6 + TITLE_DUR;
+export const END_T = WORDS[WORDS.length - 1].e + 0.9 + TITLE_DUR;   // blanc naturel avant le carton
 export const TITLE_AT = END_T - TITLE_DUR;
 export type ShotDef = { id: number; a: number; b: number };
 export const SHOTS: ShotDef[] = starts.map((a, i) => ({ id: i + 1, a: Math.round(a * FPS), b: Math.round((i + 1 < starts.length ? starts[i + 1] : END_T) * FPS) }));

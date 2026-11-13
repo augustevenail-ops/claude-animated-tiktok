@@ -165,7 +165,7 @@ class Kit:
 
     # ---------- musique v4 (2026-11-13, consigne utilisateur : « inquiétante mais légère, quelques notes qui changent de temps en temps,
     # des notes assez longues, pas trop fortes ») ----------
-    def music4(self, dur, dips=(), seed=4):
+    def music4(self, dur, dips=(), seed=4, transpose=0):
         """longues notes tenues (5-8 s) en si mineur, deux voix douces (sinus + triangle légèrement désaccordés, attaque lente),
         une note aiguë lointaine de temps en temps ; dips = instants où la musique s'efface brièvement (avant une révélation)."""
         SR, N = self.SR, self.N; t = np.arange(N) / SR; rng = np.random.default_rng(seed)
@@ -178,8 +178,8 @@ class Kit:
             tri = lambda ff: 2 * np.abs(2 * ((x * ff) % 1) - 1) - 1
             s = np.sin(2 * np.pi * f * x) * 0.7 + tri(f * 1.002) * 0.25 + np.sin(2 * np.pi * f * 0.5 * x) * 0.25
             return s * np.clip(np.minimum(x / a, (d + r - x) / r), 0, 1) * (1 + 0.06 * np.sin(2 * np.pi * 0.3 * x))
-        low = [47, 47, 43, 45, 47, 42, 43, 42]                                 # si, si, sol, la, si, fa#, sol, fa# (graves)
-        up = [54, 50, 55, 52, 54, 49, 50, 54]                                  # tierces / quintes au-dessus
+        low = [m + transpose for m in (47, 47, 43, 45, 47, 42, 43, 42)]        # si, si, sol, la, si, fa#, sol, fa#
+        up = [m + transpose for m in (54, 50, 55, 52, 54, 49, 50, 54)]         # tierces / quintes au-dessus
         mus = np.zeros(N); tt = 0.0; q = 0
         while tt < dur:
             d = 5.5 + 2.5 * rng.random()
