@@ -92,6 +92,8 @@ tail_ok = rms > -44                                             # fin de mot qui
 def onset(t, lo):
     """début réel : on recule tant qu'il reste de la voix juste avant (Whisper place souvent le 1er mot trop tard), sans passer lo"""
     i = int(t * SR / H); stop = max(int(lo * SR / H), i - int(1.2 * SR / H), 0)
+    if not voiced[max(0, i - 12):i + 12].any():                 # Whisper a placé le mot dans le silence qui suit : on remonte jusqu'à la voix
+        while i > stop and not voiced[i]: i -= 1
     while i > stop and voiced[max(0, i - 12):i].any(): i -= 1
     j = i                                                       # puis on avance jusqu'à la vraie attaque (pas le souffle)
     while j < min(n - 3, i + int(0.35 * SR / H)) and not voiced[j:j + 3].all(): j += 1
@@ -122,6 +124,8 @@ for i, w in enumerate(W):
     elif i == 0 or w["s"] - W[i - 1]["e"] > 0.12: w["s"] = onset(w["s"], W[i - 1]["e"] + 0.08 if i else 0.0)
     if w.get("fx"): continue
     if i == len(W) - 1 or W[i + 1]["s"] - w["e"] > 0.12: w["e"] = offset(w["e"], W[i + 1]["s"] - 0.1 if i + 1 < len(W) else w["e"] + 0.8)
+for i, w in enumerate(W):                                       # garde-fou : jamais de fin avant le début
+    if w["e"] < w["s"] + 0.05: w["e"] = offset(w["s"] + 0.05, W[i + 1]["s"] - 0.05 if i + 1 < len(W) else w["s"] + 1.0)
 mask = np.zeros(len(x))
 for w in W: mask[max(0, int((w["s"] - 0.02) * SR)):int((w["e"] + 0.04) * SR)] = 1
 # Whisper se trompe parfois de 0,1-0,2 s : toute voix (ou sifflante) à moins de 0,25 s d'un mot est gardée, jamais coupée
