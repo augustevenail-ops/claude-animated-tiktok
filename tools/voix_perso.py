@@ -150,8 +150,8 @@ def tighten(x, W, tail):
     return y, [{"w": w["w"], "s": rm(w["s"]), "e": rm(w["e"])} for w in W], rm(W[-1]["e"]) + 0.1
 
 # ---------- 6. réglages légers + volume calé sur la voix d'origine ----------
-TONE = ("equalizer=f=140:t=q:w=1.1:g=2.5,equalizer=f=380:t=q:w=1.3:g=-1.5,equalizer=f=3500:t=q:w=1.6:g=1.5,"
-        "deesser=i=0.35,acompressor=threshold=-24dB:ratio=2.5:attack=8:release=160:makeup=1")
+TONE = ("equalizer=f=140:t=q:w=1.1:g=2.5,equalizer=f=380:t=q:w=1.3:g=-1.5,equalizer=f=3500:t=q:w=1.6:g=0.5,"
+        "acompressor=threshold=-24dB:ratio=2.5:attack=8:release=160:makeup=1")
 if A.tempo != 1: TONE = f"rubberband=tempo={A.tempo}:pitchq=quality," + TONE
 narr = {}
 for k in sorted({w["seg"] for w in W}):
@@ -160,6 +160,16 @@ for k in sorted({w["seg"] for w in W}):
     narr[k] = (ff(y, TONE), Wt, core)
 g = 10 ** ((A.lufs - lufs(np.concatenate([v[0] for kk, v in narr.items() if kk >= 0]))) / 20)
 narr = {kk: (v[0] * g, v[1], v[2]) for kk, v in narr.items()}
+from scipy.signal import butter, sosfiltfilt
+SOS = butter(4, 3200, "highpass", fs=SR, output="sos")
+def desib(y, thr_db=-30.0, ratio=4.0):
+    """« ch », « s » trop vifs (grésillement) : bande > 3,2 kHz compressée là où elle dépasse le seuil (phase nulle, pas de décalage)"""
+    hi = sosfiltfilt(SOS, y); lo = y - hi; k = int(0.004 * SR)
+    env = np.sqrt(np.convolve(hi ** 2, np.ones(k) / k, "same")) + 1e-9; e_db = 20 * np.log10(env)
+    gdb = np.where(e_db > thr_db, (thr_db - e_db) * (1 - 1 / ratio), 0.0)
+    gdb = np.convolve(gdb, np.ones(int(0.006 * SR)) / int(0.006 * SR), "same")
+    return lo + hi * 10 ** (gdb / 20)
+narr = {kk: (desib(v[0]), v[1], v[2]) for kk, v in narr.items()}
 
 # ---------- 7. assemblage avec les répliques d'origine (haut-parleur, mère...) ----------
 def role_seg(k, role):
@@ -185,7 +195,11 @@ pk = np.abs(y).max()
 if pk > 0.95: y *= 0.95 / pk
 def wav(z, p): subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "f32le", "-ar", str(SR), "-ac", "1", "-i", "-", p], input=z.astype(np.float32).tobytes(), check=True)
 wav(y, os.path.join(A.out, "voice.wav"))
-subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", os.path.join(A.out, "voice.wav"), "-b:a", "192k", os.path.join(A.out, "voice_ecoute.mp3")])
+ec = y
+if -1 in narr:                                                  # écoute : la phrase de fin juste après (comme dans le mix, sur le carton titre)
+    yo, Wo, _ = narr[-1]; ec = np.concatenate([y, np.zeros(int(0.35 * SR)), yo[int(max(0, Wo[0]["s"] - 0.03) * SR):]])
+wav(ec, os.path.join(A.out, "_ecoute.wav"))
+subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", os.path.join(A.out, "_ecoute.wav"), "-b:a", "192k", os.path.join(A.out, "voice_ecoute.mp3")]); os.remove(os.path.join(A.out, "_ecoute.wav"))
 json.dump(words, open(os.path.join(A.out, "words.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=0)
 if -1 in narr:                                                  # phrase de fin -> outro.wav + outro.json (début du mot « épisode »)
     yo, Wo, _ = narr[-1]; wav(yo[int(max(0, Wo[0]["s"] - 0.03) * SR):], os.path.join(A.out, "outro.wav"))
