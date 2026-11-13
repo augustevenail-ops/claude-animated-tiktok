@@ -49,7 +49,7 @@ cue("heartbeat", W(179), -9, 6.0); cue("tower_groan", W(183), -10)
 HISS = np.zeros((2, N))                                                                  # signature des Longs à chaque apparition
 for a, b in [(0.0, W(4) - 0.1), (W(45), W(66) - 0.3), (W(157) - 0.5, TITLE_AT - 0.2)]: HISS += Kit(N, SR).long_hiss(a, b, seed=int(a * 10) + 1)
 act = np.abs(HISS[0]) > 1e-5
-if act.any(): HISS *= db(vref - 15 + SFX_DB - rms(HISS[0][act]))
+if act.any(): HISS *= db(vref - 10 + SFX_DB - rms(HISS[0][act]))   # +5 dB (retour utilisateur)
 k.stinger(TITLE_AT, 0.5)
 FLIP = TITLE_AT + 0.9                                                                     # le 1 devient 2 sur le carton (FLIP_AFTER, overlay.tsx)
 k.reverse(FLIP, 0.35, 0.5); cue("lock_click", FLIP - 0.01, -6); cue("sting_hit", FLIP, -12)
