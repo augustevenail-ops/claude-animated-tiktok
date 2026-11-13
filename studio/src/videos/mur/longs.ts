@@ -63,12 +63,11 @@ const head = (g: CanvasRenderingContext2D, x: number, y: number, rx: number, ry:
   g.beginPath(); g.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2); g.fillStyle = BODY; g.fill();
   g.save(); g.clip(); g.fillStyle = DARK; g.beginPath(); g.ellipse(rx * 0.45, ry * 0.2, rx * 0.75, ry, 0, 0, Math.PI * 2); g.fill(); g.restore();
   g.lineWidth = OL; g.strokeStyle = INK; g.beginPath(); g.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2); g.stroke();
-  { const sx = turn * rx * 0.45, w = rx * (0.62 - 0.2 * Math.abs(turn)), y0 = ry * 0.32, n = 7;   // bouche en zigzag anguleux, irrégulière (consigne utilisateur)
-    let seed = 7; const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
-    const top: number[][] = [], bot: number[][] = [];
-    for (let i = 0; i <= n; i++) { const x = sx - w + (2 * w * i) / n; top.push([x, y0 + (i % 2 ? 1 : -1) * ry * (0.06 + 0.07 * rnd())]); bot.push([x, y0 + ry * 0.16 + (i % 2 ? -1 : 1) * ry * (0.05 + 0.07 * rnd())]); }
-    g.beginPath(); top.forEach((p, i) => (i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1]))); for (let i = n; i >= 0; i--) g.lineTo(bot[i][0], bot[i][1]); g.closePath();
-    g.fillStyle = "#0b0a10"; g.fill(); g.lineJoin = "miter"; g.lineWidth = 1.5; g.strokeStyle = "#0b0a10"; g.stroke(); }
+  { const sx = turn * rx * 0.45, w = rx * (0.6 - 0.2 * Math.abs(turn)), y0 = ry * 0.36, n = 9;   // bouche = un seul trait en zigzag anguleux, irrégulier (consigne utilisateur)
+    let seed = 11; const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+    g.beginPath();
+    for (let i = 0; i <= n; i++) { const x = sx - w + (2 * w * i) / n + (i && i < n ? (rnd() - 0.5) * w * 0.12 : 0), y = y0 + (i % 2 ? 1 : -1) * ry * (0.03 + 0.09 * rnd()); i ? g.lineTo(x, y) : g.moveTo(x, y); }
+    g.lineJoin = "miter"; g.lineCap = "butt"; g.lineWidth = Math.max(2, rx * 0.07); g.strokeStyle = "#0b0a10"; g.stroke(); }
   g.restore();
 };
 type Sk = { head: P2; neck: P2; chest: P2; waist: P2; hip: P2; shL: P2; elL: P2; haL: P2; shR: P2; elR: P2; haR: P2; knL: P2; ftL: P2; knR: P2; ftR: P2 };
