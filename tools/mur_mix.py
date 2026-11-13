@@ -50,6 +50,15 @@ HISS = np.zeros((2, N))                                                         
 for a, b in [(0.0, W(4) - 0.1), (W(45), W(66) - 0.3), (W(157) - 0.5, TITLE_AT - 0.2)]: HISS += Kit(N, SR).long_hiss(a, b, seed=int(a * 10) + 1)
 act = np.abs(HISS[0]) > 1e-5
 if act.any(): HISS *= db(vref - 10 + SFX_DB - rms(HISS[0][act]))   # +5 dB (retour utilisateur)
+rng = np.random.default_rng(13)
+def crack(t0, g=1.0):                                                                    # craquement d'os : salve de claquements secs filtrés
+    for e in range(int(3 + rng.integers(0, 4))):
+        n = int(0.012 * SR); x = rng.standard_normal(n) * np.exp(-np.arange(n) / (0.002 * SR)); x = x - np.convolve(x, np.ones(4) / 4, "same")
+        i = int((t0 + e * (0.03 + 0.05 * rng.random())) * SR)
+        if 0 <= i < N - n: sfx[i:i + n] += x * g * db(vref - 4 + SFX_DB) * (0.5 + rng.random())
+for e in range(6): crack(W(163) + e * 0.32, 0.9)                                         # le Long se déplie
+for e in range(3): crack(W(168) + e * 0.22, 1.0)                                         # sa tête pivote
+crack(W(10), 0.7)                                                                        # tête qui se penche (plan 1)
 k.stinger(TITLE_AT, 0.5)
 FLIP = TITLE_AT + 0.9                                                                     # le 1 devient 2 sur le carton (FLIP_AFTER, overlay.tsx)
 k.reverse(FLIP, 0.35, 0.5); cue("lock_click", FLIP - 0.01, -6); cue("sting_hit", FLIP, -12)

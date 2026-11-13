@@ -80,7 +80,7 @@ const RING: [string, number][] = [["A", 0.2], ["B", 0.95], ["C", 1.7], ["D", 2.4
 export class World {
   root = new THREE.Group();
   sun: THREE.DirectionalLight; private hemi: THREE.HemisphereLight; private fog = new THREE.Fog("#000", 10, 100);
-  private pool = new Pool(); private actors: Actor[] = []; private longs: Actor[] = []; private longMats: THREE.MeshBasicMaterial[] = [];
+  private pool = new Pool(); private actors: Actor[] = []; private longs: Actor[] = []; private longMats: THREE.MeshBasicMaterial[] = []; private shadowMats: THREE.MeshBasicMaterial[] = []; private longShadow: boolean[] = [];
   private sky: THREE.Mesh; private skyMaps: THREE.Texture[]; private doors: THREE.Mesh[] = []; private movers: { m: THREE.Mesh; x: number; z: number; ax: "x" | "z" }[] = [];
   private fireGlow: THREE.Mesh; private sirenGlow: THREE.Mesh; private sirenLamp: THREE.Mesh; private candles: THREE.Mesh[] = []; private moon: THREE.Mesh; private sunDisc: THREE.Mesh;
   constructor() {
@@ -211,19 +211,22 @@ export class World {
       A.mesh.position.set(...p); A.mesh.up.set(0, 1, 0); A.mesh.rotation.set(0, face ?? yaw(p), 0);
       { const dy = cam.position.y - (p[1] + 5), hz = Math.hypot(cam.position.x - p[0], cam.position.z - p[2]);          // vu de haut : la carte se tourne vers la caméra
         if (Math.atan2(dy, hz) > 0.95) { A.mesh.up.set(0, 1, 0).applyQuaternion(cam.quaternion); A.mesh.lookAt(cam.position); A.mesh.up.set(0, 1, 0); } }
-      A.mesh.scale.setScalar(LONG_K); A.mesh.visible = true;
+      A.mesh.scale.setScalar(LONG_K); A.mesh.visible = true; this.longShadow[kl - 1] = !!s.shadow;
     };
+    /** ombre immense couchée au sol du couloir : elle s'allonge vers toi avant que le Long n'apparaisse (lumière de la sirène derrière lui) */
+    const floorShadow = (z: number, sc: number, s: LongSpec) => { long([0, 0.04, z], { ...s, shadow: true }, 0); const A = this.longs[kl - 1];
+      if (A) { A.mesh.rotation.set(Math.PI / 2, 0, 0); A.mesh.scale.set(LONG_K * 1.1, LONG_K * sc, 1); } };
     const blink = (seed: number) => (f + seed * 37) % 97 < 4;
     const W2: V3 = [YOU_WAKE[0], 0.02, YOU_WAKE[2] + 0.0];
-    if (id === 1) { place("Y", [YOU_WAKE[0], 0, YOU_WAKE[2]], { mode: "stand", expr: "worry" }, 1); long([2.5, H - (975 - PEEK_CUT) * 0.00216 * LONG_K, WAKE_Z + 3.0], { pose: "peek", turn: 0.25 }); }
+    if (id === 1) { place("Y", [YOU_WAKE[0], 0, YOU_WAKE[2]], { mode: "stand", expr: "worry" }, 1); long([2.5, H - (975 - PEEK_CUT) * 0.00216 * LONG_K, WAKE_Z + 3.0], { pose: "peek", turn: 0.25, tilt: 0.28 * smooth(u * 2), tap: t * 0.9 }); }
     if (id === 2 || id === 3) place("Y", W2, { mode: "stand", expr: "worry", blink: id === 2 && u < 0.45 }, 1, true);
     if (id === 5) place("Y", [YOU_WAKE[0], 0, YOU_WAKE[2]], { mode: "stand", expr: "worry", blink: blink(1), look: Math.sin(u * 5) * 0.8 });
     if (id === 9 || id === 10) {
       const P: V3[] = [[6, 0, WAKE_Z + 1], [-28, 0, WAKE_Z - 12], [36, 0, WAKE_Z + 20], [-12, 0, WAKE_Z + 28], [22, 0, WAKE_Z - 28], [-44, 0, WAKE_Z + 6]];
       P.forEach((p, i) => { if (id === 9 && i > 2) return; const e = id === 10 ? smooth(u * 1.6 - i * 0.12) : 1; long([p[0] + (i % 2 ? 1 : -1) * 3 * u, 0, p[2]], { pose: "walk", step: ((t * 0.35 + i * 0.3) % 1 + 1) % 1 }); void e; });
     }
-    if (id === 11) { long([13, 0, WAKE_Z + 0.4], { pose: "stand" }); place("B", [10.6, 0, WAKE_Z - 0.6], { mode: "stand", expr: "worry" }); }
-    if (id === 12) { long([2.5, H - (975 - PEEK_CUT) * 0.00216 * LONG_K, WAKE_Z + 3.0], { pose: "peek", turn: Math.sin(u * 3) * 0.6 }); place("C", [2.0, 0, WAKE_Z - 0.4], { mode: "stand", expr: "mute", blink: false }); }
+    if (id === 11) { long([13, 0, WAKE_Z + 0.4], { pose: "stand", tilt: 0.38 * smooth((u - 0.3) * 2.5) }); place("B", [10.6, 0, WAKE_Z - 0.6], { mode: "stand", expr: "worry" }); }
+    if (id === 12) { long([2.5, H - (975 - PEEK_CUT) * 0.00216 * LONG_K, WAKE_Z + 3.0], { pose: "peek", turn: Math.sin(u * 3) * 0.6, tap: t * 1.1, mouth: 0.35 * smooth((u - 0.6) * 3) }); place("C", [2.0, 0, WAKE_Z - 0.4], { mode: "stand", expr: "mute", blink: false }); }
     if (id === 13 || id === 14) {
       RING.forEach(([key, a], i) => place(key, [FIRE[0] + Math.cos(a) * 3.1, 0, FIRE[2] + Math.sin(a) * 3.1], { mode: "stand", expr: i % 3 ? "worry" : "calm", blink: blink(i + 2) }));
       if (id === 14) place("Y", [0.4, 0, 1.2], { mode: "stand", expr: "worry", back: true });
@@ -235,7 +238,10 @@ export class World {
     if (id === 21) place("Y", [0, 0.06 * Math.abs(Math.sin(t * 9)), 98 - 26 * u - 0.9], { mode: "stand", expr: "worry", back: true });
     if (id >= 22 && id <= 27) {
       const unfold = id === 23 ? smooth(u * 1.15) : id < 23 ? 0 : 1;
-      if (id >= 23) long(LONG_RUN, unfold < 1 ? { pose: "crouch", unfold } : { pose: "stand", turn: id === 24 ? 0.85 * (1 - smooth(u * 1.3)) : 0 }, 0);
+      if (id === 22) floorShadow(LONG_RUN[2], 0.4 + 1.6 * smooth(u), { pose: "crouch", unfold: 0.25 + 0.75 * smooth(u) });   // l'ombre arrive avant lui
+      if (id === 23) floorShadow(LONG_RUN[2], 2.0, { pose: "crouch", unfold: smooth(u * 1.15) });
+      if (id >= 23) long(LONG_RUN, unfold < 1 ? { pose: "crouch", unfold } : { pose: "stand",
+        turn: id === 24 ? 0.85 * (1 - smooth(u * 1.6)) : 0, mouth: id === 24 ? smooth((u - 0.55) * 3) : id >= 26 ? 0.6 : 0, tilt: id === 24 ? 0.22 * smooth((u - 0.4) * 3) : id === 27 ? 0.18 : 0 }, 0);
       if (id !== 24) place("Y", [0, 0, YOU_RUN_Z], { mode: "stand", expr: "worry", back: id === 23 || id === 25 || id === 27, blink: id === 26 && blink(6) });
     }
     void tW; void H;
@@ -245,6 +251,8 @@ export class World {
     for (const a of [...this.actors, ...this.longs]) if (a.mesh.visible) a.bind();
     this.longs.forEach((a, i) => { if (!a.mesh.visible) return;                 // les Longs brillent d'eux-mêmes (références : géants lumineux, non éclairés)
       const m = (this.longMats[i] ??= new THREE.MeshBasicMaterial({ alphaTest: 0.5, side: THREE.DoubleSide, fog: true }));
+      if (this.longShadow[i]) { const sm = (this.shadowMats[i] ??= new THREE.MeshBasicMaterial({ alphaTest: 0.5, transparent: true, opacity: 0.85, color: "#000", depthWrite: false, side: THREE.DoubleSide }));
+        sm.map = a.mat.map; a.mesh.material = sm; return; }
       m.map = a.mat.map; m.color.setRGB(1.05, 1.05, 1.1); a.mesh.material = m; });
     return focus;
   }

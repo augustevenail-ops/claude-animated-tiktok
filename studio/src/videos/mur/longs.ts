@@ -10,7 +10,10 @@ const BODY = "#cfd1f2", LIT = "#f8f9ff", DARK = "#9396d8";
 export type LongPose = "stand" | "lean" | "crouch" | "walk" | "peek";
 /** « peek » : vu de face, tête et épaules au-dessus du mur, bras qui pendent le long de la paroi ; le corps s'arrête net à PEEK_CUT (= arête du mur) */
 export const PEEK_CUT = 385;
-export type LongSpec = { pose: LongPose; unfold?: number; turn?: number; step?: number };
+export type LongSpec = { pose: LongPose; unfold?: number; turn?: number; step?: number;
+  /** bouche : 0 = trait, 1 = grande fente en zigzag ouverte ; tilt = tête penchée (rad) ; tap = phase des doigts qui tapotent (pose peek) ;
+   *  shadow = silhouette noire seule (ombre projetée sur les murs) */ mouth?: number; tilt?: number; tap?: number; shadow?: boolean };
+let SHADOW = false;
 
 type P2 = [number, number];
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
@@ -46,27 +49,42 @@ const paint = (g: CanvasRenderingContext2D, shapes: Shape[], _cx: number, band =
   // UNE seule silhouette (consigne utilisateur) : toutes les formes fusionnées en un chemin, un seul contour extérieur,
   // ombrage d'un seul tenant : lumière blanche à gauche, lavande, grande ombre bleu-violet à droite ; halo lumineux.
   const U = new Path2D(); for (const sh of shapes) U.addPath(sh.path);
+  if (SHADOW) { g.fillStyle = "#000"; g.fill(U); return; }
   const sh = (dx: number) => { const q = new Path2D(); q.addPath(U, new DOMMatrix().translate(dx, 0)); return q; };
   g.save(); g.lineJoin = "round"; g.lineCap = "round";
   g.shadowColor = "rgba(225,230,255,0.55)"; g.shadowBlur = 26; g.fillStyle = INK; g.fill(U);
   g.shadowBlur = 0; g.lineWidth = OL * 2; g.strokeStyle = INK; g.stroke(U);
   g.save(); g.clip(U); g.fillStyle = DARK; g.fill(U);
-  g.clip(sh(-band * 1.6)); g.fillStyle = LIT; g.fill(U); g.fillStyle = BODY; g.fill(sh(band * 0.9));
+  g.save(); g.clip(sh(-band * 1.6)); g.fillStyle = LIT; g.fill(U); g.fillStyle = BODY; g.fill(sh(band * 0.9)); g.restore();
+  // porcelaine : reflets brillants nets + fines fissures noires (poupée cassée)
+  g.fillStyle = "rgba(255,255,255,0.45)"; for (const [x, y, rx, ry] of CRACK_GLOSS) { g.beginPath(); g.ellipse(x, y, rx, ry, -0.35, 0, 7); g.fill(); }
+  g.strokeStyle = "#1a1828"; g.lineWidth = 1.6; g.lineJoin = "miter";
+  for (const c of CRACKS) { g.beginPath(); c.forEach((q, i) => (i ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1]))); g.stroke(); }
   g.restore(); g.restore();
 };
+const CRACK_GLOSS: number[][] = [[262, 300, 9, 26], [212, 640, 5, 20], [268, 610, 6, 22]];
+const CRACKS: P2[][] = [[[318, 286], [330, 314], [322, 330], [338, 362], [332, 380]], [[330, 314], [348, 322]], [[282, 470], [270, 492], [280, 506], [268, 530]],
+  [[364, 600], [378, 622], [372, 640]], [[300, 700], [312, 724], [304, 742], [318, 770]], [[200, 420], [192, 446], [204, 462]]];
 const hand = (x: number, y: number, ang: number, len: number, back = false): Shape[] =>
   ([[-0.3, 0.7], [0, 1], [0.3, 0.6]] as [number, number][]).map(([da, k]) => { const a = ang + da;
     return { back, path: limbPath([[x - Math.cos(ang) * 6, y - Math.sin(ang) * 6], [x + Math.cos(a) * len * k * 0.55, y + Math.sin(a) * len * k * 0.55], [x + Math.cos(a + da * 0.4) * len * k, y + Math.sin(a + da * 0.4) * len * k]], [24, 15, 4], true) }; });
 const headShape = (x: number, y: number, rx: number, ry: number, tilt: number): Shape => { const p = new Path2D(); p.ellipse(x, y, rx, ry, tilt, 0, Math.PI * 2); return { path: p }; };
-const head = (g: CanvasRenderingContext2D, x: number, y: number, rx: number, ry: number, tilt: number, turn: number) => {
+const head = (g: CanvasRenderingContext2D, x: number, y: number, rx: number, ry: number, tilt: number, turn: number, mouth = 0) => {
   g.save(); g.translate(x, y); g.rotate(tilt);
-  g.beginPath(); g.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2); g.fillStyle = BODY; g.fill();
+  g.beginPath(); g.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2); g.fillStyle = SHADOW ? "#000" : BODY; g.fill();
+  if (SHADOW) { g.restore(); return; }
   g.save(); g.clip(); g.fillStyle = DARK; g.beginPath(); g.ellipse(rx * 0.45, ry * 0.2, rx * 0.75, ry, 0, 0, Math.PI * 2); g.fill(); g.restore();
   g.lineWidth = OL; g.strokeStyle = INK; g.beginPath(); g.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2); g.stroke();
-  { const sx = turn * rx * 0.45, w = rx * (0.6 - 0.2 * Math.abs(turn)), y0 = ry * 0.36, n = 9;   // bouche = un seul trait en zigzag anguleux, irrégulier (consigne utilisateur)
+  if (SHADOW) { g.restore(); return; }
+  g.fillStyle = "rgba(255,255,255,0.9)"; g.beginPath(); g.ellipse(-rx * 0.38, -ry * 0.42, rx * 0.16, ry * 0.1, -0.5, 0, 7); g.fill();   // reflet de porcelaine
+  g.strokeStyle = "#1a1828"; g.lineWidth = 1.6; g.beginPath(); g.moveTo(rx * 0.2, -ry * 0.98); g.lineTo(rx * 0.28, -ry * 0.7); g.lineTo(rx * 0.16, -ry * 0.55); g.lineTo(rx * 0.3, -ry * 0.36); g.stroke();
+  { const op = Math.max(0, Math.min(1, mouth)), sx = turn * rx * 0.45, w = rx * (0.6 - 0.2 * Math.abs(turn)) * (1 + 0.55 * op), y0 = ry * 0.36, n = 9;   // zigzag ; s'ouvre en fente noire trop large
     let seed = 11; const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
-    g.beginPath();
-    for (let i = 0; i <= n; i++) { const x = sx - w + (2 * w * i) / n + (i && i < n ? (rnd() - 0.5) * w * 0.12 : 0), y = y0 + (i % 2 ? 1 : -1) * ry * (0.03 + 0.09 * rnd()); i ? g.lineTo(x, y) : g.moveTo(x, y); }
+    const top: P2[] = [], bot: P2[] = [];
+    for (let i = 0; i <= n; i++) { const x = sx - w + (2 * w * i) / n + (i && i < n ? (rnd() - 0.5) * w * 0.12 : 0), z = (i % 2 ? 1 : -1) * ry * (0.03 + 0.09 * rnd());
+      top.push([x, y0 + z - op * ry * 0.22 * Math.sin(Math.PI * i / n)]); bot.push([x, y0 - z * 0.8 + op * ry * 0.3 * Math.sin(Math.PI * i / n)]); }
+    g.beginPath(); top.forEach((q, i) => (i ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1])));
+    if (op > 0.02) { for (let i = n; i >= 0; i--) g.lineTo(bot[i][0], bot[i][1]); g.closePath(); g.fillStyle = "#07060b"; g.fill(); }
     g.lineJoin = "miter"; g.lineCap = "butt"; g.lineWidth = Math.max(2, rx * 0.07); g.strokeStyle = "#0b0a10"; g.stroke(); }
   g.restore();
 };
@@ -80,16 +98,19 @@ const LEAN: Sk = { head: [478, 238], neck: [440, 262], chest: [390, 300], waist:
 const mixSk = (a: Sk, b: Sk, t: number): Sk => Object.fromEntries(Object.keys(a).map((k) => [k, lp(a[k as keyof Sk], b[k as keyof Sk], t)])) as Sk;
 
 export const drawLong = (p: Pen, s: LongSpec) => {
-  const g = p.g, turn = s.turn ?? 0; g.save();
+  const g = p.g, turn = s.turn ?? 0, mo = s.mouth ?? 0, xt = s.tilt ?? 0; g.save(); SHADOW = !!s.shadow;
   const bend = (a: P2, b: P2, out: number): P2 => { const m = lp(a, b, 0.5), dx = b[0] - a[0], dy = b[1] - a[1], d = Math.hypot(dx, dy) || 1; return [m[0] - dy / d * out, m[1] + dx / d * out]; };
   if (s.pose === "peek") {                                            // vu de face par-dessus le mur : le corps s'arrête net à l'arête
     const C = PEEK_CUT;                                               // une seule silhouette : torse coupé net à l'arête, 2 bras qui retombent le long du mur
+    const tp = s.tap ?? 0;
+    const fingers: Shape[] = [0, 1, 2, 3].map((i) => { const x = 372 + i * 22, lift = Math.max(0, Math.sin(tp * Math.PI * 2 - i * 0.9)) * 26;   // doigts posés sur l'arête, qui tapotent
+      return { path: limbPath([[x, C - 22], [x + 4, C - 4 - lift * 0.4], [x + 6, C + 44 - lift]], [20, 16, 6], true) }; });
     paint(g, [
-      { path: limbPath([[300, 175], [300, 225], [302, 262], [302, 320], [300, C]], [20, 36, 150, 190, 200]) }, headShape(300, 140, 38, 50, 0.12),
+      { path: limbPath([[300, 175], [300, 225], [302, 262], [302, 320], [300, C]], [20, 36, 150, 190, 200]) }, headShape(300, 140, 38, 50, 0.12 + xt),
       { path: limbPath([[236, 282], [196, C - 10], [190, 560], [198, 760], [206, 850]], [74, 60, 48, 38, 30]) }, ...hand(206, 850, 1.52, 80),
-      { path: limbPath([[364, 282], [404, C - 10], [410, 560], [402, 760], [394, 840]], [70, 56, 46, 36, 28]) }, ...hand(394, 840, 1.62, 76),
+      { path: limbPath([[364, 282], [400, 300], [410, C - 26], [398, C - 18]], [70, 60, 50, 44]) }, ...fingers,
     ], 300);
-    head(g, 300, 140, 38, 50, 0.12, turn); g.restore(); return;
+    head(g, 300, 140, 38, 50, 0.12 + xt, turn, mo); g.restore(); SHADOW = false; return;
   }
   let k: Sk = STAND;
   if (s.pose === "crouch" || s.unfold !== undefined) k = mixSk(CROUCH, STAND, smoothT(s.unfold ?? 0));
@@ -106,8 +127,8 @@ export const drawLong = (p: Pen, s: LongSpec) => {
     { path: limbPath([lp(k.neck, k.head, 0.7), k.neck, lp(k.neck, k.chest, 0.45), k.chest, lp(k.chest, k.waist, 0.5), k.waist, k.hip, [k.hip[0], k.hip[1] + 40]], [20, 34, 130, 196, 176, 150, 190, 150]) },
     { path: limbPath([hL, bend(hL, k.knL, 8), k.knL, k.ftL], [122, 92, 56, 30], true) },
     { path: limbPath([k.shL, bend(k.shL, k.elL, 10), k.elL, bend(k.elL, k.haL, 14), k.haL], [78, 60, 48, 40, 30]) }, ...hand(k.haL[0], k.haL[1], Math.atan2(k.haL[1] - k.elL[1], k.haL[0] - k.elL[0]), 84),
-    headShape(k.head[0], k.head[1], 38, 50, ht),
+    headShape(k.head[0], k.head[1], 38, 50, ht + xt),
   ], k.chest[0]);
-  head(g, k.head[0], k.head[1], 38, 50, ht, turn);
-  g.restore();
+  head(g, k.head[0], k.head[1], 38, 50, ht + xt, turn, mo);
+  g.restore(); SHADOW = false;
 };
