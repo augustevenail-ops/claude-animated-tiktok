@@ -62,7 +62,7 @@ const paint = (g: CanvasRenderingContext2D, shapes: Shape[], _cx: number, band =
   for (const c of CRACKS) { g.beginPath(); c.forEach((q, i) => (i ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1]))); g.stroke(); }
   g.restore(); g.restore();
 };
-const CRACK_GLOSS: number[][] = [[262, 300, 9, 26], [212, 640, 5, 20], [268, 610, 6, 22]];
+const CRACK_GLOSS: number[][] = [[284, 300, 6, 22], [240, 640, 4, 16], [284, 610, 4, 18]];
 const CRACKS: P2[][] = [[[318, 286], [330, 314], [322, 330], [338, 362], [332, 380]], [[330, 314], [348, 322]], [[282, 470], [270, 492], [280, 506], [268, 530]],
   [[364, 600], [378, 622], [372, 640]], [[300, 700], [312, 724], [304, 742], [318, 770]], [[200, 420], [192, 446], [204, 462]]];
 const hand = (x: number, y: number, ang: number, len: number, back = false): Shape[] =>
@@ -89,8 +89,8 @@ const head = (g: CanvasRenderingContext2D, x: number, y: number, rx: number, ry:
   g.restore();
 };
 type Sk = { head: P2; neck: P2; chest: P2; waist: P2; hip: P2; shL: P2; elL: P2; haL: P2; shR: P2; elR: P2; haR: P2; knL: P2; ftL: P2; knR: P2; ftR: P2 };
-const STAND: Sk = { head: [300, 100], neck: [300, 210], chest: [302, 300], waist: [300, 410], hip: [300, 510], shL: [222, 268], elL: [190, 560], haL: [196, 880], shR: [378, 268], elR: [410, 560], haR: [404, 880],
-  knL: [262, 745], ftL: [262, 972], knR: [338, 745], ftR: [342, 972] };
+const STAND: Sk = { head: [300, 100], neck: [300, 210], chest: [302, 300], waist: [300, 410], hip: [300, 510], shL: [262, 262], elL: [236, 560], haL: [236, 900], shR: [338, 262], elR: [364, 560], haR: [364, 900],
+  knL: [282, 745], ftL: [280, 972], knR: [318, 745], ftR: [322, 972] };
 const CROUCH: Sk = { head: [338, 640], neck: [320, 680], chest: [305, 730], waist: [292, 800], hip: [290, 860], shL: [282, 712], elL: [205, 840], haL: [160, 972], shR: [322, 712], elR: [405, 840], haR: [440, 972],
   knL: [240, 720], ftL: [235, 972], knR: [350, 715], ftR: [360, 972] };
 const LEAN: Sk = { head: [478, 238], neck: [440, 262], chest: [390, 300], waist: [310, 400], hip: [262, 540], shL: [418, 272], elL: [478, 520], haL: [470, 840], shR: [440, 286], elR: [530, 470], haR: [565, 740],
@@ -106,9 +106,9 @@ export const drawLong = (p: Pen, s: LongSpec) => {
     const fingers: Shape[] = [0, 1, 2, 3].map((i) => { const x = 372 + i * 22, lift = Math.max(0, Math.sin(tp * Math.PI * 2 - i * 0.9)) * 26;   // doigts posés sur l'arête, qui tapotent
       return { path: limbPath([[x, C - 22], [x + 4, C - 4 - lift * 0.4], [x + 6, C + 44 - lift]], [20, 16, 6], true) }; });
     paint(g, [
-      { path: limbPath([[300, 175], [300, 225], [302, 262], [302, 320], [300, C]], [20, 36, 150, 190, 200]) }, headShape(300, 140, 38, 50, 0.12 + xt),
-      { path: limbPath([[236, 282], [196, C - 10], [190, 560], [198, 760], [206, 850]], [74, 60, 48, 38, 30]) }, ...hand(206, 850, 1.52, 80),
-      { path: limbPath([[364, 282], [400, 300], [410, C - 26], [398, C - 18]], [70, 60, 50, 44]) }, ...fingers,
+      { path: limbPath([[300, 175], [300, 225], [302, 262], [302, 320], [300, C]], [14, 22, 84, 100, 104]) }, headShape(300, 140, 38, 50, 0.12 + xt),
+      { path: limbPath([[258, 278], [236, C - 10], [230, 560], [236, 760], [240, 850]], [44, 36, 30, 24, 18]) }, ...hand(240, 850, 1.55, 80),
+      { path: limbPath([[342, 278], [378, 300], [400, C - 26], [392, C - 18]], [42, 36, 30, 28]) }, ...fingers,
     ], 300);
     head(g, 300, 140, 38, 50, 0.12 + xt, turn, mo); g.restore(); SHADOW = false; return;
   }
@@ -117,16 +117,16 @@ export const drawLong = (p: Pen, s: LongSpec) => {
   if (s.pose === "lean") k = LEAN;
   if (s.pose === "walk") { const sw = Math.sin((s.step ?? 0) * Math.PI * 2);
     k = { ...STAND, knL: [282 + 24 * sw, 745], ftL: [278 + 50 * sw, 972], knR: [318 - 24 * sw, 745], ftR: [324 - 50 * sw, 972], elL: [236 - 16 * sw, 560], haL: [226 - 44 * sw, 905], elR: [366 + 16 * sw, 560], haR: [376 + 44 * sw, 905] }; }
-  const hR: P2 = [k.hip[0] + 44, k.hip[1] - 10], hL: P2 = [k.hip[0] - 44, k.hip[1] - 10];
+  const hR: P2 = [k.hip[0] + 22, k.hip[1] - 10], hL: P2 = [k.hip[0] - 22, k.hip[1] - 10];
   const tilt = Math.atan2(k.head[1] - k.neck[1], k.head[0] - k.neck[0]) + Math.PI / 2, ht = s.pose === "lean" ? tilt * 0.55 : tilt * 0.3;
   // membres du fond (plus sombres), puis le corps d'un seul tenant : cou + torse + bassin + jambe avant + bras avant + tête
   paint(g, [
-    { back: true, path: limbPath([k.shR, bend(k.shR, k.elR, -10), k.elR, bend(k.elR, k.haR, -14), k.haR], [70, 54, 44, 36, 28]) }, ...hand(k.haR[0], k.haR[1], Math.atan2(k.haR[1] - k.elR[1], k.haR[0] - k.elR[0]), 80, true),
-    { back: true, path: limbPath([hR, bend(hR, k.knR, -8), k.knR, k.ftR], [112, 86, 52, 30], true) },
+    { back: true, path: limbPath([k.shR, bend(k.shR, k.elR, -10), k.elR, bend(k.elR, k.haR, -14), k.haR], [44, 36, 30, 24, 18]) }, ...hand(k.haR[0], k.haR[1], Math.atan2(k.haR[1] - k.elR[1], k.haR[0] - k.elR[0]), 80, true),
+    { back: true, path: limbPath([hR, bend(hR, k.knR, -8), k.knR, k.ftR], [64, 50, 34, 22], true) },
 
-    { path: limbPath([lp(k.neck, k.head, 0.7), k.neck, lp(k.neck, k.chest, 0.45), k.chest, lp(k.chest, k.waist, 0.5), k.waist, k.hip, [k.hip[0], k.hip[1] + 40]], [20, 34, 130, 196, 176, 150, 190, 150]) },
-    { path: limbPath([hL, bend(hL, k.knL, 8), k.knL, k.ftL], [122, 92, 56, 30], true) },
-    { path: limbPath([k.shL, bend(k.shL, k.elL, 10), k.elL, bend(k.elL, k.haL, 14), k.haL], [78, 60, 48, 40, 30]) }, ...hand(k.haL[0], k.haL[1], Math.atan2(k.haL[1] - k.elL[1], k.haL[0] - k.elL[0]), 84),
+    { path: limbPath([lp(k.neck, k.head, 0.7), k.neck, lp(k.neck, k.chest, 0.45), k.chest, lp(k.chest, k.waist, 0.5), k.waist, k.hip, [k.hip[0], k.hip[1] + 40]], [14, 22, 70, 96, 80, 62, 84, 66]) },
+    { path: limbPath([hL, bend(hL, k.knL, 8), k.knL, k.ftL], [70, 54, 36, 22], true) },
+    { path: limbPath([k.shL, bend(k.shL, k.elL, 10), k.elL, bend(k.elL, k.haL, 14), k.haL], [48, 38, 32, 26, 20]) }, ...hand(k.haL[0], k.haL[1], Math.atan2(k.haL[1] - k.elL[1], k.haL[0] - k.elL[0]), 84),
     headShape(k.head[0], k.head[1], 38, 50, ht + xt),
   ], k.chest[0]);
   head(g, k.head[0], k.head[1], 38, 50, ht + xt, turn, mo);
