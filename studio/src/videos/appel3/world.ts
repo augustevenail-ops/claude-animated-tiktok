@@ -452,7 +452,7 @@ export class World {
     // petites choses qui bougent
     this.traffic.visible = Math.floor(t * 1.4) % 2 === 0;
     { const on = hash(Math.floor(f / 3), 5) > 0.12; (this.sodium.material as THREE.MeshBasicMaterial).opacity = on ? 0.55 : 0.15; this.sodiumBulb.lookAt(cam.position); }
-    const spk = 0; this.spkOut.position.set(SPK_OUT[0] + spk * 0.006 * Math.sin(f * 2.1), SPK_OUT[1] + spk * 0.005 * Math.sin(f * 2.7), SPK_OUT[2]);
+    const spk = id === 63 ? 1 : 0; this.spkOut.position.set(SPK_OUT[0] + spk * 0.006 * Math.sin(f * 2.1), SPK_OUT[1] + spk * 0.005 * Math.sin(f * 2.7), SPK_OUT[2]);
     this.ledIn.visible = false;
     this.neons.forEach((n, k) => { const fl = (k === 2 || k === 5 || k === 7) && hash(Math.floor(f / 2), k) < 0.18; const off = fl; n.visible = !off; });
     this.neonGlow.forEach((n, k) => { const src = this.neons[Math.min(this.neons.length - 1, Math.floor(k / 2))]; n.visible = k === this.neonGlow.length - 1 ? this.neons[this.neons.length - 1].visible : src.visible; });

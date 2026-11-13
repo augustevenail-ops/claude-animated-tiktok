@@ -35,7 +35,7 @@ export type W = { w: string; s: number; e: number; q?: number; role?: string };
 export const WORDS: W[] = (RAW as W[]).map((w) => ({ ...w, s: w.s + VOICE_AT, e: w.e + VOICE_AT }));
 /** premier mot de chaque plan (indice dans words.json) */
 /** plans : [premier mot, rôle] (rôle = caméra/mise en place de l'ancien découpage, ou nouvelle ≥ 200) */
-const PLAN: [number, number][] = [[0, ROLE_ROOM], [1, ROLE_CITY], [6, 3], [12, ROLE_DIVE], [25, 202], [40, 203], [55, 204], [69, 1], [74, 3], [75, 5], [82, 7], [89, 8], [96, 10], [98, 11], [100, 12], [109, 14],
+const PLAN: [number, number][] = [[0, ROLE_ROOM], [1, ROLE_CITY], [6, 63], [12, ROLE_DIVE], [25, 202], [40, 203], [55, 204], [69, 1], [74, 3], [75, 5], [82, 7], [89, 8], [96, 10], [98, 11], [100, 12], [109, 14],
   [120, 15], [126, 16], [130, 17], [133, 18], [138, 19], [139, 208], [146, 21], [148, 23], [157, 24], [161, 27], [165, 205], [175, 16], [180, 206], [190, 28], [199, 29], [206, 30], [211, 31],
   [217, 32], [223, 33], [229, 34], [234, 207], [240, 37], [244, 38]];
 const ANCH = PLAN.map((p) => p[0]);
@@ -121,6 +121,7 @@ const OLD: Record<number, (u: number, f: number) => Cam> = {
 };
 const NEW: Record<number, (u: number, f: number) => Cam> = {
   [ROLE_CITY]: (u) => cityCam(u),
+  63: (u) => X(lerp3([7.9, Y0 + 4.1, 4.2], [7.2, Y0 + 4.3, 3.0], smooth(u)), SPK_OUT, 38),   // haut-parleur de la façade (ouverture)
   [ROLE_DIVE]: (u) => diveCam(u, CY),
   [ROLE_ROOM]: (u) => roomCam(u, YOU),
   200: (u) => X(lerp3([-95, 175, 640], [-38, 118, 320], glide(u)), lerp3([0, 112, 30], [0, 92, 0], smooth(u)), 46),
