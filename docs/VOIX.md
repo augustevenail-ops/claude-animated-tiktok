@@ -86,3 +86,6 @@ Chaîne (`tools/voix_transcrire.py` puis `tools/voix_perso.py`, défauts = régl
 9. Mix : `VOICE_DIR=<dossier> python3 tools/series_mix.py N` → **musique −1/4** (×0,75) pour les voix perso, bruitages inchangés.
 Commande type : `python3 tools/voix_perso.py productions/appel-ep0N <prise.wav> <transcription.json> productions/appel-ep0N/voix_perso --cut a-b --outro "Abonne-toi pour l'épisode trois."`
 Puis vidéo : copier `words.json` dans `studio/src/videos/<ep>/` et `mix.wav` dans `studio/public/<dir>/` (anciens gardés en `*_elevenlabs.*`), rerendre.
+- **Décision finale (2026-11-13)** : on garde le timbre **B + D sans aucun abaissement** (réglage des ép. 1 et 2 de *L'appel*).
+  Essais rejetés : −1 demi-ton rubberband (robotique), PSOLA −0,7 demi-ton ± formants, intonation « conteur » (--range/--enddrop),
+  variantes lissées. Les options `--st --formant --range --enddrop --slow --onepass --soft --body` restent dans l'outil, **désactivées par défaut**.
