@@ -380,7 +380,9 @@ export class World {
       const A = this.actors[k++]; if (!A) return;
       const d = cam.position.distanceTo(V(p[0], p[1] + 1.1 * scale, p[2])), [w, h, kk] = tierOf(d / scale);
       A.r = this.pool.req(`${key}|${JSON.stringify(fo)}`, w, h, kk, (pen: Pen) => drawChar(pen, { ...(LOOK[key] as CharSpec), ...fo, blink: !!fo.blink, look: fo.look ?? 0, wave: fo.wave ?? 0, throat: !!fo.throat }));
-      A.mesh.position.set(...p); A.mesh.rotation.set(lean, yaw(p), 0); A.mesh.scale.setScalar(scale); A.mesh.visible = true;
+      A.mesh.position.set(...p); A.mesh.up.set(0, 1, 0); A.mesh.rotation.set(lean, yaw(p), 0);
+      { const dy = cam.position.y - (p[1] + 1.0 * scale), hz = Math.hypot(cam.position.x - p[0], cam.position.z - p[2]);   // vue plongeante (de haut, 3/4) : la carte se tourne vers la caméra
+        if (Math.atan2(dy, hz) > 0.55) { A.mesh.up.set(0, 1, 0).applyQuaternion(cam.quaternion); A.mesh.lookAt(cam.position); A.mesh.up.set(0, 1, 0); } } A.mesh.scale.setScalar(scale); A.mesh.visible = true;
     };
     const blink = (seed: number) => (f + seed * 37) % 97 < 4;
     const inRoom = [1, 20, 21, 22, 23, 24, 36, 37, 38, 41].includes(id);

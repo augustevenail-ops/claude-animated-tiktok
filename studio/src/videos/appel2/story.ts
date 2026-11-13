@@ -35,8 +35,8 @@ export const WORDS: W[] = (RAW as W[]).map((w) => ({ ...w, s: w.s + VOICE_AT, e:
 /** premier mot de chaque plan (indice dans words.json) */
 /** plans : [premier mot, rôle] — le rôle reprend une caméra/mise en place existante (numéro de l'ancien découpage) ou une nouvelle (≥ 100) */
 const PLAN: [number, number][] = [[0, 2], [4, 6], [12, 100], [25, 23], [38, 3], [51, 4], [58, 5], [62, 11], [67, 7], [68, 8], [71, 10], [74, 112], [81, 13], [92, 15], [96, 16], [98, 17], [100, 18],
-  [103, 19], [107, 20], [109, 21], [114, 102], [121, 103], [129, 24], [135, 25], [138, 26], [142, 104], [150, 105], [156, 106], [161, 107], [168, 108], [174, 109], [179, 30], [185, 32], [191, 33],
-  [205, 110], [208, 34], [215, 36], [222, 37], [235, 38], [236, 39], [242, 111]];
+  [103, 114], [107, 20], [109, 115], [114, 102], [121, 103], [129, 24], [135, 25], [138, 26], [142, 104], [150, 105], [156, 106], [161, 107], [168, 108], [174, 109], [179, 30], [185, 32], [191, 33],
+  [205, 110], [208, 34], [215, 36], [222, 37], [235, 38], [236, 39], [242, 113]];
 const ANCH = PLAN.map((p) => p[0]);
 export const ROLE: Record<number, number> = Object.fromEntries(PLAN.map((p, i) => [i + 1, p[1]]));
 const starts = ANCH.map((wi, i) => (i === 0 ? 0 : WORDS[wi].s - 2 / FPS));
@@ -135,6 +135,9 @@ const NEW: Record<number, (u: number, f: number) => Cam> = {
   109: (u) => P(lerp3([-0.15, CY + 2.15, -14.3], [-0.35, CY + 2.22, -14.75], smooth(u)), [-1.27, CY + 2.42, -15.7], 34),
   110: (u) => P(lerp3([1.4, Y0 + 1.8, -3.0], [1.3, Y0 + 1.9, -3.45], smooth(u)), SPK_IN, 36),
   111: (u) => P(lerp3([1.55, Y0 + 1.55, -1.85], [1.8, Y0 + 1.5, -2.3], smooth(u)), [2.6, Y0 + 1.0, ZD], 50),
+  113: (u) => P(lerp3([10.2, Y0 + 1.05, -4.55], [9.7, Y0 + 1.05, -4.55], smooth(u)), [2.6, Y0 + 1.55, -4.55], 40),     // vue en coupe finale : vous d'un côté, eux de l'autre (sous les cartes de choix)
+  114: (u) => P(lerp3([-0.95, CY + 2.45, -9.4], [-0.75, CY + 2.4, -10.4], smooth(u)), [0.9, CY + 0.6, -13], 50),      // couloir vu d'en haut (3/4)
+  115: (u) => P(lerp3([0.0, Y0 + 2.5, -0.6], [0.2, Y0 + 2.45, -0.9], smooth(u)), [2.3, Y0 + 0.2, -3.3], 62),         // chambre vue du plafond
   112: (u) => P(lerp3([1.65, Y0 + 1.6, -2.4], [1.45, Y0 + 1.8, -3.1], smooth(u)), SPK_IN, 40),
 };
 const CAMS: Record<number, (u: number, f: number) => Cam> = Object.fromEntries(PLAN.map((p, i) => [i + 1, NEW[p[1]] ?? OLD[p[1]]]));

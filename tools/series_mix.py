@@ -96,22 +96,25 @@ else:
     SWELL = [(W(120), 2.0)]
 
 # ---------- grammaire commune ----------
-for j, c in enumerate(CUTS): k.whoosh(c, 0.45 + 0.25 * (j % 3 == 0))                                   # souffle sur chaque coupe
+# souffles : seulement sur les vrais changements de scène (coupe après une fin de phrase), un sur deux, discrets (retour utilisateur :
+# le souffle sur chaque coupe sonnait comme un « coup de balai » toutes les 1-2 s)
+swo = Kit(N, SR, seed=77); ends = [c for c, a in zip(CUTS, ANCH[1:]) if words[a - 1]["w"].rstrip().endswith((".", "…", "...", "?"))]
+for j, c in enumerate(ends):
+    if j % 2 == 0: swo.whoosh(c, 0.9, 0.5)
 IMPACT = [i for n_, i in enumerate(IMPACT) if n_ % 3 != 2]                                              # ~19/min au total (mesuré)
 for i in IMPACT: k.impact(W(i) - 0.02, 0.55 + 0.25 * rng.random(), 44 + 14 * rng.random())          # impacts graves
 for i in REVEAL: k.riser(W(i) - 0.05, 1.6 + 0.8 * rng.random(), 0.9); k.impact(W(i) - 0.02, 1.0, 40); k.sub_drop(W(i) - 0.02, 0.6)   # montée + coupure + impact
 k.stinger(TITLE_AT, 1.0)
 cuts_mus = [W(i) - 0.35 for i in REVEAL]
-mus = k.music(DUR, cuts=cuts_mus, swells=SWELL, quiet=QUIET)
+mus = k.music2(DUR, cuts=cuts_mus, swells=SWELL, quiet=QUIET)
 
 # ---------- niveaux (mesurés sur la référence) ----------
 def lvl(x, target):
     act = np.abs(x) > 1e-4
     return x * db(target - rms(x[act])) if act.any() else x
-bed = k._bp(np.random.default_rng(99).standard_normal(N), 4500, 9000); bed *= 0.8 + 0.2 * np.sin(2 * np.pi * 0.11 * t); fol += bed * db(-14)    # air de fond (aigus)
-hit = lvl(k.hit, vref - 5); air = lvl(k.air + fol, vref - 3); mus = lvl(mus, vref - 8)
+hit = lvl(k.hit, vref - 7); air = lvl(k.air + fol, vref - 8); air += lvl(swo.air, vref - 20); mus = lvl(mus, vref - 9)
 ph = (t * 43 / 60) % 1; sub = (np.sin(2 * np.pi * 61.74 * t) * (0.55 + 0.45 * np.exp(-ph * 3)) + 0.7 * np.sin(2 * np.pi * 30.87 * t)) * np.clip(t / 2, 0, 1) * np.clip((DUR - t) / 1.5, 0, 1)
-mus += sub * db(vref - 15 - rms(sub))                                                                    # sous-graves continus (mesurés)
+mus += sub * db(vref - 20 - rms(sub))                                                                    # sous-graves continus (mesurés)
 duck = np.ones(N)
 for w in words: duck[int(max(0, W(words.index(w)) - 0.08) * SR):int(min(DUR, E(words.index(w)) + 0.12) * SR)] = db(-3)
 mus *= np.convolve(duck, np.ones(2000) / 2000, "same")

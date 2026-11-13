@@ -35,7 +35,7 @@ export const WORDS: W[] = (RAW as W[]).map((w) => ({ ...w, s: w.s + VOICE_AT, e:
 /** premier mot de chaque plan (indice dans words.json) */
 /** plans : [premier mot, rôle] (rôle = caméra/mise en place de l'ancien découpage, ou nouvelle ≥ 200) */
 const PLAN: [number, number][] = [[0, 200], [6, 26], [12, 201], [25, 202], [40, 203], [55, 204], [69, 1], [74, 3], [75, 5], [82, 7], [89, 8], [96, 10], [98, 11], [100, 12], [109, 14],
-  [120, 15], [126, 16], [130, 17], [133, 18], [138, 19], [139, 20], [146, 21], [148, 23], [157, 24], [161, 27], [165, 205], [175, 16], [180, 206], [190, 28], [199, 29], [206, 30], [211, 31],
+  [120, 15], [126, 16], [130, 17], [133, 18], [138, 19], [139, 208], [146, 21], [148, 23], [157, 24], [161, 27], [165, 205], [175, 16], [180, 206], [190, 28], [199, 29], [206, 30], [211, 31],
   [217, 32], [223, 33], [229, 34], [234, 207], [240, 37], [244, 38]];
 const ANCH = PLAN.map((p) => p[0]);
 export const ROLE: Record<number, number> = Object.fromEntries(PLAN.map((p, i) => [i + 1, p[1]]));
@@ -126,6 +126,8 @@ const NEW: Record<number, (u: number, f: number) => Cam> = {
   204: (u) => P(lerp3([-0.55, CY + 1.6, -8.4], [-0.3, CY + 1.55, -10.4], smooth(u)), [1.2, CY + 1.25, -13], 42),
   205: (u) => P(lerp3(Hh(1.15, 1.62, -134.4), Hh(1.25, 1.62, -134.75), smooth(u)), Hh(1.5, 1.5, -136), 36, 0, 0.05, 600),
   206: (u) => P(lerp3(Hh(0, 2.6, -118), Hh(0, 2.9, -124), glide(u)), Hh(0, 4.0, STAGE_Z), 50, 0, 0.05, 600),
+  208: (u) => { const k = glide(u); return P(lerp3(Hh(4.2, 10, -94), Hh(3.4, 3.6, -96.8), k), Hh(3.0, 0.6, -99.2), 52, 0, 0.05, 600); },   // grue qui plonge sur ta mère dans la foule
+  209: (u) => P(lerp3(Hh(-5.6, 2.7, -63.7), Hh(-5.9, 2.6, -63.35), smooth(u)), Hh(-7.9, 0.6, -61.2), 52, 0, 0.05, 600),          // trois-quarts plongeant
   207: (u) => P(lerp3(Hh(-7.45, 1.15, -62.7), Hh(-7.55, 1.08, -62.35), smooth(u)), Hh(-8, 0.4, -60), 52, 0, 0.05, 600),
 };
 const CAMS: Record<number, (u: number, f: number) => Cam> = Object.fromEntries(PLAN.map((p, i) => [i + 1, NEW[p[1]] ?? OLD[p[1]]]));

@@ -467,7 +467,9 @@ export class World {
       const A = this.actors[k++]; if (!A) return;
       const d = cam.position.distanceTo(V(p[0], p[1] + 1.1 * scale, p[2])), [w, h, kk] = tierOf(d / scale);
       A.r = this.pool.req(`${key}|${JSON.stringify(fo)}`, w, h, kk, (pen: Pen) => drawChar(pen, { ...(LOOK[key] as CharSpec), ...fo, blink: !!fo.blink, look: fo.look ?? 0, wave: fo.wave ?? 0, throat: !!fo.throat }));
-      A.mesh.position.set(...p); A.mesh.up.set(0, 1, 0); A.mesh.rotation.set(lean, yaw(p), 0); A.mesh.scale.setScalar(scale); A.mesh.visible = true;
+      A.mesh.position.set(...p); A.mesh.up.set(0, 1, 0); A.mesh.rotation.set(lean, yaw(p), 0);
+      { const dy = cam.position.y - (p[1] + 1.0 * scale), hz = Math.hypot(cam.position.x - p[0], cam.position.z - p[2]);   // vue plongeante (de haut, 3/4) : la carte se tourne vers la caméra
+        if (Math.atan2(dy, hz) > 0.55) { A.mesh.up.set(0, 1, 0).applyQuaternion(cam.quaternion); A.mesh.lookAt(cam.position); A.mesh.up.set(0, 1, 0); } } A.mesh.scale.setScalar(scale); A.mesh.visible = true;
     };
     const blink = (seed: number) => (f + seed * 37) % 97 < 4;
     const lerpV = (a: V3, b: V3, w: number): V3 => [a[0] + (b[0] - a[0]) * w, a[1] + (b[1] - a[1]) * w, a[2] + (b[2] - a[2]) * w];
@@ -486,11 +488,11 @@ export class World {
     if (id === 12) { onStair("Y", 15.2 + 1.0 * u, { mode: "stand", expr: "worry" }); onStair("N", 14.8 + 1.0 * u, { mode: "stand", expr: "worry" }, 0.72); }
     if (id === 17) { place("A", Hp(-1.8, -96), { mode: "stand", expr: "calm", blink: blink(3) }); place("B", Hp(-0.7, -96.4), { mode: "stand", expr: "mute", throat: true }); place("C", Hp(0.4, -95.8), { mode: "stand", expr: "calm" }); }
     if (id === 19) place("C", Hp(-4.75, -92.5), { mode: "stand", expr: "calm", blink: u > 0.45 && u < 0.6 });
-    if (id >= 20 && id <= 22) { place("M", [3.0, HY, -99.2], { mode: "stand", expr: id === 20 ? "worry" : "calm", blink: blink(4), look: id === 20 ? -0.5 * (1 - smooth(u * 2)) : 0 }, 0.98);
+    if ((id >= 20 && id <= 22) || id === 208) { place("M", [3.0, HY, -99.2], { mode: "stand", expr: id === 20 ? "worry" : "calm", blink: blink(4), look: id === 20 ? -0.5 * (1 - smooth(u * 2)) : 0 }, 0.98);
       if (id === 22) { place("Y", Hp(2.35, -98.75), { mode: "stand", expr: "worry" }); place("N", Hp(2.75, -98.6), { mode: "stand", expr: "calm" }, 0.72); } }
     if (id === 27) for (let q = -2; q <= 2; q++) place("H", Hp(q * 1.5 - 0.12, STAGE_Z + 0.2, 3), { mode: "stand", expr: "calm" });
     if (id === 30) { onStair("H", 38.6 + 0.8 * u, { mode: "stand", expr: "calm" }); onStair("H", 37.9 + 0.8 * u, { mode: "stand", expr: "calm" }); onStair("H", 37.2 + 0.8 * u, { mode: "stand", expr: "calm" }); }
-    if (id === 31 || id === 38) { place("Y", Hp(-8.5, -61.35), { mode: "stand", expr: "worry", blink: blink(5) }); place("N", Hp(-7.95, -60.75), { mode: "stand", expr: "worry" }, 0.72); place("M", Hp(-7.25, -61.55), { mode: "stand", expr: "worry", blink: blink(6) }, 0.98); }
+    if (id === 31 || id === 38 || id === 209) { place("Y", Hp(-8.5, -61.35), { mode: "stand", expr: "worry", blink: blink(5) }); place("N", Hp(-7.95, -60.75), { mode: "stand", expr: "worry" }, 0.72); place("M", Hp(-7.25, -61.55), { mode: "stand", expr: "worry", blink: blink(6) }, 0.98); }
     if (id === 32) { onStair("H", 41.6 + 0.7 * u, { mode: "stand", expr: "calm" }); onStair("H", 40.9 + 0.7 * u, { mode: "stand", expr: "calm" }); }
     if (id === 33) place("M", Hp(-7.4 + 0.05 * Math.sin(t * 13), -61.6), { mode: "stand", expr: "worry", blink: blink(7) }, 0.98);
     if (id === 36) place("N", Hp(-8.0, -60.55), { mode: "stand", expr: "worry", blink: blink(8) }, 0.72);

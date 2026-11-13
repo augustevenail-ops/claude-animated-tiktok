@@ -248,7 +248,7 @@ export class World {
     { const sm = (w: number, h: number, d: number, x: number, y: number, z: number, m: THREE.Material) => { const o = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); o.position.set(x, y, z); this.section.add(o); return o; };
       const til = solid("tiles", "#ffffff", { map: tiles() }), black = basic("#060608");
       sm(2.9, 0.1, 2.0, 1.95, Y0 - 0.05, Z0 - 1.1, solid("lino3", "#ffffff", { map: lino() })); sm(2.9, 0.1, 2.0, 1.95, Y0 + 2.65, Z0 - 1.1, solid("ceil2", "#2b302d")); sm(2.9, 2.6, 0.1, 1.95, Y0 + 1.3, Z0 - 2.15, til);
-      sm(0.06, 3.05, 0.24, X1 + 0.13, Y0 + 1.3, Z0 - 0.04, black);                                                                   // mur coupé (porte) en noir
+      sm(0.06, 3.05, 0.34, X1 + 0.13, Y0 + 1.3, Z0 - 0.04, black);                                                                   // mur coupé (porte) en noir
       sm(0.06, 0.45, 6.6, X1 + 0.13, Y0 - 0.22, Z0 + 2.0, black); sm(0.06, 0.45, 6.6, X1 + 0.13, Y0 + 2.82, Z0 + 2.0, black);              // dalles coupées
       const ng = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.05, 0.08), basic("#d9f2ff")); ng.position.set(1.9, Y0 + 2.57, Z0 - 1.2); ng.layers.set(NOINK); this.section.add(ng); }
     // ampoule qui pend (la nuit, dans la chambre)
@@ -389,7 +389,7 @@ export class World {
       if (t > T_PUSH && t < T_PUSH + 1.6) dz += 0.008 * Math.sin((t - T_PUSH) * 14) * Math.sin(Math.PI * (t - T_PUSH) / 1.6);           // ça pousse
       this.rdoor.position.z = -4.5 + dz; this.rdoor.rotation.y = t > T_PUSH && t < T_PUSH + 1.6 ? 0.012 * Math.max(0, Math.sin((t - T_PUSH) * 14)) : 0;
       this.handle.rotation.z = t > T_HANDLE && t < T_PUSH + 1.6 ? -0.55 * smooth((t - T_HANDLE) / 2.0) : 0; }
-    this.rwall.visible = id !== 106; this.section.visible = id === 106; this.bulb.visible = t > tW(71) && c.pos[1] > 70 && c.pos[1] < 90;
+    this.rwall.visible = id !== 106 && id !== 113; this.section.visible = id === 106 || id === 113; this.bulb.visible = t > tW(71) && c.pos[1] > 70 && c.pos[1] < 90;
     this.boots.visible = t > T_BOOTS;
     for (const d of this.cdoors) { const mine = d.side > 0 && d.z === MY_DOOR_Z, neigh = d.side < 0 && d.z === -16, to = tW(210) + hash(d.z * 3 + d.side, 9) * 2.2;
       const a = mine ? 0 : id === 34 ? smooth((t - to) / 0.7) * 1.35 : neigh && id === 107 ? smooth((t - T_NEIGH) / 0.8) * 1.2 : 0; d.g.rotation.y = d.side > 0 ? a : -a; }
@@ -409,7 +409,9 @@ export class World {
       const A = this.actors[k++]; if (!A) return;
       const d = cam.position.distanceTo(V(p[0], p[1] + 1.1 * scale, p[2])), [w, h, kk] = tierOf(d / scale);
       A.r = this.pool.req(`${key}|${JSON.stringify(fo)}`, w, h, kk, (pen: Pen) => drawChar(pen, { ...(LOOK[key] as CharSpec), ...fo, blink: !!fo.blink, look: fo.look ?? 0, wave: fo.wave ?? 0, throat: !!fo.throat }));
-      A.mesh.position.set(...p); A.mesh.up.set(0, 1, 0); A.mesh.rotation.set(lean, yaw(p), 0); A.mesh.scale.setScalar(scale); A.mesh.visible = true;
+      A.mesh.position.set(...p); A.mesh.up.set(0, 1, 0); A.mesh.rotation.set(lean, yaw(p), 0);
+      { const dy = cam.position.y - (p[1] + 1.0 * scale), hz = Math.hypot(cam.position.x - p[0], cam.position.z - p[2]);   // vue plongeante (de haut, 3/4) : la carte se tourne vers la caméra
+        if (Math.atan2(dy, hz) > 0.55) { A.mesh.up.set(0, 1, 0).applyQuaternion(cam.quaternion); A.mesh.lookAt(cam.position); A.mesh.up.set(0, 1, 0); } } A.mesh.scale.setScalar(scale); A.mesh.visible = true;
     };
     const blink = (seed: number) => (f + seed * 37) % 97 < 4;
     const lerpV = (a: V3, b: V3, w: number): V3 => [a[0] + (b[0] - a[0]) * w, a[1] + (b[1] - a[1]) * w, a[2] + (b[2] - a[2]) * w];
@@ -420,7 +422,9 @@ export class World {
       place("N", NOE, { mode: "sit", expr: nE, blink: id === 12 || id === 112 ? (f % 60 < 40) : blink(2), throat: id === 3, look: id === 17 ? 0.9 : id === 20 ? 0.6 : 0 }, 0.72);
     }
     if (id === 4 || id === 5) { place("Y", YOU_WIN, { mode: "stand", expr: "talk", blink: blink(3) }); if (id === 5) place("N", NOE, { mode: "sit", expr: "mute", throat: true }, 0.72); }
-    if (id === 21) { const w = smooth(u * 1.5), w2 = smooth((u - 0.25) * 1.6);
+    if (id === 113) { place("Y", [2.75, Y0, -3.8], { mode: "stand", expr: "worry", blink: blink(12), look: -0.7 }); place("N", [2.95, Y0, -3.42], { mode: "stand", expr: "mute", look: -0.7 }, 0.72);
+      place("H", [2.7, Y0, -5.12], { mode: "stand", expr: "calm" }); place("H", [1.9, Y0, -5.6], { mode: "stand", expr: "calm" }); place("H", [3.0, Y0, -5.95], { mode: "stand", expr: "calm" }); }
+    if (id === 21 || id === 115) { const w = smooth(u * 1.5), w2 = smooth((u - 0.25) * 1.6);
       place("N", lerpV([1.6, Y0, -2.3], [2.62, Y0, -3.95], w), { mode: "stand", expr: "talk" }, 0.72); place("Y", lerpV([2.4, Y0, -2.2], [2.3, Y0, -3.6], w2), { mode: "stand", expr: "worry" }); }
     const onStair = (key: string, d: number, fo: Fo, sc = 1) => { place(key, stairAt(Math.max(0, d)), fo, sc); const m = this.actors[k - 1]?.mesh; if (m) { m.up.set(0, 1, 0).applyQuaternion(cam.quaternion); m.lookAt(cam.position); m.up.set(0, 1, 0); } };
     if (id === 100) { const lead = 2.6 + 2.4 * u; for (const [key, dd] of [["H", 0], ["B", 0.6], ["H", 1.2], ["H", 3.4], ["M", 4.1]] as [string, number][]) onStair(key, lead - dd + (dd > 2 ? 1.2 : 0), key === "H" ? { mode: "stand", expr: "calm" } : { mode: "stand", expr: "mute", throat: true }, key === "M" ? 0.98 : 1); }
@@ -435,7 +439,7 @@ export class World {
     if ([24, 27, 31].includes(id)) { place("Y", [1.6, Y0, -3.2], { mode: "stand", expr: "worry", blink: blink(4), look: id === 24 ? 0.6 : 0 }); place("N", [1.92, Y0, -3.28], { mode: "stand", expr: "mute", blink: blink(5) }, 0.72); }
     if (id === 40) { place("Y", [2.15, Y0, -3.55], { mode: "stand", expr: "worry", blink: blink(6) }); place("N", [2.5, Y0, -3.68], { mode: "stand", expr: "mute" }, 0.72); }
     // couloir : l'homme en blanc devant ta porte
-    if ([19, 26, 28, 32].includes(id)) place("H", [0.85, CY, MY_DOOR_Z + 0.15], { mode: "stand", expr: "calm" });
+    if ([19, 26, 28, 32, 114].includes(id)) place("H", [0.85, CY, MY_DOOR_Z + 0.15], { mode: "stand", expr: "calm" });
     if (id === 23) { const z = -26.6 - 2.2 * u; place("H", [-0.5, CY, z], { mode: "stand", expr: "calm" }); place("M", [0.02, CY, z - 0.5], { mode: "stand", expr: "mute", throat: true }); place("H", [0.52, CY, z - 0.2], { mode: "stand", expr: "calm" }); }
     if (id === 34) { if (u > 0.6) place("A", [1.0 - 0.4 * smooth((u - 0.6) * 2.5), CY, -10], { mode: "stand", expr: "calm" }); }
     if (id === 35) { place("A", [0.9 - 0.4 * u, CY, -16], { mode: "stand", expr: "calm" }); place("C", [-0.9 + 0.35 * u, CY, -19], { mode: "stand", expr: "calm" }); place("H", [0.1, CY, -24], { mode: "stand", expr: "calm" }); place("H", [-0.5, CY, -25], { mode: "stand", expr: "calm" }); }

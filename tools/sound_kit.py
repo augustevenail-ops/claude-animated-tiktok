@@ -79,3 +79,41 @@ class Kit:
         for c in cuts: lvl *= np.clip(np.abs(t - c - 0.15) / 0.3, 0, 1) ** 0.5 * (1 - 0.95 * ((t > c - 0.05) & (t < c + 0.35)))
         fade = np.clip(t / 1.5, 0, 1) * np.clip((dur - t) / 1.2, 0, 1)
         return (pad / (np.abs(pad).max() + 1e-9) * 0.8 + pulse * 1.0 + sh) * lvl * fade
+
+    # ---------- musique v2 (après écoute utilisateur du 2026-11-13 : la v1 était inaudible) ----------
+    def music2(self, dur, cuts=(), swells=(), quiet=(), bpm=43.0, seed=5):
+        """musique sombre et audible : accords lents en si mineur (Si m - Sol - Mi m - Fa#, 8 s chacun) en nappe de cordes
+        (médiums présents), drone grave, motif de piano feutré lent (une note toutes les 1,4 s), pulsation de basse douce.
+        cuts = coupures nettes avant les révélations ; swells = (t, durée) montées ; quiet = (t0, t1) passages très bas."""
+        SR, N = self.SR, self.N; t = np.arange(N) / SR; rng = np.random.default_rng(seed)
+        nt = lambda m: 440 * 2 ** ((m - 69) / 12)
+        CH = [(47, 50, 54), (43, 47, 50), (40, 43, 47), (42, 46, 49)]        # Si m, Sol, Mi m, Fa# (graves, voix serrées)
+        SEG = 8.0; pad = np.zeros(N); drone = np.zeros(N); pno = np.zeros(N)
+        def put(dst, sig, t0, g=1.0):
+            i = int(t0 * SR); j = min(N, i + len(sig))
+            if 0 <= i < N and j > i: dst[i:j] += sig[: j - i] * g
+        for c in range(int(dur / SEG) + 1):
+            ch = CH[c % 4]; x = np.arange(int((SEG + 2.5) * SR)) / SR; e = np.clip(np.minimum(x / 2.0, (SEG + 2.5 - x) / 2.5), 0, 1)
+            sig = np.zeros(len(x))
+            for m in ch:
+                for det in (0.998, 1.0, 1.003):
+                    f = nt(m) * det; sig += (2 * ((x * f) % 1) - 1) * (1 + 0.15 * np.sin(2 * np.pi * 5.1 * x + m))   # cordes (dents de scie + vibrato léger)
+            sig = self._sm(self._sm(sig, 22), 22)                               # filtre doux : garde les médiums, enlève l'aigre
+            put(pad, sig * e, c * SEG)
+            xd = np.arange(int((SEG + 2.5) * SR)) / SR; fd = nt(ch[0] - 12)
+            put(drone, (np.sin(2 * np.pi * fd * xd) + 0.5 * np.sin(2 * np.pi * 2 * fd * xd)) * np.clip(np.minimum(xd / 2.0, (SEG + 2.5 - xd) / 2.5), 0, 1), c * SEG)
+        per = 60 / bpm; motif = [0, 2, 1, 2, 0, 3, 1, 2]
+        for q in range(int(dur / per)):
+            ch = CH[int(q * per / SEG) % 4]; m = ch[motif[q % 8] % 3] + 12 + (12 if q % 8 == 5 else 0)
+            x = np.arange(int(2.6 * SR)) / SR; f = nt(m)
+            note = (np.sin(2 * np.pi * f * x) + 0.35 * np.sin(4 * np.pi * f * x) * np.exp(-x * 3) + 0.12 * np.sin(6 * np.pi * f * x) * np.exp(-x * 5)) * np.exp(-x * 1.6) * np.minimum(x / 0.006, 1)
+            put(pno, note, q * per + 0.02 * rng.standard_normal(), 0.55 + 0.2 * (q % 4 == 0))
+        ph = (t * bpm / 60) % 1; pulse = np.sin(2 * np.pi * nt(35) * t) * np.exp(-ph * 6)
+        pad /= np.abs(pad).max() + 1e-9; drone /= np.abs(drone).max() + 1e-9; pno /= np.abs(pno).max() + 1e-9
+        mus = pad * 0.7 + drone * 0.45 + pno * 0.4 + pulse * 0.35
+        lvl = np.ones(N)
+        for (a, b) in quiet: lvl *= 1 - 0.8 * np.clip(np.minimum((t - a) / 0.3, (b - t) / 0.3), 0, 1)
+        for (a, d) in swells: lvl *= 1 + 0.5 * np.clip((t - a) / d, 0, 1) * np.clip((a + d + 2 - t) / 2, 0, 1)
+        for c in cuts: lvl *= 1 - 0.97 * np.clip(1 - np.abs(t - (c + 0.15)) / 0.3, 0, 1) ** 0.3   # coupure nette avant la révélation
+        fade = np.clip(t / 1.5, 0, 1) * np.clip((dur - t) / 1.2, 0, 1)
+        return mus * lvl * fade
