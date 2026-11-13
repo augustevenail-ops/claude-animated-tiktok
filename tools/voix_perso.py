@@ -167,8 +167,9 @@ def tighten(x, W, tail):
     return y, [{"w": w["w"], "s": rm(w["s"]), "e": rm(w["e"])} for w in W], rm(W[-1]["e"]) + 0.1
 
 # ---------- 6. réglages légers + volume calé sur la voix d'origine ----------
-TONE = ("equalizer=f=140:t=q:w=1.1:g=2.5,equalizer=f=380:t=q:w=1.3:g=-1.5,equalizer=f=3500:t=q:w=1.6:g=0.5,"
-        "acompressor=threshold=-24dB:ratio=2.5:attack=8:release=160:makeup=1")
+# style « B + D » validé par l'utilisateur (2026-11-13) : chaud et proche + sombre et dense, sans changer la hauteur
+TONE = ("equalizer=f=110:t=q:w=0.9:g=2,lowshelf=f=160:g=2.5,equalizer=f=260:t=q:w=1.0:g=-1.5,equalizer=f=2800:t=q:w=1.2:g=1.2,"
+        "highshelf=f=6500:g=-2.5,acompressor=threshold=-27dB:ratio=3.5:attack=5:release=130:makeup=2.5,volume=3dB,asoftclip=type=tanh,volume=-3dB")
 if A.tempo != 1 or A.pitch: TONE = f"rubberband=tempo={A.tempo}:pitch={2 ** (A.pitch / 12):.5f}:formant=preserved:pitchq=quality:transients=smooth," + TONE
 narr = {}
 for k in sorted({w["seg"] for w in W}):
