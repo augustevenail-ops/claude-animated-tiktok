@@ -17,6 +17,10 @@ ap.add_argument("--end", type=float, default=0.42); ap.add_argument("--comma", t
 ap.add_argument("--pitch", type=float, default=0.0)    # demi-tons ; formants préservés (timbre naturel, pas d'effet robot)
 ap.add_argument("--text", default="")   # texte balisé à utiliser à la place de voice/text.txt (ex. réplique {merepaume}« … » ajoutée)
 ap.add_argument("--sub", default="")    # écarts de lecture assumés : « ancien>nouveau|… » appliqués au texte du narrateur
+ap.add_argument("--st", type=float, default=0.0)        # abaissement PSOLA (Praat) en demi-tons, AVANT le timbre (pas de vocodeur)
+ap.add_argument("--formant", type=float, default=1.0)  # < 1 : timbre plus ample
+ap.add_argument("--sat", type=float, default=3.0)      # attaque de la saturation douce (dB)
+ap.add_argument("--body", action="store_true")         # un peu plus de poitrine (réglage F)
 ap.add_argument("--outro", default="")   # texte de la phrase de fin (ex. « Abonne-toi pour l'épisode deux. »), lu à la fin de la prise
 A = ap.parse_args()
 SR = 48000; os.makedirs(A.out, exist_ok=True)
@@ -178,11 +182,22 @@ def tighten(x, W, tail):
 TONE = ("equalizer=f=110:t=q:w=0.9:g=2,lowshelf=f=160:g=2.5,equalizer=f=260:t=q:w=1.0:g=-1.5,equalizer=f=2800:t=q:w=1.2:g=1.2,"
         "highshelf=f=6500:g=-2.5,acompressor=threshold=-27dB:ratio=3.5:attack=5:release=130:makeup=2.5,volume=3dB,asoftclip=type=tanh,volume=-3dB")
 if A.tempo != 1 or A.pitch: TONE = f"rubberband=tempo={A.tempo}:pitch={2 ** (A.pitch / 12):.5f}:formant=preserved:pitchq=quality:transients=smooth," + TONE
+TONE = TONE.replace("volume=3dB,asoftclip=type=tanh,volume=-3dB", f"volume={A.sat}dB,asoftclip=type=tanh,volume=-{A.sat}dB") if A.sat else TONE.replace(",volume=3dB,asoftclip=type=tanh,volume=-3dB", "")
+if A.body: TONE = "lowshelf=f=130:g=2,equalizer=f=320:t=q:w=1.2:g=-1," + TONE
+F0 = None
+if A.st or A.formant != 1:
+    import parselmouth
+    from parselmouth.praat import call
+    F0 = call(parselmouth.Sound(x, SR).to_pitch(time_step=0.01, pitch_floor=60, pitch_ceiling=400), "Get quantile", 0, 0, 0.5, "Hertz")
+def grave(y):
+    if F0 is None: return y
+    z = call(parselmouth.Sound(y, SR), "Change gender", 60, 400, A.formant, F0 * 2 ** (A.st / 12), 1.0, 1.0).values[0].astype(np.float64)
+    return z[:len(y)] if len(z) >= len(y) else np.pad(z, (0, len(y) - len(z)))
 narr = {}
 for k in sorted({w["seg"] for w in W}):
     Wk = [w for w in W if w["seg"] == k]
     y, Wt, core = tighten(x, Wk, 0.15)
-    narr[k] = (ff(y, TONE), Wt, core)
+    narr[k] = (ff(grave(y), TONE), Wt, core)
 g = 10 ** ((A.lufs - lufs(np.concatenate([v[0] for kk, v in narr.items() if kk >= 0]))) / 20)
 narr = {kk: (v[0] * g, v[1], v[2]) for kk, v in narr.items()}
 from scipy.signal import butter, sosfiltfilt
