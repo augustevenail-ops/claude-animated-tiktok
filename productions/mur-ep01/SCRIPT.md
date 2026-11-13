@@ -1,43 +1,49 @@
-# Le Mur — épisode 1 : script v2 « rétention » (2026-11-13)
+# Le Mur — épisode 1 : script v3 (validé 2026-11-13) — l'enjeu, c'est toi
 
-Objectif chiffré (stats L'appel : 70 % à 1 s, 53 % à 2 s, 29 % à 10 s) : **> 65 % à 2 s, > 35 % à 10 s, > 25 % de durée moyenne**.
-Leviers : 1ʳᵉ image = la plus forte (un Long, de nuit) + texte à l'écran dès 0 s ; voix dès 0,1 s ; une question nouvelle
-toutes les 5-8 s ; boucle ouverte au début refermée au milieu (« ne bouge pas » → règle n° 2) ; compteur « VIVANTS » à l'écran
-qui crée l'anomalie 21/20 ; révélation finale + choix A/B. Voix : enregistrée par l'utilisateur (docs/VOIX.md), aucune autre voix.
-≈ 215 mots ≈ 75-80 s. Les « … » = petite pause voulue ; **gras** = mot appuyé.
+Voix : enregistrée par l'utilisateur (docs/VOIX.md). ≈ 205 mots ≈ 72 s. Objectif : > 65 % à 2 s, > 35 % à 10 s.
+Longs : ≥ 5 personnages de haut, blancs, sans visage (fente), bras plus longs que les jambes (réf. utilisateur, non versionnée).
 
 ## Script à lire
 Surtout… ne bouge pas.
-Imagine… Tu te réveilles au milieu d'un labyrinthe géant. Des murs de trente mètres. À perte de vue. Et **aucun** souvenir.
-Sur ton bras, quelqu'un a écrit au marqueur : « Ne les crois pas. » Et c'est **ton** écriture.
-Le jour, le labyrinthe dort. Mais la nuit… il change. Les murs glissent. Et les Longs sortent. Blancs. Dix mètres de haut. Sans visage.
-Ils ne courent jamais. Ils attendent que tu **bouges**.
-Au centre, une clairière. Vingt jeunes, sans souvenirs, eux aussi. Une fille, Ilse, te donne les règles.
-Règle numéro un : rentre avant la sirène. Règle numéro deux : la nuit, ne bouge plus. Règle numéro trois : si un mur porte ton nom, ne le touche **pas**.
-Sur le grand mur, des centaines de noms gravés. Tous ceux qui ne sont jamais rentrés.
-Ce soir, autour du feu, tu comptes. Vingt et un. Ilse recompte… Vingt.
-La sirène hurle. Tu ne bouges plus. Toute la nuit, quelque chose gratte contre la pierre. Juste derrière ta tête.
-Au matin, un nouveau nom est gravé sur le grand mur… Le **tien**. Et Ilse te regarde… comme si elle ne t'avait jamais vu.
-Alors, tu suis le message sur ton bras et tu fuis seul dans le labyrinthe, ou tu restes et tu leur montres ton nom ? Dis-le en commentaire.
-(fin, sur le carton titre) Abonne-toi pour l'épisode deux.
+Imagine… Tu te réveilles au milieu d'un labyrinthe géant. Des murs de trente mètres, à perte de vue. Et aucun souvenir de comment tu es arrivé là.
+Le jour, le labyrinthe est calme. Mais la nuit… il change. Les murs bougent. Et les Longs sortent. Des créatures blanches de dix mètres, sans visage. Ils ne voient rien. Ils sentent ce qui bouge.
+Au centre, une clairière. Vingt jeunes, perdus comme toi. Ils t'expliquent les deux règles pour survivre.
+Règle numéro un : avant la sirène, tout le monde rentre dans la clairière. Règle numéro deux : la nuit, ne bouge plus. Même pas un doigt.
+Sur un mur, des centaines de noms gravés. Tous ceux qui ont bougé.
+Mais toi, tu veux sortir d'ici. Alors le lendemain, tu pars seul explorer le labyrinthe. Loin. Trop loin.
+La sirène hurle.
+Tu cours. La clairière est au bout du couloir. Cinquante mètres. L'entrée commence à se refermer.
+Et entre toi et l'entrée… un Long se déplie lentement. Il tourne la tête vers toi.
+Si tu cours, il te sent. Si tu restes immobile, l'entrée se ferme, et tu passes la nuit seul dans le labyrinthe.
+Alors, tu cours vers l'entrée, ou tu restes immobile toute la nuit ? Dis-le en commentaire.
+(carton titre) Abonne-toi pour l'épisode deux.
 
-## Découpage (temps estimés, recalés ensuite sur words.json)
-| t | Voix | Image | Texte écran / son | Rôle rétention |
-|---|---|---|---|---|
-| 0,0-1,5 | Surtout… ne bouge pas. | **NUIT.** Plongée : toi minuscule entre deux murs ; derrière le mur, la tête d'un Long se lève lentement (fente blanche) | « NE BOUGE PAS » (blanc, haut) ; souffle grave + impact sourd | arrêter le défilement dès la 1ʳᵉ image |
-| 1,5 | Imagine… | **TAC** → plein jour orange : gros plan au sol sur toi, yeux qui s'ouvrent | coupure sèche, silence ½ s puis nappe | rupture = curiosité |
-| 2-9 | Tu te réveilles… aucun souvenir. | **Grand recul** : du visage, le long du mur de 30 m, puis très haut : labyrinthe sans fin jusqu'à l'horizon, brume | montée de la nappe, vent | échelle vertigineuse |
-| 9-14 | Sur ton bras… ton écriture. | Gros plan bras : « NE LES CROIS PAS » au marqueur (texte diégétique) | grincement de feutre | 1ʳᵉ énigme |
-| 14-17 | Le jour… Mais la nuit… | Vue du ciel, jour | — | annonce |
-| 17 | il change. | **TAC** nuit bleue d'un coup | interrupteur géant + ½ s de silence | choc |
-| 17-26 | Les murs glissent… sans visage. | Vu du ciel la nuit : blocs qui glissent ; silhouettes blanches qui marchent lentement entre les couloirs ; puis contre-plongée sur un Long (≥ 5 personnages) | grondement de pierre, pas lourds lointains | montrer le monstre tôt |
-| 26-29 | Ils ne courent jamais… bouges. | Un Long penché par-dessus un mur, immobile, au-dessus d'un jeune figé | cœur qui ralentit | règle du monde |
-| 29-35 | Au centre… les règles. | Clairière, feu, 20 jeunes ; Ilse s'approche | HUD : « NUIT 1 » / « VIVANTS 21 » | nouveaux personnages |
-| 35-45 | Règles 1-3 | 3 plans courts : sirène sur un poteau ; jeune figé de nuit ; un nom gravé qu'une main évite | « RÈGLE 1/2/3 » à l'écran ; la règle 2 referme le « ne bouge pas » du début | boucle refermée |
-| 45-50 | Sur le grand mur… jamais rentrés. | Travelling vertical sur un mur couvert de noms | gravures qui scintillent | poids |
-| 50-56 | Ce soir… Vingt et un. Ilse recompte… Vingt. | Plan sur les visages autour du feu, comptés un par un ; le compteur HUD hésite **21 → 20** | tic de compteur ; silence avant « Vingt » | anomalie (pic d'attention) |
-| 56-63 | La sirène… derrière ta tête. | Nuit : toi allongé, yeux ouverts ; ombre de longs doigts sur le mur derrière toi | sirène, puis grattement très proche (son spatialisé) | peur |
-| 63-70 | Au matin… Le tien. | Le grand mur au matin, zoom lent sur un nom fraîchement gravé ; **ton prénom ne s'affiche qu'au mot « tien »** | silence total puis impact | révélation |
-| 70-73 | Et Ilse te regarde… | Ilse, visage fermé, comme une inconnue | — | 2ᵉ retournement |
-| 73-80 | Alors… Dis-le en commentaire. | Toi entre le bras écrit et le mur ; cartes A « FUIR SEUL » / B « MONTRER TON NOM » | montée de tension jusqu'à la question | engagement |
-| fin | Abonne-toi pour l'épisode deux. | Carton titre « LE MUR » | — | abonnement |
+## Plans
+Format : « phrase » : ce qu'on voit, mouvement de caméra, texte/son. Temps recalés sur words.json après enregistrement.
+1. « Surtout… ne bouge pas. » : NUIT bleue. Plongée verticale sur un couloir étroit, toi minuscule figé au centre. Derrière le mur de droite, la tête lisse d'un Long monte lentement au-dessus du bord, ses longs doigts se posent sur l'arête. Descente lente vers toi. Texte « NE BOUGE PAS ». Souffle grave + impact.
+2. « Imagine… » : TAC, plein jour orange. Gros plan au sol sur ton visage allongé sur le béton, les yeux s'ouvrent. Caméra quasi fixe.
+3. « Tu te réveilles au milieu d'un labyrinthe géant. » : la caméra quitte ton visage et monte verticalement le long du mur (béton, mousse, fissures) ; tu rapetisses en bas.
+4. « Des murs de trente mètres, à perte de vue. » : passage au-dessus de l'arête puis énorme recul en montant : couloirs, blocs, labyrinthe infini jusqu'à l'horizon dans la brume, ciel orange (distance interpolée en log, plus loin que la ville de L'appel).
+5. « Et aucun souvenir de comment tu es arrivé là. » : retour au sol, plan moyen : tu te relèves et regardes autour de toi ; orbite lente de 90° autour de toi.
+6. « Le jour, le labyrinthe est calme. » : vue aérienne oblique, lumière chaude, ombres longues, poussière en suspension ; glissé latéral lent.
+7. « Mais la nuit… il change. » : même cadre qui ralentit ; sur « change », TAC : tout passe en nuit bleue d'un coup (bruit d'interrupteur géant), ½ s de silence.
+8. « Les murs bougent. » : vue du ciel la nuit : des blocs glissent au sol et ouvrent/ferment des couloirs dans la poussière ; léger zoom avant.
+9. « Et les Longs sortent. » : même vue plus proche : silhouettes blanches qui émergent et marchent lentement entre les couloirs ; la caméra descend.
+10. « Des créatures blanches de dix mètres, sans visage. » : contre-plongée au sol : un Long debout près d'un mur, un jeune minuscule à ses pieds pour l'échelle ; tilt des pieds à la tête (fente blanche).
+11. « Ils ne voient rien. Ils sentent ce qui bouge. » : la tête du Long penchée par-dessus un mur, qui pivote lentement ; en dessous, un jeune figé. Travelling avant lent sur la tête.
+12. « Au centre, une clairière. » : jour : vue aérienne qui plonge vers une clairière d'herbe au milieu des murs (cabanes, feu de camp).
+13. « Vingt jeunes, perdus comme toi. Ils t'expliquent les deux règles pour survivre. » : au sol, le groupe autour du feu, visages inquiets, toi de dos au premier plan ; glissé latéral le long du groupe.
+14. « Règle numéro un : avant la sirène, tout le monde rentre dans la clairière. » : pylône avec sirène rouillée en contre-plongée, ciel qui rougit, push-in lent ; texte « RÈGLE 1 » ; puis des jeunes qui rentrent en courant par l'entrée entre deux murs.
+15. « Règle numéro deux : la nuit, ne bouge plus. Même pas un doigt. » : nuit : jeunes allongés, figés, yeux ouverts ; gros plan sur une main qui tremble puis s'immobilise. Texte « RÈGLE 2 ».
+16. « Sur un mur, des centaines de noms gravés. Tous ceux qui ont bougé. » : travelling vertical lent vers le haut sur un mur couvert de noms, bougies au pied.
+17. « Mais toi, tu veux sortir d'ici. » : gros plan sur ton visage déterminé, regard vers un couloir.
+18. « Alors le lendemain, tu pars seul explorer le labyrinthe. Loin. Trop loin. » : 3 plans courts de toi qui marches, de plus en plus loin ; puis vue du ciel : toi minuscule, la clairière n'est plus qu'un point au loin, la lumière baisse.
+19. « La sirène hurle. » : gros plan sur la sirène qui hurle (lumière rouge tournante) ; puis toi qui sursautes ; petite secousse caméra.
+20. « Tu cours. La clairière est au bout du couloir. Cinquante mètres. » : caméra basse derrière toi qui te suit en courant ; au bout, l'entrée lumineuse ; texte « 50 m ».
+21. « L'entrée commence à se refermer. » : vue frontale de l'entrée : deux murs géants glissent l'un vers l'autre dans la poussière.
+22. « Et entre toi et l'entrée… un Long se déplie lentement. » : tu t'arrêtes net ; devant toi, une forme blanche recroquevillée se déplie et se lève jusqu'à dépasser les murs ; contre-plongée depuis ta hauteur.
+23. « Il tourne la tête vers toi. » : gros plan sur la tête, la fente pivote vers la caméra ; silence ; zoom très lent.
+24. « Si tu cours, il te sent. » : plan large de profil : toi, le Long, l'entrée derrière lui qui se ferme.
+25. « Si tu restes immobile, l'entrée se ferme, et tu passes la nuit seul dans le labyrinthe. » : gros plan sur toi figé qui respires ; puis l'entrée presque fermée, le rai de lumière qui s'amincit.
+26. « Alors, tu cours vers l'entrée, ou tu restes immobile toute la nuit ? Dis-le en commentaire. » : plan serré sur toi entre le Long et l'entrée ; cartes A « COURIR » / B « NE PAS BOUGER ».
+27. « Abonne-toi pour l'épisode deux. » : carton titre « LE MUR ».
