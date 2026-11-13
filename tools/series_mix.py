@@ -170,6 +170,23 @@ else:
          ("crowd_shuffle", W(127), -14), ("cloth_rustle", W(141), -14), ("mic_tap", W(162), -12), ("mask_breath", W(166), -12), ("pa_feedback", W(176), -16),
          ("siren_far", W(190), -20), ("mask_breath", W(219), -14), ("cloth_rustle", W(224), -14), ("heart_fast", W(236), -12), ("breath_nervous", W(237), -12), ("struggle", W(245), -12)]
 for nm, t0, g in X: cue(nm, t0, g)
+# ---- accroche sonore sur « Imagine... » (essais : HOOK=A..E ; HOOK_PREVIEW=1 -> extrait de 10 s, mix validé intact)
+HOOK = os.environ.get("HOOK", "")
+if HOOK:
+    hk = Kit(N, SR, seed=77); T1 = W(1) - 2 / 30                      # T1 = coupe vers le plan de la ville
+    if HOOK == "A":   # le haut-parleur s'allume : déclic, larsen, grésillement
+        cue("pa_click", 0.0, 0); cue("pa_feedback", 0.03, -5); cue("pa_static", 0.08, -6); hk.impact(0.03, 0.6, 46.0, 1.8)
+    elif HOOK == "B": # impact grave de bande-annonce + aspiration jusqu'à la coupe
+        hk.impact(0.03, 1.0, 40.0, 2.6); cue("sting_hit", 0.0, -4); hk.reverse(T1, 1.1, 0.7); cue("boom_low", T1, -8)
+    elif HOOK == "C": # cœur qui cogne + la tour qui grince
+        cue("heartbeat", 0.0, -2); cue("tower_groan", 0.15, -8); cue("glass_rattle", 0.7, -12); hk.thud(0.02, 0.8, 60.0)
+    elif HOOK == "D": # note aiguë qui monte jusqu'à la coupe, puis chute grave
+        cue("sting_soft", 0.0, -5); hk.riser(T1, T1, 0.9); hk.sub_drop(T1, 1.0)
+    elif HOOK == "E": # chuchotement + coup sourd + métal lointain
+        cue("whisper_voice", 0.0, -6); hk.impact(0.03, 0.8, 44.0, 2.2); cue("metal_creak_far", 0.35, -10)
+    hs = hk.hit + 0.8 * hk.air; act = np.abs(hs) > 1e-4
+    if act.any(): sfx += hs * db(vref - 9 - rms(hs[act]))
+PREVIEW = bool(os.environ.get("HOOK_PREVIEW"))
 k.stinger(TITLE_AT, 0.5)
 def lvl(x, target):
     act = np.abs(x) > 1e-4
@@ -193,6 +210,10 @@ subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "f64le", "-ar", str(SR), "-
 m = subprocess.run(["ffmpeg", "-i", pre, "-af", "loudnorm=I=-15:TP=-1.2:LRA=7:print_format=json", "-f", "null", "-"], capture_output=True, text=True).stderr
 j = json.loads(m[m.rfind("{"):])
 af = f"loudnorm=I=-15:TP=-1.2:LRA=7:measured_I={j['input_i']}:measured_TP={j['input_tp']}:measured_LRA={j['input_lra']}:measured_thresh={j['input_thresh']}:offset={j['target_offset']}:linear=true,aresample=48000"
+if PREVIEW:
+    hd = os.path.join(out, "accroches"); os.makedirs(hd, exist_ok=True)
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", pre, "-af", af, "-t", "10", "-b:a", "192k", os.path.join(hd, f"accroche_{HOOK or 'actuelle'}.mp3")], check=True); os.remove(pre)
+    print("aperçu", HOOK or "actuelle"); sys.exit(0)
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", pre, "-af", af, "-c:a", "pcm_s24le", os.path.join(out, "mix.wav")], check=True); os.remove(pre)
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", os.path.join(out, "mix.wav"), "-b:a", "192k", os.path.join(out, "mix_ecoute.mp3")])
 pub = os.path.join(ROOT, "studio", "public", SDIR); os.makedirs(pub, exist_ok=True); shutil.copy(os.path.join(out, "mix.wav"), os.path.join(pub, "mix.wav"))
