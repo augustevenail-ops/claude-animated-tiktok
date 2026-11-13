@@ -188,7 +188,7 @@ export class World {
   private wins: THREE.InstancedMesh; private winCol = new THREE.Color();
   private neons: THREE.Mesh[] = []; private neonGlow: THREE.Mesh[] = []; private lamps: { m: THREE.Mesh; side: number; z: number }[] = [];
   private greens: THREE.Mesh[] = []; private traffic!: THREE.Mesh; private ledIn!: THREE.Mesh; private spkOut!: THREE.Group; private door!: THREE.Group;
-  private fogs: THREE.Mesh[] = []; private ash: THREE.Points; private ashBase: Float32Array; private stairRed!: THREE.Mesh; private sodium!: THREE.Mesh; private sodiumBulb!: THREE.Mesh;
+  private fogs: THREE.Mesh[] = []; private halo!: THREE.Mesh; private ash: THREE.Points; private ashBase: Float32Array; private stairRed!: THREE.Mesh; private sodium!: THREE.Mesh; private sodiumBulb!: THREE.Mesh;
   private crowd: { m: THREE.InstancedMesh; pts: V3[] }[] = []; private palm!: Screen; private hallGlows: THREE.Mesh[] = []; private dust!: THREE.Points;
   private rdoor!: THREE.Group; private boots!: THREE.Group; private cdoors: { g: THREE.Group; side: number; z: number }[] = [];
   constructor() {
@@ -365,6 +365,8 @@ export class World {
     }
     // lueur derrière la porte de ta chambre (le couloir)
     { const m = new THREE.Mesh(new THREE.PlaneGeometry(2.0, 2.6), new THREE.MeshBasicMaterial({ map: glowTex("200,225,255"), transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false })); m.position.set(2.8, Y0 + 1.1, -5.4); m.layers.set(NOINK); R.add(m); }
+    this.halo = new THREE.Mesh(new THREE.PlaneGeometry(760, 900), new THREE.MeshBasicMaterial({ map: glowTex("255,175,95"), transparent: true, opacity: 0.3, fog: false, blending: THREE.AdditiveBlending, depthWrite: false }));
+    this.halo.position.set(25, 130, 45); this.halo.layers.set(NOINK); this.halo.visible = false; R.add(this.halo);   // halo chaud de la dernière tour (plan d'ouverture)
     b.build(R, true);
     const seenMat = new Set<THREE.Material>();
     R.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh || Array.isArray(m.material) || seenMat.has(m.material)) return; seenMat.add(m.material); const mt = m.material as THREE.MeshLambertMaterial;   // textures fines peintes
@@ -430,7 +432,9 @@ export class World {
     TONE.uShadeCol.value.set(L.shade[0], L.shade[1] + 0.12 * g, L.shade[2]); if (hall || deep) TONE.uShadeCol.value.set(0.3, 0.13, 0.16);
     TONE.uShadeLift.value.set(...L.lift); TONE.uLambert.value = 0.35; TONE.uSideK.value = 0.84; TONE.uTerm.value = 0.2; TONE.uBounce.value.set(0, 0, 0); TONE.uSat.value = L.sat;
     CHAR.uCharTint.value.set(L.charTint[0] * (1 - 0.25 * g), L.charTint[1] * (1 + 0.35 * g), L.charTint[2] * (1 - 0.1 * g)); if (hall || deep) CHAR.uCharTint.value.set(1.15, 0.72, 0.72); CHAR.uCharShade.value = 0.72; CHAR.uGrad.value = 0.09; CHAR.uBodyGrad.value = 0.22; CHAR.uSideTint.value.set(0.8, 0.86, 1.0);
-    const F = outside ? FOG_OUT : FOG_IN; untone(F.col, this.fog.color); this.fog.near = F.near; this.fog.far = id === 60 ? 6000 : id === 28 || id === 200 ? 4500 : F.far; if (hall) { this.fog.color.set("#160506"); this.fog.near = 12; this.fog.far = 110; } scene.fog = this.fog; scene.background = new THREE.Color(outside ? "#0b1014" : "#05070a");
+    const F = outside ? FOG_OUT : FOG_IN; untone(F.col, this.fog.color); this.fog.near = F.near; this.fog.far = id === 60 ? 5200 : id === 28 || id === 200 ? 4500 : F.far; if (hall) { this.fog.color.set("#160506"); this.fog.near = 12; this.fog.far = 110; } scene.fog = this.fog; scene.background = new THREE.Color(outside ? "#0b1014" : "#05070a");
+    if (id === 60) { this.fog.color.set("#0a1222"); this.fog.near = 260; scene.background = new THREE.Color("#060a14"); }
+    this.halo.visible = id === 60; if (id === 60) { this.halo.lookAt(cam.position); (this.halo.material as THREE.MeshBasicMaterial).opacity = 0.32 * smooth(u * 2.5); }
     for (const m of this.greens) (m.material as THREE.MeshBasicMaterial).opacity = g * 0.9;
     // fenêtres de la tour
     if (outside) {

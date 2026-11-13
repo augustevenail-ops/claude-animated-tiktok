@@ -36,8 +36,8 @@ export const WORDS: W[] = (RAW as W[]).map((w) => ({ ...w, s: w.s + VOICE_AT, e:
 /** premier mot de chaque plan (indice dans words.json) */
 const OLD_ANCH = [0, 1, 11, 14, 20, 27, 34, 37, 42, 45, 48, 53, 56, 66, 70, 74, 78, 83, 95, 101, 109, 118, 121, 129, 133, 136, 149, 157, 164, 170, 173, 181, 183, 191, 197, 202, 206, 211, 213, 218, 226];
 /** affiches des règles tenues pendant toute la phrase (consigne du 2026-11-13) : on retire les plans 13, 26 et 31 de l'ancien découpage */
-/** ouverture et plongée refaites (consigne du 2026-11-13) : plan 2 -> ville (60), plans 15 + 16 -> plongée couloir/escalier (61) */
-const PLAN: [number, number][] = OLD_ANCH.map((a, i) => [a, i + 1] as [number, number]).filter((p) => ![13, 16, 26, 31].includes(p[1]))
+/** ouverture et plongée refaites (consigne du 2026-11-13) : plan 2 -> ville (60), plans 15 + 16 + 17 -> plongée couloir/escalier (61) */
+const PLAN: [number, number][] = OLD_ANCH.map((a, i) => [a, i + 1] as [number, number]).filter((p) => ![13, 16, 17, 26, 31].includes(p[1]))
   .map((p) => [p[0], p[1] === 2 ? ROLE_CITY : p[1] === 15 ? ROLE_DIVE : p[1]] as [number, number]);
 const ANCH = PLAN.map((p) => p[0]);
 export const ROLE: Record<number, number> = Object.fromEntries(PLAN.map((p, i) => [i + 1, p[1]]));

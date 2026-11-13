@@ -14,7 +14,7 @@ const mixv = (a: V3, b: V3, u: number): V3 => [a[0] + (b[0] - a[0]) * u, a[1] + 
 /** grand recul : distance interpolée en log (vitesse perçue constante), hauteur qui monte d'abord le long de la façade */
 export const cityCam = (u: number): OpenCam => {
   const k = 0.35 * u + 0.65 * gl(u);
-  const d = 24 * Math.pow(1500 / 24, k), yaw = 0.12 + 0.55 * sm(k), y = 1.6 + 640 * Math.pow(k, 0.8);
+  const d = 24 * Math.pow(950 / 24, k), yaw = 0.12 + 0.55 * sm(k), y = 1.6 + 430 * Math.pow(k, 0.8);
   const C: V3 = [12, 0, 32];
   const pos: V3 = [C[0] + d * Math.sin(yaw), y, C[2] + d * Math.cos(yaw)];
   const look = mixv([2, 190, 2], [14, 70, 26], sm(k * 1.15));
@@ -23,7 +23,7 @@ export const cityCam = (u: number): OpenCam => {
 
 /** couloir -> porte -> plongée au centre de la cage (vide central x ∈ ±0,8, z ∈ [-33,2 ; -31,2]) : courbe de Bézier cubique */
 export const diveCam = (u: number, CY: number): OpenCam => {
-  const P0: V3 = [0.05, CY + 1.55, -21.5], P1: V3 = [0, CY + 1.5, -32.2], P2: V3 = [0, CY + 0.2, -32.2], P3: V3 = [0, CY - 27, -32.2];
+  const P0: V3 = [0.05, CY + 1.55, -21.5], P1: V3 = [0, CY + 1.5, -34.5], P2: V3 = [0, CY + 1.3, -32.2], P3: V3 = [0, CY - 27, -32.2];
   const t = 0.45 * u + 0.55 * sm(u);
   const b = (a: number, p1: number, p2: number, d: number, s: number) => { const r = 1 - s; return r * r * r * a + 3 * r * r * s * p1 + 3 * r * s * s * p2 + s * s * s * d; };
   const db = (a: number, p1: number, p2: number, d: number, s: number) => { const r = 1 - s; return 3 * r * r * (p1 - a) + 6 * r * s * (p2 - p1) + 3 * s * s * (d - p2); };
