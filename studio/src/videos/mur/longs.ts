@@ -43,22 +43,16 @@ const limbPath = (pts: P2[], ws: number[], tip = false) => {
  *  -> aucune ligne entre torse, bras et jambes (consigne utilisateur du 2026-11-13). Les formes « back » sont teintées plus sombres. */
 type Shape = { path: Path2D; back?: boolean };
 const paint = (g: CanvasRenderingContext2D, shapes: Shape[], _cx: number, band = 26) => {
-  // références v2 : volumes doux, 3 tons francs (lumière blanche à gauche, lavande, grande ombre bleu-violet à droite),
-  // contour fin, halo lumineux autour ; les bandes sont la forme moins elle-même décalée (remplissage pair-impair).
+  // UNE seule silhouette (consigne utilisateur) : toutes les formes fusionnées en un chemin, un seul contour extérieur,
+  // ombrage d'un seul tenant : lumière blanche à gauche, lavande, grande ombre bleu-violet à droite ; halo lumineux.
+  const U = new Path2D(); for (const sh of shapes) U.addPath(sh.path);
+  const sh = (dx: number) => { const q = new Path2D(); q.addPath(U, new DOMMatrix().translate(dx, 0)); return q; };
   g.save(); g.lineJoin = "round"; g.lineCap = "round";
-  g.shadowColor = "rgba(225,230,255,0.55)"; g.shadowBlur = 26;
-  for (const sh of shapes) { g.fillStyle = INK; g.fill(sh.path); }
-  g.shadowBlur = 0; g.lineWidth = OL * 2; g.strokeStyle = INK; for (const sh of shapes) g.stroke(sh.path);
-  const shift = (p: Path2D, dx: number) => { const q = new Path2D(); q.addPath(p, new DOMMatrix().translate(dx, 0)); return q; };
-  for (const sh of shapes) {
-    g.save(); g.clip(sh.path);
-    g.fillStyle = DARK; g.fill(sh.path);
-    if (!sh.back) { g.fillStyle = BODY; g.fill(shift(sh.path, -band * 1.6)); }
-    const xor = new Path2D(); xor.addPath(sh.path); xor.addPath(sh.path, new DOMMatrix().translate(band * 0.9, 0));
-    g.fillStyle = sh.back ? "rgba(248,249,255,0.3)" : LIT; g.fill(xor, "evenodd");
-    g.restore();
-  }
-  g.restore();
+  g.shadowColor = "rgba(225,230,255,0.55)"; g.shadowBlur = 26; g.fillStyle = INK; g.fill(U);
+  g.shadowBlur = 0; g.lineWidth = OL * 2; g.strokeStyle = INK; g.stroke(U);
+  g.save(); g.clip(U); g.fillStyle = DARK; g.fill(U);
+  g.clip(sh(-band * 1.6)); g.fillStyle = LIT; g.fill(U); g.fillStyle = BODY; g.fill(sh(band * 0.9));
+  g.restore(); g.restore();
 };
 const hand = (x: number, y: number, ang: number, len: number, back = false): Shape[] =>
   ([[-0.3, 0.7], [0, 1], [0.3, 0.6]] as [number, number][]).map(([da, k]) => { const a = ang + da;
@@ -69,7 +63,12 @@ const head = (g: CanvasRenderingContext2D, x: number, y: number, rx: number, ry:
   g.beginPath(); g.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2); g.fillStyle = BODY; g.fill();
   g.save(); g.clip(); g.fillStyle = DARK; g.beginPath(); g.ellipse(rx * 0.45, ry * 0.2, rx * 0.75, ry, 0, 0, Math.PI * 2); g.fill(); g.restore();
   g.lineWidth = OL; g.strokeStyle = INK; g.beginPath(); g.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2); g.stroke();
-  void turn;                                                          // visage lisse, sans yeux ni bouche (consigne utilisateur : plus inquiétant)
+  { const sx = turn * rx * 0.45, w = rx * (0.62 - 0.2 * Math.abs(turn)), y0 = ry * 0.32, n = 7;   // bouche en zigzag anguleux, irrégulière (consigne utilisateur)
+    let seed = 7; const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+    const top: number[][] = [], bot: number[][] = [];
+    for (let i = 0; i <= n; i++) { const x = sx - w + (2 * w * i) / n; top.push([x, y0 + (i % 2 ? 1 : -1) * ry * (0.06 + 0.07 * rnd())]); bot.push([x, y0 + ry * 0.16 + (i % 2 ? -1 : 1) * ry * (0.05 + 0.07 * rnd())]); }
+    g.beginPath(); top.forEach((p, i) => (i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1]))); for (let i = n; i >= 0; i--) g.lineTo(bot[i][0], bot[i][1]); g.closePath();
+    g.fillStyle = "#0b0a10"; g.fill(); g.lineJoin = "miter"; g.lineWidth = 1.5; g.strokeStyle = "#0b0a10"; g.stroke(); }
   g.restore();
 };
 type Sk = { head: P2; neck: P2; chest: P2; waist: P2; hip: P2; shL: P2; elL: P2; haL: P2; shR: P2; elR: P2; haR: P2; knL: P2; ftL: P2; knR: P2; ftR: P2 };
@@ -85,13 +84,13 @@ export const drawLong = (p: Pen, s: LongSpec) => {
   const g = p.g, turn = s.turn ?? 0; g.save();
   const bend = (a: P2, b: P2, out: number): P2 => { const m = lp(a, b, 0.5), dx = b[0] - a[0], dy = b[1] - a[1], d = Math.hypot(dx, dy) || 1; return [m[0] - dy / d * out, m[1] + dx / d * out]; };
   if (s.pose === "peek") {                                            // vu de face par-dessus le mur : le corps s'arrête net à l'arête
-    const C = PEEK_CUT;
-    paint(g, [{ back: true, path: limbPath([[350, 290], [392, C - 6], [404, 560], [396, 760], [388, 830]], [40, 30, 23, 18, 13]) }, ...hand(388, 830, 1.62, 50, true)], 300);
-    g.save(); g.beginPath(); g.rect(0, 0, 600, C); g.clip();
-    paint(g, [{ path: limbPath([[300, 170], [302, 245], [303, 300], [300, 380], [300, 470]], [16, 60, 118, 90, 90]) }, headShape(300, 140, 30, 40, 0.12)], 300);
-    g.restore();
-    paint(g, [{ path: limbPath([[252, 290], [206, C - 6], [196, 560], [204, 760], [212, 840]], [70, 54, 44, 36, 28]) }, ...hand(212, 840, 1.52, 52)], 300);
-    head(g, 300, 140, 30, 40, 0.12, turn); g.restore(); return;
+    const C = PEEK_CUT;                                               // une seule silhouette : torse coupé net à l'arête, 2 bras qui retombent le long du mur
+    paint(g, [
+      { path: limbPath([[300, 175], [300, 225], [302, 262], [302, 320], [300, C]], [20, 36, 150, 190, 200]) }, headShape(300, 140, 38, 50, 0.12),
+      { path: limbPath([[236, 282], [196, C - 10], [190, 560], [198, 760], [206, 850]], [74, 60, 48, 38, 30]) }, ...hand(206, 850, 1.52, 80),
+      { path: limbPath([[364, 282], [404, C - 10], [410, 560], [402, 760], [394, 840]], [70, 56, 46, 36, 28]) }, ...hand(394, 840, 1.62, 76),
+    ], 300);
+    head(g, 300, 140, 38, 50, 0.12, turn); g.restore(); return;
   }
   let k: Sk = STAND;
   if (s.pose === "crouch" || s.unfold !== undefined) k = mixSk(CROUCH, STAND, smoothT(s.unfold ?? 0));
@@ -104,8 +103,7 @@ export const drawLong = (p: Pen, s: LongSpec) => {
   paint(g, [
     { back: true, path: limbPath([k.shR, bend(k.shR, k.elR, -10), k.elR, bend(k.elR, k.haR, -14), k.haR], [70, 54, 44, 36, 28]) }, ...hand(k.haR[0], k.haR[1], Math.atan2(k.haR[1] - k.elR[1], k.haR[0] - k.elR[0]), 80, true),
     { back: true, path: limbPath([hR, bend(hR, k.knR, -8), k.knR, k.ftR], [112, 86, 52, 30], true) },
-  ], k.chest[0]);
-  paint(g, [
+
     { path: limbPath([lp(k.neck, k.head, 0.7), k.neck, lp(k.neck, k.chest, 0.45), k.chest, lp(k.chest, k.waist, 0.5), k.waist, k.hip, [k.hip[0], k.hip[1] + 40]], [20, 34, 130, 196, 176, 150, 190, 150]) },
     { path: limbPath([hL, bend(hL, k.knL, 8), k.knL, k.ftL], [122, 92, 56, 30], true) },
     { path: limbPath([k.shL, bend(k.shL, k.elL, 10), k.elL, bend(k.elL, k.haL, 14), k.haL], [78, 60, 48, 40, 30]) }, ...hand(k.haL[0], k.haL[1], Math.atan2(k.haL[1] - k.elL[1], k.haL[0] - k.elL[0]), 84),

@@ -67,7 +67,6 @@ export const drawPerson = (p: Pen, s: Person) => {
   const hg = g.createRadialGradient(cx - 10, hy - 6, 4, cx, hy, R); hg.addColorStop(0, "#ffffff"); hg.addColorStop(0.45, "#f6f6f7"); hg.addColorStop(0.85, "#dcdde2"); hg.addColorStop(1, "#b9bac3");
   g.beginPath(); g.arc(cx, hy, R, 0, 7); g.fillStyle = hg; g.fill();
   g.save(); g.beginPath(); g.arc(cx, hy, R, 0, 7); g.clip();
-  g.fillStyle = "rgba(60,60,72,0.16)"; g.fillRect(cx - R, hy + R * 0.5, 2 * R, R);                  // bande d'ombre sous le visage (lumière du dessus)
   g.globalAlpha = 0.6; g.fillStyle = "#ffffff"; g.beginPath(); g.ellipse(cx - 8, hy + 2, R * 0.4, R * 0.32, 0, 0, 7); g.fill();
   g.globalAlpha = 0.9; g.beginPath(); g.ellipse(cx + R * 0.55, hy - R * 0.1, 5, 7, 0, 0, 7); g.fill(); g.globalAlpha = 1; g.restore();
   // ---- cheveux (casque-bol, aplat + léger reflet)
