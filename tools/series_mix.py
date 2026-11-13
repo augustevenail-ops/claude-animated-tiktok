@@ -171,7 +171,7 @@ else:
          ("siren_far", W(190), -20), ("mask_breath", W(219), -14), ("cloth_rustle", W(224), -14), ("heart_fast", W(236), -12), ("breath_nervous", W(237), -12), ("struggle", W(245), -12)]
 for nm, t0, g in X: cue(nm, t0, g)
 # ---- accroche sonore sur « Imagine... » (essais : HOOK=A..E ; HOOK_PREVIEW=1 -> extrait de 10 s, mix validé intact)
-HOOK = os.environ.get("HOOK", "")
+HOOK = os.environ.get("HOOK", "D")   # D validée par l'utilisateur le 2026-11-13
 if HOOK:
     hk = Kit(N, SR, seed=77); T1 = W(1) - 2 / 30                      # T1 = coupe vers le plan de la ville
     if HOOK == "A":   # le haut-parleur s'allume : déclic, larsen, grésillement
