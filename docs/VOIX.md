@@ -89,3 +89,8 @@ Puis vidéo : copier `words.json` dans `studio/src/videos/<ep>/` et `mix.wav` da
 - **Décision finale (2026-11-13)** : on garde le timbre **B + D sans aucun abaissement** (réglage des ép. 1 et 2 de *L'appel*).
   Essais rejetés : −1 demi-ton rubberband (robotique), PSOLA −0,7 demi-ton ± formants, intonation « conteur » (--range/--enddrop),
   variantes lissées. Les options `--st --formant --range --enddrop --slow --onepass --soft --body` restent dans l'outil, **désactivées par défaut**.
+
+> Ménage 2026-11-13 : outils de l'ancienne chaîne ElevenLabs (`tts_episode`, `voice_edit/fall/gap/patch/splice/tighten`) et planches d'essai
+> (`voix_grave/effets/variantes`) supprimés ; les réglages décrits plus haut restent la référence. Chaîne actuelle : `voix_transcrire.py`
+> → `voix_perso.py` → `series_mix.py` (répliques d'autres rôles : `tts_roles.py`/`tts_outro.py`, cache `voice/_seg`).
+> **Voix des ép. 2-3 de L'appel (finale)** : F3 = `--st -0.7 --formant 0.97 --body --sat 1.5` ; musique : couche de tension (`TENSION=1`, défaut).
