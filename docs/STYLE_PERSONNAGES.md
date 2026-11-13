@@ -64,3 +64,28 @@ Blancs, contour/ombre sombres, **un mot clé en jaune (#f2c14e)** par groupe. (N
 - Lumière qui change en cours de plan : même cadre blanc froid -> rouge alarme (dortoir), heure qui défile dans le HUD (06:00 -> 21:29 -> 02:06).
 - Puits vu d'en dessous : rayons de lumière, poussière, mains et traits de comptage gravés sur la paroi.
 - HUD variante : « ÉPISODE 5 » rouge + horloge + « NIVEAU 31 », à droite « PLACES 4 112 / 4 112 ».
+
+## Fiche de reproduction complète (validée par l'utilisateur, 2026-11-13) — remplace les images de référence
+### Humains (`studio/src/videos/mur/people.ts`)
+- Carte 2D 600 x 1000, sol y = 975. Contour #221e1d, 11 px constant. Tête cercle R = 122 en (300, 196) : dégradé radial #fff -> #f6f6f7 -> #dcdde2 -> #b9bac3,
+  reflet ovale blanc 60 % au centre + petite tache blanche à droite. **Aucune ombre de barbe** (réservée aux personnages barbus).
+- Cheveux casque-bol : frange droite à hy - 4, pans jusqu'à hy + 44 (bob) ; reflet radial chaud (255,240,215,0.42) sur le dessus.
+- Yeux : ovales noirs 9 x 13 (peur : 7 x 10) à ±38 px, ey = hy + 30, mini-reflet blanc ; cernes violets (112,84,150) si peur/fatigue ;
+  sourcils épais (9 px) inclinés pour inquiétude/peur ; bouche tiret 12 px à hy + 72, « o » pour peur/choc, arc pour soulagement.
+- Col blanc rectangulaire ; torse 150 x 274 coins 30, dégradé latéral (1.1 -> 1 -> 0.78), taches d'usure, côtes tricotées en bas, fermeture ;
+  capuche = bourrelet foncé (0.78) autour du col ; bras tubes 40 px couleur du sweat, mains ronds blancs R = 31 ; jambes tubes 40 px, chaussures ovales brun foncé.
+- Toi : sweat #d4533e, jean #4b5165, chaussures #3a2a24, cheveux #3b2b25. Jeunes : pics #2a2220 / queue de cheval #a07850 / chignon #c9c3b8 / frange #24201f.
+### Les Longs (`studio/src/videos/mur/longs.ts`)
+- ~5 personnages de haut (LONG_K = 5.1), **très longilignes** (torse ~100 px de large sur 600), UNE seule silhouette (aucun trait intérieur),
+  contour fin #3a3d58 2,4 px, halo (225,230,255,0.55) flou 26 ; ombrage 3 tons : lumière #f8f9ff à gauche, lavande #cfd1f2, ombre #9396d8 à droite.
+- Non éclairés par la scène (lumineux d'eux-mêmes). Peau de porcelaine : reflets brillants + fines fissures noires (corps et crâne).
+- Tête œuf 38 x 50 sur long cou, **sans yeux** ; bouche = un seul trait noir en zigzag anguleux irrégulier, qui peut s'ouvrir en fente noire trop large.
+- Mains à **7 longs doigts** effilés ; pose « peek » : main à plat sur l'arête du mur, doigts qui passent par-dessus et tapotent.
+- Comportements : tête penchée par moments, pivot de tête visible, doigts qui tapotent, ombre au sol qui s'allonge avant l'apparition,
+  parfois vus en partie (main, tête), parfois en entier (échelle). Son : sifflement de serpent qui se balade (`Kit.long_hiss`), craquements d'os.
+### Image, texte, son
+- Décors validés (labyrinthe, clairière) ; jour orange / nuit bleue (TAC) / crépuscule rouge sirène (`mur/look.ts`).
+- Sous-titres : Montserrat 900, 84 px à 1920, blanc, contour noir 5 px + ombre, 1-3 mots, **mot prononcé en orange #FF9A3C** + léger grossissement ;
+  marges latérales 120 px (zone sûre TikTok). HUD Bebas Neue en haut à 120 px des bords. Cartes A/B vert / rouge.
+- Un détail vivant **différent** à chaque plan (pas seulement de la poussière) : gestes des figurants, ombre qui monte sur le visage, flammes, etc.
+- Son : voix perso F3, musique -1/4 + couche de tension, accroche D, bruitages -4 dB, sirène douce, effet sonore au passage « épisode 1 -> 2 ».
