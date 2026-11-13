@@ -39,3 +39,10 @@ Blancs, contour/ombre sombres, **un mot clé en jaune (#f2c14e)** par groupe. (N
 - **Monstres et échelle** : main géante qui agrippe l'arête d'un immeuble (doigts épais, articulations en angle, 2 tons + traits fins de plis),
   géant à quatre pattes qui passe la tête au coin d'une tour, fenêtre dorée lumineuse au milieu d'une façade froide.
 - Vue d'en bas d'une tour dans la brume avec un soleil-halo ; contre-jours. Escalier derrière une grille cadenassée.
+
+## Compléments (4ᵉ série)
+- Personnages minuscules **dans la paume** d'une main géante (doigts arrondis, plis fins aux phalanges, 2 tons) : échelle extrême lisible.
+- Géant qui escalade une façade, coupe de tour en vue latérale (étages comme une maison de poupée, une seule pièce éclairée).
+- Toi bras levés de joie / bras tendus, marche (jambes écartées), ombre de contact douce au sol sous les personnages.
+- Lumière : couloir d'ampoules / soleil-halo au bout d'une perspective infinie ; fenêtre dorée avec silhouette noire.
+- Le HUD (compteur d'étage) **change pendant les plans** (3 → 11 → 27 → 36 → 68) : encore du mouvement à l'écran.
