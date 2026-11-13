@@ -7,7 +7,7 @@
 // Dessin 600 x 1000, sol à y = 975 (compatible Pool/Actor).
 import type { Pen } from "../bridge/toon";
 
-const INK = "#17161c", OL = 11;
+const INK = "#221e1d", OL = 11;
 export type Pose = "stand" | "reach" | "armsUp" | "handMouth" | "run";
 export type Expr = "calm" | "worry" | "fear" | "shock" | "tired" | "relief" | "frown";
 export type Person = {
@@ -47,7 +47,14 @@ export const drawPerson = (p: Pen, s: Person) => {
   // ---- de dos : capuche = grand bourrelet sur le haut du dos (derrière la tête)
   if (s.hood && s.back) { g.beginPath(); g.ellipse(cx, top + 34, 98, 84, 0, 0, 7); g.fillStyle = shade(J, 0.8); g.fill(); stroke(g); }
   // ---- torse
-  rrect(g, cx - tw / 2, top, cx + tw / 2, hip, 30); g.fillStyle = J; g.fill(); stroke(g);
+  rrect(g, cx - tw / 2, top, cx + tw / 2, hip, 30);
+  { const cg = g.createLinearGradient(cx - tw / 2, 0, cx + tw / 2, 0); cg.addColorStop(0, shade(J, 1.1)); cg.addColorStop(0.55, J); cg.addColorStop(1, shade(J, 0.78)); g.fillStyle = cg; g.fill();
+    g.save(); g.clip(); g.fillStyle = shade(J, 0.72); g.globalAlpha = 0.28;                      // texture : taches d'usure, côtes du bas
+    for (const [x, y, rx, ry] of [[-30, 120, 16, 22], [34, 200, 12, 16], [-10, 230, 9, 12], [40, 70, 10, 13], [-44, 190, 8, 10]]) { g.beginPath(); g.ellipse(cx + x, top + y, rx, ry, 0.3, 0, 7); g.fill(); }
+    g.globalAlpha = 0.45; g.strokeStyle = shade(J, 0.62); g.lineWidth = 3; for (let k = 0; k < 12; k++) { const x = cx - tw / 2 + 8 + k * (tw - 16) / 11; g.beginPath(); g.moveTo(x, hip - 30); g.lineTo(x, hip); g.stroke(); }
+    g.globalAlpha = 1; g.restore(); }
+  g.beginPath(); g.moveTo(cx - tw / 2, hip - 32); g.lineTo(cx + tw / 2, hip - 32); g.strokeStyle = shade(J, 0.55); g.lineWidth = 4; g.stroke();
+  rrect(g, cx - tw / 2, top, cx + tw / 2, hip, 30); stroke(g);
   if (!s.back) { g.strokeStyle = shade(J, 0.6); g.lineWidth = 5; g.beginPath(); g.moveTo(cx + 4, top + 40); g.lineTo(cx + 4, hip - 10); g.stroke(); }
   // ---- de face : capuche = bourrelet foncé en U autour du col
   if (s.hood && !s.back) { g.beginPath(); g.ellipse(cx, top + 14, 84, 46, 0, 0, 7); g.fillStyle = shade(J, 0.78); g.fill(); stroke(g);
@@ -59,7 +66,10 @@ export const drawPerson = (p: Pen, s: Person) => {
   // ---- tête : sphère nacrée (reflet net au centre, bord gris)
   const hg = g.createRadialGradient(cx - 10, hy - 6, 4, cx, hy, R); hg.addColorStop(0, "#ffffff"); hg.addColorStop(0.45, "#f6f6f7"); hg.addColorStop(0.85, "#dcdde2"); hg.addColorStop(1, "#b9bac3");
   g.beginPath(); g.arc(cx, hy, R, 0, 7); g.fillStyle = hg; g.fill();
-  g.globalAlpha = 0.55; g.fillStyle = "#ffffff"; g.beginPath(); g.ellipse(cx - 6, hy + 4, R * 0.42, R * 0.34, 0, 0, 7); g.fill(); g.globalAlpha = 1;
+  g.save(); g.beginPath(); g.arc(cx, hy, R, 0, 7); g.clip();
+  g.fillStyle = "rgba(60,60,72,0.16)"; g.fillRect(cx - R, hy + R * 0.5, 2 * R, R);                  // bande d'ombre sous le visage (lumière du dessus)
+  g.globalAlpha = 0.6; g.fillStyle = "#ffffff"; g.beginPath(); g.ellipse(cx - 8, hy + 2, R * 0.4, R * 0.32, 0, 0, 7); g.fill();
+  g.globalAlpha = 0.9; g.beginPath(); g.ellipse(cx + R * 0.55, hy - R * 0.1, 5, 7, 0, 0, 7); g.fill(); g.globalAlpha = 1; g.restore();
   // ---- cheveux (casque-bol, aplat + léger reflet)
   const hc = s.hairColor;
   if (s.hair !== "bald") {
@@ -72,7 +82,8 @@ export const drawPerson = (p: Pen, s: Person) => {
       g.quadraticCurveTo(cx - R * 0.8, fr + 4, cx - R * 0.86, side); g.closePath();
     } else { g.moveTo(cx - R, hy - 18); g.lineTo(cx - R, hy - R); g.lineTo(cx + R, hy - R); g.lineTo(cx + R, hy - 18); g.quadraticCurveTo(cx, hy - 62, cx - R, hy - 18); }
     g.fill(); g.strokeStyle = INK; g.lineWidth = OL; g.stroke();
-    g.globalAlpha = 0.18; g.strokeStyle = "#ffffff"; g.lineWidth = 9; g.beginPath(); g.arc(cx - 10, hy - 10, R * 0.78, Math.PI * 1.15, Math.PI * 1.45); g.stroke(); g.globalAlpha = 1;
+    { const gl = g.createRadialGradient(cx, hy - R * 0.55, 4, cx, hy - R * 0.45, R * 0.75); gl.addColorStop(0, "rgba(255,240,215,0.42)"); gl.addColorStop(1, "rgba(255,240,215,0)");
+      g.fillStyle = gl; g.fill(); }                                                               // reflet doux sur le casque de cheveux
     g.restore();
   } else {                                                            // chauve : 2 touffes grises sur les côtés
     for (const sx of [-1, 1]) { g.beginPath(); g.ellipse(cx + sx * R * 0.86, hy - 4, 22, 34, sx * 0.3, 0, 7); g.fillStyle = hc; g.fill(); stroke(g); }
@@ -94,6 +105,7 @@ export const drawPerson = (p: Pen, s: Person) => {
       const rx = s.expr === "fear" || s.expr === "shock" ? 7 : 9, ry = s.expr === "fear" ? 10 : 13;
       g.beginPath(); g.ellipse(x, ey, rx, ry, 0, 0, 7); g.fill();
       g.fillStyle = "#ffffff"; g.beginPath(); g.arc(x - 2.5, ey - 5, 2.4, 0, 7); g.fill(); g.fillStyle = INK;
+      if (s.expr === "worry" || s.expr === "fear") { g.save(); g.lineWidth = 9; g.beginPath(); g.moveTo(x + sx * 16, ey - 24); g.lineTo(x - sx * 8, ey - 34); g.stroke(); g.restore(); }
       if (s.expr === "frown") { g.beginPath(); g.moveTo(x - sx * 16, ey - 24); g.lineTo(x + sx * 10, ey - 30); g.stroke(); }
     }
     const mx = cx + lx * 0.8, my = hy + 72;

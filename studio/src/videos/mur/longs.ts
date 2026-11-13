@@ -62,9 +62,7 @@ const head = (g: CanvasRenderingContext2D, x: number, y: number, rx: number, ry:
   g.beginPath(); g.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2); g.fillStyle = BODY; g.fill();
   g.save(); g.clip(); g.fillStyle = DARK; g.beginPath(); g.ellipse(rx * 0.45, ry * 0.2, rx * 0.75, ry, 0, 0, Math.PI * 2); g.fill(); g.restore();
   g.lineWidth = OL; g.strokeStyle = INK; g.beginPath(); g.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2); g.stroke();
-  const sx = turn * rx * 0.5;                                          // visage : 2 petits points + bouche « o » (style v2)
-  g.fillStyle = "#101018"; for (const d of [-1, 1]) { g.beginPath(); g.arc(sx + d * rx * 0.24, ry * 0.05, rx * 0.085, 0, 7); g.fill(); }
-  g.beginPath(); g.ellipse(sx, ry * 0.42, rx * 0.07, rx * 0.1, 0, 0, 7); g.fill();
+  void turn;                                                          // visage lisse, sans yeux ni bouche (consigne utilisateur : plus inquiétant)
   g.restore();
 };
 type Sk = { head: P2; neck: P2; chest: P2; waist: P2; hip: P2; shL: P2; elL: P2; haL: P2; shR: P2; elR: P2; haR: P2; knL: P2; ftL: P2; knR: P2; ftR: P2 };
