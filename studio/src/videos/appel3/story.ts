@@ -40,7 +40,7 @@ const PLAN: [number, number][] = [[0, 200], [6, 26], [12, 201], [25, 202], [40, 
 const ANCH = PLAN.map((p) => p[0]);
 export const ROLE: Record<number, number> = Object.fromEntries(PLAN.map((p, i) => [i + 1, p[1]]));
 const starts = ANCH.map((wi, i) => (i === 0 ? 0 : WORDS[wi].s - 2 / FPS));
-export const TITLE_DUR = 2.0;
+export const TITLE_DUR = 2.8;
 export const END_T = WORDS[WORDS.length - 1].e + 1.6 + TITLE_DUR;
 export const TITLE_AT = END_T - TITLE_DUR;
 export type ShotDef = { id: number; a: number; b: number };

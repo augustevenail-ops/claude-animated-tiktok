@@ -80,7 +80,9 @@ export const ChoiceCards: React.FC<{ t: number; at: number; a: string; b: string
 };
 
 // ---------------- carton final ----------------
-export const TITLE_DUR = 2.0;
+export const TITLE_DUR = 2.8;
+/** instant (après le début du carton) où « ÉPISODE N » devient « ÉPISODE N+1 » en rouge, calé sur le mot « épisode » de la phrase de fin */
+export const FLIP_AFTER = 1.3;
 export const TitleCard: React.FC<{ t: number; at: number; title: string; episode: number }> = ({ t, at, title, episode }) => {
   if (t < at) return null;
   const k = Math.min(1, (t - at) / 0.2);
@@ -93,7 +95,9 @@ export const TitleCard: React.FC<{ t: number; at: number; title: string; episode
       <div style={{ position: "absolute", left: 513, top: 640, width: 54, height: 66, background: "#8ff0b0", boxShadow: "0 0 60px 30px rgba(110,240,160,0.35), 0 0 12px rgba(200,255,220,0.9)" }} />
       <div style={{ position: "absolute", left: 0, right: 0, top: 760, textAlign: "center", fontFamily: BEBAS, fontSize: 250, lineHeight: 1, color: "#ece6da", letterSpacing: 2,
         textShadow: "0 8px 0 rgba(0,0,0,0.35), 0 12px 30px rgba(0,0,0,0.6)" }}>{title}</div>
-      <div style={{ position: "absolute", left: 0, right: 0, top: 1030, textAlign: "center", fontFamily: MONT, fontWeight: 800, fontSize: 52, letterSpacing: 16, color: "#b9bdd8" }}>ÉPISODE {episode}</div>
+      {(() => { const fl = t - at - FLIP_AFTER, on = fl >= 0, pop = on ? 1 + 0.18 * Math.exp(-fl * 9) : 1;
+        return <div style={{ position: "absolute", left: 0, right: 0, top: 1030, textAlign: "center", fontFamily: MONT, fontWeight: 800, fontSize: 52, letterSpacing: 16,
+          color: on ? "#ff4a3d" : "#b9bdd8", transform: `scale(${pop})`, textShadow: on ? "0 0 24px rgba(255,74,61,0.55)" : "none" }}>ÉPISODE {on ? episode + 1 : episode}</div>; })()}
     </div>
   );
 };

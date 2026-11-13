@@ -162,3 +162,31 @@ class Kit:
         for c in silences: lvl *= 1 - np.clip(1 - np.abs(t - c) / 0.28, 0, 1) ** 0.25 * 0.97             # silence net autour de c
         fade = np.clip(t / 1.2, 0, 1) * np.clip((dur - t) / 0.8, 0, 1)
         return tone * lvl * fade, sw * lvl, hb * lvl, ru * lvl
+
+    # ---------- musique v4 (2026-11-13, consigne utilisateur : « inquiétante mais légère, quelques notes qui changent de temps en temps,
+    # des notes assez longues, pas trop fortes ») ----------
+    def music4(self, dur, dips=(), seed=4):
+        """longues notes tenues (5-8 s) en si mineur, deux voix douces (sinus + triangle légèrement désaccordés, attaque lente),
+        une note aiguë lointaine de temps en temps ; dips = instants où la musique s'efface brièvement (avant une révélation)."""
+        SR, N = self.SR, self.N; t = np.arange(N) / SR; rng = np.random.default_rng(seed)
+        nt = lambda m: 440 * 2 ** ((m - 69) / 12)
+        def put(dst, sig, t0, g=1.0):
+            i = int(t0 * SR); j = min(N, i + len(sig))
+            if 0 <= i < N and j > i: dst[i:j] += sig[: j - i] * g
+        def voice(m, d, a=1.6, r=2.4):
+            x = np.arange(int((d + r) * SR)) / SR; f = nt(m)
+            tri = lambda ff: 2 * np.abs(2 * ((x * ff) % 1) - 1) - 1
+            s = np.sin(2 * np.pi * f * x) * 0.7 + tri(f * 1.002) * 0.25 + np.sin(2 * np.pi * f * 0.5 * x) * 0.25
+            return s * np.clip(np.minimum(x / a, (d + r - x) / r), 0, 1) * (1 + 0.06 * np.sin(2 * np.pi * 0.3 * x))
+        low = [47, 47, 43, 45, 47, 42, 43, 42]                                 # si, si, sol, la, si, fa#, sol, fa# (graves)
+        up = [54, 50, 55, 52, 54, 49, 50, 54]                                  # tierces / quintes au-dessus
+        mus = np.zeros(N); tt = 0.0; q = 0
+        while tt < dur:
+            d = 5.5 + 2.5 * rng.random()
+            put(mus, voice(low[q % 8], d), tt, 0.8); put(mus, voice(up[q % 8], d * 0.9, 2.2, 2.6), tt + 0.8, 0.45)
+            if q % 2 == 1: put(mus, voice(up[q % 8] + 12 + (3 if q % 4 == 3 else 0), 3.5, 1.2, 3.0), tt + 2.5, 0.22)   # note aiguë lointaine
+            tt += d; q += 1
+        lvl = np.ones(N)
+        for c in dips: lvl *= 1 - 0.75 * np.clip(1 - np.abs(t - c) / 0.5, 0, 1)
+        fade = np.clip(t / 2.0, 0, 1) * np.clip((dur - t) / 1.5, 0, 1)
+        return mus / (np.abs(mus).max() + 1e-9) * lvl * fade
