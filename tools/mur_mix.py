@@ -19,13 +19,13 @@ sp = np.zeros(N, bool)
 for w in words: sp[int((w["s"] + OFF) * SR):min(N, int((w["e"] + OFF) * SR))] = True
 rms = lambda x: 20 * np.log10(np.sqrt(np.mean(x ** 2)) + 1e-9); vref = rms(voice[sp])
 def lvl(x, target): a = np.abs(x) > 1e-5; return x * db(target - rms(x[a])) if a.any() else x
-k = Kit(N, SR, seed=21); sfx = np.zeros(N); LIB = os.path.join(ROOT, "productions", "sfx_lib"); _c = {}
+k = Kit(N, SR, seed=21); sfx = np.zeros(N); SFX_DB = -4.0; LIB = os.path.join(ROOT, "productions", "sfx_lib"); _c = {}   # SFX_DB : bruitages 4 dB plus bas (retour utilisateur)
 def cue(name, t0, g=-10.0, dur=None):
     if name not in _c: _c[name] = dec(os.path.join(LIB, name + ".mp3"))
     x = _c[name] if dur is None else _c[name][: int(dur * SR)]
     a = np.abs(x) > 1e-3
     if not a.any(): return
-    x = x * db(vref + g - rms(x[a])); i = int(t0 * SR); j = min(N, i + len(x))
+    x = x * db(vref + g + SFX_DB - rms(x[a])); i = int(t0 * SR); j = min(N, i + len(x))
     if 0 <= i < N: sfx[i:j] += x[: j - i]
 # ---- accroche D (validée) : note qui monte jusqu'à « Imagine », chute grave ; + coup sourd sur « ne bouge pas »
 T1 = W(4) - 2 / 30
@@ -57,7 +57,7 @@ if a.any(): mus = mus + ten * db(vref - 5 - rms(ten[a])) * 0.75
 duck = np.ones(N)
 for i in range(len(words)): duck[int(max(0, W(i) - 0.08) * SR):int(min(DUR, E(i) + 0.12) * SR)] = db(-2.5)
 mus *= np.convolve(duck, np.ones(2000) / 2000, "same")
-hs = k.hit + 0.8 * k.air; hit = lvl(hs, vref - 9)
+hs = k.hit + 0.8 * k.air; hit = lvl(hs, vref - 13)
 o = dec(os.path.join(VD, "outro.wav")); j0 = int((TITLE_AT + 0.05) * SR); voice[j0:j0 + len(o)] += o[: max(0, N - j0)] * db(vref - rms(o[np.abs(o) > 1e-3]))
 mix = np.stack([voice + mus + hit + sfx, voice + mus * 0.97 + hit + sfx * 0.92], 1)
 pre = os.path.join(VD, "_pre.wav")

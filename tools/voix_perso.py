@@ -104,7 +104,7 @@ def onset(t, lo):
     i = int(t * SR / H); stop = max(int(lo * SR / H), i - int(1.2 * SR / H), 0)
     if not voiced[max(0, i - 12):i + 12].any():                 # Whisper a placé le mot dans le silence qui suit : on remonte jusqu'à la voix
         while i > stop and not voiced[i]: i -= 1
-    while i > stop and voiced[max(0, i - 12):i].any(): i -= 1
+    while i > stop and voiced[max(0, i - 30):i].any(): i -= 1
     j = i                                                       # puis on avance jusqu'à la vraie attaque (pas le souffle)
     while j < min(n - 3, i + int(0.35 * SR / H)) and not voiced[j:j + 3].all(): j += 1
     return max(lo, j * H / SR - 0.035)
