@@ -7,7 +7,7 @@ from sound_kit import Kit
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 EP = os.path.join(ROOT, "productions", "mur-ep01"); VD = os.path.join(EP, "voix_perso")
-SR = 48000; OFF = 0.35; TITLE = 2.8
+SR = 48000; OFF = 0.15; TITLE = 2.8          # voix dès 0,15 s (retour utilisateur)
 words = json.load(open(os.path.join(VD, "words.json"), encoding="utf-8"))
 DUR = round(words[-1]["e"] + OFF + 0.35 + TITLE, 2); N = int(DUR * SR); TITLE_AT = DUR - TITLE
 W = lambda i: words[i]["s"] + OFF
@@ -47,6 +47,8 @@ cue("metal_creak_far", W(162), -8); k.impact(W(163), 0.7, 42.0, 2.0)            
 cue("breath_nervous", W(167), -10); cue("sting_hit", W(170), -8)                          # il tourne la tête
 cue("heartbeat", W(179), -9, 6.0); cue("tower_groan", W(183), -10)
 k.stinger(TITLE_AT, 0.5)
+FLIP = TITLE_AT + 0.9                                                                     # le 1 devient 2 sur le carton (FLIP_AFTER, overlay.tsx)
+k.reverse(FLIP, 0.35, 0.5); cue("lock_click", FLIP - 0.01, -6); cue("sting_hit", FLIP, -12)
 # ---- musique douce (-1/4) + tension qui suit l'histoire
 REVEAL = [2, 41, 47, 102, 119, 140, 163, 172, 194]
 mus = k.music4(DUR, dips=[W(i) - 0.25 for i in REVEAL], transpose=12)

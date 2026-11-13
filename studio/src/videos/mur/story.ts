@@ -22,7 +22,7 @@ export const YOU_RUN_Z = 66;                              // là où tu t'arrêt
 
 // ---------------- temps (voix) ----------------
 import RAW from "./words.json";
-export const VOICE_AT = 0.35;
+export const VOICE_AT = 0.15;   // voix dès 0,15 s (= OFF de tools/mur_mix.py)
 export type W = { w: string; s: number; e: number; q?: number; role?: string };
 export const WORDS: W[] = (RAW as W[]).map((w) => ({ ...w, s: w.s + VOICE_AT, e: w.e + VOICE_AT }));
 /** premier mot de chaque plan (indice dans words.json) -> rôle (caméra + mise en place) */
