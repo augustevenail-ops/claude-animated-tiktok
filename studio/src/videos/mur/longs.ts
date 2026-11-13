@@ -65,9 +65,13 @@ const paint = (g: CanvasRenderingContext2D, shapes: Shape[], _cx: number, band =
 const CRACK_GLOSS: number[][] = [[284, 300, 6, 22], [240, 640, 4, 16], [284, 610, 4, 18]];
 const CRACKS: P2[][] = [[[318, 286], [330, 314], [322, 330], [338, 362], [332, 380]], [[330, 314], [348, 322]], [[282, 470], [270, 492], [280, 506], [268, 530]],
   [[364, 600], [378, 622], [372, 640]], [[300, 700], [312, 724], [304, 742], [318, 770]], [[200, 420], [192, 446], [204, 462]]];
-const hand = (x: number, y: number, ang: number, len: number, back = false): Shape[] =>
-  ([[-0.3, 0.7], [0, 1], [0.3, 0.6]] as [number, number][]).map(([da, k]) => { const a = ang + da;
-    return { back, path: limbPath([[x - Math.cos(ang) * 6, y - Math.sin(ang) * 6], [x + Math.cos(a) * len * k * 0.55, y + Math.sin(a) * len * k * 0.55], [x + Math.cos(a + da * 0.4) * len * k, y + Math.sin(a + da * 0.4) * len * k]], [24, 15, 4], true) }; });
+/** main à 7 longs doigts effilés, en éventail (consigne utilisateur) */
+const hand = (x: number, y: number, ang: number, len: number, back = false): Shape[] => {
+  const out: Shape[] = [{ back, path: limbPath([[x - Math.cos(ang) * 10, y - Math.sin(ang) * 10], [x + Math.cos(ang) * len * 0.18, y + Math.sin(ang) * len * 0.18]], [30, 34]) }];
+  for (let i = 0; i < 7; i++) { const da = (i - 3) * 0.16, k = 1 - Math.abs(i - 3) * 0.09, a = ang + da, bx = x + Math.cos(ang) * len * 0.15, by = y + Math.sin(ang) * len * 0.15;
+    out.push({ back, path: limbPath([[bx, by], [bx + Math.cos(a) * len * k * 0.5, by + Math.sin(a) * len * k * 0.5], [bx + Math.cos(a + da * 0.5) * len * k, by + Math.sin(a + da * 0.5) * len * k]], [10, 7, 2.5], true) }); }
+  return out;
+};
 const headShape = (x: number, y: number, rx: number, ry: number, tilt: number): Shape => { const p = new Path2D(); p.ellipse(x, y, rx, ry, tilt, 0, Math.PI * 2); return { path: p }; };
 const head = (g: CanvasRenderingContext2D, x: number, y: number, rx: number, ry: number, tilt: number, turn: number, mouth = 0) => {
   g.save(); g.translate(x, y); g.rotate(tilt);
@@ -103,12 +107,14 @@ export const drawLong = (p: Pen, s: LongSpec) => {
   if (s.pose === "peek") {                                            // vu de face par-dessus le mur : le corps s'arrête net à l'arête
     const C = PEEK_CUT;                                               // une seule silhouette : torse coupé net à l'arête, 2 bras qui retombent le long du mur
     const tp = s.tap ?? 0;
-    const fingers: Shape[] = [0, 1, 2, 3].map((i) => { const x = 372 + i * 22, lift = Math.max(0, Math.sin(tp * Math.PI * 2 - i * 0.9)) * 26;   // doigts posés sur l'arête, qui tapotent
-      return { path: limbPath([[x, C - 22], [x + 4, C - 4 - lift * 0.4], [x + 6, C + 44 - lift]], [20, 16, 6], true) }; });
+    // main posée à plat sur l'arête du mur (référence : main géante agrippée au toit) : paume large, 7 doigts qui passent par-dessus et retombent
+    const palm: Shape = { path: limbPath([[372, C - 40], [420, C - 26], [470, C - 14], [500, C - 6]], [34, 46, 52, 48]) };
+    const fingers: Shape[] = [...Array(7)].map((_, i) => { const x = 452 + i * 16, ln = 64 + (i === 3 ? 22 : 14 - Math.abs(i - 3) * 6), lift = Math.max(0, Math.sin(tp * Math.PI * 2 - i * 0.7)) * 22;
+      return { path: limbPath([[x - 4, C - 10], [x + 4, C - 4], [x + 8, C + 14 - lift * 0.3], [x + 6, C + ln - lift]], [14, 13, 11, 4], true) }; });
     paint(g, [
       { path: limbPath([[300, 175], [300, 225], [302, 262], [302, 320], [300, C]], [14, 22, 84, 100, 104]) }, headShape(300, 140, 38, 50, 0.12 + xt),
-      { path: limbPath([[258, 278], [236, C - 10], [230, 560], [236, 760], [240, 850]], [44, 36, 30, 24, 18]) }, ...hand(240, 850, 1.55, 80),
-      { path: limbPath([[342, 278], [378, 300], [400, C - 26], [392, C - 18]], [42, 36, 30, 28]) }, ...fingers,
+      { path: limbPath([[258, 278], [236, C - 10], [230, 560], [236, 760], [240, 850]], [44, 36, 30, 24, 18]) }, ...hand(240, 850, 1.55, 90),
+      { path: limbPath([[340, 272], [350, 300], [362, C - 50], [380, C - 38]], [42, 38, 34, 32]) }, palm, ...fingers,
     ], 300);
     head(g, 300, 140, 38, 50, 0.12 + xt, turn, mo); g.restore(); SHADOW = false; return;
   }
