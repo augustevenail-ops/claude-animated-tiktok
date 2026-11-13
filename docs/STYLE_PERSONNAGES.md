@@ -46,3 +46,13 @@ Blancs, contour/ombre sombres, **un mot clé en jaune (#f2c14e)** par groupe. (N
 - Toi bras levés de joie / bras tendus, marche (jambes écartées), ombre de contact douce au sol sous les personnages.
 - Lumière : couloir d'ampoules / soleil-halo au bout d'une perspective infinie ; fenêtre dorée avec silhouette noire.
 - Le HUD (compteur d'étage) **change pendant les plans** (3 → 11 → 27 → 36 → 68) : encore du mouvement à l'écran.
+
+## Compléments (5ᵉ série)
+- **Coiffures = identité** (toujours aplat + contour) : frange-casque, mèche sur un œil, pics, chignon, couettes/macarons, queue de cheval,
+  cheveux gris plaqués avec raie ; couleurs brun foncé, châtain clair, gris. Vêtements en tons doux (bleu ciel, beige, gris) pour la foule.
+- **Expressions par 1 trait** : sourcil oblique (méfiance/colère), yeux fermés en arc (soulagement), petit sourire, bouche « o », moustache.
+- Poses : agenouillé qui soulève quelqu'un, assis par terre jambes tendues, bras levés, accroupi ; personnages **assis en rangées** avec un
+  ticket numéroté dans la main (textes diégétiques).
+- Foule : figurants plus petits, plus clairs et légèrement **flous** au fond (profondeur de champ forte), personnage net au premier plan.
+- Monstre en gros plan : **un œil réaliste injecté de sang** derrière ses doigts (rupture de style volontaire = choc) ; fissure sur la peau.
+- Objet lumineux tenu près du visage (lune, lampe) : halo doré qui éclaire le personnage par en dessous.
