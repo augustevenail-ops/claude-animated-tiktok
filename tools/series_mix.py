@@ -95,19 +95,66 @@ else:
     QUIET = [(W(138) - 0.1, W(139) + 0.3), (W(206), W(211))]
     SWELL = [(W(120), 2.0)]
 
-# ---------- musique v4 + bruitages de situation (consigne utilisateur du 2026-11-13) ----------
-# musique légère et inquiétante (longues notes), qui s'efface brièvement avant les révélations ; bruitages discrets mais
-# perceptibles, uniquement liés à ce qu'on voit / entend dans l'histoire (définis plus haut par épisode) ; phrase de fin sur le titre.
+# ---------- musique v4 (plus forte) + bruitages réels (bibliothèque ElevenLabs, tools/sfx_gen.py) placés par situation ----------
 SIL = REVEAL
+k.hit[:] = 0; k.air[:] = 0; fol[:] = 0
 mus = k.music4(DUR, dips=[W(i) - 0.25 for i in SIL])
+LIBD = os.path.join(ROOT, "productions", "sfx_lib"); _cache = {}
+def smp(name):
+    if name not in _cache:
+        _cache[name] = np.frombuffer(subprocess.run(["ffmpeg", "-v", "error", "-i", os.path.join(LIBD, name + ".mp3"), "-ac", "1", "-ar", str(SR), "-f", "f32le", "-"], capture_output=True).stdout, np.float32).astype(float)
+    return _cache[name]
+sfx = np.zeros(N)
+def cue(name, t0, gdb=-10.0):
+    x = smp(name); act = np.abs(x) > 1e-3
+    if not act.any(): return
+    put(sfx, x * db(vref + gdb - rms(x[act])), t0)
+def amb(name, a, b, gdb=-24.0):
+    x = smp(name); x = x * db(vref + gdb - rms(x[np.abs(x) > 1e-3])); L = len(x); fadeN = int(0.8 * SR); tt = a
+    while tt < b:
+        seg = x.copy(); seg[:fadeN] *= np.linspace(0, 1, fadeN); seg[-fadeN:] *= np.linspace(1, 0, fadeN); put(sfx, seg[: int((b - tt + 0.8) * SR)], tt); tt += L / SR - 0.8
+def heart(a, b, gdb=-15.0): amb("heartbeat", a, b, gdb)
+if EPN == 1:
+    amb("wind_city", 0.3, W(149), -27); cue("gasp_teen", 0.05, -7)
+    cue("pa_static", W(13) - 0.1, -11); cue("pa_chime", W(42) - 1.0, -11); cue("pa_click", W(42) - 0.15, -12)
+    for i in (53, 133, 170): cue("boom_low", W(i) - 0.05, -11)
+    cue("boots_approach", W(70), -15); cue("steel_door", W(74), -12); cue("sting_soft", W(78), -12)
+    cue("sting_hit", W(129) - 0.05, -9); heart(W(130), W(149), -15)
+    cue("lights_cascade", W(149), -12); cue("lights_cascade", W(156), -11); cue("buzzer", W(163), -13)
+    cue("sting_soft", W(181), -12); cue("neon_flicker", W(121), -20)
+    for i in (197, 206): cue("pa_static", W(i) - 0.55, -12); cue("pa_click", W(i) - 0.12, -12)
+    cue("beep_ok", E(205) + 0.05, -12); heart(W(211), W(226) + 2.5, -13); cue("sting_soft", W(226), -13)
+elif EPN == 2:
+    amb("wind_city", 0.3, W(71), -27); cue("boom_low", W(1), -13); cue("boots_approach", W(13), -16); cue("steel_door", W(20), -12); cue("sting_soft", W(25), -14)
+    cue("pa_click", W(62) - 0.25, -12); cue("pa_static", W(62) - 0.6, -13); cue("beep_ok", E(67) + 0.05, -11)
+    cue("pa_static", W(75) - 0.1, -12); cue("pa_click", W(80), -12); cue("boom_low", W(81) - 0.05, -11)
+    cue("knock3", W(96) + 0.02, -6); cue("whisper_voice", W(101), -17); cue("sting_soft", W(103), -13)
+    cue("gasp_boy", W(110), -7); cue("sting_soft", W(121), -14)
+    cue("sting_hit", W(135), -12); heart(W(136), W(150), -15)
+    cue("handle_turn", W(143) - 0.1, -6); cue("gasp_boy", W(149) + 0.35, -8)
+    cue("door_slam_body", W(152) - 0.05, -5); cue("door_push", W(157), -6); cue("gasp_boy", W(160) + 0.2, -10)
+    cue("door_open_creak", W(163), -13); cue("door_slam_far", W(169) - 0.05, -8); cue("buzzer", W(176), -14)
+    cue("whisper_voice", W(180), -16); cue("sting_hit", W(187), -10)
+    cue("door_open_creak", W(211), -16); cue("door_slam_far", W(213) + 0.6, -17); cue("door_open_creak", W(214), -18)
+    cue("lights_cascade", W(217), -12); heart(W(222), W(242) + 2.5, -14); cue("sting_soft", W(235), -12)
+else:
+    amb("wind_city", 0.3, W(96), -28); amb("hall_ambience", W(120), TITLE_AT, -22); amb("crowd_breath", W(126), W(161), -17)
+    cue("boom_low", W(0) + 0.3, -13); cue("pa_chime", W(7) - 0.4, -12); cue("boots_approach", W(13), -16); cue("steel_door", W(20), -12)
+    cue("sting_soft", W(25), -14); cue("whisper_voice", W(58), -16); cue("door_open_creak", W(69) - 0.1, -8)
+    cue("sting_soft", W(74), -12); cue("neon_flicker", W(75), -16); cue("steel_door", W(83), -10); cue("boom_low", W(89), -12)
+    cue("steps_stairs", W(96), -10); cue("steps_stairs", W(100) + 1.0, -12); cue("boom_low", W(109) - 0.05, -11)
+    cue("sting_hit", W(120) - 0.05, -11); cue("sting_soft", W(138), -14); cue("gasp_boy", W(146) + 0.3, -9)
+    cue("finger_skin", W(152), -8); cue("boom_low", W(161) - 0.05, -10); cue("pa_static", W(190) - 0.3, -14); cue("sting_hit", W(199), -12)
+    cue("boots_approach", W(207), -15); cue("sting_soft", W(211), -14); cue("vent_air", W(229), -13)
+    heart(W(234), TITLE_AT, -14); cue("boots_approach", W(240), -8); cue("gasp_boy", W(243), -10)
 k.stinger(TITLE_AT, 0.5)
 def lvl(x, target):
     act = np.abs(x) > 1e-4
     return x * db(target - rms(x[act])) if act.any() else x
-mus = lvl(mus, vref - 15)                                                 # légère
-hit = lvl(k.hit, vref - 11); air = lvl(k.air + fol, vref - 12)           # perceptibles, pas trop forts
+mus = lvl(mus, vref - 9)                                                  # musique nettement audible (retour utilisateur)
+hit = lvl(k.hit, vref - 12); air = sfx                                    # coup final du titre + bruitages déjà calés en niveau
 duck = np.ones(N)
-for w in words: duck[int(max(0, W(words.index(w)) - 0.08) * SR):int(min(DUR, E(words.index(w)) + 0.12) * SR)] = db(-3)
+for w in words: duck[int(max(0, W(words.index(w)) - 0.08) * SR):int(min(DUR, E(words.index(w)) + 0.12) * SR)] = db(-2.5)
 mus *= np.convolve(duck, np.ones(2000) / 2000, "same")
 ou = os.path.join(EP, "voice", "outro.wav")                               # « Abonne-toi pour l'épisode N+1 »
 if os.path.exists(ou):
@@ -127,4 +174,4 @@ subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", pre, "-af", af, "-c:a", "pc
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", os.path.join(out, "mix.wav"), "-b:a", "192k", os.path.join(out, "mix_ecoute.mp3")])
 pub = os.path.join(ROOT, "studio", "public", SDIR); os.makedirs(pub, exist_ok=True); shutil.copy(os.path.join(out, "mix.wav"), os.path.join(pub, "mix.wav"))
 e = subprocess.run(["ffmpeg", "-i", os.path.join(out, "mix.wav"), "-af", "ebur128=peak=true", "-f", "null", "-"], capture_output=True, text=True).stderr
-print(f"ép. {EPN} : durée {DUR} s, {len(SIL)} respirations de la musique |", " | ".join(l.strip() for l in e[e.rfind('Summary:'):].splitlines() if l.strip().startswith(("I:", "Peak:"))))
+print(f"ép. {EPN} : durée {DUR} s, bruitages réels |", " | ".join(l.strip() for l in e[e.rfind('Summary:'):].splitlines() if l.strip().startswith(("I:", "Peak:"))))
