@@ -80,7 +80,7 @@ const RING: [string, number][] = [["A", 0.2], ["B", 0.95], ["C", 1.7], ["D", 2.4
 export class World {
   root = new THREE.Group();
   sun: THREE.DirectionalLight; private hemi: THREE.HemisphereLight; private fog = new THREE.Fog("#000", 10, 100);
-  private pool = new Pool(); private actors: Actor[] = []; private longs: Actor[] = [];
+  private pool = new Pool(); private actors: Actor[] = []; private longs: Actor[] = []; private longMats: THREE.MeshBasicMaterial[] = [];
   private sky: THREE.Mesh; private skyMaps: THREE.Texture[]; private doors: THREE.Mesh[] = []; private movers: { m: THREE.Mesh; x: number; z: number; ax: "x" | "z" }[] = [];
   private fireGlow: THREE.Mesh; private sirenGlow: THREE.Mesh; private sirenLamp: THREE.Mesh; private candles: THREE.Mesh[] = []; private moon: THREE.Mesh; private sunDisc: THREE.Mesh;
   constructor() {
@@ -243,6 +243,9 @@ export class World {
     for (; kl < this.longs.length; kl++) this.longs[kl].mesh.visible = false;
     this.pool.flush();
     for (const a of [...this.actors, ...this.longs]) if (a.mesh.visible) a.bind();
+    this.longs.forEach((a, i) => { if (!a.mesh.visible) return;                 // les Longs brillent d'eux-mêmes (références : géants lumineux, non éclairés)
+      const m = (this.longMats[i] ??= new THREE.MeshBasicMaterial({ alphaTest: 0.5, side: THREE.DoubleSide, fog: true }));
+      m.map = a.mat.map; m.color.setRGB(1.05, 1.05, 1.1); a.mesh.material = m; });
     return focus;
   }
 }

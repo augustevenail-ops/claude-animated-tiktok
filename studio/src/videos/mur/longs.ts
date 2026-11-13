@@ -4,9 +4,9 @@
 // ombre douce d'un côté. Dessin dans l'espace 600 x 1000 (sol à y = 975), carte agrandie ~5x dans le monde (≈ 11 m).
 import type { Pen } from "../bridge/toon";
 
-const INK = "#2a2c40", OL = 3.5;
+const INK = "#3a3d58", OL = 2.4;
 // style v2 : cel-shading 2 tons (clair blanc-lavande / ombre bleu-violet), contour fin, aucun trait intérieur
-const BODY = "#e9eaf7", LIT = "#f6f6fc", DARK = "#9599cf";
+const BODY = "#cfd1f2", LIT = "#f8f9ff", DARK = "#9396d8";
 export type LongPose = "stand" | "lean" | "crouch" | "walk" | "peek";
 /** « peek » : vu de face, tête et épaules au-dessus du mur, bras qui pendent le long de la paroi ; le corps s'arrête net à PEEK_CUT (= arête du mur) */
 export const PEEK_CUT = 385;
@@ -42,20 +42,27 @@ const limbPath = (pts: P2[], ws: number[], tip = false) => {
 /** silhouette d'un seul tenant : toutes les formes d'abord en encre élargie (contour extérieur unique), puis remplies sans trait
  *  -> aucune ligne entre torse, bras et jambes (consigne utilisateur du 2026-11-13). Les formes « back » sont teintées plus sombres. */
 type Shape = { path: Path2D; back?: boolean };
-const paint = (g: CanvasRenderingContext2D, shapes: Shape[], _cx: number, band = 22) => {
+const paint = (g: CanvasRenderingContext2D, shapes: Shape[], _cx: number, band = 26) => {
+  // références v2 : volumes doux, 3 tons francs (lumière blanche à gauche, lavande, grande ombre bleu-violet à droite),
+  // contour fin, halo lumineux autour ; les bandes sont la forme moins elle-même décalée (remplissage pair-impair).
   g.save(); g.lineJoin = "round"; g.lineCap = "round";
-  for (const sh of shapes) { g.fillStyle = INK; g.fill(sh.path); g.lineWidth = OL * 2; g.strokeStyle = INK; g.stroke(sh.path); }
-  // aplat clair puis bande d'ombre franche côté droit (= forme moins elle-même décalée vers la droite)
+  g.shadowColor = "rgba(225,230,255,0.55)"; g.shadowBlur = 26;
+  for (const sh of shapes) { g.fillStyle = INK; g.fill(sh.path); }
+  g.shadowBlur = 0; g.lineWidth = OL * 2; g.strokeStyle = INK; for (const sh of shapes) g.stroke(sh.path);
+  const shift = (p: Path2D, dx: number) => { const q = new Path2D(); q.addPath(p, new DOMMatrix().translate(dx, 0)); return q; };
   for (const sh of shapes) {
-    g.fillStyle = sh.back ? DARK : BODY; g.fill(sh.path);
-    if (sh.back) continue;
-    g.save(); g.clip(sh.path); g.fillStyle = DARK; g.fill(sh.path); g.translate(-band, 0); g.fillStyle = BODY; g.fill(sh.path); g.restore();
+    g.save(); g.clip(sh.path);
+    g.fillStyle = DARK; g.fill(sh.path);
+    if (!sh.back) { g.fillStyle = BODY; g.fill(shift(sh.path, -band * 1.6)); }
+    const xor = new Path2D(); xor.addPath(sh.path); xor.addPath(sh.path, new DOMMatrix().translate(band * 0.9, 0));
+    g.fillStyle = sh.back ? "rgba(248,249,255,0.3)" : LIT; g.fill(xor, "evenodd");
+    g.restore();
   }
   g.restore();
 };
 const hand = (x: number, y: number, ang: number, len: number, back = false): Shape[] =>
   ([[-0.3, 0.7], [0, 1], [0.3, 0.6]] as [number, number][]).map(([da, k]) => { const a = ang + da;
-    return { back, path: limbPath([[x - Math.cos(ang) * 6, y - Math.sin(ang) * 6], [x + Math.cos(a) * len * k * 0.55, y + Math.sin(a) * len * k * 0.55], [x + Math.cos(a + da * 0.4) * len * k, y + Math.sin(a + da * 0.4) * len * k]], [16, 9, 2], true) }; });
+    return { back, path: limbPath([[x - Math.cos(ang) * 6, y - Math.sin(ang) * 6], [x + Math.cos(a) * len * k * 0.55, y + Math.sin(a) * len * k * 0.55], [x + Math.cos(a + da * 0.4) * len * k, y + Math.sin(a + da * 0.4) * len * k]], [24, 15, 4], true) }; });
 const headShape = (x: number, y: number, rx: number, ry: number, tilt: number): Shape => { const p = new Path2D(); p.ellipse(x, y, rx, ry, tilt, 0, Math.PI * 2); return { path: p }; };
 const head = (g: CanvasRenderingContext2D, x: number, y: number, rx: number, ry: number, tilt: number, turn: number) => {
   g.save(); g.translate(x, y); g.rotate(tilt);
@@ -66,8 +73,8 @@ const head = (g: CanvasRenderingContext2D, x: number, y: number, rx: number, ry:
   g.restore();
 };
 type Sk = { head: P2; neck: P2; chest: P2; waist: P2; hip: P2; shL: P2; elL: P2; haL: P2; shR: P2; elR: P2; haR: P2; knL: P2; ftL: P2; knR: P2; ftR: P2 };
-const STAND: Sk = { head: [300, 112], neck: [300, 230], chest: [302, 310], waist: [300, 420], hip: [300, 520], shL: [244, 272], elL: [222, 570], haL: [214, 915], shR: [356, 272], elR: [378, 570], haR: [386, 915],
-  knL: [282, 745], ftL: [278, 972], knR: [318, 745], ftR: [324, 972] };
+const STAND: Sk = { head: [300, 100], neck: [300, 210], chest: [302, 300], waist: [300, 410], hip: [300, 510], shL: [222, 268], elL: [190, 560], haL: [196, 880], shR: [378, 268], elR: [410, 560], haR: [404, 880],
+  knL: [262, 745], ftL: [262, 972], knR: [338, 745], ftR: [342, 972] };
 const CROUCH: Sk = { head: [338, 640], neck: [320, 680], chest: [305, 730], waist: [292, 800], hip: [290, 860], shL: [282, 712], elL: [205, 840], haL: [160, 972], shR: [322, 712], elR: [405, 840], haR: [440, 972],
   knL: [240, 720], ftL: [235, 972], knR: [350, 715], ftR: [360, 972] };
 const LEAN: Sk = { head: [478, 238], neck: [440, 262], chest: [390, 300], waist: [310, 400], hip: [262, 540], shL: [418, 272], elL: [478, 520], haL: [470, 840], shR: [440, 286], elR: [530, 470], haR: [565, 740],
@@ -83,7 +90,7 @@ export const drawLong = (p: Pen, s: LongSpec) => {
     g.save(); g.beginPath(); g.rect(0, 0, 600, C); g.clip();
     paint(g, [{ path: limbPath([[300, 170], [302, 245], [303, 300], [300, 380], [300, 470]], [16, 60, 118, 90, 90]) }, headShape(300, 140, 30, 40, 0.12)], 300);
     g.restore();
-    paint(g, [{ path: limbPath([[252, 290], [206, C - 6], [196, 560], [204, 760], [212, 840]], [52, 38, 30, 23, 16]) }, ...hand(212, 840, 1.52, 52)], 300);
+    paint(g, [{ path: limbPath([[252, 290], [206, C - 6], [196, 560], [204, 760], [212, 840]], [70, 54, 44, 36, 28]) }, ...hand(212, 840, 1.52, 52)], 300);
     head(g, 300, 140, 30, 40, 0.12, turn); g.restore(); return;
   }
   let k: Sk = STAND;
@@ -91,19 +98,19 @@ export const drawLong = (p: Pen, s: LongSpec) => {
   if (s.pose === "lean") k = LEAN;
   if (s.pose === "walk") { const sw = Math.sin((s.step ?? 0) * Math.PI * 2);
     k = { ...STAND, knL: [282 + 24 * sw, 745], ftL: [278 + 50 * sw, 972], knR: [318 - 24 * sw, 745], ftR: [324 - 50 * sw, 972], elL: [236 - 16 * sw, 560], haL: [226 - 44 * sw, 905], elR: [366 + 16 * sw, 560], haR: [376 + 44 * sw, 905] }; }
-  const hR: P2 = [k.hip[0] + 18, k.hip[1] - 10], hL: P2 = [k.hip[0] - 18, k.hip[1] - 10];
+  const hR: P2 = [k.hip[0] + 44, k.hip[1] - 10], hL: P2 = [k.hip[0] - 44, k.hip[1] - 10];
   const tilt = Math.atan2(k.head[1] - k.neck[1], k.head[0] - k.neck[0]) + Math.PI / 2, ht = s.pose === "lean" ? tilt * 0.55 : tilt * 0.3;
   // membres du fond (plus sombres), puis le corps d'un seul tenant : cou + torse + bassin + jambe avant + bras avant + tête
   paint(g, [
-    { back: true, path: limbPath([k.shR, bend(k.shR, k.elR, -10), k.elR, bend(k.elR, k.haR, -14), k.haR], [52, 38, 30, 23, 16]) }, ...hand(k.haR[0], k.haR[1], Math.atan2(k.haR[1] - k.elR[1], k.haR[0] - k.elR[0]), 50, true),
-    { back: true, path: limbPath([hR, bend(hR, k.knR, -8), k.knR, k.ftR], [80, 62, 42, 26], true) },
+    { back: true, path: limbPath([k.shR, bend(k.shR, k.elR, -10), k.elR, bend(k.elR, k.haR, -14), k.haR], [70, 54, 44, 36, 28]) }, ...hand(k.haR[0], k.haR[1], Math.atan2(k.haR[1] - k.elR[1], k.haR[0] - k.elR[0]), 80, true),
+    { back: true, path: limbPath([hR, bend(hR, k.knR, -8), k.knR, k.ftR], [112, 86, 52, 30], true) },
   ], k.chest[0]);
   paint(g, [
-    { path: limbPath([lp(k.neck, k.head, 0.7), k.neck, k.chest, k.waist, k.hip], [18, 30, 150, 104, 132]) },
-    { path: limbPath([hL, bend(hL, k.knL, 8), k.knL, k.ftL], [86, 66, 44, 26], true) },
-    { path: limbPath([k.shL, bend(k.shL, k.elL, 10), k.elL, bend(k.elL, k.haL, 14), k.haL], [56, 40, 32, 24, 17]) }, ...hand(k.haL[0], k.haL[1], Math.atan2(k.haL[1] - k.elL[1], k.haL[0] - k.elL[0]), 52),
-    headShape(k.head[0], k.head[1], 30, 40, ht),
+    { path: limbPath([lp(k.neck, k.head, 0.7), k.neck, lp(k.neck, k.chest, 0.45), k.chest, lp(k.chest, k.waist, 0.5), k.waist, k.hip, [k.hip[0], k.hip[1] + 40]], [20, 34, 130, 196, 176, 150, 190, 150]) },
+    { path: limbPath([hL, bend(hL, k.knL, 8), k.knL, k.ftL], [122, 92, 56, 30], true) },
+    { path: limbPath([k.shL, bend(k.shL, k.elL, 10), k.elL, bend(k.elL, k.haL, 14), k.haL], [78, 60, 48, 40, 30]) }, ...hand(k.haL[0], k.haL[1], Math.atan2(k.haL[1] - k.elL[1], k.haL[0] - k.elL[0]), 84),
+    headShape(k.head[0], k.head[1], 38, 50, ht),
   ], k.chest[0]);
-  head(g, k.head[0], k.head[1], 30, 40, ht, turn);
+  head(g, k.head[0], k.head[1], 38, 50, ht, turn);
   g.restore();
 };
