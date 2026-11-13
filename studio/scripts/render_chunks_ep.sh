@@ -8,7 +8,7 @@ for ((a=0; a<TOTAL; a+=300)); do
   b=$((a + 299)); [ $b -ge $TOTAL ] && b=$((TOTAL - 1))
   f=$D/c_$(printf %04d $a).mp4
   [ -f "$f" ] && continue
-  T=$D/tmp_$a; mkdir -p $T   # bundle temporaire propre à ce morceau, supprimé ensuite (sinon ~130 Mo laissés dans /tmp à chaque rendu)
+  T=$(pwd)/$D/tmp_$a; mkdir -p $T   # bundle temporaire propre à ce morceau, supprimé ensuite (sinon ~130 Mo laissés dans /tmp à chaque rendu)
   TMPDIR=$T TEMP=$T TMP=$T REMOTION_TMP=$T ENTRY=$SNAP/index.ts node scripts/render.mjs $COMP "$f.tmp.mp4" 1 "$a-$b" 1 '{"post":{"audio":false,"lens":false}}' > "$D/log_$a.txt" 2>&1 && mv "$f.tmp.mp4" "$f"
   rm -rf "$T"
   echo "$COMP morceau $a-$b : $(tail -1 $D/log_$a.txt)"
