@@ -1,0 +1,1433 @@
+[
+ {
+  "w": "Imagine...",
+  "s": 0.033,
+  "e": 0.76,
+  "role": "narrateur"
+ },
+ {
+  "w": "Tu",
+  "s": 1.012,
+  "e": 1.164,
+  "role": "narrateur"
+ },
+ {
+  "w": "vis",
+  "s": 1.218,
+  "e": 1.337,
+  "role": "narrateur"
+ },
+ {
+  "w": "dans",
+  "s": 1.359,
+  "e": 1.467,
+  "role": "narrateur"
+ },
+ {
+  "w": "la",
+  "s": 1.489,
+  "e": 1.543,
+  "role": "narrateur"
+ },
+ {
+  "w": "dernière",
+  "s": 1.597,
+  "e": 1.923,
+  "role": "narrateur"
+ },
+ {
+  "w": "tour",
+  "s": 1.945,
+  "e": 2.183,
+  "role": "narrateur"
+ },
+ {
+  "w": "encore",
+  "s": 2.216,
+  "e": 2.487,
+  "role": "narrateur"
+ },
+ {
+  "w": "habitée,",
+  "s": 2.509,
+  "e": 3.117,
+  "role": "narrateur"
+ },
+ {
+  "w": "et",
+  "s": 3.225,
+  "e": 3.345,
+  "role": "narrateur"
+ },
+ {
+  "w": "quand",
+  "s": 3.378,
+  "e": 3.529,
+  "role": "narrateur"
+ },
+ {
+  "w": "ce",
+  "s": 3.55,
+  "e": 3.649,
+  "role": "narrateur"
+ },
+ {
+  "w": "haut-parleur",
+  "s": 3.713,
+  "e": 4.202,
+  "role": "narrateur"
+ },
+ {
+  "w": "grésille,",
+  "s": 4.267,
+  "e": 4.842,
+  "role": "narrateur"
+ },
+ {
+  "w": "toute",
+  "s": 4.95,
+  "e": 5.179,
+  "role": "narrateur"
+ },
+ {
+  "w": "la",
+  "s": 5.2,
+  "e": 5.276,
+  "role": "narrateur"
+ },
+ {
+  "w": "ville",
+  "s": 5.33,
+  "e": 5.515,
+  "role": "narrateur"
+ },
+ {
+  "w": "retient",
+  "s": 5.548,
+  "e": 5.851,
+  "role": "narrateur"
+ },
+ {
+  "w": "son",
+  "s": 5.873,
+  "e": 6.003,
+  "role": "narrateur"
+ },
+ {
+  "w": "souffle.",
+  "s": 6.057,
+  "e": 6.567,
+  "role": "narrateur"
+ },
+ {
+  "w": "Dehors,",
+  "s": 6.82,
+  "e": 7.363,
+  "role": "narrateur"
+ },
+ {
+  "w": "une",
+  "s": 7.471,
+  "e": 7.601,
+  "role": "narrateur"
+ },
+ {
+  "w": "maladie",
+  "s": 7.622,
+  "e": 7.992,
+  "role": "narrateur"
+ },
+ {
+  "w": "a",
+  "s": 8.013,
+  "e": 8.035,
+  "role": "narrateur"
+ },
+ {
+  "w": "vidé",
+  "s": 8.089,
+  "e": 8.284,
+  "role": "narrateur"
+ },
+ {
+  "w": "le",
+  "s": 8.317,
+  "e": 8.382,
+  "role": "narrateur"
+ },
+ {
+  "w": "monde.",
+  "s": 8.425,
+  "e": 8.893,
+  "role": "narrateur"
+ },
+ {
+  "w": "Elle",
+  "s": 9.196,
+  "e": 9.402,
+  "role": "narrateur"
+ },
+ {
+  "w": "commence",
+  "s": 9.423,
+  "e": 9.738,
+  "role": "narrateur"
+ },
+ {
+  "w": "toujours",
+  "s": 9.76,
+  "e": 10.086,
+  "role": "narrateur"
+ },
+ {
+  "w": "de",
+  "s": 10.107,
+  "e": 10.162,
+  "role": "narrateur"
+ },
+ {
+  "w": "la",
+  "s": 10.194,
+  "e": 10.249,
+  "role": "narrateur"
+ },
+ {
+  "w": "même",
+  "s": 10.292,
+  "e": 10.444,
+  "role": "narrateur"
+ },
+ {
+  "w": "façon",
+  "s": 10.477,
+  "e": 10.856,
+  "role": "narrateur"
+ },
+ {
+  "w": "la",
+  "s": 11.262,
+  "e": 11.349,
+  "role": "narrateur"
+ },
+ {
+  "w": "voix",
+  "s": 11.403,
+  "e": 11.588,
+  "role": "narrateur"
+ },
+ {
+  "w": "s'éteint.",
+  "s": 11.61,
+  "e": 12.142,
+  "role": "narrateur"
+ },
+ {
+  "w": "Alors",
+  "s": 12.394,
+  "e": 12.676,
+  "role": "narrateur"
+ },
+ {
+  "w": "chaque",
+  "s": 12.698,
+  "e": 12.926,
+  "role": "narrateur"
+ },
+ {
+  "w": "soir,",
+  "s": 12.947,
+  "e": 13.284,
+  "role": "narrateur"
+ },
+ {
+  "w": "c'est",
+  "s": 13.316,
+  "e": 13.446,
+  "role": "narrateur"
+ },
+ {
+  "w": "l'appel.",
+  "s": 13.469,
+  "e": 13.978,
+  "role": "narrateur"
+ },
+ {
+  "w": "Début",
+  "s": 14.239,
+  "e": 14.575,
+  "role": "hp",
+  "q": 1
+ },
+ {
+  "w": "de",
+  "s": 14.598,
+  "e": 14.662,
+  "role": "hp"
+ },
+ {
+  "w": "l'appel.",
+  "s": 14.706,
+  "e": 15.248,
+  "role": "hp"
+ },
+ {
+  "w": "Six",
+  "s": 15.504,
+  "e": 15.678,
+  "role": "narrateur"
+ },
+ {
+  "w": "mille",
+  "s": 15.7,
+  "e": 15.874,
+  "role": "narrateur"
+ },
+ {
+  "w": "fenêtres.",
+  "s": 15.905,
+  "e": 16.524,
+  "role": "narrateur"
+ },
+ {
+  "w": "Chaque",
+  "s": 16.776,
+  "e": 17.059,
+  "role": "narrateur"
+ },
+ {
+  "w": "habitant",
+  "s": 17.08,
+  "e": 17.503,
+  "role": "narrateur"
+ },
+ {
+  "w": "a",
+  "s": 17.558,
+  "e": 17.602,
+  "role": "narrateur"
+ },
+ {
+  "w": "son",
+  "s": 17.656,
+  "e": 17.786,
+  "role": "narrateur"
+ },
+ {
+  "w": "numéro.",
+  "s": 17.818,
+  "e": 18.415,
+  "role": "narrateur"
+ },
+ {
+  "w": "Règle",
+  "s": 18.667,
+  "e": 18.96,
+  "role": "narrateur"
+ },
+ {
+  "w": "numéro",
+  "s": 19.003,
+  "e": 19.351,
+  "role": "narrateur"
+ },
+ {
+  "w": "un",
+  "s": 19.427,
+  "e": 19.524,
+  "role": "narrateur"
+ },
+ {
+  "w": "quand",
+  "s": 19.93,
+  "e": 20.081,
+  "role": "narrateur"
+ },
+ {
+  "w": "on",
+  "s": 20.136,
+  "e": 20.201,
+  "role": "narrateur"
+ },
+ {
+  "w": "appelle",
+  "s": 20.267,
+  "e": 20.505,
+  "role": "narrateur"
+ },
+ {
+  "w": "ton",
+  "s": 20.538,
+  "e": 20.646,
+  "role": "narrateur"
+ },
+ {
+  "w": "numéro,",
+  "s": 20.679,
+  "e": 21.145,
+  "role": "narrateur"
+ },
+ {
+  "w": "tu",
+  "s": 21.199,
+  "e": 21.319,
+  "role": "narrateur"
+ },
+ {
+  "w": "réponds.",
+  "s": 21.373,
+  "e": 21.883,
+  "role": "narrateur"
+ },
+ {
+  "w": "À",
+  "s": 22.136,
+  "e": 22.2,
+  "role": "narrateur"
+ },
+ {
+  "w": "voix",
+  "s": 22.277,
+  "e": 22.418,
+  "role": "narrateur"
+ },
+ {
+  "w": "haute.",
+  "s": 22.45,
+  "e": 22.927,
+  "role": "narrateur"
+ },
+ {
+  "w": "Ceux",
+  "s": 23.18,
+  "e": 23.386,
+  "role": "narrateur"
+ },
+ {
+  "w": "qui",
+  "s": 23.419,
+  "e": 23.506,
+  "role": "narrateur"
+ },
+ {
+  "w": "se",
+  "s": 23.549,
+  "e": 23.636,
+  "role": "narrateur"
+ },
+ {
+  "w": "taisent,",
+  "s": 23.69,
+  "e": 24.189,
+  "role": "narrateur"
+ },
+ {
+  "w": "les",
+  "s": 24.282,
+  "e": 24.445,
+  "role": "narrateur"
+ },
+ {
+  "w": "hommes",
+  "s": 24.51,
+  "e": 24.684,
+  "role": "narrateur"
+ },
+ {
+  "w": "en",
+  "s": 24.717,
+  "e": 24.825,
+  "role": "narrateur"
+ },
+ {
+  "w": "blanc",
+  "s": 24.868,
+  "e": 25.108,
+  "role": "narrateur"
+ },
+ {
+  "w": "les",
+  "s": 25.162,
+  "e": 25.259,
+  "role": "narrateur"
+ },
+ {
+  "w": "descendent",
+  "s": 25.292,
+  "e": 25.725,
+  "role": "narrateur"
+ },
+ {
+  "w": "au",
+  "s": 25.791,
+  "e": 25.835,
+  "role": "narrateur"
+ },
+ {
+  "w": "sous-sol.",
+  "s": 25.878,
+  "e": 26.518,
+  "role": "narrateur"
+ },
+ {
+  "w": "Personne",
+  "s": 26.77,
+  "e": 27.215,
+  "role": "narrateur"
+ },
+ {
+  "w": "n'en",
+  "s": 27.237,
+  "e": 27.345,
+  "role": "narrateur"
+ },
+ {
+  "w": "est",
+  "s": 27.41,
+  "e": 27.476,
+  "role": "narrateur"
+ },
+ {
+  "w": "jamais",
+  "s": 27.497,
+  "e": 27.725,
+  "role": "narrateur"
+ },
+ {
+  "w": "remonté.",
+  "s": 27.747,
+  "e": 28.43,
+  "role": "narrateur"
+ },
+ {
+  "w": "Il",
+  "s": 28.682,
+  "e": 28.845,
+  "role": "narrateur"
+ },
+ {
+  "w": "y",
+  "s": 28.91,
+  "e": 28.932,
+  "role": "narrateur"
+ },
+ {
+  "w": "a",
+  "s": 28.975,
+  "e": 29.008,
+  "role": "narrateur"
+ },
+ {
+  "w": "un",
+  "s": 29.095,
+  "e": 29.214,
+  "role": "narrateur"
+ },
+ {
+  "w": "an,",
+  "s": 29.323,
+  "e": 29.474,
+  "role": "narrateur"
+ },
+ {
+  "w": "la",
+  "s": 29.582,
+  "e": 29.681,
+  "role": "narrateur"
+ },
+ {
+  "w": "voix",
+  "s": 29.735,
+  "e": 29.876,
+  "role": "narrateur"
+ },
+ {
+  "w": "de",
+  "s": 29.897,
+  "e": 29.963,
+  "role": "narrateur"
+ },
+ {
+  "w": "ta",
+  "s": 29.996,
+  "e": 30.082,
+  "role": "narrateur"
+ },
+ {
+  "w": "mère",
+  "s": 30.137,
+  "e": 30.332,
+  "role": "narrateur"
+ },
+ {
+  "w": "s'est",
+  "s": 30.353,
+  "e": 30.483,
+  "role": "narrateur"
+ },
+ {
+  "w": "éteinte.",
+  "s": 30.57,
+  "e": 31.124,
+  "role": "narrateur"
+ },
+ {
+  "w": "Ils",
+  "s": 31.376,
+  "e": 31.571,
+  "role": "narrateur"
+ },
+ {
+  "w": "l'ont",
+  "s": 31.593,
+  "e": 31.734,
+  "role": "narrateur"
+ },
+ {
+  "w": "descendue",
+  "s": 31.767,
+  "e": 32.167,
+  "role": "narrateur"
+ },
+ {
+  "w": "le",
+  "s": 32.2,
+  "e": 32.266,
+  "role": "narrateur"
+ },
+ {
+  "w": "soir",
+  "s": 32.309,
+  "e": 32.504,
+  "role": "narrateur"
+ },
+ {
+  "w": "même.",
+  "s": 32.558,
+  "e": 32.96,
+  "role": "narrateur"
+ },
+ {
+  "w": "Depuis,",
+  "s": 33.221,
+  "e": 33.763,
+  "role": "narrateur"
+ },
+ {
+  "w": "tu",
+  "s": 33.871,
+  "e": 33.991,
+  "role": "narrateur"
+ },
+ {
+  "w": "veilles",
+  "s": 34.045,
+  "e": 34.262,
+  "role": "narrateur"
+ },
+ {
+  "w": "sur",
+  "s": 34.283,
+  "e": 34.403,
+  "role": "narrateur"
+ },
+ {
+  "w": "ton",
+  "s": 34.446,
+  "e": 34.544,
+  "role": "narrateur"
+ },
+ {
+  "w": "petit",
+  "s": 34.587,
+  "e": 34.815,
+  "role": "narrateur"
+ },
+ {
+  "w": "frère,",
+  "s": 34.837,
+  "e": 35.163,
+  "role": "narrateur"
+ },
+ {
+  "w": "Noé.",
+  "s": 35.196,
+  "e": 35.672,
+  "role": "narrateur"
+ },
+ {
+  "w": "Pour",
+  "s": 35.924,
+  "e": 36.087,
+  "role": "narrateur"
+ },
+ {
+  "w": "le",
+  "s": 36.131,
+  "e": 36.185,
+  "role": "narrateur"
+ },
+ {
+  "w": "faire",
+  "s": 36.239,
+  "e": 36.435,
+  "role": "narrateur"
+ },
+ {
+  "w": "rire,",
+  "s": 36.456,
+  "e": 36.825,
+  "role": "narrateur"
+ },
+ {
+  "w": "tu",
+  "s": 36.901,
+  "e": 37.042,
+  "role": "narrateur"
+ },
+ {
+  "w": "imites",
+  "s": 37.108,
+  "e": 37.367,
+  "role": "narrateur"
+ },
+ {
+  "w": "toutes",
+  "s": 37.389,
+  "e": 37.596,
+  "role": "narrateur"
+ },
+ {
+  "w": "les",
+  "s": 37.617,
+  "e": 37.704,
+  "role": "narrateur"
+ },
+ {
+  "w": "voix.",
+  "s": 37.737,
+  "e": 38.17,
+  "role": "narrateur"
+ },
+ {
+  "w": "Même",
+  "s": 38.423,
+  "e": 38.607,
+  "role": "narrateur"
+ },
+ {
+  "w": "la",
+  "s": 38.628,
+  "e": 38.704,
+  "role": "narrateur"
+ },
+ {
+  "w": "sienne.",
+  "s": 38.758,
+  "e": 39.247,
+  "role": "narrateur"
+ },
+ {
+  "w": "Ce",
+  "s": 39.499,
+  "e": 39.651,
+  "role": "narrateur"
+ },
+ {
+  "w": "soir,",
+  "s": 39.695,
+  "e": 40.139,
+  "role": "narrateur"
+ },
+ {
+  "w": "Noé",
+  "s": 40.258,
+  "e": 40.508,
+  "role": "narrateur"
+ },
+ {
+  "w": "ouvre",
+  "s": 40.573,
+  "e": 40.78,
+  "role": "narrateur"
+ },
+ {
+  "w": "la",
+  "s": 40.811,
+  "e": 40.877,
+  "role": "narrateur"
+ },
+ {
+  "w": "bouche",
+  "s": 40.931,
+  "e": 41.159,
+  "role": "narrateur"
+ },
+ {
+  "w": "pour",
+  "s": 41.181,
+  "e": 41.3,
+  "role": "narrateur"
+ },
+ {
+  "w": "répondre...",
+  "s": 41.344,
+  "e": 41.995,
+  "role": "narrateur"
+ },
+ {
+  "w": "Rien.",
+  "s": 42.415,
+  "e": 42.893,
+  "role": "narrateur"
+ },
+ {
+  "w": "Plus",
+  "s": 43.145,
+  "e": 43.372,
+  "role": "narrateur"
+ },
+ {
+  "w": "un",
+  "s": 43.438,
+  "e": 43.492,
+  "role": "narrateur"
+ },
+ {
+  "w": "son.",
+  "s": 43.557,
+  "e": 43.926,
+  "role": "narrateur"
+ },
+ {
+  "w": "Règle",
+  "s": 44.179,
+  "e": 44.472,
+  "role": "narrateur"
+ },
+ {
+  "w": "numéro",
+  "s": 44.515,
+  "e": 44.797,
+  "role": "narrateur"
+ },
+ {
+  "w": "deux",
+  "s": 44.863,
+  "e": 45.047,
+  "role": "narrateur"
+ },
+ {
+  "w": "on",
+  "s": 45.103,
+  "e": 45.211,
+  "role": "narrateur"
+ },
+ {
+  "w": "ne",
+  "s": 45.244,
+  "e": 45.298,
+  "role": "narrateur"
+ },
+ {
+  "w": "répond",
+  "s": 45.341,
+  "e": 45.591,
+  "role": "narrateur"
+ },
+ {
+  "w": "jamais",
+  "s": 45.635,
+  "e": 45.906,
+  "role": "narrateur"
+ },
+ {
+  "w": "pour",
+  "s": 45.939,
+  "e": 46.068,
+  "role": "narrateur"
+ },
+ {
+  "w": "un",
+  "s": 46.123,
+  "e": 46.188,
+  "role": "narrateur"
+ },
+ {
+  "w": "autre.",
+  "s": 46.264,
+  "e": 46.633,
+  "role": "narrateur"
+ },
+ {
+  "w": "Celui",
+  "s": 46.885,
+  "e": 47.199,
+  "role": "narrateur"
+ },
+ {
+  "w": "qui",
+  "s": 47.253,
+  "e": 47.34,
+  "role": "narrateur"
+ },
+ {
+  "w": "ment",
+  "s": 47.395,
+  "e": 47.58,
+  "role": "narrateur"
+ },
+ {
+  "w": "descend",
+  "s": 47.644,
+  "e": 47.992,
+  "role": "narrateur"
+ },
+ {
+  "w": "avec",
+  "s": 48.046,
+  "e": 48.23,
+  "role": "narrateur"
+ },
+ {
+  "w": "lui.",
+  "s": 48.284,
+  "e": 48.632,
+  "role": "narrateur"
+ },
+ {
+  "w": "Étage",
+  "s": 48.884,
+  "e": 49.296,
+  "role": "narrateur"
+ },
+ {
+  "w": "après",
+  "s": 49.318,
+  "e": 49.535,
+  "role": "narrateur"
+ },
+ {
+  "w": "étage,",
+  "s": 49.6,
+  "e": 50.099,
+  "role": "narrateur"
+ },
+ {
+  "w": "les",
+  "s": 50.208,
+  "e": 50.327,
+  "role": "narrateur"
+ },
+ {
+  "w": "fenêtres",
+  "s": 50.36,
+  "e": 50.783,
+  "role": "narrateur"
+ },
+ {
+  "w": "s'allument",
+  "s": 50.805,
+  "e": 51.152,
+  "role": "narrateur"
+ },
+ {
+  "w": "en",
+  "s": 51.228,
+  "e": 51.282,
+  "role": "narrateur"
+ },
+ {
+  "w": "vert.",
+  "s": 51.337,
+  "e": 51.814,
+  "role": "narrateur"
+ },
+ {
+  "w": "Ici",
+  "s": 52.067,
+  "e": 52.392,
+  "role": "narrateur"
+ },
+ {
+  "w": "et",
+  "s": 52.457,
+  "e": 52.5,
+  "role": "narrateur"
+ },
+ {
+  "w": "là,",
+  "s": 52.533,
+  "e": 52.869,
+  "role": "narrateur"
+ },
+ {
+  "w": "une",
+  "s": 52.978,
+  "e": 53.108,
+  "role": "narrateur"
+ },
+ {
+  "w": "fenêtre",
+  "s": 53.14,
+  "e": 53.51,
+  "role": "narrateur"
+ },
+ {
+  "w": "devient",
+  "s": 53.542,
+  "e": 53.824,
+  "role": "narrateur"
+ },
+ {
+  "w": "rouge.",
+  "s": 53.846,
+  "e": 54.345,
+  "role": "narrateur"
+ },
+ {
+  "w": "Le",
+  "s": 54.597,
+  "e": 54.727,
+  "role": "narrateur"
+ },
+ {
+  "w": "vert",
+  "s": 54.77,
+  "e": 54.998,
+  "role": "narrateur"
+ },
+ {
+  "w": "se",
+  "s": 55.02,
+  "e": 55.096,
+  "role": "narrateur"
+ },
+ {
+  "w": "rapproche",
+  "s": 55.139,
+  "e": 55.519,
+  "role": "narrateur"
+ },
+ {
+  "w": "de",
+  "s": 55.552,
+  "e": 55.617,
+  "role": "narrateur"
+ },
+ {
+  "w": "vous.",
+  "s": 55.681,
+  "e": 56.072,
+  "role": "narrateur"
+ },
+ {
+  "w": "Règle",
+  "s": 56.324,
+  "e": 56.607,
+  "role": "narrateur"
+ },
+ {
+  "w": "numéro",
+  "s": 56.65,
+  "e": 56.943,
+  "role": "narrateur"
+ },
+ {
+  "w": "trois",
+  "s": 56.986,
+  "e": 57.312,
+  "role": "narrateur"
+ },
+ {
+  "w": "pendant",
+  "s": 57.368,
+  "e": 57.619,
+  "role": "narrateur"
+ },
+ {
+  "w": "l'appel,",
+  "s": 57.64,
+  "e": 58.074,
+  "role": "narrateur"
+ },
+ {
+  "w": "on",
+  "s": 58.118,
+  "e": 58.215,
+  "role": "narrateur"
+ },
+ {
+  "w": "ne",
+  "s": 58.237,
+  "e": 58.291,
+  "role": "narrateur"
+ },
+ {
+  "w": "regarde",
+  "s": 58.335,
+  "e": 58.681,
+  "role": "narrateur"
+ },
+ {
+  "w": "jamais",
+  "s": 58.736,
+  "e": 58.975,
+  "role": "narrateur"
+ },
+ {
+  "w": "en",
+  "s": 58.996,
+  "e": 59.051,
+  "role": "narrateur"
+ },
+ {
+  "w": "bas.",
+  "s": 59.105,
+  "e": 59.474,
+  "role": "narrateur"
+ },
+ {
+  "w": "Tu",
+  "s": 59.726,
+  "e": 59.856,
+  "role": "narrateur"
+ },
+ {
+  "w": "regardes.",
+  "s": 59.91,
+  "e": 60.496,
+  "role": "narrateur"
+ },
+ {
+  "w": "Dans",
+  "s": 60.749,
+  "e": 60.911,
+  "role": "narrateur"
+ },
+ {
+  "w": "la",
+  "s": 60.933,
+  "e": 60.988,
+  "role": "narrateur"
+ },
+ {
+  "w": "cour,",
+  "s": 61.053,
+  "e": 61.4,
+  "role": "narrateur"
+ },
+ {
+  "w": "les",
+  "s": 61.509,
+  "e": 61.66,
+  "role": "narrateur"
+ },
+ {
+  "w": "hommes",
+  "s": 61.725,
+  "e": 61.888,
+  "role": "narrateur"
+ },
+ {
+  "w": "en",
+  "s": 61.91,
+  "e": 62.04,
+  "role": "narrateur"
+ },
+ {
+  "w": "blanc",
+  "s": 62.083,
+  "e": 62.29,
+  "role": "narrateur"
+ },
+ {
+  "w": "attendent,",
+  "s": 62.323,
+  "e": 62.973,
+  "role": "narrateur"
+ },
+ {
+  "w": "le",
+  "s": 63.067,
+  "e": 63.153,
+  "role": "narrateur"
+ },
+ {
+  "w": "visage",
+  "s": 63.196,
+  "e": 63.544,
+  "role": "narrateur"
+ },
+ {
+  "w": "levé",
+  "s": 63.577,
+  "e": 63.805,
+  "role": "narrateur"
+ },
+ {
+  "w": "vers",
+  "s": 63.837,
+  "e": 63.978,
+  "role": "narrateur"
+ },
+ {
+  "w": "ta",
+  "s": 64.0,
+  "e": 64.076,
+  "role": "narrateur"
+ },
+ {
+  "w": "fenêtre.",
+  "s": 64.13,
+  "e": 64.695,
+  "role": "narrateur"
+ },
+ {
+  "w": "Deux",
+  "s": 64.955,
+  "e": 65.108,
+  "role": "hp",
+  "q": 1
+ },
+ {
+  "w": "mille",
+  "s": 65.14,
+  "e": 65.444,
+  "role": "hp"
+ },
+ {
+  "w": "quatre",
+  "s": 65.5,
+  "e": 65.771,
+  "role": "hp"
+ },
+ {
+  "w": "cent",
+  "s": 65.815,
+  "e": 65.978,
+  "role": "hp"
+ },
+ {
+  "w": "dix-sept.",
+  "s": 66.011,
+  "e": 66.553,
+  "role": "hp"
+ },
+ {
+  "w": "C'est",
+  "s": 66.809,
+  "e": 66.993,
+  "role": "narrateur"
+ },
+ {
+  "w": "toi.",
+  "s": 67.014,
+  "e": 67.351,
+  "role": "narrateur"
+ },
+ {
+  "w": "Tu",
+  "s": 67.546,
+  "e": 67.666,
+  "role": "narrateur"
+ },
+ {
+  "w": "réponds.",
+  "s": 67.72,
+  "e": 68.132,
+  "role": "narrateur"
+ },
+ {
+  "w": "Deux",
+  "s": 68.393,
+  "e": 68.534,
+  "role": "hp",
+  "q": 1
+ },
+ {
+  "w": "mille",
+  "s": 68.567,
+  "e": 68.784,
+  "role": "hp"
+ },
+ {
+  "w": "quatre",
+  "s": 68.827,
+  "e": 69.099,
+  "role": "hp"
+ },
+ {
+  "w": "cent",
+  "s": 69.142,
+  "e": 69.348,
+  "role": "hp"
+ },
+ {
+  "w": "dix-huit.",
+  "s": 69.37,
+  "e": 69.912,
+  "role": "hp"
+ },
+ {
+  "w": "C'est",
+  "s": 70.168,
+  "e": 70.342,
+  "role": "narrateur"
+ },
+ {
+  "w": "Noé.",
+  "s": 70.385,
+  "e": 70.895,
+  "role": "narrateur"
+ },
+ {
+  "w": "Ils",
+  "s": 71.147,
+  "e": 71.343,
+  "role": "narrateur"
+ },
+ {
+  "w": "viennent",
+  "s": 71.364,
+  "e": 71.614,
+  "role": "narrateur"
+ },
+ {
+  "w": "d'entendre",
+  "s": 71.635,
+  "e": 72.059,
+  "role": "narrateur"
+ },
+ {
+  "w": "ta",
+  "s": 72.091,
+  "e": 72.177,
+  "role": "narrateur"
+ },
+ {
+  "w": "voix.",
+  "s": 72.232,
+  "e": 72.633,
+  "role": "narrateur"
+ },
+ {
+  "w": "Si",
+  "s": 72.886,
+  "e": 73.059,
+  "role": "narrateur"
+ },
+ {
+  "w": "tu",
+  "s": 73.102,
+  "e": 73.189,
+  "role": "narrateur"
+ },
+ {
+  "w": "réponds",
+  "s": 73.233,
+  "e": 73.504,
+  "role": "narrateur"
+ },
+ {
+  "w": "encore,",
+  "s": 73.537,
+  "e": 74.101,
+  "role": "narrateur"
+ },
+ {
+  "w": "ils",
+  "s": 74.166,
+  "e": 74.318,
+  "role": "narrateur"
+ },
+ {
+  "w": "pourraient",
+  "s": 74.34,
+  "e": 74.601,
+  "role": "narrateur"
+ },
+ {
+  "w": "la",
+  "s": 74.622,
+  "e": 74.676,
+  "role": "narrateur"
+ },
+ {
+  "w": "reconnaître.",
+  "s": 74.73,
+  "e": 75.392,
+  "role": "narrateur"
+ },
+ {
+  "w": "Alors,",
+  "s": 75.644,
+  "e": 76.187,
+  "role": "narrateur"
+ },
+ {
+  "w": "tu",
+  "s": 76.295,
+  "e": 76.426,
+  "role": "narrateur"
+ },
+ {
+  "w": "imites",
+  "s": 76.49,
+  "e": 76.762,
+  "role": "narrateur"
+ },
+ {
+  "w": "sa",
+  "s": 76.784,
+  "e": 76.881,
+  "role": "narrateur"
+ },
+ {
+  "w": "voix,",
+  "s": 76.925,
+  "e": 77.316,
+  "role": "narrateur"
+ },
+ {
+  "w": "ou",
+  "s": 77.402,
+  "e": 77.5,
+  "role": "narrateur"
+ },
+ {
+  "w": "tu",
+  "s": 77.543,
+  "e": 77.63,
+  "role": "narrateur"
+ },
+ {
+  "w": "te",
+  "s": 77.673,
+  "e": 77.76,
+  "role": "narrateur"
+ },
+ {
+  "w": "tais",
+  "s": 77.847,
+  "e": 78.064,
+  "role": "narrateur"
+ },
+ {
+  "w": "Dis-le",
+  "s": 78.12,
+  "e": 78.424,
+  "role": "narrateur"
+ },
+ {
+  "w": "en",
+  "s": 78.468,
+  "e": 78.522,
+  "role": "narrateur"
+ },
+ {
+  "w": "commentaire.",
+  "s": 78.576,
+  "e": 79.271,
+  "role": "narrateur"
+ }
+]
