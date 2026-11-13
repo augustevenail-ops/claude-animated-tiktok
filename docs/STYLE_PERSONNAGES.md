@@ -56,3 +56,11 @@ Blancs, contour/ombre sombres, **un mot clé en jaune (#f2c14e)** par groupe. (N
 - Foule : figurants plus petits, plus clairs et légèrement **flous** au fond (profondeur de champ forte), personnage net au premier plan.
 - Monstre en gros plan : **un œil réaliste injecté de sang** derrière ses doigts (rupture de style volontaire = choc) ; fissure sur la peau.
 - Objet lumineux tenu près du visage (lune, lampe) : halo doré qui éclaire le personnage par en dessous.
+
+## Compléments (6ᵉ série)
+- Gros plan d'un document (registre, numéro 0308, bande rouge tachée) pointé par une main-rond : les textes diégétiques portent l'info.
+- **Bonnet côtelé** (bleu canard), écharpe verte, barbe grise en aplat avec traits, gants sombres « boudins » ; mains en moufle à doigts
+  pour les gros plans ; reflet spéculaire sur la tête (sphère nacrée).
+- Lumière qui change en cours de plan : même cadre blanc froid -> rouge alarme (dortoir), heure qui défile dans le HUD (06:00 -> 21:29 -> 02:06).
+- Puits vu d'en dessous : rayons de lumière, poussière, mains et traits de comptage gravés sur la paroi.
+- HUD variante : « ÉPISODE 5 » rouge + horloge + « NIVEAU 31 », à droite « PLACES 4 112 / 4 112 ».
