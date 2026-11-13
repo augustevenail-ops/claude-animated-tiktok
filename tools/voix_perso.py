@@ -13,10 +13,12 @@ import numpy as np
 ap = argparse.ArgumentParser()
 ap.add_argument("ep"); ap.add_argument("prise"); ap.add_argument("trans"); ap.add_argument("out")
 ap.add_argument("--cut", default=""); ap.add_argument("--tempo", type=float, default=1.0); ap.add_argument("--lufs", type=float, default=-22.5)
+ap.add_argument("--end", type=float, default=0.42); ap.add_argument("--comma", type=float, default=0.14)
 ap.add_argument("--outro", default="")   # texte de la phrase de fin (ex. « Abonne-toi pour l'épisode deux. »), lu à la fin de la prise
 A = ap.parse_args()
 SR = 48000; os.makedirs(A.out, exist_ok=True)
-CFG = json.load(open(os.path.join(A.ep, "voices.json"), encoding="utf-8")); P = CFG["pauses"]
+CFG = json.load(open(os.path.join(A.ep, "voices.json"), encoding="utf-8")); P = dict(CFG["pauses"])
+P["end"], P["comma"] = A.end, A.comma          # voix perso : un peu plus de silence en fin de phrase (demande utilisateur)
 
 def ff(x, af):
     return np.frombuffer(subprocess.run(["ffmpeg", "-v", "error", "-f", "f32le", "-ar", str(SR), "-ac", "1", "-i", "-", "-af", af, "-f", "f32le", "-"],
@@ -82,20 +84,40 @@ rms = 20 * np.log10(np.sqrt((fr ** 2).mean(1)) + 1e-9)
 spec = np.abs(np.fft.rfft(fr * np.hanning(H), axis=1)); f = np.fft.rfftfreq(H, 1 / SR)
 hf = spec[:, f > 3000].sum(1) / (spec[:, (f > 80) & (f < 1200)].sum(1) + 1e-9)
 voiced = (rms > -33) | ((rms > -46) & (hf > 5))                 # voix, ou sifflante (s, ch, f) ; pas le souffle d'une inspiration
-def onset(t):
-    i0, i1 = int((t - 0.12) * SR / H), int((t + 0.35) * SR / H)
-    for i in range(max(0, i0), min(n, i1)):
-        if voiced[i:i + 3].all(): return max(t - 0.12, i * H / SR - 0.035)
-    return t
-def offset(t):
-    i0, i1 = int((t - 0.3) * SR / H), int((t + 0.25) * SR / H)
-    for i in range(min(n, i1) - 1, max(0, i0), -1):
-        if voiced[max(0, i - 2):i + 1].all(): return min(t + 0.25, (i + 1) * H / SR + 0.06)
-    return t
+tail_ok = rms > -44                                             # fin de mot qui s'éteint doucement (« Imagine… ») : gardée
+def onset(t, lo):
+    """début réel : on recule tant qu'il reste de la voix juste avant (Whisper place souvent le 1er mot trop tard), sans passer lo"""
+    i = int(t * SR / H); stop = max(int(lo * SR / H), i - int(1.2 * SR / H), 0)
+    while i > stop and voiced[max(0, i - 12):i].any(): i -= 1
+    j = i                                                       # puis on avance jusqu'à la vraie attaque (pas le souffle)
+    while j < min(n - 3, i + int(0.35 * SR / H)) and not voiced[j:j + 3].all(): j += 1
+    return max(lo, j * H / SR - 0.035)
+def offset(t, hi):
+    """fin réelle : on avance tant que la voix (ou sa queue douce) continue, sans dépasser hi"""
+    i = int(t * SR / H); stop = min(int(hi * SR / H), i + int(0.8 * SR / H), n - 1)
+    while i < stop and tail_ok[i:i + 6].any(): i += 1
+    return min(hi, i * H / SR + 0.05)
 W = [{"seg": k, "w": t, "s": s, "e": e, "pc": i in PC} for i, ((k, t), (s, e)) in enumerate(zip(sw, times))]
+def silence_between(a, b):
+    """plus long silence (>= 80 ms, ni voix ni queue douce) entre a et b -> (début, fin) ou None"""
+    i0, i1 = max(0, int(a * SR / H)), min(n, int(b * SR / H)); best, run0 = None, None
+    for i in range(i0, i1 + 1):
+        q = i < i1 and not tail_ok[i]
+        if q and run0 is None: run0 = i
+        if not q and run0 is not None:
+            if i - run0 >= int(0.10 * SR / H) and (best is None or i - run0 > best[1] - best[0]): best = (run0, i)
+            run0 = None
+    return (best[0] * H / SR, best[1] * H / SR) if best else None
+for i in range(len(W) - 1):                                      # fin de phrase / virgule : Whisper colle souvent les mots -> on cherche le vrai silence
+    w, nx = W[i], W[i + 1]
+    if re.search(r"[.?!…,:;]$", w["w"]) or w.get("pc") or nx["s"] - w["e"] > 0.12:
+        sil = silence_between(max(w["s"] + 0.1, w["e"] - 0.45), min(nx["e"] - 0.05, nx["s"] + 0.45))
+        if sil: w["e"], nx["s"] = sil[0] + 0.05, max(sil[0] + 0.05, sil[1] - 0.035); w["fx"] = nx["fx_s"] = 1
 for i, w in enumerate(W):
-    if i == 0 or w["s"] - W[i - 1]["e"] > 0.12: w["s"] = onset(w["s"])
-    if i == len(W) - 1 or W[i + 1]["s"] - w["e"] > 0.12: w["e"] = offset(w["e"])
+    if i and W[i - 1].get("fx") and w.get("fx_s"): pass
+    elif i == 0 or w["s"] - W[i - 1]["e"] > 0.12: w["s"] = onset(w["s"], W[i - 1]["e"] + 0.08 if i else 0.0)
+    if w.get("fx"): continue
+    if i == len(W) - 1 or W[i + 1]["s"] - w["e"] > 0.12: w["e"] = offset(w["e"], W[i + 1]["s"] - 0.1 if i + 1 < len(W) else w["e"] + 0.8)
 mask = np.zeros(len(x))
 for w in W: mask[max(0, int((w["s"] - 0.02) * SR)):int((w["e"] + 0.04) * SR)] = 1
 k = int(0.008 * SR); mask = np.convolve(mask, np.ones(k) / k, "same")
