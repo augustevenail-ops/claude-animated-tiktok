@@ -175,7 +175,7 @@ def police_sting(t0, g=-13.0):                               # POLICE : double c
 rule_sting(W(76) - 0.03); rule_sting(W(161) - 0.03)                                         # « Règle numéro 1 » / « Règle numéro 2 »
 for t_ in (S("06") + 0.1, S("13") + 0.1, S("14") + 0.05, S("18") + 0.02, S("19") + 0.05, S("24") + 0.05): infected_sting(t_)   # chaque apparition d'infectés
 girl_motif(At("16b", 0.2)); girl_motif(At("17", 0.15), -17); girl_motif(S("23") + 0.05, -18)  # la fillette : découverte, la main, son regard
-police_sting(S("05") + 0.15); police_sting(At("20", 0.55), -14)                               # la police : encerclement, le cordon
+# (son « police » retiré à la demande de l utilisateur)
 # souffles discrets aux coupes (sauf les inserts très courts)
 for n, _ in PLANS[1:]: k.whoosh(S(n), 0.3, 0.22)
 
