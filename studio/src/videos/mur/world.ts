@@ -12,7 +12,7 @@ import { drawPerson, Person, Expr, Pose } from "./people";
 import { painted } from "../shared/painted";
 import { drawLong, LongSpec, PEEK_CUT } from "./longs";
 import { FPS, V3, CELL, H, TH, LONG_K, CLEAR, ENTRY_Z, ENTRY_W, WAKE_Z, YOU_WAKE, FIRE, SIREN, NAMES_Z, LONG_RUN, YOU_RUN_Z, LIGHT,
-  camAt, uOf, ROLE, hash, smooth, entryClose, tW } from "./story";
+  camAt, uOf, ROLE, hash, smooth, entryClose, tW, HOOK_M, hookLean } from "./story";
 import { LIGHTS } from "./look";
 
 const V = (x: number, y: number, z: number) => new THREE.Vector3(x, y, z);
@@ -237,21 +237,23 @@ export class World {
       }
       A.mesh.scale.setScalar(scale); A.mesh.visible = true;
     };
-    const long = (p: V3, s: LongSpec, face?: number) => {
+    const long = (p: V3, s: LongSpec, face?: number, m = 1) => {
       const A = this.longs[kl++]; if (!A) return;
       const d = cam.position.distanceTo(V(p[0], p[1] + 5, p[2])), [w, h, kk] = tierOf(d / LONG_K * 0.6);
       A.r = this.pool.req(`L|${JSON.stringify(s)}`, w, h, kk, (pen: Pen) => drawLong(pen, s));
       A.mesh.position.set(...p); A.mesh.up.set(0, 1, 0); A.mesh.rotation.set(0, face ?? yaw(p), 0);
       { const dy = cam.position.y - (p[1] + 5), hz = Math.hypot(cam.position.x - p[0], cam.position.z - p[2]);          // vu de haut : la carte se tourne vers la caméra
         if (Math.atan2(dy, hz) > 0.95) { A.mesh.up.set(0, 1, 0).applyQuaternion(cam.quaternion); A.mesh.lookAt(cam.position); A.mesh.up.set(0, 1, 0); } }
-      A.mesh.scale.setScalar(LONG_K); A.mesh.visible = true; this.longShadow[kl - 1] = !!s.shadow;
+      A.mesh.scale.setScalar(LONG_K * m); A.mesh.visible = true; this.longShadow[kl - 1] = !!s.shadow;
     };
     /** ombre immense couchée au sol du couloir : elle s'allonge vers toi avant que le Long n'apparaisse (lumière de la sirène derrière lui) */
     const floorShadow = (z: number, sc: number, s: LongSpec) => { long([0, 0.04, z], { ...s, shadow: true }, 0); const A = this.longs[kl - 1];
       if (A) { A.mesh.rotation.set(Math.PI / 2, 0, 0); A.mesh.scale.set(LONG_K * 1.1, LONG_K * sc, 1); } };
     const blink = (seed: number) => (f + seed * 37) % 97 < 4;
     const W2: V3 = [YOU_WAKE[0], 0.02, YOU_WAKE[2] + 0.0];
-    if (id === 1) { place("Y", [YOU_WAKE[0], 0, YOU_WAKE[2]], { mode: "stand", expr: "worry" }, 1); long([2.5, H - (975 - PEEK_CUT) * 0.00216 * LONG_K, WAKE_Z + 2.93], { pose: "peek", turn: 0.25, tilt: 0.28 * smooth(u * 2), tap: t * 0.9 }, Math.PI); }   // carte parallèle au mur : la main reste devant la paroi
+    if (id === 1) { place("Y", [YOU_WAKE[0], 0, YOU_WAKE[2]], { mode: "stand", expr: "shock", blink: false }, 1); long([0.2, 0, 0], { pose: "peek", turn: 0.35 - 0.35 * smooth(t / 1.3), tilt: 0.38 * smooth(t / 1.4), tap: t * 0.9, mouth: smooth((t - 1.35) / 0.4) }, Math.PI, HOOK_M);
+      { const A = this.longs[kl - 1], lean = hookLean(t), hc = (975 - PEEK_CUT) * 0.00216 * LONG_K * HOOK_M;   // pivot sur l'arête : la coupe reste sur le mur, la tête vient au-dessus de toi
+        if (A) { A.mesh.rotation.set(lean, Math.PI, 0, "YXZ"); A.mesh.position.set(0.2, H - hc * Math.cos(lean), WAKE_Z + 2.93 + hc * Math.sin(lean)); } } }   // accroche : la tête se penche, se tourne vers toi, la bouche s'ouvre sur « bouge pas »   // carte parallèle au mur : la main reste devant la paroi
     if (id === 2 || id === 3) place("Y", W2, { mode: "stand", expr: "worry", blink: id === 2 && u < 0.45 }, 1, true);
     if (id === 5) place("Y", [YOU_WAKE[0], 0, YOU_WAKE[2]], { mode: "stand", expr: "worry", blink: blink(1), look: Math.sin(u * 5) * 0.8 });
     if (id === 9 || id === 10) {

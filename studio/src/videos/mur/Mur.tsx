@@ -38,20 +38,21 @@ const Inner: React.FC = () => {
     bloom: makeBloom(), tone: new ToneMappingEffect({ mode: ToneMappingMode.NEUTRAL }), grade: new GradeEffect(GRADES[0], 1),
   }), [camera, scene, on]);
   useEffect(() => () => fx.ink.dispose(), [fx]);
+  const lensOn = on.lens || ROLE[shotAt(f).id] === 1;   // flou de profondeur réel au plan 1 (bascule de netteté)
   const chain = useMemo(() => (
     <EffectComposer multisampling={0}>
       {on.ink ? <primitive object={fx.ink} dispose={null} /> : <></>}
-      {on.lens ? <primitive object={fx.lens} dispose={null} /> : <></>}
+      {lensOn ? <primitive object={fx.lens} dispose={null} /> : <></>}
       {on.bloom ? <primitive object={fx.bloom} dispose={null} /> : <></>}
       <primitive object={fx.tone} dispose={null} />
       {on.grade ? <primitive object={fx.grade} dispose={null} /> : <></>}
     </EffectComposer>
-  ), [fx, on]);
+  ), [fx, on, lensOn]);
   const cam = camera as THREE.PerspectiveCamera;
   const target = world.update(shotAt(f).id, f, cam, scene);
   noInkFallback(world.root);
   const sid = shotAt(f).id; fx.grade.set(GRADES[LIGHT[ROLE[sid]]]);
-  const d = dofAt(sid);
+  const d = dofAt(sid, f);
   cam.getWorldDirection(fwd);
   if (d.focus) fpt.set(...d.focus); else fpt.copy(target);
   fx.lens.focus = Math.max(0.3, fpt.sub(cam.position).dot(fwd));

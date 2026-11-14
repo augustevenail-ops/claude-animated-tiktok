@@ -59,7 +59,7 @@ const pullBack = (u: number): Cam => {
   return XL(pos, look, 50 - 8 * smooth(k));
 };
 const CAMS: Record<number, (u: number) => Cam> = {
-  1: (u) => P(lerp3([-1.4, 11.8, WAKE_Z - 2.6], [-0.4, 9.7, WAKE_Z - 1.0], smooth(u)), lerp3([0.6, 6.9, WAKE_Z + 2.9], [0.3, 7.5, WAKE_Z + 2.9], smooth(u)), 40),   // nuit : on s'approche de la main à 7 doigts posée sur l'arête
+  1: (u) => P(lerp3([0.05, 0.7, WAKE_Z - 2.4], [0.0, 0.75, WAKE_Z - 2.0], smooth(u)), lerp3([0, 5.5, WAKE_Z + 2.9], [0, 6.3, WAKE_Z + 2.9], smooth(u)), 74),   // accroche : ton visage en gros plan, la tête du Long derrière toi
   2: (u) => P(lerp3([0.02, 1.05, WAKE_Z - 1.25], [0.02, 0.95, WAKE_Z - 1.3], u), [0, 0, WAKE_Z - 1.42], 38),                 // gros plan visage au sol
   3: (u) => P(lerp3([-0.4, 1.2, WAKE_Z - 1.0], [-3, H + 3.5, WAKE_Z + 0.4], glide(u)), lerp3([0, 0, WAKE_Z - 1.42], [30, H * 0.6, WAKE_Z], glide(u)), 50),
   4: pullBack,
@@ -95,4 +95,12 @@ export const camAt = (sid: number, f: number): Cam => {
 export type Dof = { cInf: number; focus?: V3 };
 const DOFS: Record<number, number> = { 1: 6, 2: 14, 3: 6, 4: 1, 5: 12, 6: 2, 7: 2, 8: 2, 9: 2, 10: 3, 11: 8, 12: 10, 13: 2, 14: 12, 15: 10, 16: 12, 17: 8, 18: 14,
   19: 2, 20: 10, 21: 8, 22: 6, 23: 8, 24: 12, 25: 4, 26: 14, 27: 10 };
-export const dofAt = (sid: number): Dof => ({ cInf: DOFS[ROLE[sid]] ?? 8 });
+/** plan 1 : bascule de netteté de ton visage vers la tête du Long, juste avant « ne bouge pas » */
+export const HOOK_RACK = (t: number) => smooth((t - 1.0) / 0.4);
+/** plan 1 : le Long se penche au-dessus de toi en pivotant sur l'arête (rad) ; HOOK_M = agrandissement ; HOOK_HEAD = hauteur de la tête au-dessus de l'arête */
+export const HOOK_M = 1.5, HOOK_HEAD = 245 * 0.00216 * LONG_K * HOOK_M;
+export const hookLean = (t: number) => 0.22 + 0.36 * smooth(t / 1.8);
+const hookHead = (t: number): V3 => [0.2, H + HOOK_HEAD * Math.cos(hookLean(t)), WAKE_Z + 2.93 - HOOK_HEAD * Math.sin(hookLean(t))];
+export const dofAt = (sid: number, f = 0): Dof => ROLE[sid] === 1
+  ? { cInf: 16, focus: lerp3([0, 1.48, WAKE_Z], hookHead(f / FPS), HOOK_RACK(f / FPS)) }
+  : { cInf: DOFS[ROLE[sid]] ?? 8 };
