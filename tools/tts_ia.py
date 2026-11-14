@@ -91,7 +91,30 @@ def main():
         r = tts(cfg, text, voice)
         out.with_suffix(".mp3").write_bytes(base64.b64decode(r["audio_base64"]))
         if r.get("alignment"): out.with_suffix(".json").write_text(json.dumps(words(r["alignment"], text), ensure_ascii=False, indent=0))
-    print(f"{out.with_suffix('.mp3')}  ({len(text.encode())} octets)")
+    serre(out.with_suffix(".mp3"))
+    print(f"{out.with_suffix('.mp3')}  ({len(text.encode())} octets) -> {out.name}_serre.mp3")
+
+
+def serre(mp3: Path, keep=0.15, lead=0.04, thr_db=-38.0):
+    """resserre les blancs (consigne utilisateur 2026-11-14 : silences légers et rapides) :
+    chaque blanc (trames de 10 ms sous thr_db) plus long que keep s est ramené à keep s ; début ramené à lead s"""
+    import subprocess, numpy as np
+    sr = 44100
+    raw = subprocess.run(["ffmpeg", "-loglevel", "error", "-i", str(mp3), "-f", "f32le", "-ac", "1", "-ar", str(sr), "-"], capture_output=True, check=True).stdout
+    x = np.frombuffer(raw, np.float32); n = sr // 100
+    rms = np.sqrt(np.mean(x[: len(x) // n * n].reshape(-1, n) ** 2, axis=1) + 1e-12)
+    quiet = 20 * np.log10(rms) < thr_db
+    keepf = np.ones(len(quiet), bool); i = 0
+    while i < len(quiet):
+        if not quiet[i]: i += 1; continue
+        j = i
+        while j < len(quiet) and quiet[j]: j += 1
+        lim = int((lead if i == 0 else keep) * 100)
+        if j - i > lim:
+            a = i + lim // 2 if i else 0; keepf[a: a + (j - i - lim)] = False   # on retire le milieu du blanc
+        i = j
+    y = np.concatenate([x[k * n:(k + 1) * n] for k in np.flatnonzero(keepf)] + [x[len(quiet) * n:]])
+    subprocess.run(["ffmpeg", "-loglevel", "error", "-y", "-f", "f32le", "-ar", str(sr), "-ac", "1", "-i", "-", "-b:a", "192k", str(mp3.with_name(mp3.stem + "_serre.mp3"))], input=y.tobytes(), check=True)
 
 
 if __name__ == "__main__":

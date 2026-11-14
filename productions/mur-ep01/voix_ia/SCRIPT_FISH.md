@@ -4,7 +4,7 @@ d'un ton : (whispering) (soft tone) (in a hurry tone) (shouting). Silences : « 
 Émotions s1 utilisées : scared, worried, nervous, serious, curious, interested, confident, sad, depressed, upset, surprised.
 
 (nervous)(whispering) Surtout… ne bouge pas.
-(long-break)(curious)(soft tone) Imagine…
+(curious)(soft tone) Imagine…
 (curious) Tu te réveilles au milieu d'un labyrinthe géant.
 (surprised)(soft tone) Des murs de trente mètres, à perte de vue.
 (worried) Et aucun souvenir de comment tu es arrivé là.
