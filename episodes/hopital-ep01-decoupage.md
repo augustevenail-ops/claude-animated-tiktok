@@ -41,7 +41,7 @@ recalés sont coupés en sous-plans `a/b/c/d`, même contenu). Fin de la vidéo 
 | 17 | 29,11 → 31,59 | « Tu la prends avec toi pour fuir ensemble. » | **Plan des deux personnages côte à côte qui se prennent la main** (mains rondes) puis partent | — |
 | 18 | 31,59 → 33,21 | « Quatre infectés te repèrent et » | Insert : yeux blancs d'un infecté qui tressautent dans l'ombre | — |
 | 19 | 33,21 → 35,53 | « se lancent à votre poursuite dans les couloirs. » | La horde (**4 infectés**) surgit et fonce vers la caméra | **MENACE DÉTECTÉE** (rouge, 33,4 → 35,2 fondu) |
-| 20 | 35,53 → 40,57 | « Dehors, la police… d'appeler l'armée. » | Drone : traverse une vitre, rase la façade, zoome sur un policier au talkie-walkie | **POLICE** (bleu, ~38,4 → 40,3, à l'arrivée sur le policier) |
+| 20 | 35,53 → 40,57 | « Dehors, la police… d'appeler l'armée. » | Drone : traverse une vitre, rase la façade, arrive sur le cordon de police : **6 à 8 policiers** derrière **2 voitures garées de travers** (une de profil, une de face), positions variées (un **accroupi** derrière une portière, un qui vise, un qui recule, un qui fait signe…) ; zoom final sur **le policier au talkie-walkie** | **POLICE** (bleu, ~38,4 → 40,3, à l'arrivée sur le policier) |
 | 21 | 40,57 → 42,39 | « Vous dévalez les escaliers de service. » | Plongée zénithale en spirale dans l'escalier en béton | — |
 | 22 | 42,39 → 44,99 | « Tu te plaques contre un mur pour reprendre ton souffle. » | Dos contre le béton, torse qui se soulève vite | — |
 | 23 | 44,99 → 45,79 | « Et tu remarques » | Insert : regard inquiet de la fillette derrière lui | — |
