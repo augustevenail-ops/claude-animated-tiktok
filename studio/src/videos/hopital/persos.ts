@@ -146,6 +146,12 @@ export const drawPerso = (p: Pen, s: Perso) => {
     };
     // mèches sur les côtés, sous la bande (rien au-dessus des yeux)
     g.save(); g.beginPath(); g.arc(cx, hy, R - 1, 0, 7); g.clip();
+    if (s.back) {                                                                        // de dos : arrière du crâne couvert de cheveux sous le bandage
+      g.beginPath(); g.moveTo(cx - R - 4, hy - 90); g.lineTo(cx + R + 4, hy - 90); g.lineTo(cx + R + 4, hy + 40);
+      g.quadraticCurveTo(cx, hy + 92, cx - R - 4, hy + 40); g.closePath(); g.fillStyle = s.hairColor; g.fill(); stroke(g, 7);
+      g.strokeStyle = "rgba(255,240,215,0.18)"; g.lineWidth = 4;                                   // mèches
+      for (const dx of [-70, -36, 0, 36, 70]) { g.beginPath(); g.moveTo(cx + dx, hy - 30); g.quadraticCurveTo(cx + dx * 1.1, hy + 20, cx + dx * 0.95, hy + 56); g.stroke(); }
+    }
     for (const sx of [-1, 1]) { g.beginPath(); g.moveTo(cx + sx * (R + 4), hy - 80); g.lineTo(cx + sx * R * 0.66, hy - 80);
       g.quadraticCurveTo(cx + sx * R * 0.6, hy - 24, cx + sx * R * 0.8, hy + (sx < 0 ? 38 : 2)); g.lineTo(cx + sx * (R + 4), hy + (sx < 0 ? 42 : 6));   // bas des mèches = hauteur des sourcils g.closePath();
       g.fillStyle = s.hairColor; g.fill(); stroke(g, 7); }

@@ -21,3 +21,4 @@
 (serious)(soft tone) Alors toi, qu'est-ce que tu fais ?
 (serious)(soft tone) Est-ce que tu t'engouffres dans le couloir noir, ou est-ce que tu fonces dans la lumière ?
 (serious)(soft tone) Dis-le-moi en commentaire.
+(serious)(soft tone) Abonne-toi pour l'épisode deux.
