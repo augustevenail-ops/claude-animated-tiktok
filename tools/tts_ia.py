@@ -83,6 +83,12 @@ def main():
         text, out = sys.argv[sys.argv.index("--texte") + 1], d / f"essai_texte_{prov}"
     elif "--outro" in sys.argv:                     # ligne « OUTRO: » du script (carton final)
         text = next(l[6:].strip() for l in (d / cfg["script"]).read_text(encoding="utf-8").splitlines() if l.startswith("OUTRO:")); out = d / "outro"
+        if prov == "fish":                          # même timbre que le récit : générée à la suite des 2 dernières phrases, puis découpée
+            ref = cfg["fallback_reference_id"] if "--fallback" in sys.argv else cfg["reference_id"]
+            x = decode(fish(cfg, "\n".join(L[-2:] + [text]), ref)); x = x[cut_outro(x):]
+            encode(x, out.with_suffix(".mp3")); y = serre(x, keep=cfg.get("blanc_max", 0.15)); encode(y, out.with_name(out.name + "_serre.mp3"))
+            subprocess.run(["ffmpeg", "-loglevel", "error", "-y", "-i", str(out.with_name(out.name + "_serre.mp3")), "-ar", "48000", "-c:a", "pcm_s16le", str(out.with_suffix(".wav"))], check=True)
+            print(f"{out}.wav (dans la continuité du récit)"); return
     elif "--test" in sys.argv:
         n = int(sys.argv[sys.argv.index("--test") + 1]); text, out = L[n - 1], d / f"essai_{n:02d}_{prov}"
     else:
@@ -107,6 +113,15 @@ def main():
 
 
 SR = 44100
+
+
+def cut_outro(x):
+    """début du mot « Abonne » (faster-whisper), 60 ms avant"""
+    from faster_whisper import WhisperModel
+    a = subprocess.run(["ffmpeg", "-v", "quiet", "-f", "f32le", "-ar", str(SR), "-ac", "1", "-i", "-", "-ar", "16000", "-f", "f32le", "-"], input=x.tobytes(), capture_output=True).stdout
+    segs, _ = WhisperModel("small", device="cpu", compute_type="int8").transcribe(np.frombuffer(a, np.float32), language="fr", word_timestamps=True)
+    t = next(w.start for s in segs for w in s.words if "abonn" in w.word.lower())
+    return max(0, int((t - 0.06) * SR))
 
 
 def decode(b: bytes):
