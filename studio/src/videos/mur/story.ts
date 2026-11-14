@@ -102,5 +102,5 @@ export const HOOK_M = 1.5, HOOK_HEAD = 245 * 0.00216 * LONG_K * HOOK_M;
 export const hookLean = (t: number) => 0.22 + 0.36 * smooth(t / 1.8);
 const hookHead = (t: number): V3 => [0.2, H + HOOK_HEAD * Math.cos(hookLean(t)), WAKE_Z + 2.93 - HOOK_HEAD * Math.sin(hookLean(t))];
 export const dofAt = (sid: number, f = 0): Dof => ROLE[sid] === 1
-  ? { cInf: 16, focus: lerp3([0, 1.48, WAKE_Z], hookHead(f / FPS), HOOK_RACK(f / FPS)) }
+  ? { cInf: 6, focus: lerp3([0, 1.48, WAKE_Z], hookHead(f / FPS), 0.35 * HOOK_RACK(f / FPS)) }
   : { cInf: DOFS[ROLE[sid]] ?? 8 };
