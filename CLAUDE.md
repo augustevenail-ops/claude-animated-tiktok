@@ -64,7 +64,8 @@ zones sombres désaturées + accents saturés (lumières pratiques chaudes, roug
 
 ## Démarrage rapide (nouvelle session)
 L'analyse complète du dépôt est faite (2026-11-11) : **ne pas la refaire**.
-**Référence actuelle = *Le Mur* ép. 1 (v6, 2026-11-14)** : personnages, voix, montage, son. Lire d'abord `docs/serie.md`,
+**Nouvelle session : lire seulement `docs/DEMARRAGE.md`** (résumé complet ; commande `/nouvelle-serie`).
+**Référence actuelle = *Le Mur* ép. 1 (v6, 2026-11-14)** : personnages, voix, montage, son. Détails : `docs/serie.md`,
 `docs/personnages.md`, `docs/direction-artistique.md`, `docs/audio.md` ; puis, selon le besoin :
 1. `docs/WORKFLOW.md` — étapes de production + checklist « première vidéo ».
 2. `docs/STYLE_ARTISTIQUE.md` — toutes les valeurs de style chiffrées (personnages, couleurs, encre, DOF, caméra, son).
