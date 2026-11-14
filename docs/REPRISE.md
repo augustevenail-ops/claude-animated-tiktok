@@ -9,9 +9,10 @@
 
 ## Reste à faire
 - *Le Mur* ép. 1 : **rendu final fait (2026-11-14)**, 68,2 s : `archives_videos/le_mur_ep1_tiktok.mp4` (62 Mo) et `le_mur_ep1_2K.mp4` (44 Mo),
-  en attente du retour de l'utilisateur. Voix IA = voix clonée de l'utilisateur sur Fish Audio (`tools/tts_ia.py`, `productions/mur-ep01/voix_ia/`),
+  puis **v2 rendue (2026-11-14)** après retours : 59 sous-plans courts (CUTS dans story.ts), accroche zoom/dézoom, drones ras du sol, mur des noms gravés,
+  flashs 2 images, SFX enrichis : `archives_videos/le_mur_ep1_v2_tiktok.mp4` (64 Mo) et `le_mur_ep1_v2_2K.mp4` (49 Mo), en attente du retour de l'utilisateur. Voix IA = voix clonée de l'utilisateur sur Fish Audio (`tools/tts_ia.py`, `productions/mur-ep01/voix_ia/`),
   minutage `tools/aligne_mots.py`, mix `tools/mur_mix.py` (MUR_VOIX=voix_ia par défaut). Narration « comme Imagine. » : grave, doux, vitesse 1 ; accroche en peur chuchotée.
-- Rendu : copier `studio/src` dans `studio/out/snap_mur/src`, puis `bash scripts/render_parallel.sh out/queue_mur.txt` (~16 min / 300 images, ~2 h 10 au total).
+- Rendu : copier `studio/src` dans `studio/out/snap_mur/src`, puis `bash scripts/render_parallel.sh out/queue_mur2.txt` (v2, sortie `out/v2_mur`) (~16 min / 300 images, ~2 h 10 au total).
 
 ## Règles de travail (économie de tokens)
 - Ne pas relire de gros fichiers ; utiliser grep/sed. Une seule planche d'images par étape ; ne pas ouvrir d'images inutiles.
