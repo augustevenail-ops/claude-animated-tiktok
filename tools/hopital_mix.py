@@ -151,6 +151,31 @@ click(W(221) - 0.05 if False else S("31b") + 0.5, -16, 900); click(At("31c", 0.6
 growl(S("31d"), 1.6, -27); cue("gasp_teen", At("31d", 0.5), -24)
 FLIP = TITLE_AT + 0.9 + 0.4                                                                            # 32 : « ÉPISODE 1 » -> « 2 » (Hopital.tsx)
 k.stinger(TITLE_AT, 0.45); k.reverse(FLIP, 0.35, 0.5); cue("lock_click", FLIP - 0.01, -8); cue("sting_hit", FLIP, -10)
+
+# ================= NOTES SIGNATURES (retour utilisateur) : une couleur sonore par élément =================
+from scipy.signal import lfilter as _lf
+def _lp(x, fc): a_ = np.exp(-2 * np.pi * fc / SR); return _lf([1 - a_], [1, -a_], x)
+def rule_sting(t0, g=-9.0):                                  # RÈGLE : souffle inversé qui monte + coup grave + cloche (partiels inharmoniques)
+    k.reverse(t0, 0.9, 0.55); k.impact(t0, 0.9, 42.0, 2.2)
+    n = int(3.5 * SR); t = np.arange(n) / SR
+    bell = sum(a * np.sin(2 * np.pi * 246.9 * r * t) * np.exp(-t * d) for r, a, d in ((1, 1, 0.9), (2.76, 0.55, 1.6), (5.4, 0.3, 2.8), (8.93, 0.15, 4)))
+    put(sfx, bell, t0, g)
+def infected_sting(t0, g=-11.0):                             # INFECTÉS : accord dissonant grave (secondes mineures), attaque sèche, souffle
+    n = int(1.8 * SR); t = np.arange(n) / SR; x = np.zeros(n)
+    for m in (35, 36, 42, 47, 48): f = 440 * 2 ** ((m - 69) / 12); x += 2 * ((t * f + rng.random()) % 1) - 1
+    x = _lp(x, 900) * np.exp(-t * 1.8) * np.minimum(1, t / 0.01); put(sfx, x, t0, g)
+def girl_motif(t0, g=-14.0):                                 # LA FILLETTE : petit motif de boîte à musique (si - ré - fa#), doux
+    for q, m in enumerate((83, 86, 90)):
+        n = int(1.6 * SR); t = np.arange(n) / SR; f = 440 * 2 ** ((m - 69) / 12)
+        x = (np.sin(2 * np.pi * f * t) + 0.3 * np.sin(2 * np.pi * f * 3.01 * t)) * np.exp(-t * 3.2) * np.minimum(1, t / 0.003); put(sfx, x, t0 + q * 0.22, g)
+def police_sting(t0, g=-13.0):                               # POLICE : double coup grave de « cuivres » (quinte), sec
+    for q, m in enumerate((38, 45)):
+        n = int(0.9 * SR); t = np.arange(n) / SR; f = 440 * 2 ** ((m - 69) / 12)
+        x = _lp(2 * ((t * f) % 1) - 1 + 0.5 * (2 * ((t * f * 1.005) % 1) - 1), 700) * np.exp(-t * 3) * np.minimum(1, t / 0.02); put(sfx, x, t0 + q * 0.16, g)
+rule_sting(W(76) - 0.03); rule_sting(W(161) - 0.03)                                         # « Règle numéro 1 » / « Règle numéro 2 »
+for t_ in (S("06") + 0.1, S("13") + 0.1, S("14") + 0.05, S("18") + 0.02, S("19") + 0.05, S("24") + 0.05): infected_sting(t_)   # chaque apparition d'infectés
+girl_motif(At("16b", 0.2)); girl_motif(At("17", 0.15), -17); girl_motif(S("23") + 0.05, -18)  # la fillette : découverte, la main, son regard
+police_sting(S("05") + 0.15); police_sting(At("20", 0.55), -14)                               # la police : encerclement, le cordon
 # souffles discrets aux coupes (sauf les inserts très courts)
 for n, _ in PLANS[1:]: k.whoosh(S(n), 0.3, 0.22)
 
@@ -232,7 +257,8 @@ for i in range(len(words)): duck[int(max(0, W(i) - 0.08) * SR):int(min(DUR, E(i)
 mus *= np.convolve(duck, np.ones(2000) / 2000, "same")
 hit = k.hit + 0.8 * k.air; a = np.abs(hit) > 1e-5; hit = hit * db(vref - 14 - rms(hit[a])) if a.any() else hit
 
-G_SFX, G_AMB = db(3.5), db(2.0)
+G_SFX, G_AMB = db(3.5) * 0.75, db(2.0) * 0.75                                                # bruitages −1/4 (retour utilisateur)
+mus = mus * (2 / 3)                                                                           # musique −1/3
 mix = np.stack([voice + mus + amb * G_AMB + (hit + sfx) * G_SFX, voice + mus * 0.97 + amb * 0.95 * G_AMB + (hit + sfx * 0.93) * G_SFX], 1)
 pre = os.path.join(VD, "_pre.wav")
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "f64le", "-ar", str(SR), "-ac", "2", "-i", "-", pre], input=mix.tobytes(), check=True)
