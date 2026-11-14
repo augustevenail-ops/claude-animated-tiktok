@@ -11,7 +11,7 @@ import { LensBlurEffect } from "../bridge/lensblur";
 import { GradeEffect } from "../bridge/grade";
 
 import { World } from "./world";
-import { TOTAL, FPS, WORDS, shotAt, dofAt, CHOICE_AT, TITLE_AT, LIGHT, ROLE } from "./story";
+import { TOTAL, FPS, WORDS, shotAt, dofAt, CHOICE_AT, TITLE_AT, LIGHT, ROLE, uOf } from "./story";
 import { Captions, captionGroups, Hud, ChoiceCards, TitleCard, useFonts, KARAOKE } from "../shared/overlay";
 const GROUPS = captionGroups(WORDS);
 import { GRADES } from "./look";
@@ -78,6 +78,9 @@ export const MurEp1: React.FC = () => {
         <Inner />
       </ThreeCanvas>
       <div style={{ position: "absolute", inset: 0, mixBlendMode: "overlay", opacity: 0.13, backgroundImage: `url("${GRAIN}")`, backgroundSize: "260px 260px", backgroundPosition: `${(f * 53) % 260}px ${(f * 97) % 260}px` }} />
+      {(() => { const id = ROLE[shotAt(f).id]; if (id !== 25 && id !== 26) return null;            // ombre de l'entrée qui se referme : elle monte du bas vers le haut sur toi
+        const u = uOf(shotAt(f).id, f), h = id === 25 ? 10 + 30 * u : 35 + 85 * u;
+        return <div style={{ position: "absolute", inset: 0, pointerEvents: "none", background: `linear-gradient(to top, rgba(2,2,6,0.72) 0%, rgba(2,2,6,0.72) ${h - 18}%, rgba(2,2,6,0) ${h + 12}%)` }} />; })()}
       {t < TITLE_AT ? <Hud episode={1} place={LIGHT[ROLE[shotAt(f).id]] === 2 ? "NUIT 1" : "JOUR 1"} label="NOMS SUR LE MUR" count={347} alert={LIGHT[ROLE[shotAt(f).id]] > 0} /> : null}
       {t < TITLE_AT ? <ChoiceCards t={t} at={CHOICE_AT} a="COURIR" b="NE PAS BOUGER" /> : null}
       {t < CHOICE_AT ? <Captions t={t} groups={GROUPS} karaoke={KARAOKE} /> : null}

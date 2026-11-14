@@ -82,7 +82,7 @@ export class World {
   sun: THREE.DirectionalLight; private hemi: THREE.HemisphereLight; private fog = new THREE.Fog("#000", 10, 100);
   private pool = new Pool(); private actors: Actor[] = []; private longs: Actor[] = []; private longMats: THREE.MeshBasicMaterial[] = []; private shadowMats: THREE.MeshBasicMaterial[] = []; private longShadow: boolean[] = [];
   private sky: THREE.Mesh; private skyMaps: THREE.Texture[]; private doors: THREE.Mesh[] = []; private movers: { m: THREE.Mesh; x: number; z: number; ax: "x" | "z" }[] = [];
-  private fireGlow: THREE.Mesh; private sirenGlow: THREE.Mesh; private sirenLamp: THREE.Mesh; private candles: THREE.Mesh[] = []; private moon: THREE.Mesh; private sunDisc: THREE.Mesh;
+  private fireGlow: THREE.Mesh; private sirenGlow: THREE.Mesh; private sirenLamp: THREE.Mesh; private candles: THREE.Mesh[] = []; private parts: Record<string, THREE.Points> = {}; private moon: THREE.Mesh; private sunDisc: THREE.Mesh;
   constructor() {
     const R = this.root;
     this.hemi = new THREE.HemisphereLight("#ffcf9a", "#3a2a2a", 0.3); R.add(this.hemi);
@@ -156,6 +156,12 @@ export class World {
     this.sunDisc = new THREE.Mesh(new THREE.PlaneGeometry(900, 900), new THREE.MeshBasicMaterial({ map: glowTex("255,190,120"), transparent: true, fog: false, blending: THREE.AdditiveBlending, depthWrite: false })); this.sunDisc.layers.set(NOINK); R.add(this.sunDisc);
     for (let i = 0; i < 16; i++) this.actors.push(new Actor(R));
     for (let i = 0; i < 8; i++) this.longs.push(new Actor(R));
+    // ---------- détails vivants : particules calculées à partir du temps seul (rendu par morceaux sûr) ----------
+    const mk = (key: string, n: number, col: string, size: number, add: boolean, op = 1, fog = true) => { const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.BufferAttribute(new Float32Array(n * 3), 3));
+      const pt = new THREE.Points(g, new THREE.PointsMaterial({ map: glowTex(col), size, transparent: true, opacity: op, depthWrite: false, blending: add ? THREE.AdditiveBlending : THREE.NormalBlending, fog }));
+      pt.layers.set(NOINK); pt.visible = false; pt.frustumCulled = false; R.add(pt); this.parts[key] = pt; };
+    mk("dust", 160, "255,214,160", 0.05, true, 0.9); mk("spark", 90, "255,150,50", 0.2, true); mk("smoke", 70, "175,170,165", 8, false, 0.3);
+    mk("bird", 24, "8,8,12", 0.5, false); mk("puff", 140, "210,170,140", 0.7, false, 0.4, false); mk("wisp", 30, "150,150,150", 0.12, false, 0.5);
   }
 
   update(sid: number, f: number, cam: THREE.PerspectiveCamera, scene: THREE.Scene) {
@@ -181,13 +187,40 @@ export class World {
     // entrée, blocs mobiles, lueurs
     const close = id >= 22 ? entryClose(t) : 0;
     for (const d of this.doors) d.position.x = d.userData.s * (ENTRY_W / 2 + 1.6 - (ENTRY_W / 2 + 1.6 - (ENTRY_W / 4 + 0.05)) * close);
-    this.movers.forEach((mv, i) => { mv.m.visible = id === 9 || id === 10; const s = smooth(u) * (hash(i, 64) < 0.5 ? -1 : 1) * CELL;
+    this.movers.forEach((mv, i) => { mv.m.visible = id >= 8 && id <= 10; const s = smooth(u) * (hash(i, 64) < 0.5 ? -1 : 1) * CELL;
       mv.m.position.set(mv.x + (mv.ax === "x" ? s : 0), 0, mv.z + (mv.ax === "z" ? s : 0)); });
     const night = lk === 2; if (night) (this.root.getObjectByName("grass") as THREE.Mesh | undefined); const flick = 0.85 + 0.15 * Math.sin(t * 17) * Math.sin(t * 7.3);
     (this.fireGlow.material as THREE.MeshBasicMaterial).opacity = (night ? 1 : 0.55) * flick; this.fireGlow.lookAt(cam.position);
     const siren = id === 20 || id === 21 || id >= 22; const rot = 0.5 + 0.5 * Math.sin(t * 8);
     (this.sirenGlow.material as THREE.MeshBasicMaterial).opacity = siren ? 0.4 + 0.6 * rot : 0.08; this.sirenGlow.lookAt(cam.position); this.sirenLamp.visible = true;
     this.candles.forEach((cd, i) => { (cd.material as THREE.MeshBasicMaterial).opacity = (night ? 0.95 : 0.4) * (0.8 + 0.2 * Math.sin(t * 9 + i * 2)); cd.lookAt(cam.position); });
+
+    // ---------- détails vivants (un différent par plan) ----------
+    if (id === 7) this.sun.intensity *= 1 - 0.55 * smooth(u);                               // la lumière baisse : la nuit approche
+    this.candles.forEach((cd, i) => { if (id === 17 && i === 2) (cd.material as THREE.MeshBasicMaterial).opacity *= 1 - smooth((u - 0.45) * 6); });   // une bougie s'éteint
+    const fwd = new THREE.Vector3(); cam.getWorldDirection(fwd); const rgt = fwd.clone().cross(V(0, 1, 0)).normalize(), upv = rgt.clone().cross(fwd).normalize();
+    const nearCam = (d: number, x: number, y: number): V3 => { const q = cam.position.clone().addScaledVector(fwd, d).addScaledVector(rgt, x).addScaledVector(upv, y); return [q.x, q.y, q.z]; };
+    const fr = (x: number) => x - Math.floor(x);
+    const setP = (key: string, on: boolean, fn?: (i: number, r: (k: number) => number) => V3 | null, size?: number) => { const pt = this.parts[key]; pt.visible = on; if (!on || !fn) return;
+      if (size) (pt.material as THREE.PointsMaterial).size = size;
+      const a = pt.geometry.getAttribute("position") as THREE.BufferAttribute;
+      for (let i = 0; i < a.count; i++) { const v = fn(i, (kk) => hash(i, 300 + kk)) ?? [0, -999, 0]; a.setXYZ(i, v[0], v[1], v[2]); } a.needsUpdate = true; };
+    setP("dust", id === 3 || id === 6, (i, r) => id === 3                                    // 3 : poussière qui tombe du mur ; 6 : poussière dorée en suspension
+      ? nearCam(1.5 + r(0) * 5, (r(1) - 0.5) * 3, 2.5 - fr(r(2) + t * (0.12 + r(3) * 0.1)) * 5)
+      : nearCam(3 + r(0) * 9, (r(1) - 0.5) * 6 + Math.sin(t * 0.6 + i) * 0.3 + t * 0.15, (r(2) - 0.5) * 10 + Math.sin(t * 0.8 + i * 2) * 0.25), id === 6 ? 0.13 : 0.06);
+    setP("bird", id === 4, (i, r) => { const a = u + (r(0) - 0.5) * 0.12;                 // 4 : nuée d'oiseaux noirs qui traverse sous la caméra
+      return nearCam(22 + r(1) * 14, -14 + a * 28 + r(2) * 3, -3 + (r(3) - 0.5) * 4 + Math.sin(t * 9 + i) * 0.4); }, 2.2);
+    setP("smoke", id === 13, (i, r) => { const a = fr(r(0) + t * 0.08);                       // 13 : la fumée du feu monte au-dessus de la clairière
+      return [FIRE[0] + (r(1) - 0.5) * (1 + a * 6) + a * 4, 1 + a * 22, FIRE[2] + (r(2) - 0.5) * (1 + a * 6)]; });
+    setP("spark", id === 14, (i, r) => { const a = fr(r(0) + t * (0.5 + r(1) * 0.5));          // 14 : étincelles qui jaillissent du feu
+      return [FIRE[0] + (r(2) - 0.5) * 0.6 + Math.sin(t * 3 + i) * a * 0.4, 0.4 + a * (2 + r(3) * 2.5), FIRE[2] + (r(4) - 0.5) * 0.6]; });
+    setP("wisp", id === 17 && u > 0.47, (i, r) => { const c = this.candles[2]?.position; if (!c) return null; const a = fr(r(0) + t * 0.35);   // 17 : filet de fumée de la bougie éteinte
+      return [c.x + Math.sin(a * 9 + t) * 0.06 * (1 + a * 3), c.y + 0.1 + a * 1.4, c.z]; });
+    setP("puff", id === 21 || id === 22, (i, r) => { const a = fr(r(0) + t * (id === 21 ? 2.2 : 0.4));
+      if (id === 21) { const zy = 98 - 26 * u - 0.9; return [(r(1) - 0.5) * 0.5, 0.04 + a * 0.25, zy + a * 0.6]; }   // 21 : poussière sous tes pas
+      const sd = r(1) < 0.5 ? -1 : 1, ex = ENTRY_W / 2 + 1.6 - (ENTRY_W / 2 + 1.6 - (ENTRY_W / 4 + 0.05)) * close;          // 22 : poussière soulevée par les murs qui glissent
+      return [sd * (ex - 1.2 + (r(2) - 0.5) * 2.5 * (1 + a)), 0.2 + a * 2.2, ENTRY_Z + (r(3) - 0.5) * 3 * (1 + a)]; }, id === 21 ? 0.12 : 2.4);
+    const jit = (amp: number, seed: number) => amp * Math.sin(t * 41 + seed) * Math.sin(t * 13 + seed * 2);
 
     // ---------- personnages ----------
     const yaw = (p: V3) => Math.atan2(cam.position.x - p[0], cam.position.z - p[2]);
@@ -225,14 +258,14 @@ export class World {
       const P: V3[] = [[6, 0, WAKE_Z + 1], [-28, 0, WAKE_Z - 12], [36, 0, WAKE_Z + 20], [-12, 0, WAKE_Z + 28], [22, 0, WAKE_Z - 28], [-44, 0, WAKE_Z + 6]];
       P.forEach((p, i) => { if (id === 9 && i > 2) return; const e = id === 10 ? smooth(u * 1.6 - i * 0.12) : 1; long([p[0] + (i % 2 ? 1 : -1) * 3 * u, 0, p[2]], { pose: "walk", step: ((t * 0.35 + i * 0.3) % 1 + 1) % 1 }); void e; });
     }
-    if (id === 11) { long([13, 0, WAKE_Z + 0.4], { pose: "stand", tilt: 0.38 * smooth((u - 0.3) * 2.5) }); place("B", [10.6, 0, WAKE_Z - 0.6], { mode: "stand", expr: "worry" }); }
+    if (id === 11) { long([13, 0, WAKE_Z + 0.4], { pose: "stand", tilt: 0.38 * smooth((u - 0.3) * 2.5) }); place("B", [10.6 + jit(0.035, 1), 0, WAKE_Z - 0.6], { mode: "stand", expr: "worry" }); }   // le jeune tremble
     if (id === 12) { long([2.5, H - (975 - PEEK_CUT) * 0.00216 * LONG_K, WAKE_Z + 3.0], { pose: "peek", turn: Math.sin(u * 3) * 0.6, tap: t * 1.1, mouth: 0.35 * smooth((u - 0.6) * 3) }); place("C", [2.0, 0, WAKE_Z - 0.4], { mode: "stand", expr: "mute", blink: false }); }
     if (id === 13 || id === 14) {
       RING.forEach(([key, a], i) => place(key, [FIRE[0] + Math.cos(a) * 3.1, 0, FIRE[2] + Math.sin(a) * 3.1], { mode: "stand", expr: i % 3 ? "worry" : "calm", blink: blink(i + 2) }));
       if (id === 14) place("Y", [0.4, 0, 1.2], { mode: "stand", expr: "worry", back: true });
     }
     if (id === 15) [[-3, 22], [-1, 24], [1.5, 23]].forEach(([x, z], i) => place(["A", "D", "E"][i], [x, 0, z - 6 * smooth(u)], { mode: "stand", expr: "worry", side: -1 }));
-    if (id === 16) RING.slice(0, 6).forEach(([key, a], i) => place(key, [FIRE[0] + Math.cos(a) * 3.1, 0, FIRE[2] + Math.sin(a) * 3.1], { mode: "stand", expr: "mute" }));
+    if (id === 16) RING.slice(0, 6).forEach(([key, a], i) => place(key, [FIRE[0] + Math.cos(a) * 3.1 + (i === 2 ? jit(0.04, 3) * (1 - smooth(u * 1.6)) : 0), 0, FIRE[2] + Math.sin(a) * 3.1], { mode: "stand", expr: "mute" }));   // un jeune tremble puis se fige
     if (id === 18) place("Y", [0, 0, 20], { mode: "stand", expr: "calm", blink: blink(5) });
     if (id === 19) place("Y", [0, 0, 118 - 30 * u], { mode: "stand", expr: "calm" });
     if (id === 21) place("Y", [0, 0.06 * Math.abs(Math.sin(t * 9)), 98 - 26 * u - 0.9], { mode: "stand", expr: "worry", back: true });
@@ -242,7 +275,8 @@ export class World {
       if (id === 23) floorShadow(LONG_RUN[2], 2.0, { pose: "crouch", unfold: smooth(u * 1.15) });
       if (id >= 23) long(LONG_RUN, unfold < 1 ? { pose: "crouch", unfold } : { pose: "stand",
         turn: id === 24 ? 0.85 * (1 - smooth(u * 1.6)) : 0, mouth: id === 24 ? smooth((u - 0.55) * 3) : id >= 26 ? 0.6 : 0, tilt: id === 24 ? 0.22 * smooth((u - 0.4) * 3) : id === 27 ? 0.18 : 0 }, 0);
-      if (id !== 24) place("Y", [0, 0, YOU_RUN_Z], { mode: "stand", expr: "worry", back: id === 23 || id === 25 || id === 27, blink: id === 26 && blink(6) });
+      if (id !== 24) place("Y", [0, 0, YOU_RUN_Z - (id === 27 ? 0.35 * Math.max(0, Math.sin(u * Math.PI * 3)) * (1 - u) : 0)],   // 27 : tu hésites, un pas en avant, puis tu te retiens
+        { mode: "stand", expr: "worry", back: id === 23 || id === 25 || id === 27, blink: id === 26 && blink(6) });
     }
     void tW; void H;
     for (; k < this.actors.length; k++) this.actors[k].mesh.visible = false;
