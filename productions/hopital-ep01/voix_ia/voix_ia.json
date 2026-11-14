@@ -38,5 +38,6 @@
     "free_voice_name": "George (premade, utilisable sur le forfait gratuit ; accent non natif)",
     "script": "SCRIPT_BALISE.md",
     "_note_forfait": "Forfait gratuit : les voix de la bibliothèque (Martin Dupont, Nicolas Petit) sont refusées par l'API (402) ; option --free = George."
-  }
+  },
+  "_note_imagine": "« Imagine » d'ouverture : (serious)(whispering) Imagine… généré seul (--texte) puis raccordé dans le silence avant la respiration de la 2e phrase (fondu 0,12 s, volume aligné). Reste du texte : (serious)(soft tone). Validé 2026-11-14 (docs/audio.md)."
 }

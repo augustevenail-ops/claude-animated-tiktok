@@ -1,4 +1,15 @@
-# Reprise de session (2026-11-13) — à lire en premier, rien d'autre sauf besoin
+# Reprise de session (2026-11-14) — à lire en premier, rien d'autre sauf besoin
+
+## En cours : *L'hôpital* ép. 1 (nouvelle série, même univers que *Le Mur*)
+- Branche de travail : `claude/affectionate-pascal-ztsueb`.
+- Découpage validé (38 plans recalés sur la voix, tags, HUD, sound design) : `episodes/hopital-ep01-decoupage.md`.
+- Voix **validée** : `productions/hopital-ep01/voix_ia/voice.wav` (69,3 s) + `words.json` ; réglages dans `docs/audio.md`.
+- Personnages validés : `studio/src/videos/hopital/persos.ts`, planche `HopitalPlanche` (`productions/hopital-ep01/planche_persos.png`) :
+  héros patient + bandage de travers sur tout le crâne (mèches sur les côtés, pas de frange), policiers, médecins, soignant (normal → infecté,
+  veines en réseau qui poussent avec `grow`), fillette, 4 infectés. Lumière/reflets réalistes à ajouter au rendu des plans (pas au design).
+- Étapes suivantes : images de référence des 38 plans (validation utilisateur avant toute animation) ; bande son (bruitages + musique) ;
+  puis animation, rendu.
+
 
 ## État
 - *L'appel* ép. 1-3 : terminés, publiés (vidéos dans `archives_videos/`, non versionnées).

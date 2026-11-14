@@ -1,8 +1,23 @@
-# Audio — réglages validés (2026-11-14, *Le Mur* ép. 1 v6) : défaut de toutes les nouvelles vidéos
+# Audio — réglages validés (2026-11-14 : *Le Mur* ép. 1 v6, puis voix de *L'hôpital* ép. 1) : défaut de toutes les nouvelles vidéos
 
 Seule voix utilisée : plus d'ElevenLabs (ancienne doc retirée le 2026-11-14).
 
-## Voix off
+## Voix off — réglage actuel (validé 2026-11-14 sur *L'hôpital* ép. 1) : **à utiliser par défaut**
+- Voix Fish Audio **« Narrateur Expressif et Profond »** (`reference_id` `15ba126e214c4eae9c69d5a01bbbf53c`, voix de l'utilisateur, FR),
+  modèle `s1`, vitesse 1.0, `blanc_max` 0.3 ; ancienne voix « Narrateur Dramatique et Captivant » en `fallback_reference_id`.
+  Config à copier : `productions/hopital-ep01/voix_ia/voix_ia.json` (+ `SCRIPT_FISH.md` comme modèle).
+- **Tout le texte** : `(serious)(soft tone)` sur chaque phrase, y compris la dernière ligne « Abonne-toi pour l'épisode deux. »
+  (intégrée à la fin du script, pas de fichier outro séparé).
+- **« Imagine » d'ouverture** : `(serious)(whispering) Imagine…` (chuchoté, points de suspension). La génération dans le texte
+  complet sort trop enjouée → **générer ce mot seul** (`--texte "(serious)(whispering) Imagine…"`), couper les silences,
+  et le **raccorder dans la voix complète** : coupe placée **dans le silence avant la respiration** qui précède la 2ᵉ phrase
+  (jamais au milieu d'une respiration), volume aligné sur la suite (RMS des parties parlées), fondu croisé 0,12 s dans le bruit
+  de fond (pas de trou de silence numérique). Minutage inchangé. Essais d'intonation : `productions/hopital-ep01/voix_ia/essais_imagine/`
+  (validée = n° 2 ; refusées : `(scared)(whispering)` trop enjouée, `(curious)(soft tone)` détonne avec le reste).
+- Si une phrase est réécrite : régénérer **toute** la voix (continuité), puis refaire le raccord « Imagine », puis
+  `aligne_mots.py` et recaler le découpage (début de plan = mot − 2 images).
+
+## Voix off — réglage *Le Mur* (historique)
 - **Fish Audio**, modèle `s1`, voix clonée de l'utilisateur « Narrateur Dramatique et Captivant » (`reference_id` dans
   `productions/mur-ep01/voix_ia/voix_ia.json` — copier ce fichier pour un nouvel épisode). Clé injectée par le proxy (aucune clé à saisir).
 - Script `SCRIPT_FISH.md` : **une phrase par ligne, chaque phrase précédée de sa balise** (vérifié par `--check`).

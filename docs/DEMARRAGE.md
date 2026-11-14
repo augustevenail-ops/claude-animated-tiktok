@@ -1,6 +1,6 @@
 # Démarrage express (nouvelle session) — lire CE fichier seulement, le reste à la demande
 
-Référence actuelle : *Le Mur* ép. 1 v6 (2026-11-14). Répondre en français, court. Un pas à la fois, validé par l'utilisateur.
+Référence actuelle : *Le Mur* ép. 1 v6 (image, son) ; série en cours : ***L'hôpital* ép. 1** (voir `docs/REPRISE.md`). Répondre en français, court. Un pas à la fois, validé par l'utilisateur.
 Commit + push après chaque étape. Ne jamais supprimer/écraser sans accord. Pas de PR.
 
 ## Ce qu'on fait
@@ -9,9 +9,9 @@ sous-titres karaoké (blanc, mot prononcé #FF9A3C), fin = choix A/B en commenta
 Structure : accroche-choc (0-3 s) → « Imagine. » → monde → 2-3 règles → règle enfreinte → révélation → tension → choix.
 
 ## Recette validée (détails : fichier entre parenthèses, à n'ouvrir que si besoin)
-- **Voix** : voix clonée de l'utilisateur sur Fish Audio (s1), une balise par phrase : accroche `(scared)(whispering)`,
-  tout le reste `(serious)(soft tone)`, vitesse 1.0. `tools/tts_ia.py` + `tools/aligne_mots.py` ; config à copier :
-  `productions/mur-ep01/voix_ia/voix_ia.json` + `SCRIPT_FISH.md` (`docs/audio.md`). **Pas ElevenLabs.**
+- **Voix** : Fish Audio (s1), voix de l'utilisateur **« Narrateur Expressif et Profond »**, tout le texte `(serious)(soft tone)`,
+  vitesse 1.0 ; « Imagine » d'ouverture `(serious)(whispering) Imagine…` généré seul puis raccordé (procédure : `docs/audio.md`).
+  `tools/tts_ia.py` + `tools/aligne_mots.py` ; config à copier : `productions/hopital-ep01/voix_ia/voix_ia.json` + `SCRIPT_FISH.md`. **Pas ElevenLabs.**
 - **Personnages** : cartes 2D (`studio/src/videos/mur/people.ts`), peur = cernes violets + sourcils inversés ;
   un monstre signature lumineux, sans yeux, apparitions partielles (`longs.ts`, `docs/personnages.md`).
 - **Image** : ~59 sous-plans de 1-2,5 s calés sur les mots (`CUTS` de `mur/story.ts`), drones rasants, zooms éclair,
