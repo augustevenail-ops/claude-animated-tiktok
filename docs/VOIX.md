@@ -1,6 +1,7 @@
 # Voix off — réglages validés (utilisateur, 2026-11-11, épisode « L'Arène » 1)
 
-Réglages **par défaut pour toutes les vidéos**. Ne les changer que sur demande de l'utilisateur.
+> **HISTORIQUE — ne plus appliquer.** Depuis le 2026-11-14 (*Le Mur* ép. 1), la voix est la voix clonée de l'utilisateur sur **Fish Audio** :
+> voir `docs/audio.md`. Ce fichier décrit l'ancienne voix ElevenLabs (George) des premières vidéos.
 
 ## Génération (ElevenLabs, clé injectée par le proxy de l'environnement `claude-animated-tiktok`)
 | Réglage | Valeur |

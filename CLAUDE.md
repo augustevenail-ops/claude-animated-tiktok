@@ -44,7 +44,7 @@ zones sombres désaturées + accents saturés (lumières pratiques chaudes, roug
    de `SKILL.md`/`STYLE_BIBLE.md` et sur la formule humoristique (« Luckily / Unluckily », faits réels).
 5. Tout est calé sur `words.json` : chaque réaction visuelle tombe 0-3 images avant son mot.
    Verrouiller les timings image **avant** de produire le son.
-6. Mix standard : musique +3 dB, SFX -6 dB, voix inchangée. Mux avec `-map 0:v:0 -map 1:a:0`.
+6. Mix : voix la plus forte > bruitages > musique (réglages dans `docs/audio.md`, modèle `tools/mur_mix.py`). Mux avec `-map 0:v:0 -map 1:a:0`.
 7. Les paramètres en pixels du post-traitement s'échelonnent avec la hauteur de sortie / 1920.
 8. Après chaque modification de code : `npx tsc --noEmit` ; pas de fichiers `.ts` temporaires dans `out/`.
 9. Rendus : définir `REMOTION_TMP` / `TEMP` / `TMP` sur un disque spacieux (chaque bundle copie ~1,3 Go).
@@ -63,12 +63,15 @@ zones sombres désaturées + accents saturés (lumières pratiques chaudes, roug
 - Les stills de contrôle se font à l'échelle 0.5 ; le rendu 2K complet seulement à la fin.
 
 ## Démarrage rapide (nouvelle session)
-L'analyse complète du dépôt est faite (2026-11-11) : **ne pas la refaire**. Lire dans l'ordre, selon le besoin :
+L'analyse complète du dépôt est faite (2026-11-11) : **ne pas la refaire**.
+**Référence actuelle = *Le Mur* ép. 1 (v6, 2026-11-14)** : personnages, voix, montage, son. Lire d'abord `docs/serie.md`,
+`docs/personnages.md`, `docs/direction-artistique.md`, `docs/audio.md` ; puis, selon le besoin :
 1. `docs/WORKFLOW.md` — étapes de production + checklist « première vidéo ».
 2. `docs/STYLE_ARTISTIQUE.md` — toutes les valeurs de style chiffrées (personnages, couleurs, encre, DOF, caméra, son).
 3. `docs/ARCHITECTURE_TECHNIQUE.md` — dépendances, rôle de chaque module, contrats, commandes.
 4. `docs/INVENTAIRE.md` — ressources, ce qui a été analysé, ce qui manque.
-6. `docs/VOIX.md` — réglages voix validés, à appliquer tels quels.
+6. `docs/audio.md` — **voix (Fish Audio, voix clonée de l'utilisateur) et mix validés**, à appliquer tels quels.
+   (`docs/VOIX.md` = ancienne voix ElevenLabs, historique seulement.)
 5. `docs/REFERENCE_APOKALYPS.md` — **référence officielle n° 2** (voix, suspense, nuit, montage) : règles §7, écarts à trancher §8.
 
 ## Références officielles
