@@ -116,9 +116,9 @@ wings(S(4) + 0.3, Se(4) - 0.2, -24)                          # 4 : nuée d'oisea
 sand(S(6), Se(6), -30, 25)                                   # 6 : poussière dorée en suspension (à peine)
 cue("vent_air", S(7), -26, Se(7) - S(7))                     # 7 : la lumière baisse, souffle d'air
 cue("breath_nervous", S(11) + 0.3, -22)                      # 11 : le jeune tremble
-fire(S(13), Se(14), -24)                                     # 13-14 : feu de camp (léger)
+fire(S(13), Se(15), -19)                                     # 13-15 : feu de camp (plus présent, retour v5)
 sand(S(14) + 0.2, Se(14), -30, 30)                           # 14 : étincelles qui crépitent
-fire(S(16), Se(16), -30)                                     # 16 : la nuit, le feu presque éteint
+fire(S(16), Se(17), -25)                                     # 16 : la nuit, le feu presque éteint
 cue("breath_nervous", S(16) + 0.4, -24)                      # 16 : un jeune tremble puis se fige
 puff(S(17) + 0.47 * (Se(17) - S(17)), -20)                   # 17 : la bougie s'éteint
 for e in range(int((Se(19) - S(19)) / 0.55)): cue("footstep_one", S(19) + 0.2 + e * 0.55, -26)   # 19 : tes pas, loin
@@ -177,6 +177,27 @@ def tiin(t0, d=2.6, g_db=-15, f=1568.0):                                        
     if 0 <= i < N: sfx[i:j] += x[: j - i]
 for t_ in [W(4) - 0.05, S(10) + 0.2, S(12) + 0.15, W(140) - 0.05, W(162), S(24) + 0.55 * (Se(24) - S(24)), S(27) + 0.5]:
     tiin(t_)                                                                              # Long qui apparaît, sirène, fente, Long derrière toi
+def pops(t0, t1, g_db, rate=2.2):                                                        # bûches qui claquent / braises qui sautent
+    n = int((t1 - t0) * SR); x = np.zeros(n); t = 0.1
+    while t < t1 - t0 - 0.2:
+        m = int(0.03 * SR); i = int(t * SR); e = np.exp(-np.arange(m) / (0.004 * SR))
+        x[i:i + m] += bp(drng.standard_normal(m), 900, 6000) * e * (0.6 + drng.random()); t += drng.exponential(1 / rate)
+    put(x, t0, g_db, 0.2)
+def crickets(t0, t1, g_db):                                                               # grillons de nuit, lointains
+    n = int((t1 - t0) * SR); t = np.arange(n) / SR
+    gate = (np.sin(2 * np.pi * 14 * t) > 0.3) * (np.sin(2 * np.pi * 0.9 * t + 1) > -0.2)
+    x = np.sin(2 * np.pi * 4300 * t) * gate + 0.6 * np.sin(2 * np.pi * 4800 * t + 2) * (np.sin(2 * np.pi * 11 * t + 0.5) > 0.4) * (np.sin(2 * np.pi * 0.6 * t) > 0)
+    put(np.convolve(x, np.ones(40) / 40, "same"), t0, g_db, 0.6)
+# ---- clairière plus vivante (retour v5 : « pas assez de bruit » pendant les règles)
+pops(S(13), Se(15), -20); pops(S(16), Se(17), -28, 1.0)                                    # le feu crépite et claque
+cue("crowd_shuffle", S(14) + 0.2, -19); cue("crowd_breath", S(14) + 1.5, -21)              # vingt jeunes qui bougent, respirent
+cue("crowd_shuffle", S(15) + 0.4, -21); cue("cloth_rustle", S(15) + 2.2, -18)
+steps(S(14) + 0.4, S(14) + 2.6, 0.55, -24); steps(S(15) + 1.0, S(15) + 2.8, 0.6, -26)      # pas dans la terre
+sand(S(14), Se(15), -32, 40)                                                               # terre qui crisse sous les pieds
+cue("wind_city", S(13), -24); cue("wind_city", S(15), -25)                                 # air du labyrinthe
+crickets(S(16), Se(18), -30)                                                               # nuit : grillons
+cue("cloth_rustle", S(17) + 0.3, -20); sand(S(17) + 0.6, S(17) + 2.2, -27, 70)             # 17 : doigts sur la pierre gravée, poussière
+cue("wind_city", S(18), -22); cue("footstep_one", S(18) + 0.6, -20)                        # 18 : tu te lèves
 hs = k.hit + 0.8 * k.air; hit = lvl(hs, vref - 13)
 o = dec(os.path.join(VD, "outro.wav")); j0 = int((TITLE_AT + 0.05) * SR); voice[j0:j0 + len(o)] += o[: max(0, N - j0)] * db(vref - rms(o[np.abs(o) > 1e-3]))
 mix = np.stack([voice + mus + hit + sfx + HISS[0], voice + mus * 0.97 + hit + sfx * 0.92 + HISS[1]], 1)
