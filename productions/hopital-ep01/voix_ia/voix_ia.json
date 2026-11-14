@@ -1,0 +1,42 @@
+{
+  "provider": "fish",
+  "_note": "Voix IA du narrateur. Décision utilisateur 2026-11-14 : Fish Audio (modèle s1) à la place d'ElevenLabs (voix de bibliothèque refusées sur le forfait gratuit). Balises d'émotion Fish S1 entre parenthèses, une par phrase.",
+  "fish": {
+    "reference_id": "e85eb76597a045c08f9031096e973f86",
+    "voice_name": "Narrateur Dramatique et Captivant (voix de l'utilisateur clonée dans Fish Audio, FR) — défaut depuis 2026-11-14",
+    "fallback_reference_id": "3bce5f0710f949888abe982ded1ef731",
+    "fallback_voice_name": "Lama Faché (FR, homme d'âge moyen, grave, mystérieux, cinématographique, suspense)",
+    "model": "s1",
+    "script": "SCRIPT_FISH.md",
+    "format": "mp3",
+    "mp3_bitrate": 192,
+    "normalize": true,
+    "latency": "normal",
+    "temperature": 0.7,
+    "top_p": 0.7,
+    "prosody": {
+      "speed": 1.0,
+      "volume": 0
+    },
+    "blanc_max": 0.3
+  },
+  "elevenlabs": {
+    "voice_id": "wyZnrAs18zdIj8UgFSV8",
+    "voice_name": "Martin Dupont - Thriller Narrator (bibliothèque ElevenLabs, FR, grave, narratif sombre)",
+    "fallback_voice_id": "2AGrjHJgmTgUqzy68M9W",
+    "fallback_voice_name": "Nicolas Petit - Deep Narrator (FR, grave, enquête / cold case)",
+    "model_id": "eleven_v3",
+    "language_code": "fr",
+    "voice_settings": {
+      "stability": 0.5,
+      "similarity_boost": 0.85,
+      "style": 0.35,
+      "use_speaker_boost": true,
+      "speed": 0.95
+    },
+    "free_voice_id": "JBFqnCBsd6RMkjVDRZzb",
+    "free_voice_name": "George (premade, utilisable sur le forfait gratuit ; accent non natif)",
+    "script": "SCRIPT_BALISE.md",
+    "_note_forfait": "Forfait gratuit : les voix de la bibliothèque (Martin Dupont, Nicolas Petit) sont refusées par l'API (402) ; option --free = George."
+  }
+}
