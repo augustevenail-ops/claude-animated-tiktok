@@ -11,7 +11,7 @@ import { LensBlurEffect } from "../bridge/lensblur";
 import { GradeEffect } from "../bridge/grade";
 
 import { World } from "./world";
-import { TOTAL, FPS, WORDS, shotAt, dofAt, CHOICE_AT, TITLE_AT, LIGHT, ROLE, uOf } from "./story";
+import { TOTAL, FPS, WORDS, shotAt, dofAt, CHOICE_AT, TITLE_AT, LIGHT, ROLE, uOf, cutAt } from "./story";
 import { Captions, captionGroups, Hud, ChoiceCards, TitleCard, useFonts, KARAOKE } from "../shared/overlay";
 const GROUPS = captionGroups(WORDS);
 import { GRADES } from "./look";
@@ -25,6 +25,8 @@ const makeBloom = () => {
   mip.setSize = (w: number, h: number) => setSize(Math.round((1920 * w) / Math.max(h, 1)), 1920);
   return b;
 };
+/** coupes éclair (retour utilisateur : très courtes) : noir sur « change », blanc sur « hurle », noir sur « tourne » */
+const FLASHES = [{ w: 40, col: "#000", o: 1 }, { w: 140, col: "#fff", o: 0.8 }, { w: 168, col: "#000", o: 1 }].map((x) => ({ ...x, f: Math.round(WORDS[x.w].s * FPS) - 1 }));
 const fwd = new THREE.Vector3(), fpt = new THREE.Vector3();
 
 const Inner: React.FC = () => {
@@ -79,7 +81,9 @@ export const MurEp1: React.FC = () => {
         <Inner />
       </ThreeCanvas>
       <div style={{ position: "absolute", inset: 0, mixBlendMode: "overlay", opacity: 0.13, backgroundImage: `url("${GRAIN}")`, backgroundSize: "260px 260px", backgroundPosition: `${(f * 53) % 260}px ${(f * 97) % 260}px` }} />
-      {(() => { const id = ROLE[shotAt(f).id]; if (id !== 25 && id !== 26) return null;            // ombre de l'entrée qui se referme : elle monte du bas vers le haut sur toi
+      {(() => { const fl = FLASHES.find((x) => f >= x.f && f < x.f + 2); if (!fl) return null;   // flash / noir de 2 images, calé sur le mot
+        return <div style={{ position: "absolute", inset: 0, background: fl.col, opacity: f === fl.f ? fl.o : fl.o * 0.45 }} />; })()}
+      {(() => { const id = ROLE[shotAt(f).id]; if (id !== 25 && !(id === 26 && cutAt(f).k === 0)) return null;            // ombre de l'entrée qui se referme : elle monte du bas vers le haut sur toi
         const u = uOf(shotAt(f).id, f), h = id === 25 ? 10 + 30 * u : 35 + 85 * u;
         return <div style={{ position: "absolute", inset: 0, pointerEvents: "none", background: `linear-gradient(to top, rgba(2,2,6,0.72) 0%, rgba(2,2,6,0.72) ${h - 18}%, rgba(2,2,6,0) ${h + 12}%)` }} />; })()}
       {t < TITLE_AT ? <Hud episode={1} place={LIGHT[ROLE[shotAt(f).id]] === 2 ? "NUIT 1" : "JOUR 1"} label="NOMS SUR LE MUR" count={347} alert={LIGHT[ROLE[shotAt(f).id]] > 0} /> : null}

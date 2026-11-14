@@ -19,7 +19,7 @@ sp = np.zeros(N, bool)
 for w in words: sp[int((w["s"] + OFF) * SR):min(N, int((w["e"] + OFF) * SR))] = True
 rms = lambda x: 20 * np.log10(np.sqrt(np.mean(x ** 2)) + 1e-9); vref = rms(voice[sp])
 def lvl(x, target): a = np.abs(x) > 1e-5; return x * db(target - rms(x[a])) if a.any() else x
-k = Kit(N, SR, seed=21); sfx = np.zeros(N); SFX_DB = -4.0; LIB = os.path.join(ROOT, "productions", "sfx_lib"); _c = {}   # SFX_DB : bruitages 4 dB plus bas (retour utilisateur)
+k = Kit(N, SR, seed=21); sfx = np.zeros(N); SFX_DB = -1.5; LIB = os.path.join(ROOT, "productions", "sfx_lib"); _c = {}   # SFX_DB : bruitages 4 dB plus bas (retour utilisateur)
 def cue(name, t0, g=-10.0, dur=None):
     if name not in _c: _c[name] = dec(os.path.join(LIB, name + ".mp3"))
     x = _c[name] if dur is None else _c[name][: int(dur * SR)]
@@ -32,8 +32,8 @@ T1 = W(4) - 2 / 30
 cue("sting_soft", 0.0, -5); k.riser(T1, T1, 0.9); k.sub_drop(T1, 1.0); k.impact(W(2), 0.7, 44.0, 2.0); cue("breath_nervous", W(1) - 0.2, -14)
 # ---- monde
 cue("wind_city", W(4), -20); cue("wind_city", W(13), -22)
-cue("light_off", W(41) - 0.05, -2); k.impact(W(41), 0.8, 40.0, 2.4)                    # TAC : la nuit tombe d'un coup
-cue("tower_groan", W(42), -8); cue("metal_creak_far", W(43) + 0.3, -12)                 # les murs glissent
+cue("light_off", W(40) - 0.07, 3); k.impact(W(40) - 0.03, 1.1, 40.0, 2.4)                # TAC : la nuit tombe d'un coup (coupe noire)
+cue("tower_groan", W(42) - 0.1, -3); cue("metal_creak_far", W(43) + 0.2, -8)                 # les murs glissent
 for e in range(5): k.thud(W(47) + e * 0.9, 0.55, 48)                                    # pas lourds des Longs
 cue("crowd_breath", W(66), -18); cue("cloth_rustle", W(70), -16)                        # la clairière, le feu
 cue("sting_hit", W(82) - 0.05, -10); cue("sting_hit", W(95) - 0.05, -10)                 # règle 1 / règle 2
@@ -56,7 +56,7 @@ def crack(t0, g=1.0):                                                           
         n = int(0.012 * SR); x = rng.standard_normal(n) * np.exp(-np.arange(n) / (0.002 * SR)); x = x - np.convolve(x, np.ones(4) / 4, "same")
         i = int((t0 + e * (0.03 + 0.05 * rng.random())) * SR)
         if 0 <= i < N - n: sfx[i:i + n] += x * g * db(vref - 4 + SFX_DB) * (0.5 + rng.random())
-for e in range(6): crack(W(163) + e * 0.32, 0.9)                                         # le Long se déplie
+for e in range(16): crack(W(162) + e * 0.19 + 0.05 * rng.random(), 1.0 + 0.4 * rng.random())   # le Long se déplie : longue salve de craquements d'os
 for e in range(3): crack(W(168) + e * 0.22, 1.0)                                         # sa tête pivote
 crack(0.35, 0.55); crack(W(1) - 0.1, 0.8)                                            # plan 1 : la tête se penche, puis la bouche s'ouvre sur « bouge »
 k.stinger(TITLE_AT, 0.5)
@@ -113,15 +113,41 @@ for e in range(3): cue("finger_skin", S(12) + 0.3 + e * 0.45, -26, 0.25)        
 crack(S(24) + 0.55 * (Se(24) - S(24)), 0.9)                                             # 24 : la fente s'ouvre
 crack(S(27) + 0.5, 0.6)                                                                 # 27 : le Long derrière toi bouge                      # 26 : l'ombre monte sur toi, ta respiration
 cue("footstep_one", S(27) + 0.25 * (Se(27) - S(27)), -20)    # 27 : un pas, puis tu te retiens
+# ---- montage rapide (59 sous-plans) : souffles sur les coupes, sursaut d'ouverture, pas des Longs, pulsation qui accélère
+CUTW = {3: [9], 5: [26], 6: [34], 11: [55], 12: [61], 14: [72, 75], 15: [85, 88], 16: [100, 103], 17: [110, 115], 19: [129, 135, 136], 20: [140],
+        21: [143, 150], 22: [155], 23: [162, 165], 24: [170], 25: [176], 26: [183, 187, 190], 27: [198, 200, 202, 204, 207]}   # = CUTS de story.ts
+SNAP = {55, 85, 140, 170}                                                                 # zooms éclair : souffle plus fort
+for k_ in range(2, 28): k.whoosh(S(k_), 0.35, 0.35)                                       # chaque changement de scène
+for ws in CUTW.values():
+    for w in ws: k.whoosh(W(w) - 2 / 30, 0.4 if w in SNAP else 0.3, 0.9 if w in SNAP else 0.45)
+k.impact(0.02, 1.3, 46.0, 1.6); cue("sting_hit", 0.0, -2)                                 # sursaut à la première image
+k.whoosh(0.32, 0.3, 0.9); k.reverse(0.75, 0.35, 0.6)                                       # zoom sur ta tête, puis dézoom
+k.impact(W(140) - 0.03, 1.0, 44.0, 1.8); k.impact(W(168) - 0.03, 0.9, 38.0, 2.0)           # flash blanc « hurle », noir « tourne »
+for sc in (10, 12):                                                                       # drones : pas lourds des Longs + air qui défile
+    for e in range(int((Se(sc) - S(sc)) / 0.42)): k.thud(S(sc) + 0.1 + e * 0.42, 0.5, 46)
+    cue("vent_air", S(sc), -12, Se(sc) - S(sc))
+wings(S(15) + 0.2, Se(15) - 0.4, -18)                                                      # 15 : les oiseaux s'envolent du pylône
+cue("tower_groan", S(9), -6)                                                               # 9 : le bloc qui glisse
+sand(S(9), Se(9), -20, 90)
+def pulse(t0, t1, r0, r1, g_db):                                                           # pulsation grave qui accélère (r0 -> r1 coups/s)
+    t = t0; x = np.zeros(int((t1 - t0) * SR) + SR)
+    while t < t1:
+        m = int(0.22 * SR); tt = np.arange(m) / SR; i = int((t - t0) * SR)
+        x[i:i + m] += np.sin(2 * np.pi * (52 - 18 * tt) * tt) * np.exp(-tt / 0.06)
+        r = r0 + (r1 - r0) * (t - t0) / max(1e-3, t1 - t0); t += 1 / r
+    put(x, t0, g_db, 0.05)
+pulse(S(10), Se(12), 1.5, 2.0, -10)                                                        # les Longs sortent
+pulse(W(138), W(157), 1.6, 2.6, -9)                                                        # la sirène, la course : accélération
+pulse(W(157), TITLE_AT - 0.4, 1.3, 3.0, -8)                                                # le Long se déplie -> le choix : accélération jusqu'au bout
 # ---- musique douce (-1/4) + tension qui suit l'histoire
 REVEAL = [2, 41, 47, 102, 119, 140, 163, 172, 194]
 mus = k.music4(DUR, dips=[W(i) - 0.25 for i in REVEAL], transpose=12)
-mus = lvl(mus, vref - 6) * 0.75
+mus = lvl(mus, vref - 7.0)                                                                 # musique un peu plus présente, sous les bruitages
 ten, _ = Kit(N, SR, seed=5).tension_layer(DUR, [W(i) for i in REVEAL], W(len(words) - 1) - 14, TITLE_AT)
 a = np.abs(ten) > 1e-4
-if a.any(): mus = mus + ten * db(vref - 5 - rms(ten[a])) * 0.75
+if a.any(): mus = mus + ten * db(vref - 6 - rms(ten[a]))
 duck = np.ones(N)
-for i in range(len(words)): duck[int(max(0, W(i) - 0.08) * SR):int(min(DUR, E(i) + 0.12) * SR)] = db(-2.5)
+for i in range(len(words)): duck[int(max(0, W(i) - 0.08) * SR):int(min(DUR, E(i) + 0.12) * SR)] = db(-3.0)
 mus *= np.convolve(duck, np.ones(2000) / 2000, "same")
 hs = k.hit + 0.8 * k.air; hit = lvl(hs, vref - 13)
 o = dec(os.path.join(VD, "outro.wav")); j0 = int((TITLE_AT + 0.05) * SR); voice[j0:j0 + len(o)] += o[: max(0, N - j0)] * db(vref - rms(o[np.abs(o) > 1e-3]))

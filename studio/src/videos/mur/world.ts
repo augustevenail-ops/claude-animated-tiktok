@@ -12,7 +12,7 @@ import { drawPerson, Person, Expr, Pose } from "./people";
 import { painted } from "../shared/painted";
 import { drawLong, LongSpec, PEEK_CUT } from "./longs";
 import { FPS, V3, CELL, H, TH, LONG_K, CLEAR, ENTRY_Z, ENTRY_W, WAKE_Z, YOU_WAKE, FIRE, SIREN, NAMES_Z, LONG_RUN, YOU_RUN_Z, LIGHT,
-  camAt, uOf, ROLE, hash, smooth, entryClose, tW, HOOK_M, hookLean } from "./story";
+  camAt, uOf, ROLE, hash, smooth, entryClose, tW, HOOK_M, hookLean, cutAt } from "./story";
 import { LIGHTS } from "./look";
 
 const V = (x: number, y: number, z: number) => new THREE.Vector3(x, y, z);
@@ -27,6 +27,14 @@ const wallTex = () => ctex("mu_wall", 256, 256, (g) => {             // béton o
   for (let i = 0; i < 70; i++) { g.fillStyle = `rgba(${hash(i) < 0.5 ? "40,30,25" : "255,240,220"},${0.04 + hash(i, 1) * 0.07})`; g.beginPath(); g.ellipse(hash(i, 2) * 256, hash(i, 3) * 256, 8 + hash(i, 4) * 34, 5 + hash(i, 5) * 22, 0, 0, 7); g.fill(); }
   g.strokeStyle = "rgba(40,30,25,0.35)"; g.lineWidth = 3; for (let k = 0; k < 4; k++) { g.beginPath(); g.moveTo(0, k * 64 + 2); g.lineTo(256, k * 64 + 2); g.stroke(); for (let j = 0; j < 3; j++) { const x = ((k % 2) * 42 + j * 86) % 256; g.beginPath(); g.moveTo(x, k * 64); g.lineTo(x, k * 64 + 64); g.stroke(); } }
   for (let i = 0; i < 9; i++) { const x = hash(i, 6) * 256; const gr = g.createLinearGradient(0, 0, 0, 200); gr.addColorStop(0, "rgba(30,24,20,0.3)"); gr.addColorStop(1, "rgba(30,24,20,0)"); g.fillStyle = gr; g.fillRect(x, 0, 3 + hash(i, 7) * 7, 120 + hash(i, 8) * 120); }
+  g.strokeStyle = "rgba(25,18,14,0.5)"; g.lineWidth = 1.6;                       // fissures
+  for (let i = 0; i < 5; i++) { let x = hash(i, 81) * 256, y = hash(i, 82) * 180; g.beginPath(); g.moveTo(x, y); for (let k = 0; k < 6; k++) { x += (hash(i * 7 + k, 83) - 0.5) * 18; y += 6 + hash(i * 7 + k, 84) * 10; g.lineTo(x, y); } g.stroke(); }
+  for (let i = 0; i < 2; i++) { const x = 30 + hash(i, 85) * 190, y = 60 + hash(i, 86) * 90;   // griffures des Longs : 3 entailles parallèles
+    for (let k = 0; k < 3; k++) { g.strokeStyle = "rgba(20,14,12,0.6)"; g.lineWidth = 2.4; g.beginPath(); g.moveTo(x + k * 7, y); g.quadraticCurveTo(x + k * 7 + 6, y + 22, x + k * 7 + 2, y + 46); g.stroke();
+      g.strokeStyle = "rgba(255,240,220,0.18)"; g.lineWidth = 1; g.beginPath(); g.moveTo(x + k * 7 + 1.5, y); g.quadraticCurveTo(x + k * 7 + 7.5, y + 22, x + k * 7 + 3.5, y + 46); g.stroke(); } }
+  for (let i = 0; i < 3; i++) { const x0 = hash(i, 87) * 256;                           // lierre qui tombe du haut
+    for (let k = 0; k < 26; k++) { const y = hash(i * 31 + k, 88) * (60 + hash(i, 89) * 100), x = x0 + Math.sin(y * 0.08 + i) * 6 + (hash(i * 31 + k, 90) - 0.5) * 14;
+      g.fillStyle = `rgba(${40 + hash(k, 91) * 30},${70 + hash(k, 92) * 40},${30 + hash(k, 93) * 15},0.75)`; g.beginPath(); g.ellipse(x, y, 3 + hash(k, 94) * 3, 2 + hash(k, 95) * 2, hash(k, 96) * 3, 0, 7); g.fill(); } }
   const m = g.createLinearGradient(0, 200, 0, 256); m.addColorStop(0, "rgba(70,90,40,0)"); m.addColorStop(1, "rgba(70,90,40,0.45)"); g.fillStyle = m; g.fillRect(0, 200, 256, 56);
 });
 const dirtTex = () => ctex("mu_dirt", 256, 256, (g) => {
@@ -75,13 +83,14 @@ const LOOK: Record<string, Partial<Person>> = {
 type Fo = { mode?: "stand"; pose?: Pose; expr: Expr | "mute"; blink?: boolean; look?: number; back?: boolean; side?: 1 | -1; reach?: number; step?: number };
 const tierOf = (d: number): [number, number, number] => (d < 3.5 ? [1080, 1800, 1.8] : d < 14 ? [600, 1000, 1] : [300, 500, 0.5]);
 /** cercle autour du feu (jeunes de la clairière) */
+const SX = SIREN[0], SZ = SIREN[2];
 const RING: [string, number][] = [["A", 0.2], ["B", 0.95], ["C", 1.7], ["D", 2.45], ["E", 3.6], ["A", 4.3], ["C", 5.05], ["B", 5.6]];
 
 export class World {
   root = new THREE.Group();
   sun: THREE.DirectionalLight; private hemi: THREE.HemisphereLight; private fog = new THREE.Fog("#000", 10, 100);
   private pool = new Pool(); private actors: Actor[] = []; private longs: Actor[] = []; private longMats: THREE.MeshBasicMaterial[] = []; private shadowMats: THREE.MeshBasicMaterial[] = []; private longShadow: boolean[] = [];
-  private sky: THREE.Mesh; private skyMaps: THREE.Texture[]; private doors: THREE.Mesh[] = []; private movers: { m: THREE.Mesh; x: number; z: number; ax: "x" | "z" }[] = [];
+  private sky: THREE.Mesh; private skyMaps: THREE.Texture[]; private doors: THREE.Mesh[] = []; private slab!: THREE.Mesh; private torches: THREE.Mesh[] = []; private cloths: THREE.Mesh[] = []; private beams: THREE.Mesh[] = []; private movers: { m: THREE.Mesh; x: number; z: number; ax: "x" | "z" }[] = [];
   private fireGlow: THREE.Mesh; private sirenGlow: THREE.Mesh; private sirenLamp: THREE.Mesh; private candles: THREE.Mesh[] = []; private parts: Record<string, THREE.Points> = {}; private moon: THREE.Mesh; private sunDisc: THREE.Mesh;
   constructor() {
     const R = this.root;
@@ -118,6 +127,7 @@ export class World {
       const m = new THREE.Mesh(new THREE.BoxGeometry(ax === "x" ? CELL * 1.5 : TH * 1.3, H * 1.02, ax === "x" ? TH * 1.3 : CELL * 1.5).translate(0, H * 0.51, 0), wallM);
       m.castShadow = m.receiveShadow = true; m.position.set(x, 0, z); m.visible = false; R.add(m); this.movers.push({ m, x, z, ax });
     }
+    this.slab = new THREE.Mesh(new THREE.BoxGeometry(TH * 1.3, H, CELL).translate(0, H / 2, 0), wallM); this.slab.castShadow = this.slab.receiveShadow = true; this.slab.visible = false; R.add(this.slab);
     // ---------- sol ----------
     const dt = dirtTex(); dt.wrapS = dt.wrapT = THREE.RepeatWrapping; dt.repeat.set(160, 160);
     const ground = new THREE.Mesh(new THREE.PlaneGeometry(1300, 1300).rotateX(-Math.PI / 2), solid("dirt", "#ffffff", { map: dt })); ground.receiveShadow = true; R.add(ground);
@@ -145,6 +155,31 @@ export class World {
       const c = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.9), new THREE.MeshBasicMaterial({ map: glowTex("255,190,110"), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false })); c.position.set(x, 0.42, NAMES_Z + 0.52); c.layers.set(NOINK); R.add(c); this.candles.push(c);
     }
     this.fireGlow = new THREE.Mesh(new THREE.PlaneGeometry(5, 5), new THREE.MeshBasicMaterial({ map: glowTex("255,150,60"), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false })); this.fireGlow.position.set(FIRE[0], 0.8, FIRE[2]); this.fireGlow.layers.set(NOINK); R.add(this.fireGlow);
+    // ---------- détails de la clairière : tonneaux, caisses, torches, cordes à linge, touffes d'herbe ----------
+    const barrel = solid("barrel", "#6a4a2e"), crate = solid("crate", "#8a6a44"), cloth = ["#b8a07a", "#8a5a4a", "#6a7a8a", "#a88a5a"], tuft = solid("tuft", "#4f6a2e");
+    for (let i = 0; i < 9; i++) { const a = hash(i, 101) * 6.28, r = 9 + hash(i, 102) * 18, x = Math.cos(a) * r, z = Math.sin(a) * r; if (Math.abs(x) < 3 && z > 20) continue;
+      if (i % 2) b.add(new THREE.CylinderGeometry(0.42, 0.38, 1.0, 10).translate(x, 0.5, z), barrel); else b.add(new THREE.BoxGeometry(0.9, 0.8, 0.9).rotateY(a).translate(x, 0.4, z), crate); }
+    for (const [x, z] of [[-6, 2], [6, -12], [-12, -8], [10, 4], [-3, 14], [14, -4]] as [number, number][]) {
+      b.add(new THREE.CylinderGeometry(0.06, 0.08, 2.2, 6).translate(x, 1.1, z), wood); b.add(new THREE.CylinderGeometry(0.14, 0.09, 0.3, 8).translate(x, 2.3, z), metal);
+      const tg = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 1.6), new THREE.MeshBasicMaterial({ map: glowTex("255,160,70"), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
+      tg.position.set(x, 2.55, z); tg.layers.set(NOINK); R.add(tg); this.torches.push(tg); }
+    for (const [x0, z0, x1, z1] of [[-20, -14, -12, -18], [16, 6, 22, 14], [-18, 4, -24, 12]] as [number, number, number, number][]) {
+      b.add(new THREE.CylinderGeometry(0.07, 0.07, 2.4, 6).translate(x0, 1.2, z0), wood); b.add(new THREE.CylinderGeometry(0.07, 0.07, 2.4, 6).translate(x1, 1.2, z1), wood);
+      const L = Math.hypot(x1 - x0, z1 - z0), ang = Math.atan2(z1 - z0, x1 - x0);
+      b.add(new THREE.CylinderGeometry(0.015, 0.015, L, 4).rotateZ(Math.PI / 2).rotateY(-ang).translate((x0 + x1) / 2, 2.3, (z0 + z1) / 2), metal);
+      for (let k = 1; k < 4; k++) { const c = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 1.1).translate(0, -0.55, 0), solid("cloth" + k, cloth[k % 4]));
+        (c.material as THREE.Material).side = THREE.DoubleSide; c.position.set(x0 + (x1 - x0) * k / 4, 2.3, z0 + (z1 - z0) * k / 4); c.rotation.y = -ang; c.castShadow = true; R.add(c); this.cloths.push(c); } }
+    const tg2 = new THREE.ConeGeometry(0.18, 0.7, 4), tufts = new THREE.InstancedMesh(tg2, tuft, 260);
+    for (let i = 0; i < 260; i++) { const x = (hash(i, 111) - 0.5) * 60, z = (hash(i, 112) - 0.5) * 60; if (Math.hypot(x - FIRE[0], z - FIRE[2]) < 5) { mm.compose(V(0, -5, 0), q.identity(), V(1, 1, 1)); tufts.setMatrixAt(i, mm); continue; }
+      mm.compose(V(x, 0.3, z), q.setFromAxisAngle(V(hash(i, 113) - 0.5, 0, hash(i, 114) - 0.5).normalize(), 0.25), V(1, 0.6 + hash(i, 115) * 0.9, 1)); tufts.setMatrixAt(i, mm); }
+    tufts.receiveShadow = true; R.add(tufts);
+    for (const [ax, az] of [[-6, -3], [5, 4], [3, -6]] as [number, number][]) {                       // câbles qui tiennent le pylône
+      const top = V(SX, 10.2, SZ), bot = V(SX + ax, 0, SZ + az), d = top.clone().sub(bot), L = d.length();
+      const cg = new THREE.CylinderGeometry(0.025, 0.025, L, 4).translate(0, L / 2, 0); cg.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(V(0, 1, 0), d.normalize())); cg.translate(bot.x, bot.y, bot.z); b.add(cg, metal); }
+    b.add(new THREE.BoxGeometry(1.2, 0.5, 0.6).translate(SX, 1.0, SZ + 0.4), rust); b.add(new THREE.BoxGeometry(0.4, 0.15, 0.15).translate(SX, 9.6, SZ), metal);
+    for (const s of [-1, 1]) { const bm = new THREE.Mesh(new THREE.ConeGeometry(2.6, 14, 16, 1, true).translate(0, -7, 0).rotateZ(s * Math.PI / 2),
+        new THREE.MeshBasicMaterial({ color: "#ff3020", transparent: true, opacity: 0.22, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }));
+      bm.position.set(SX, 11.5, SZ); bm.layers.set(NOINK); R.add(bm); this.beams.push(bm); }                        // faisceaux rouges tournants
     b.build(R, true);
     const done = new Set<THREE.Material>();
     R.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh || Array.isArray(m.material) || done.has(m.material)) return; const mt = m.material as THREE.MeshLambertMaterial; done.add(mt);
@@ -180,7 +215,7 @@ export class World {
     TONE.uLitCol.value.set(...L.lit); TONE.uShadeCol.value.set(...L.shade); TONE.uShadeLift.value.set(...L.lift);
     TONE.uLambert.value = 0.35; TONE.uSideK.value = 0.84; TONE.uTerm.value = 0.2; TONE.uBounce.value.set(0, 0, 0); TONE.uSat.value = L.sat;
     CHAR.uCharTint.value.set(...L.charTint); CHAR.uCharShade.value = 0.72; CHAR.uGrad.value = 0.09; CHAR.uBodyGrad.value = 0.22; CHAR.uSideTint.value.set(0.8, 0.86, 1.0);
-    untone(L.fogCol, this.fog.color); this.fog.near = L.fogNear; this.fog.far = c.pos[1] > 300 ? 9000 : L.fogFar; scene.fog = this.fog; scene.background = new THREE.Color(L.bg);
+    untone(L.fogCol, this.fog.color); this.fog.near = c.pos[1] > 25 ? 110 + c.pos[1] * 0.25 : L.fogNear; this.fog.far = c.pos[1] > 25 ? Math.min(L.fogFar, 560 + c.pos[1] * 0.9) : L.fogFar;   // brume : le labyrinthe se perd à l'horizon scene.fog = this.fog; scene.background = new THREE.Color(L.bg);
     (this.sky.material as THREE.MeshBasicMaterial).map = this.skyMaps[lk]; this.sky.position.copy(cam.position);
     this.moon.visible = lk === 2; this.moon.position.copy(cam.position).add(V(-0.45, 0.55, -1).normalize().multiplyScalar(5000)); this.moon.lookAt(cam.position);
     this.sunDisc.visible = lk !== 2; this.sunDisc.position.copy(cam.position).add(V(-L.sunDir[0], 0.08, -L.sunDir[2]).normalize().multiplyScalar(-5000)); this.sunDisc.lookAt(cam.position);
@@ -191,13 +226,18 @@ export class World {
       mv.m.position.set(mv.x + (mv.ax === "x" ? s : 0), 0, mv.z + (mv.ax === "z" ? s : 0)); });
     const night = lk === 2; if (night) (this.root.getObjectByName("grass") as THREE.Mesh | undefined); const flick = 0.85 + 0.15 * Math.sin(t * 17) * Math.sin(t * 7.3);
     (this.fireGlow.material as THREE.MeshBasicMaterial).opacity = (night ? 1 : 0.55) * flick; this.fireGlow.lookAt(cam.position);
-    const siren = id === 20 || id === 21 || id >= 22; const rot = 0.5 + 0.5 * Math.sin(t * 8);
+    const siren = id === 15 || id === 20 || id === 21 || id >= 22; const rot = 0.5 + 0.5 * Math.sin(t * 8);
     (this.sirenGlow.material as THREE.MeshBasicMaterial).opacity = siren ? 0.4 + 0.6 * rot : 0.08; this.sirenGlow.lookAt(cam.position); this.sirenLamp.visible = true;
     this.candles.forEach((cd, i) => { (cd.material as THREE.MeshBasicMaterial).opacity = (night ? 0.95 : 0.4) * (0.8 + 0.2 * Math.sin(t * 9 + i * 2)); cd.lookAt(cam.position); });
 
+    const ct = cutAt(f), kc = ct.sid === sid ? ct.k : 0;                                     // sous-plan en cours
+    this.torches.forEach((tg, i) => { (tg.material as THREE.MeshBasicMaterial).opacity = (night ? 1 : 0.5) * (0.75 + 0.25 * Math.sin(t * 13 + i * 2) * Math.sin(t * 5.3 + i)); tg.lookAt(cam.position); });
+    this.cloths.forEach((c, i) => { c.rotation.x = 0.18 * Math.sin(t * 2.1 + i * 0.9) + 0.06 * Math.sin(t * 5.3 + i); });   // le linge bouge au vent
+    this.beams.forEach((bm, i) => { bm.visible = siren; bm.rotation.y = t * 4.2 + i * Math.PI; });
+    this.slab.visible = id === 9; this.slab.position.set(-8, 0, WAKE_Z + 8.6 - 8.0 * smooth(u * 1.2));   // 9 : un bloc sort du mur et ferme le couloir
     // ---------- détails vivants (un différent par plan) ----------
     if (id === 7) this.sun.intensity *= 1 - 0.55 * smooth(u);                               // la lumière baisse : la nuit approche
-    this.candles.forEach((cd, i) => { if (id === 17 && i === 2) (cd.material as THREE.MeshBasicMaterial).opacity *= 1 - smooth((u - 0.45) * 6); });   // une bougie s'éteint
+    this.candles.forEach((cd, i) => { if (id === 17 && i === 2) (cd.material as THREE.MeshBasicMaterial).opacity *= 1 - smooth((t - tW(116)) * 5); });   // une bougie s'éteint
     const fwd = new THREE.Vector3(); cam.getWorldDirection(fwd); const rgt = fwd.clone().cross(V(0, 1, 0)).normalize(), upv = rgt.clone().cross(fwd).normalize();
     const nearCam = (d: number, x: number, y: number): V3 => { const q = cam.position.clone().addScaledVector(fwd, d).addScaledVector(rgt, x).addScaledVector(upv, y); return [q.x, q.y, q.z]; };
     const fr = (x: number) => x - Math.floor(x);
@@ -208,15 +248,17 @@ export class World {
     setP("dust", id === 3 || id === 6, (i, r) => id === 3                                    // 3 : poussière qui tombe du mur ; 6 : poussière dorée en suspension
       ? nearCam(1.5 + r(0) * 5, (r(1) - 0.5) * 3, 2.5 - fr(r(2) + t * (0.12 + r(3) * 0.1)) * 5)
       : nearCam(3 + r(0) * 9, (r(1) - 0.5) * 6 + Math.sin(t * 0.6 + i) * 0.3 + t * 0.15, (r(2) - 0.5) * 10 + Math.sin(t * 0.8 + i * 2) * 0.25), id === 6 ? 0.13 : 0.06);
-    setP("bird", id === 4, (i, r) => { const a = u + (r(0) - 0.5) * 0.12;                 // 4 : nuée d'oiseaux noirs qui traverse sous la caméra
+    setP("bird", id === 4 || id === 15, (i, r) => { if (id === 15) { const a = fr(r(0) * 0.3 + t * 0.25); return [SX + (r(1) - 0.5) * 3 + a * 30 * (r(2) - 0.3), 11 + a * 18 + Math.sin(t * 9 + i) * 0.4, SZ + a * 25 * (r(3) - 0.2)]; }   // 15 : oiseaux qui s'envolent du pylône
+      const a = u + (r(0) - 0.5) * 0.12;                 // 4 : nuée d'oiseaux noirs qui traverse sous la caméra
       return nearCam(22 + r(1) * 14, -14 + a * 28 + r(2) * 3, -3 + (r(3) - 0.5) * 4 + Math.sin(t * 9 + i) * 0.4); }, 2.2);
     setP("smoke", id === 13, (i, r) => { const a = fr(r(0) + t * 0.08);                       // 13 : la fumée du feu monte au-dessus de la clairière
       return [FIRE[0] + (r(1) - 0.5) * (1 + a * 6) + a * 4, 1 + a * 22, FIRE[2] + (r(2) - 0.5) * (1 + a * 6)]; });
     setP("spark", id === 14, (i, r) => { const a = fr(r(0) + t * (0.5 + r(1) * 0.5));          // 14 : étincelles qui jaillissent du feu
       return [FIRE[0] + (r(2) - 0.5) * 0.6 + Math.sin(t * 3 + i) * a * 0.4, 0.4 + a * (2 + r(3) * 2.5), FIRE[2] + (r(4) - 0.5) * 0.6]; });
-    setP("wisp", id === 17 && u > 0.47, (i, r) => { const c = this.candles[2]?.position; if (!c) return null; const a = fr(r(0) + t * 0.35);   // 17 : filet de fumée de la bougie éteinte
+    setP("wisp", id === 17 && t > tW(116), (i, r) => { const c = this.candles[2]?.position; if (!c) return null; const a = fr(r(0) + t * 0.35);   // 17 : filet de fumée de la bougie éteinte
       return [c.x + Math.sin(a * 9 + t) * 0.06 * (1 + a * 3), c.y + 0.1 + a * 1.4, c.z]; });
-    setP("puff", id === 21 || id === 22, (i, r) => { const a = fr(r(0) + t * (id === 21 ? 2.2 : 0.4));
+    setP("puff", id === 21 || id === 22 || id === 9, (i, r) => { const a = fr(r(0) + t * (id === 21 ? 2.2 : 0.4));
+      if (id === 9) return [-8 + (r(1) - 0.5) * 2.5 * (1 + a), 0.1 + a * 1.6, this.slab.position.z - 4 + r(2) * 8];   // 9 : poussière sous le bloc
       if (id === 21) { const zy = 98 - 26 * u - 0.9; return [(r(1) - 0.5) * 0.5, 0.04 + a * 0.25, zy + a * 0.6]; }   // 21 : poussière sous tes pas
       const sd = r(1) < 0.5 ? -1 : 1, ex = ENTRY_W / 2 + 1.6 - (ENTRY_W / 2 + 1.6 - (ENTRY_W / 4 + 0.05)) * close;          // 22 : poussière soulevée par les murs qui glissent
       return [sd * (ex - 1.2 + (r(2) - 0.5) * 2.5 * (1 + a)), 0.2 + a * 2.2, ENTRY_Z + (r(3) - 0.5) * 3 * (1 + a)]; }, id === 21 ? 0.12 : 2.4);
@@ -256,12 +298,13 @@ export class World {
         if (A) { A.mesh.rotation.set(lean, Math.PI, 0, "YXZ"); A.mesh.position.set(0.2, H - hc * Math.cos(lean), WAKE_Z + 2.93 + hc * Math.sin(lean)); } } }   // accroche : la tête se penche, se tourne vers toi, la bouche s'ouvre sur « bouge pas »   // carte parallèle au mur : la main reste devant la paroi
     if (id === 2 || id === 3) place("Y", W2, { mode: "stand", expr: "worry", blink: id === 2 && u < 0.45 }, 1, true);
     if (id === 5) place("Y", [YOU_WAKE[0], 0, YOU_WAKE[2]], { mode: "stand", expr: "worry", blink: blink(1), look: Math.sin(u * 5) * 0.8 });
-    if (id === 9 || id === 10) {
-      const P: V3[] = [[6, 0, WAKE_Z + 1], [-28, 0, WAKE_Z - 12], [36, 0, WAKE_Z + 20], [-12, 0, WAKE_Z + 28], [22, 0, WAKE_Z - 28], [-44, 0, WAKE_Z + 6]];
-      P.forEach((p, i) => { if (id === 9 && i > 2) return; const e = id === 10 ? smooth(u * 1.6 - i * 0.12) : 1; long([p[0] + (i % 2 ? 1 : -1) * 3 * u, 0, p[2]], { pose: "walk", step: ((t * 0.35 + i * 0.3) % 1 + 1) % 1 }); void e; });
+    if (id === 10 || id === 12) {                                                          // drones au ras du sol : des Longs dans le couloir et derrière les murs
+      const P: [number, number][] = id === 10 ? [[20, 1.4], [8, -9], [-2, 9], [28, -9], [-14, -1.2], [40, 9]] : [[-40, 1.2], [-48, 9], [-33, -9], [-55, -9]];
+      P.forEach(([x, dz], i) => long([x + (i % 2 ? 1 : -1) * 2.5 * u, 0, WAKE_Z + dz], { pose: "walk", step: ((t * 0.45 + i * 0.3) % 1 + 1) % 1 }));
+      if (id === 12) { place("C", [-22 + jit(0.03, 2), 0, WAKE_Z - 1.0], { mode: "stand", expr: "fear", blink: false });
+        long([-24.5, 0, WAKE_Z + 1.6], { pose: "stand", tilt: 0.42 * smooth(u * 1.4), turn: 0.3 * Math.sin(u * 3), mouth: 0.4 * smooth((u - 0.6) * 3) }); }
     }
     if (id === 11) { long([13, 0, WAKE_Z + 0.4], { pose: "stand", tilt: 0.38 * smooth((u - 0.3) * 2.5) }); place("B", [10.6 + jit(0.035, 1), 0, WAKE_Z - 0.6], { mode: "stand", expr: "worry" }); }   // le jeune tremble
-    if (id === 12) { long([2.5, H - (975 - PEEK_CUT) * 0.00216 * LONG_K, WAKE_Z + 3.0], { pose: "peek", turn: Math.sin(u * 3) * 0.6, tap: t * 1.1, mouth: 0.35 * smooth((u - 0.6) * 3) }); place("C", [2.0, 0, WAKE_Z - 0.4], { mode: "stand", expr: "mute", blink: false }); }
     if (id === 13 || id === 14) {
       RING.forEach(([key, a], i) => place(key, [FIRE[0] + Math.cos(a) * 3.1, 0, FIRE[2] + Math.sin(a) * 3.1], { mode: "stand", expr: i % 3 ? "worry" : "calm", blink: blink(i + 2) }));
       if (id === 14) place("Y", [0.4, 0, 1.2], { mode: "stand", expr: "worry", back: true });
@@ -270,7 +313,8 @@ export class World {
     if (id === 16) RING.slice(0, 6).forEach(([key, a], i) => place(key, [FIRE[0] + Math.cos(a) * 3.1 + (i === 2 ? jit(0.04, 3) * (1 - smooth(u * 1.6)) : 0), 0, FIRE[2] + Math.sin(a) * 3.1], { mode: "stand", expr: "mute" }));   // un jeune tremble puis se fige
     if (id === 18) place("Y", [0, 0, 20], { mode: "stand", expr: "calm", blink: blink(5) });
     if (id === 19) place("Y", [0, 0, 118 - 30 * u], { mode: "stand", expr: "calm" });
-    if (id === 21) place("Y", [0, 0.06 * Math.abs(Math.sin(t * 9)), 98 - 26 * u - 0.9], { mode: "stand", expr: "worry", back: true });
+    if (id === 21) place("Y", [0, 0.06 * Math.abs(Math.sin(t * 9)), 98 - 26 * u - 0.9], { mode: "stand", expr: "worry", back: kc !== 1 });
+    if (id === 20) place("Y", [0, 0, 90], { mode: "stand", expr: "shock", blink: false });
     if (id >= 22 && id <= 27) {
       const unfold = id === 23 ? smooth(u * 1.15) : id < 23 ? 0 : 1;
       if (id === 22) floorShadow(LONG_RUN[2], 0.4 + 1.6 * smooth(u), { pose: "crouch", unfold: 0.25 + 0.75 * smooth(u) });   // l'ombre arrive avant lui
@@ -278,7 +322,7 @@ export class World {
       if (id >= 23) long(LONG_RUN, unfold < 1 ? { pose: "crouch", unfold } : { pose: "stand",
         turn: id === 24 ? 0.85 * (1 - smooth(u * 1.6)) : 0, mouth: id === 24 ? smooth((u - 0.55) * 3) : id >= 26 ? 0.6 : 0, tilt: id === 24 ? 0.22 * smooth((u - 0.4) * 3) : id === 27 ? 0.18 : 0 }, 0);
       if (id !== 24) place("Y", [0, 0, YOU_RUN_Z - (id === 27 ? 0.35 * Math.max(0, Math.sin(u * Math.PI * 3)) * (1 - u) : 0)],   // 27 : tu hésites, un pas en avant, puis tu te retiens
-        { mode: "stand", expr: "worry", back: id === 23 || id === 25 || id === 27, blink: id === 26 && blink(6) });
+        { mode: "stand", expr: "worry", back: id === 22 || id === 23 || id === 25 || (id === 26 && kc > 0) || (id === 27 && kc !== 4), blink: id === 26 && blink(6) });
     }
     void tW; void H;
     for (; k < this.actors.length; k++) this.actors[k].mesh.visible = false;
