@@ -27,22 +27,21 @@ const NETS = new Map<string, Seg[]>();
 const rng = (seed: number) => () => { seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
 const veinNet = (seed: number, neck: boolean): Seg[] => {
   const key = `${seed}${neck}`; if (NETS.has(key)) return NETS.get(key)!;
-  const r = rng(seed * 977 + 13), segs: Seg[] = [], L = neck ? 110 : 230;
-  const grow = (x: number, y: number, a: number, w: number, d: number, depth: number) => {
-    let c = (r() - 0.5) * 0.12;
-    for (let i = 0; i < 40 && segs.length < (neck ? 80 : 300); i++) {
-      const len = (10 + r() * 7) * (depth ? 0.8 : 1); c = Math.max(-0.16, Math.min(0.16, c + (r() - 0.5) * 0.1)); a += c + (r() - 0.5) * 0.35;   // courbure qui dérive : veines sinueuses
+  const r = rng(seed * 977 + 13), segs: Seg[] = [], L = neck ? 120 : 300;
+  const grow = (x: number, y: number, a: number, w: number, d: number, depth: number) => {   // réglages de la 1re version (validée)
+    for (let i = 0; i < 40 && segs.length < 700; i++) {
+      const len = 9 + r() * 9; a += (r() - 0.5) * 0.7;
       const nx = x + Math.cos(a) * len, ny = y + Math.sin(a) * len;
-      if (!neck && (Math.hypot(nx - cx, ny - hy) > R - 6 || ny < hy - 46)) return;   // reste sur le visage, sous les cheveux
+      if (!neck && Math.hypot(nx - cx, ny - hy) > R - 4) return;
       if (neck && ny < hy + R - 40) return;
-      segs.push({ x0: x, y0: y, x1: nx, y1: ny, t0: d / L, t1: (d + len) / L, w }); d += len; x = nx; y = ny; w = Math.max(1.6, w * 0.95);
-      if (r() < (depth ? 0.13 : 0.2) && depth < 3) grow(x, y, a + (r() < 0.5 ? -1 : 1) * (0.7 + r() * 0.6), w * 0.68, d, depth + 1);   // ramifications → capillaires
+      segs.push({ x0: x, y0: y, x1: nx, y1: ny, t0: d / L, t1: (d + len) / L, w }); d += len; x = nx; y = ny; w = Math.max(1.4, w * 0.93);
+      if (r() < 0.2 && depth < 4) grow(x, y, a + (r() < 0.5 ? -1 : 1) * (0.5 + r() * 0.5), w * 0.75, d, depth + 1);
       if (d > L) return;
     }
   };
   if (neck) for (const x0 of [-40, -14, 12, 36]) grow(cx + x0, top + 10, -Math.PI / 2 + (r() - 0.5) * 0.5, 5.5, 0, 1);
-  else for (const x0 of [-88, -54, -18, 18, 54, 90]) { const y0 = hy + Math.sqrt(R * R - x0 * x0) - 6;
-    grow(cx + x0, y0, -Math.PI / 2 + x0 / R * 0.7 + (r() - 0.5) * 0.4, 6.5, 0, 0); }
+  else for (const x0 of [-96, -70, -44, -18, 8, 34, 60, 88]) { const y0 = hy + Math.sqrt(R * R - x0 * x0) - 6;
+    grow(cx + x0, y0, -Math.PI / 2 + x0 / R * 0.55 + (r() - 0.5) * 0.4, 6, 0, 0); }
   NETS.set(key, segs); return segs;
 };
 const drawVeins = (g: CanvasRenderingContext2D, grow: number, seed: number, neck = false) => {
@@ -58,6 +57,19 @@ const drawVeins = (g: CanvasRenderingContext2D, grow: number, seed: number, neck
   g.restore();
 };
 
+// contour des cheveux vus de face (même géométrie que mur/people.ts) : sert à arrêter les veines sous les cheveux
+const hairPath = (g: CanvasRenderingContext2D, s: Person) => {
+  if (s.hair === "bald") return false;
+  g.beginPath();
+  if (s.hair === "bob" || s.hair === "fringe") {
+    const fr = hy - 4, side = hy + (s.hair === "bob" ? 44 : 22);
+    g.moveTo(cx - R, side); g.lineTo(cx - R, hy - R); g.lineTo(cx + R, hy - R); g.lineTo(cx + R, side);
+    g.lineTo(cx + R * 0.86, side); g.quadraticCurveTo(cx + R * 0.8, fr + 4, cx + R * 0.55, fr); g.lineTo(cx - R * 0.55, fr);
+    g.quadraticCurveTo(cx - R * 0.8, fr + 4, cx - R * 0.86, side); g.closePath();
+  } else { g.moveTo(cx - R, hy - 18); g.lineTo(cx - R, hy - R); g.lineTo(cx + R, hy - R); g.lineTo(cx + R, hy - 18); g.quadraticCurveTo(cx, hy - 62, cx - R, hy - 18); g.closePath(); }
+  return true;
+};
+
 export const drawPerso = (p: Pen, s: Perso) => {
   const g = p.g; g.save(); g.lineCap = "round"; g.lineJoin = "round";
   // ---- derrière le corps : pans de blouse (médecin) / jupe de blouse (patient) qui dépassent sous la taille
@@ -66,7 +78,11 @@ export const drawPerso = (p: Pen, s: Perso) => {
     g.beginPath(); g.moveTo(cx - tw / 2, top + 60); g.lineTo(cx + tw / 2, top + 60); g.lineTo(cx + w, b); g.lineTo(cx - w, b); g.closePath();
     g.fillStyle = s.jacket; g.fill(); stroke(g);
   }
-  drawPerson(p, { ...s, expr: s.infect && s.infect > 0.5 ? "shock" : s.expr });
+  const noTufts = s.bandage ? ({ g: new Proxy(g, {
+    get: (t, k) => k === "ellipse" ? (...a: number[]) => { if (a[2] === 22 && a[3] === 34) return; (t.ellipse as unknown as (...b: number[]) => void)(...a); }
+      : typeof (t as never)[k] === "function" ? ((t as never)[k] as (...b: unknown[]) => unknown).bind(t) : (t as never)[k],
+    set: (t, k, v) => { (t as unknown as Record<string | symbol, unknown>)[k] = v; return true; } }) } as unknown as Pen) : p;
+  drawPerson(noTufts, { ...s, expr: s.infect && s.infect > 0.5 ? "shock" : s.expr });
   const front = !s.back;
   // ---- détails de tenue
   if (s.role === "patient" && front) {                                   // blouse à petits motifs + bracelet d'hôpital
@@ -131,7 +147,7 @@ export const drawPerso = (p: Pen, s: Perso) => {
     // mèches sur les côtés, sous la bande (rien au-dessus des yeux)
     g.save(); g.beginPath(); g.arc(cx, hy, R - 1, 0, 7); g.clip();
     for (const sx of [-1, 1]) { g.beginPath(); g.moveTo(cx + sx * (R + 4), hy - 80); g.lineTo(cx + sx * R * 0.66, hy - 80);
-      g.quadraticCurveTo(cx + sx * R * 0.6, hy + 20, cx + sx * R * 0.78, hy + (sx < 0 ? 66 : 50)); g.lineTo(cx + sx * (R + 4), hy + 70); g.closePath();
+      g.quadraticCurveTo(cx + sx * R * 0.6, hy - 24, cx + sx * R * 0.8, hy + (sx < 0 ? 38 : 2)); g.lineTo(cx + sx * (R + 4), hy + (sx < 0 ? 42 : 6));   // bas des mèches = hauteur des sourcils g.closePath();
       g.fillStyle = s.hairColor; g.fill(); stroke(g, 7); }
     g.restore();
     const main = [hy - 17, hy + 27, hy - 81, hy - 37];                                    // bande basse [haut G, bas G, haut D, bas D]
@@ -159,7 +175,11 @@ export const drawPerso = (p: Pen, s: Perso) => {
   if (k > 0 && front) {
     g.save(); g.beginPath(); g.arc(cx, hy, R - 5, 0, 7); g.clip();
     g.fillStyle = `rgba(120,140,110,${0.42 * k})`; g.fillRect(cx - R, hy - R, 2 * R, 2 * R);
-    drawVeins(g, Math.min(1, k / 0.7), 1);
+    { const hasHair = hairPath(g, s);                                                    // peau = tête moins cheveux (evenodd)
+      if (hasHair) { g.arc(cx, hy, R - 5, 0, 7); g.clip("evenodd"); }
+      drawVeins(g, Math.min(1, k / 0.7), 1); }
+    g.restore(); g.save(); g.beginPath(); g.arc(cx, hy, R, 0, 7); g.clip();
+    if (hairPath(g, s)) { g.lineWidth = OL; g.strokeStyle = INK; g.stroke(); }             // contour des cheveux redessiné par-dessus
     g.restore();
     if (k > 0.5) {
       for (const sx of [-1, 1]) { g.beginPath(); g.ellipse(cx + sx * 38, hy + 30, 15, 17, 0, 0, 7); g.fillStyle = "#e9e7d6"; g.fill(); stroke(g, 5);
