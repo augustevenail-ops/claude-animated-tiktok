@@ -17,7 +17,7 @@ const GROUPS = captionGroups(WORDS);
 export const HOPITAL_FRAMES = TOTAL;
 const MONT = "'Montserrat', 'Liberation Sans', sans-serif", BEBAS = "'Bebas Neue', 'Liberation Sans Narrow', sans-serif";
 type Post = { ink: boolean; bloom: boolean; grade: boolean; audio: boolean; shadow: boolean; smap: number };
-const post = (): Post => ({ ink: true, bloom: true, grade: true, audio: false, shadow: true, smap: 2048, ...((getInputProps() as { post?: Partial<Post> }).post ?? {}) });
+const post = (): Post => ({ ink: true, bloom: true, grade: true, audio: true, shadow: true, smap: 2048, ...((getInputProps() as { post?: Partial<Post> }).post ?? {}) });
 const makeBloom = () => {
   const b = new BloomEffect({ blendFunction: BlendFunction.ADD, intensity: 0.85, luminanceThreshold: 0.82, luminanceSmoothing: 0.2, mipmapBlur: true, levels: 5, radius: 0.65 });
   const mip = b.mipmapBlurPass, setSize = mip.setSize.bind(mip);
