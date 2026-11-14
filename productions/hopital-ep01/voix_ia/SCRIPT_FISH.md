@@ -1,4 +1,4 @@
-(scared)(whispering) Imagine.
+(curious)(soft tone) Imagine…
 (serious)(soft tone) Tu te réveilles dans une chambre d'hôpital.
 (serious)(soft tone) Tu te tournes vers la fenêtre : les médecins s'enfuient.
 (serious)(soft tone) La police encercle le bâtiment et tire à vue sur des humains infectés.
