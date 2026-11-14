@@ -41,7 +41,18 @@ cue("heartbeat", W(100), -10, 3.0)                                              
 cue("whisper_voice", W(113), -18)                                                        # les noms gravés
 cue("footstep_one", W(129), -14); cue("footstep_one", W(131), -15); cue("wind_city", W(134), -18)
 cue("siren_far", W(138) - 0.1, -7)                                                       # la sirène hurle
-cue("run_steps_room", W(141), -8); cue("heart_fast", W(143), -9)
+cue("run_steps_room", W(141), -8)
+srng = np.random.default_rng(31)
+def steps(t0, t1, dt, g_db):                                                              # pas synthétisés (retour v3 : la course ne s'arrête plus au bout d'1 s)
+    t = t0; e = 0
+    while t < t1:
+        if "footstep_one" not in _c: _c["footstep_one"] = dec(os.path.join(LIB, "footstep_one.mp3"))
+        x = _c["footstep_one"]; r = 0.9 + 0.2 * srng.random(); x = np.interp(np.arange(0, len(x) - 1, r), np.arange(len(x)), x)
+        a = np.abs(x) > 1e-3; x = x * db(vref + g_db + SFX_DB - rms(x[a]) + (1.5 if e % 2 else 0) - 2 * srng.random())
+        i = int(t * SR); j = min(N, i + len(x)); sfx[i:j] += x[: j - i]; t += dt * (0.92 + 0.16 * srng.random()); e += 1
+steps(W(141) + 1.1, W(152), 0.29, -11)                                                    # tu cours dans le couloir
+steps(W(152), W(157) - 0.2, 0.5, -15)                                                     # puis tu marches, essoufflé
+cue("heart_fast", W(143), -9)
 cue("tower_groan", W(152), -6); cue("steel_door", W(155), -10)                           # l'entrée se referme
 cue("metal_creak_far", W(162), -8); k.impact(W(163), 0.7, 42.0, 2.0)                     # un Long se déplie
 cue("breath_nervous", W(167), -10); cue("sting_hit", W(170), -8)                          # il tourne la tête
@@ -51,14 +62,21 @@ for a, b in [(0.0, W(4) - 0.1), (W(45), W(66) - 0.3), (W(157) - 0.5, TITLE_AT - 
 act = np.abs(HISS[0]) > 1e-5
 if act.any(): HISS *= db(vref - 10 + SFX_DB - rms(HISS[0][act]))   # +5 dB (retour utilisateur)
 rng = np.random.default_rng(13)
-def crack(t0, g=1.0):                                                                    # craquement d'os : salve de claquements secs filtrés
-    for e in range(int(3 + rng.integers(0, 4))):
-        n = int(0.012 * SR); x = rng.standard_normal(n) * np.exp(-np.arange(n) / (0.002 * SR)); x = x - np.convolve(x, np.ones(4) / 4, "same")
-        i = int((t0 + e * (0.03 + 0.05 * rng.random())) * SR)
-        if 0 <= i < N - n: sfx[i:i + n] += x * g * db(vref - 4 + SFX_DB) * (0.5 + rng.random())
+def crack(t0, g=1.0):                                                                    # craquement d'os (v4, « crac » bien audible) : claquement sec + grain + résonance boisée
+    n = int(0.11 * SR); t = np.arange(n) / SR; f0 = 600 + 500 * rng.random()
+    snap = rng.standard_normal(n) * np.exp(-t / 0.004); snap = snap - np.convolve(snap, np.ones(6) / 6, "same")
+    grain = np.zeros(n)
+    for _ in range(int(4 + rng.integers(0, 5))):                                        # éclats secondaires (l'os qui cède)
+        j = int(rng.random() * 0.05 * SR); m = int(0.006 * SR); grain[j:j + m] += rng.standard_normal(m) * np.exp(-np.arange(m) / (0.0015 * SR)) * (0.3 + 0.5 * rng.random())
+    body = (np.sin(2 * np.pi * f0 * t) + 0.6 * np.sin(2 * np.pi * 2.3 * f0 * t)) * np.exp(-t / 0.018) + 0.8 * np.sin(2 * np.pi * 170 * t) * np.exp(-t / 0.03)
+    x = snap + grain + 0.5 * body; x *= db(vref - 9 + SFX_DB - rms(x[: int(0.05 * SR)])) * g * (0.8 + 0.4 * rng.random())
+    i = int(t0 * SR)
+    if 0 <= i < N - n: sfx[i:i + n] += x
+def crac3(t0, g=1.0, k=3):                                                                # « crac, crac, crac »
+    for e in range(k): crack(t0 + e * (0.17 + 0.06 * rng.random()), g * (1.0 - 0.1 * e))
 for e in range(16): crack(W(162) + e * 0.19 + 0.05 * rng.random(), 1.0 + 0.4 * rng.random())   # le Long se déplie : longue salve de craquements d'os
-for e in range(3): crack(W(168) + e * 0.22, 1.0)                                         # sa tête pivote
-crack(0.35, 0.55); crack(W(1) - 0.1, 0.8)                                            # plan 1 : la tête se penche, puis la bouche s'ouvre sur « bouge »
+crac3(W(168), 1.0)                                         # sa tête pivote
+crac3(0.3, 0.8); crac3(W(1) - 0.15, 0.9)                                            # plan 1 : la tête se penche, puis la bouche s'ouvre sur « bouge »
 k.stinger(TITLE_AT, 0.5)
 FLIP = TITLE_AT + 0.9                                                                     # le 1 devient 2 sur le carton (FLIP_AFTER, overlay.tsx)
 k.reverse(FLIP, 0.35, 0.5); cue("lock_click", FLIP - 0.01, -6); cue("sting_hit", FLIP, -12)
@@ -107,11 +125,11 @@ for e in range(int((Se(19) - S(19)) / 0.55)): cue("footstep_one", S(19) + 0.2 + 
 sand(S(22), Se(22), -24, 80)                                 # 22 : poussière soulevée par l'entrée
 cue("breath_nervous", S(26) + 0.2, -18)
 for e in range(4): cue("finger_skin", 0.15 + e * 0.38, -24, 0.25)                    # plan 1 : les 7 doigts tapotent l'arête du mur
-crack(S(11) + 0.3 * (Se(11) - S(11)), 0.7)                                              # 11 : le Long penche la tête
-crack(S(12) + 0.15, 0.6); crack(S(12) + 0.6 * (Se(12) - S(12)), 0.8)                   # 12 : la tête pivote, la bouche s'ouvre
+crac3(S(11) + 0.3 * (Se(11) - S(11)), 0.9)                                              # 11 : le Long penche la tête
+crac3(S(12) + 0.15, 0.85); crac3(S(12) + 0.6 * (Se(12) - S(12)), 0.9)                   # 12 : la tête pivote, la bouche s'ouvre
 for e in range(3): cue("finger_skin", S(12) + 0.3 + e * 0.45, -26, 0.25)              # 12 : doigts qui tapotent
-crack(S(24) + 0.55 * (Se(24) - S(24)), 0.9)                                             # 24 : la fente s'ouvre
-crack(S(27) + 0.5, 0.6)                                                                 # 27 : le Long derrière toi bouge                      # 26 : l'ombre monte sur toi, ta respiration
+crac3(S(24) + 0.55 * (Se(24) - S(24)), 1.0)                                             # 24 : la fente s'ouvre
+crac3(S(27) + 0.5, 0.85)                                                                 # 27 : le Long derrière toi bouge                      # 26 : l'ombre monte sur toi, ta respiration
 cue("footstep_one", S(27) + 0.25 * (Se(27) - S(27)), -20)    # 27 : un pas, puis tu te retiens
 # ---- montage rapide (59 sous-plans) : souffles sur les coupes, sursaut d'ouverture, pas des Longs, pulsation qui accélère
 CUTW = {3: [9], 5: [26], 6: [34], 11: [55], 12: [61], 14: [72, 75], 15: [85, 88], 16: [100, 103], 17: [110, 115], 19: [129, 135, 136], 20: [140],
@@ -126,7 +144,7 @@ k.whoosh(0.32, 0.3, 0.9); k.reverse(0.75, 0.35, 0.6)                            
 k.impact(W(140) - 0.03, 1.0, 44.0, 1.8); k.impact(W(168) - 0.03, 0.9, 38.0, 2.0)           # flash blanc « hurle », noir « tourne »
 for sc in (10, 12):                                                                       # drones : pas lourds des Longs + air qui défile
     for e in range(int((Se(sc) - S(sc)) / 0.42)): k.thud(S(sc) + 0.1 + e * 0.42, 0.5, 46)
-    cue("vent_air", S(sc), -12, Se(sc) - S(sc))
+    cue("vent_air", S(sc), -12, Se(sc) - S(sc)); crac3(S(sc) + 0.25, 0.8); crac3(S(sc) + 0.6 * (Se(sc) - S(sc)), 0.75)
 wings(S(15) + 0.2, Se(15) - 0.4, -18)                                                      # 15 : les oiseaux s'envolent du pylône
 cue("tower_groan", S(9), -6)                                                               # 9 : le bloc qui glisse
 sand(S(9), Se(9), -20, 90)
