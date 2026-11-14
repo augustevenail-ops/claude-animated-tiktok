@@ -1,19 +1,41 @@
 {
-  "_note": "Voix IA du narrateur (décision utilisateur 2026-11-14). Modèle eleven_v3 : seul modèle qui comprend les balises d'émotion [..]. stability v3 = 0.0 (créatif) / 0.5 (naturel) / 1.0 (robuste).",
-  "voice_id": "wyZnrAs18zdIj8UgFSV8",
-  "voice_name": "Martin Dupont - Thriller Narrator (bibliothèque ElevenLabs, FR, grave, narratif sombre)",
-  "fallback_voice_id": "2AGrjHJgmTgUqzy68M9W",
-  "fallback_voice_name": "Nicolas Petit - Deep Narrator (FR, grave, enquête / cold case)",
-  "model_id": "eleven_v3",
-  "language_code": "fr",
-  "voice_settings": {
-    "stability": 0.5,
-    "similarity_boost": 0.85,
-    "style": 0.35,
-    "use_speaker_boost": true,
-    "speed": 0.95
+  "provider": "fish",
+  "_note": "Voix IA du narrateur. Décision utilisateur 2026-11-14 : Fish Audio (modèle s1) à la place d'ElevenLabs (voix de bibliothèque refusées sur le forfait gratuit). Balises d'émotion Fish S1 entre parenthèses, une par phrase.",
+  "fish": {
+    "reference_id": "3bce5f0710f949888abe982ded1ef731",
+    "voice_name": "Lama Faché (FR, homme d'âge moyen, grave, mystérieux, cinématographique, suspense)",
+    "fallback_reference_id": "4f2a0684dd0247dda68f339738c780e6",
+    "fallback_voice_name": "Le narrateur (FR, grave, sérieux, cinématographique)",
+    "model": "s1",
+    "script": "SCRIPT_FISH.md",
+    "format": "mp3",
+    "mp3_bitrate": 192,
+    "normalize": true,
+    "latency": "normal",
+    "temperature": 0.7,
+    "top_p": 0.7,
+    "prosody": {
+      "speed": 0.95,
+      "volume": 0
+    }
   },
-  "free_voice_id": "JBFqnCBsd6RMkjVDRZzb",
-  "free_voice_name": "George (premade, utilisable sur le forfait gratuit ; accent non natif)",
-  "_note_forfait": "Forfait gratuit : les voix de la bibliothèque (Martin Dupont, Nicolas Petit) sont refusées par l'API (402) ; option --free = George."
+  "elevenlabs": {
+    "voice_id": "wyZnrAs18zdIj8UgFSV8",
+    "voice_name": "Martin Dupont - Thriller Narrator (bibliothèque ElevenLabs, FR, grave, narratif sombre)",
+    "fallback_voice_id": "2AGrjHJgmTgUqzy68M9W",
+    "fallback_voice_name": "Nicolas Petit - Deep Narrator (FR, grave, enquête / cold case)",
+    "model_id": "eleven_v3",
+    "language_code": "fr",
+    "voice_settings": {
+      "stability": 0.5,
+      "similarity_boost": 0.85,
+      "style": 0.35,
+      "use_speaker_boost": true,
+      "speed": 0.95
+    },
+    "free_voice_id": "JBFqnCBsd6RMkjVDRZzb",
+    "free_voice_name": "George (premade, utilisable sur le forfait gratuit ; accent non natif)",
+    "script": "SCRIPT_BALISE.md",
+    "_note_forfait": "Forfait gratuit : les voix de la bibliothèque (Martin Dupont, Nicolas Petit) sont refusées par l'API (402) ; option --free = George."
+  }
 }
