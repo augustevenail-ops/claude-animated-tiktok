@@ -58,7 +58,7 @@ def crack(t0, g=1.0):                                                           
         if 0 <= i < N - n: sfx[i:i + n] += x * g * db(vref - 4 + SFX_DB) * (0.5 + rng.random())
 for e in range(6): crack(W(163) + e * 0.32, 0.9)                                         # le Long se déplie
 for e in range(3): crack(W(168) + e * 0.22, 1.0)                                         # sa tête pivote
-crack(W(10), 0.7)                                                                        # tête qui se penche (plan 1)
+crack(0.35, 0.55); crack(W(1) - 0.1, 0.8)                                            # plan 1 : la tête se penche, puis la bouche s'ouvre sur « bouge »
 k.stinger(TITLE_AT, 0.5)
 FLIP = TITLE_AT + 0.9                                                                     # le 1 devient 2 sur le carton (FLIP_AFTER, overlay.tsx)
 k.reverse(FLIP, 0.35, 0.5); cue("lock_click", FLIP - 0.01, -6); cue("sting_hit", FLIP, -12)
@@ -105,7 +105,13 @@ cue("breath_nervous", S(16) + 0.4, -24)                      # 16 : un jeune tre
 puff(S(17) + 0.47 * (Se(17) - S(17)), -20)                   # 17 : la bougie s'éteint
 for e in range(int((Se(19) - S(19)) / 0.55)): cue("footstep_one", S(19) + 0.2 + e * 0.55, -26)   # 19 : tes pas, loin
 sand(S(22), Se(22), -24, 80)                                 # 22 : poussière soulevée par l'entrée
-cue("breath_nervous", S(26) + 0.2, -18)                      # 26 : l'ombre monte sur toi, ta respiration
+cue("breath_nervous", S(26) + 0.2, -18)
+for e in range(4): cue("finger_skin", 0.15 + e * 0.38, -24, 0.25)                    # plan 1 : les 7 doigts tapotent l'arête du mur
+crack(S(11) + 0.3 * (Se(11) - S(11)), 0.7)                                              # 11 : le Long penche la tête
+crack(S(12) + 0.15, 0.6); crack(S(12) + 0.6 * (Se(12) - S(12)), 0.8)                   # 12 : la tête pivote, la bouche s'ouvre
+for e in range(3): cue("finger_skin", S(12) + 0.3 + e * 0.45, -26, 0.25)              # 12 : doigts qui tapotent
+crack(S(24) + 0.55 * (Se(24) - S(24)), 0.9)                                             # 24 : la fente s'ouvre
+crack(S(27) + 0.5, 0.6)                                                                 # 27 : le Long derrière toi bouge                      # 26 : l'ombre monte sur toi, ta respiration
 cue("footstep_one", S(27) + 0.25 * (Se(27) - S(27)), -20)    # 27 : un pas, puis tu te retiens
 # ---- musique douce (-1/4) + tension qui suit l'histoire
 REVEAL = [2, 41, 47, 102, 119, 140, 163, 172, 194]
