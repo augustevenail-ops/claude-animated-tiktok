@@ -61,3 +61,70 @@ recalés sont coupés en sous-plans `a/b/c/d`, même contenu). Fin de la vidéo 
 ## HUD « INFECTÉS » (paliers irréguliers)
 73 (0 s) · 74 (6,08) · 79 (7,86, tirs) · 80 (17,68) · 81 (20,40, le soignant) · 82 (21,57, le fuyard) · 89 (31,48) · 97 (35,14)
 · 103 (37,62) · 104 (44,10) · 112 (52,58) · 119 (56,64) · 126 (60,64 → fin)
+
+## SOUND DESIGN
+
+### Niveaux (hiérarchie fixe)
+**Voix off** (référence 0 dB, loudness finale −15 LUFS) **> bruitages** (−9 à −15 dB sous la voix, sauf tirs/impacts −6 dB
+hors paroles) **> ambiance de lieu** (−18 à −22 dB) **> musique** (−20 dB, ducking −3 dB supplémentaire sous chaque phrase).
+Fondus de 0,3-0,6 s entre ambiances à chaque changement de lieu ; aucune coupure sèche sauf sur les impacts.
+Banque : `productions/sfx_lib/*.mp3` + synthèses `tools/sound_kit.py` / `tools/mur_mix.py` (modèle à copier : `tools/hopital_mix.py`).
+
+### Musique de fond (générale)
+Cinématique sombre / survival horror, **instrumentale** : nappe grave tenue (cordes basses + drone synthé), notes de piano
+isolées et lointaines, pulsation grave (`pulse`) qui **accélère** avec le stress. Très discrète, toujours derrière la voix.
+| Section | Plans | Variation |
+|---|---|---|
+| Réveil | 01-04b | Drone seul, très bas, une note de piano aiguë isolée sur « Imagine ». |
+| Siège extérieur | 05-07 | Le drone s'élargit, pulsation lente (60 bpm) ; coupure nette en silence quasi total sur le plan 07 (radio seule). |
+| Décision | 08-10 | Remontée douce du drone ; la pulsation reprend à 70 bpm sur « tu te lèves ». |
+| Le soignant | 11a-14 | Tension : cordes en trémolo grave, pulsation 85 bpm ; montée sur la transformation (13), accent sur le bond (14). |
+| Règle 1 | 15 | La musique retombe à une nappe tenue sous l'énoncé de la règle (respiration). |
+| La fillette | 16a-17 | **Baisse** : moment calme, nappe douce + quelques notes de piano plus chaudes. |
+| Poursuite | 18-21 | **Montée de tension** : pulsation 110 → 130 bpm, percussions sourdes, cordes staccato ; pic sur la horde (19) et dans l'escalier (21). Le plan 20 (dehors) garde l'élan avec un souffle large. |
+| Répit | 22-24 | Chute brutale de la pulsation (le souffle du héros prend la place), puis nappe suspendue ; tension qui revient doucement sur les infectés bloqués (24). |
+| Règle 2 | 25 | Nappe tenue, un accord grave unique à l'apparition du texte. |
+| Choix | 26-31d | **Suspense** : drone de plus en plus aigu et serré, pulsation lente 60 bpm qui se resserre ; silence relatif sous la question (31a), deux accords différents pour A (31b, grave et sombre) et B (31c, aigu et froid). |
+| Carton | 32 | **Montée dramatique** : crescendo cordes + percussions, coup final (stinger) sur « ÉPISODE 2 », queue de réverb jusqu'à la fin. |
+
+### Par plan
+| Plan | Ambiance sonore (continue, lieu) | Bruitages (synchronisés à l'action) |
+|---|---|---|
+| 01 | Chambre : bourdonnement électrique (`elec_hum`), sirènes lointaines étouffées par la vitre (`siren_far`) | Respiration nerveuse du héros (`breath_nervous`, très bas) ; bip discret du HUD qui apparaît (`beep_ok`) ; tag PATIENT 047 : petit clic |
+| 02 | Idem chambre | Grincement du lit quand il se redresse (`bed_creak`) ; froissement du drap qui glisse (`cloth_rustle`) puis tombe au sol (souffle mat) |
+| 03 | Idem chambre | Rotation sèche de la tête : petit « tic » mécanique + vibration (jitter) ; `whoosh` court |
+| 04a | Extérieur à travers la vitre : sirènes plus présentes, foule paniquée lointaine (`crowd_shuffle`) | Pas qui courent sur le bitume, très étouffés |
+| 04b | Couloir derrière la vitre : alarme hôpital lointaine | Pas rapides sur le lino, porte battante qui claque (`door_slam_far`) |
+| 05 | Extérieur nuit : vent (`wind_city`), sirènes de police (`siren_far`), foule lointaine | Rotation des gyrophares (léger « wouf » cyclique) ; tag ZONE CONFINÉE : clic |
+| 06 | Extérieur : sirènes, vent, grognements lointains des infectés | **Tirs** (3 salves espacées, sèches, avec écho sur la façade) ; douilles qui tombent ; ordre crié indistinct au loin ; tag POLICE : clic |
+| 07 | Chambre : silence lourd, bourdonnement électrique seul | Grésillement radio (`pa_static`) + petites secousses de la radio au sol ; voix radio hachée inintelligible ; tag SIGNAL PERDU : clic + coupure du grésillement à la fin |
+| 08 | Chambre : bourdonnement | Respiration retenue ; minuscule « tic » de la goutte de sueur |
+| 09 | Chambre | Pieds nus qui frappent le sol (`footstep_one`) ; poussière (souffle léger) |
+| 10 | Passage chambre → couloir (fondu d'ambiance) | Porte poussée violemment (`door_push`) puis qui bat encore ; pas rapides |
+| 11a | Couloir : néons qui grésillent (`neon_flicker`), alarme lointaine, ventilation (`vent_air`) | Pas du héros ; râle lointain du soignant |
+| 11b | Couloir | Genoux qui cèdent, chute lourde du corps (`struggle` + impact sourd), poussière |
+| 12 | Couloir | Pulsations de sang (battement humide, au rythme du `heartbeat`) |
+| 13 | Couloir : l'ambiance se resserre (filtre) | Craquement organique des veines qui se propagent (`crac3` très bas) ; **note « tiiin »** (`tiin`) à la première apparition des veines ; tag INFECTÉ : clic grave |
+| 14 | Couloir | **Grognement** du soignant + bond (`whoosh`), cri étouffé et chute du fuyard, chariot/objet métallique renversé (`glass_rattle`) |
+| 15 | Couloir : ambiance qui retombe | Néons qui s'allument un à un sous le texte de la règle (`light_on` ×3, `lights_cascade`) + bourdonnement rouge |
+| 16a | Couloir : néons, ventilation | Pas prudents, plus lents |
+| 16b | Couloir, ras du sol | Respiration rapide et aiguë de la fillette (`gasp_teen` très bas) ; légère vibration des roues du brancard ; tag SURVIVANTE : clic doux |
+| 17 | Couloir | Froissement de vêtements, petite main saisie (`finger_skin`), pas qui repartent à deux |
+| 18 | Couloir sombre | Respiration rauque de l'infecté ; petits claquements nerveux ; **« tiiin »** |
+| 19 | Couloir : alarme plus forte | **Course de la horde** (pas lourds multiples, `run_steps_room`), grognements superposés (4 voix), chariots bousculés ; tag MENACE DÉTECTÉE : clic + bip d'alerte |
+| 20 | Transition intérieur → extérieur : vent, sirènes, hélicoptère lointain | **Vitre qui éclate** (`glass_rattle` + impact), souffle de vitesse le long de la façade (`whoosh` long), voix grésillante du talkie (`pa_static`, `mic_tap`) ; tag POLICE : clic |
+| 21 | Cage d'escalier en béton : réverbération | Pas qui dévalent les marches (`steps_stairs`, rapides et rythmés), rampe métallique qui vibre, `whoosh` à chaque tour de spirale |
+| 22 | Escalier : réverb, bourdonnement des néons de secours | Dos qui frappe le béton (impact sourd) ; **souffle** du héros, rapide puis qui ralentit (`breath_nervous`) ; battements de cœur (`heart_fast`) |
+| 23 | Idem | Petite respiration de la fillette |
+| 24 | Escalier : **néons de secours puissants** (bourdonnement fort, `elec_hum` + `neon_flicker`) | Pieds des infectés qui piétinent sur place, grognements frustrés, frottements ; grésillement quand une main approche de la lumière |
+| 25 | Idem, la caméra traverse le couloir | Souffle du mouvement de caméra (`whoosh` doux) ; texte qui s'imprime : grésillement électrique + `light_on` |
+| 26 | Escalier/palier | Respiration retenue du héros |
+| 27 | Couloir noir : silence presque total, goutte qui tombe (`drip`), ventilation lointaine | Pas du travelling très feutrés ; grésillement du panneau vert de plus en plus présent en approchant |
+| 28 | Couloir noir | **Panneau vert qui grésille et claque** (`neon_flicker`, irrégulier) ; tag SORTIE DE SECOURS : clic |
+| 29 | Couloir de droite : bourdonnement intense des néons puissants (aigu, `elec_hum`) | Souffle du travelling ; reflets (petits scintillements) |
+| 30 | Idem | Vitres qui vibrent légèrement (`glass_rattle` très bas) ; pas qui s'arrêtent net |
+| 31a | Palier entre les deux couloirs : les deux ambiances mélangées (silence noir à gauche, bourdonnement à droite) | Respiration du héros ; cœur lent (`heartbeat`) |
+| 31b | Gauche : `drip` + silence | Carte A : clic grave |
+| 31c | Droite : bourdonnement des néons | Carte B : clic aigu |
+| 31d | Les deux ambiances, grognements lointains qui reviennent | Petite respiration de la fillette |
+| 32 | Extérieur de nuit : vent, sirènes très lointaines | Stinger + « clic » au passage ÉPISODE 1 → 2 (`sting_hit`) |
