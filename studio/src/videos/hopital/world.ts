@@ -8,7 +8,8 @@ import { NOINK } from "../bridge/ink";
 import { Pool, Actor } from "../bridge/cast";
 import type { Pen } from "../bridge/toon";
 import { painted } from "../shared/painted";
-import { drawPerso, Perso } from "./persos";
+import { drawPerso, Perso, BIG, BIG_DX, BIG_DY } from "./persos";
+import { runJ, walkJ, mixJ, REST } from "./pantin";
 import { FPS, V3, NAME, LIGHT, CORR_Z, STAIR, LAND_Z, camAt, uOf, hash, smooth, clamp01, tW } from "./story";
 import { LIGHTS } from "./look";
 import { City } from "./city";
@@ -136,7 +137,7 @@ type Place = { p: V3; s: Perso; yaw?: number; tilt?: number; roll?: number; scal
 export class World {
   root = new THREE.Group();
   sun: THREE.DirectionalLight; private hemi: THREE.HemisphereLight; private fog = new THREE.Fog("#000", 10, 100);
-  private pool = new Pool(); private actors: Actor[] = [];
+  private pool = new Pool(); private actors: Actor[] = []; private bigs: Actor[] = [];
   private gyros: { m: THREE.Mesh; col: string; ph: number }[] = []; private neons: THREE.Mesh[] = []; private exit: THREE.Mesh; private exitGlow: THREE.Mesh;
   private sheet: THREE.Mesh; private door: THREE.Mesh; private talkie: THREE.Group; private led: THREE.Mesh; private curtain: THREE.Mesh;
   private rule1: RuleText; private city = new City(); private clock!: THREE.Mesh; private ecg!: { cv: HTMLCanvasElement; tex: THREE.CanvasTexture }; private curtains: THREE.Mesh[] = []; private alarms: THREE.Mesh[] = []; private papers: THREE.Mesh[] = []; private shadows: THREE.Mesh[] = []; private drip!: THREE.Mesh; private rule2: RuleText; private parts: Record<string, THREE.Points> = {}; private moon: THREE.Mesh; private sky: THREE.Mesh;
@@ -222,7 +223,21 @@ export class World {
       g.translate(SX, 6, SZ); b.add(g, beton); const m = beton.clone(); m.side = THREE.BackSide; }
     { const g = new THREE.CylinderGeometry(3.72, 3.72, 12, 40, 1, true, 0.95, Math.PI * 2 - 1.9); g.translate(SX, 6, SZ); const m = solid("beton_in", "#ffffff", { map: rep(concreteTex(), 9, 4.8), side: THREE.BackSide }); b.add(g, m); }
     b.add(new THREE.CylinderGeometry(0.45, 0.45, 12, 16).translate(SX, 6, SZ), beton);                                         // noyau
-    for (let k = 0; k < 44; k++) { const a = k * 0.32, y = k * 0.25; const g = new THREE.BoxGeometry(3.1, 0.25, 0.75).translate(2.05, y + 0.125, 0).rotateY(-a + Math.PI / 2).translate(SX, 0, SZ); b.add(g, solid("step", "#a3a5a6")); }
+    { const stepM = solid("step", "#9fa2a4"), nose = solid("nose", "#d9b22a"), rail = solid("rail", "#6d747c"), pts: THREE.Vector3[] = [];
+      for (let k = 0; k < 44; k++) { const a = k * 0.32, y = k * 0.25;
+        b.add(new THREE.CylinderGeometry(3.55, 3.55, 0.2, 8, 1, false, a, 0.34).translate(SX, y + 0.15, SZ), stepM);                                   // marche épaisse en secteur
+        const ca = Math.cos(a), sa = Math.sin(a), nx = SX + sa * 2.05, nz = SZ + ca * 2.05;
+        b.add(new THREE.BoxGeometry(3.0, 0.035, 0.05).rotateY(a - Math.PI / 2).translate(nx, y + 0.265, nz), nose);                                 // nez de marche jaune
+        b.add(new THREE.BoxGeometry(3.0, 0.25, 0.04).rotateY(a - Math.PI / 2).translate(nx, y + 0.12, nz), solid("riser", "#85888a"));             // contremarche
+        const bx = SX + Math.sin(a + 0.17) * 3.35, bz = SZ + Math.cos(a + 0.17) * 3.35; b.add(new THREE.CylinderGeometry(0.018, 0.018, 0.9, 5).translate(bx, y + 0.7, bz), rail);   // balustre
+        pts.push(new THREE.Vector3(bx, y + 1.15, bz)); }
+      b.add(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 220, 0.035, 6), rail);                                                           // main courante hélicoïdale
+      for (let q = 0; q < 8; q++) { const a = q * 1.4 + 0.5, y = 1.8 + q * 1.35; if (Math.abs(((a % 6.283) + 6.283) % 6.283 - 6.283) < 1.0 || ((a % 6.283) + 6.283) % 6.283 < 1.0) continue;   // appliques murales (pas dans l'ouverture)
+        const x = SX + Math.sin(a) * 3.62, z = SZ + Math.cos(a) * 3.62; b.add(new THREE.BoxGeometry(0.3, 0.16, 0.08).rotateY(a).translate(x, y, z), solid("sconce", "#c9d0d6"));
+        const gl2 = new THREE.Mesh(new THREE.PlaneGeometry(2.4, 2.4), new THREE.MeshBasicMaterial({ map: glowTex("255,226,180"), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false })); gl2.position.set(SX + Math.sin(a) * 3.45, y, SZ + Math.cos(a) * 3.45); gl2.layers.set(NOINK); R.add(gl2); this.neons.push(gl2); }
+      for (let q = 0; q < 3; q++) { const a = 2.2 + q * 1.3; b.add(new THREE.CylinderGeometry(0.06, 0.06, 12, 8).translate(SX + Math.sin(a) * 3.55, 6, SZ + Math.cos(a) * 3.55), solid("pipe" + q, ["#7a6a4a", "#8a3a2a", "#4a6a7a"][q])); }   // tuyaux verticaux
+    }
+
     floor(beton, SX - 3.7, SX + 3.7, SZ - 3.7, SZ + 3.7, 0.001, 2.5);
     // palier z ∈ [3,5 ; 9,2], x ∈ [194 ; 206] ; ouvertures des couloirs z ∈ [4,6 ; 8,2]
     floor(beton, 150, 250, 3.5, 9.2, 0, 2.5); ceiling(beton, 150, 250, 3.5, 9.2, HC);
@@ -302,6 +317,33 @@ export class World {
       const amb = new THREE.Matrix4().makeRotationY(0.15).setPosition(-22, 0, -16); b.add(new THREE.BoxGeometry(5.6, 2.4, 2.2).translate(0, 1.5, 0), solid("ambu", "#f2f2ee"), amb); b.add(new THREE.BoxGeometry(5.62, 0.3, 2.22).translate(0, 1.3, 0), solid("ambuband", "#c0121e"), amb); b.add(new THREE.BoxGeometry(1.4, 0.6, 2.0).translate(2.6, 2.95, 0), solid("ambuwin", "#1a2230"), amb);
       for (const [dx, dz] of [[-1.9, 1], [1.9, 1], [-1.9, -1], [1.9, -1]]) b.add(new THREE.CylinderGeometry(0.4, 0.4, 0.26, 12).rotateX(Math.PI / 2).translate(dx, 0.4, dz), dark, amb);
       for (const [x, z, col] of [[-22.3, -16, "#ff2a2a"], [-21.4, -16.1, "#2a6bff"]] as [number, number, string][]) { const g = new THREE.Mesh(new THREE.PlaneGeometry(3.2, 3.2), new THREE.MeshBasicMaterial({ map: glowTex(col === "#ff2a2a" ? "255,42,42" : "42,107,255"), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, fog: false })); g.position.set(x, 2.95, z); g.layers.set(NOINK); R.add(g); this.gyros.push({ m: g, col, ph: x * 3 }); } }
+    // sol du palier et des couloirs : fissures, saletés, traces de pas, bandes de sécurité, grille d'évacuation
+    const crackTex = ctex("ho_cracks", 512, 512, (g) => { g.clearRect(0, 0, 512, 512);
+      for (let i = 0; i < 40; i++) { g.fillStyle = `rgba(30,28,26,${0.05 + hash(i, 121) * 0.1})`; g.beginPath(); g.ellipse(hash(i, 122) * 512, hash(i, 123) * 512, 10 + hash(i, 124) * 60, 6 + hash(i, 125) * 30, hash(i, 126) * 3, 0, 7); g.fill(); }
+      g.strokeStyle = "rgba(25,22,20,0.55)"; g.lineWidth = 2; for (let i = 0; i < 10; i++) { let x = hash(i, 127) * 512, y = hash(i, 128) * 512; g.beginPath(); g.moveTo(x, y); for (let k2 = 0; k2 < 9; k2++) { x += (hash(i * 9 + k2, 129) - 0.5) * 50; y += (hash(i * 9 + k2, 130) - 0.3) * 40; g.lineTo(x, y); } g.stroke(); }
+      g.fillStyle = "rgba(40,30,25,0.35)"; for (let i = 0; i < 18; i++) { g.save(); g.translate(60 + i * 24, 250 + Math.sin(i) * 30 + (i % 2) * 22); g.rotate(0.1); g.beginPath(); g.ellipse(0, 0, 7, 15, 0, 0, 7); g.fill(); g.beginPath(); g.ellipse(0, 20, 6, 7, 0, 0, 7); g.fill(); g.restore(); } });
+    for (const [x, z, w, d] of [[200, 6.4, 12, 5.6], [188, 6.4, 12, 3.6], [176, 6.4, 12, 3.6], [212, 6.4, 12, 3.6], [224, 6.4, 12, 3.6], [236, 6.4, 12, 3.6]] as number[][]) floorDeco(crackTex, w, d, [x, 0.011, z], false, 0.9);
+    for (let q = 0; q < 9; q++) box(b, solid(q % 2 ? "stripeY" : "stripeK", q % 2 ? "#d9b22a" : "#1e1e20"), SX - 2.9 + q * 0.64, 0.004, 3.55, SX - 2.9 + q * 0.64 + 0.64, 0.012, 3.85);   // bande de sécurité au pied de l'escalier
+    box(b, solid("grate", "#3a3e44"), 201.2, 0.003, 8.3, 202.0, 0.012, 8.8);
+    // palier / carrefour : armoire incendie, tableau électrique, plan d'évacuation, chaises, poubelle, chemin de câbles, gaine
+    box(b, solid("hose", "#b3121c"), 194.05, 0.9, 7.0, 194.3, 1.9, 7.9); deco(signTex("hoseG", "", "rgba(200,230,255,0.25)", "#fff", 128, 128), 0.8, 0.9, [194.31, 1.4, 7.45], Math.PI / 2, false, 0.6);
+    box(b, solid("elec", "#8a9096"), 205.7, 1.0, 4.9, 205.95, 2.0, 5.7); deco(signTex("volt", "⚡", "#f2c12e", "#111", 128, 128), 0.22, 0.22, [205.69, 1.75, 5.3], -Math.PI / 2);
+    deco(ctex("ho_map", 256, 192, (g) => { g.fillStyle = "#f4f4ee"; g.fillRect(0, 0, 256, 192); g.strokeStyle = "#333"; g.lineWidth = 3; g.strokeRect(20, 30, 216, 140); g.beginPath(); g.moveTo(20, 100); g.lineTo(236, 100); g.moveTo(128, 30); g.lineTo(128, 170); g.stroke();
+      g.fillStyle = "#1aa34a"; g.fillRect(210, 90, 24, 20); g.fillStyle = "#c0121e"; g.beginPath(); g.arc(120, 110, 8, 0, 7); g.fill(); g.fillStyle = "#111"; g.font = "bold 18px DejaVu Sans"; g.fillText("PLAN D'ÉVACUATION", 30, 22); }), 0.7, 0.52, [197.2, 1.6, 9.18], Math.PI);
+    for (const x of [202.4, 203.0, 203.6]) { box(b, solid("chairP", "#3f6f86"), x, 0.42, 8.55, x + 0.5, 0.48, 9.1); box(b, solid("chairP", "#3f6f86"), x, 0.48, 9.0, x + 0.5, 0.95, 9.08); box(b, metal, x + 0.05, 0, 8.6, x + 0.09, 0.42, 9.05); }
+    b.add(new THREE.CylinderGeometry(0.22, 0.2, 0.7, 12).translate(205.4, 0.35, 8.8), solid("bin", "#2a6b4a"));
+    box(b, metal, 150, HC - 0.25, 8.0, 250, HC - 0.22, 8.2); box(b, solid("duct", "#9aa0a6"), 150, HC - 0.55, 4.7, 250, HC - 0.2, 5.2);                         // chemin de câbles, gaine de ventilation
+    for (let x = 152; x < 250; x += 2.5) box(b, metal, x, HC - 0.6, 4.65, x + 0.04, HC - 0.2, 5.25);
+    // couloir blanc : carrelage, portes, mains courantes, panneaux, fauteuil, pied à perfusion
+    floorDeco(rep(tileTex(), 15, 2), 30, 3.6, [179, 0.0125, LAND_Z], false, 0.55);
+    for (const x of [168, 174, 182, 190]) { box(b, solid("wdoor", "#cfd8de"), x, 0, 4.62, x + 1.1, 2.15, 4.66); box(b, solid("wdoor", "#cfd8de"), x + 1.5, 0, 8.14, x + 2.6, 2.15, 8.18); }
+    box(b, metal, 164, 0.9, 4.64, 194, 0.95, 4.7); box(b, metal, 164, 0.9, 8.1, 194, 0.95, 8.16);
+    deco(signTex("bloc", "BLOC OPÉRATOIRE", "#2f6fa8", "#fff", 768, 128, "  ←"), 1.5, 0.25, [186, 2.55, 4.68], 0);
+    { const wc = solid("wheel", "#2a2e34"); b.add(new THREE.TorusGeometry(0.3, 0.03, 6, 18).translate(0, 0.3, 0).translate(172, 0, 7.6), wc); b.add(new THREE.TorusGeometry(0.3, 0.03, 6, 18).translate(0, 0.3, 0).translate(172, 0, 8.05), wc); box(b, solid("seat", "#2f4f6a"), 171.8, 0.45, 7.6, 172.4, 0.52, 8.05); box(b, solid("seat", "#2f4f6a"), 172.35, 0.52, 7.6, 172.42, 1.0, 8.05); }
+    box(b, metal, 180, 0, 5.0, 180.04, 1.9, 5.04); box(b, white, 179.9, 1.6, 4.98, 180.14, 1.85, 5.06);
+    // couloir noir : chariot renversé, draps, papiers
+    box(b, metal, 226, 0, 4.9, 227.2, 0.08, 5.5); box(b, solid("sheet2", "#c9d3d8"), 229, 0.005, 6.8, 230.4, 0.03, 7.9);
+    for (let q = 0; q < 4; q++) deco(signTex("niv" + q, String(-1 + q), "rgba(0,0,0,0)", "#f2c12e", 256, 256), 0.9, 0.9, [SX + Math.sin(3.6 + q * 0.6) * 3.6, 1.6 + q * 3, SZ + Math.cos(3.6 + q * 0.6) * 3.6], 3.6 + q * 0.6 + Math.PI);
     // ombres de contact sous les personnages
     for (let q = 0; q < 26; q++) { const sh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ map: shadowTex(), transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -3 })); sh.visible = false; R.add(sh); this.shadows.push(sh); }
     b.build(R, true);
@@ -314,6 +356,7 @@ export class World {
     this.sky.layers.set(NOINK); this.sky.renderOrder = -1; R.add(this.sky);
     this.moon = new THREE.Mesh(new THREE.PlaneGeometry(90, 90), new THREE.MeshBasicMaterial({ map: glowTex("215,235,255"), transparent: true, fog: false, blending: THREE.AdditiveBlending, depthWrite: false })); this.moon.layers.set(NOINK); R.add(this.moon);
     for (let i = 0; i < 34; i++) this.actors.push(new Actor(R));
+    { const bg = new THREE.PlaneGeometry(BIG * SU, BIG * SU); bg.translate((BIG / 2 - (BIG_DX + 300)) * SU, ((BIG_DY + 975) - BIG / 2) * SU, 0); for (let i = 0; i < 12; i++) this.bigs.push(new Actor(R, bg)); }
     const mk = (key: string, n: number, col: string, size: number, add: boolean, op = 1) => { const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.BufferAttribute(new Float32Array(n * 3), 3));
       const pt = new THREE.Points(g, new THREE.PointsMaterial({ map: glowTex(col), size, transparent: true, opacity: op, depthWrite: false, blending: add ? THREE.AdditiveBlending : THREE.NormalBlending })); pt.layers.set(NOINK); pt.visible = false; pt.frustumCulled = false; R.add(pt); this.parts[key] = pt; };
     mk("dust", 140, "255,240,220", 0.03, true, 0.8); mk("glass", 90, "200,230,255", 0.06, true); mk("blood", 40, "150,10,20", 0.05, false); mk("sweat", 1, "220,240,255", 0.02, true);
@@ -377,9 +420,11 @@ export class World {
     // ---------- personnages ----------
     let k = 0;
     const yawTo = (p: V3) => Math.atan2(cam.position.x - p[0], cam.position.z - p[2]);
+    let kb = 0;
     const place = (o: Place) => {
-      const A = this.actors[k++]; if (!A) return; const sc = o.scale ?? 1;
-      const d = cam.position.distanceTo(V(o.p[0], o.p[1] + 1.2 * sc, o.p[2])), [w, h, kk] = tierOf(d / sc);
+      const big = !!(o.s.view || o.s.j), A = big ? this.bigs[kb++] : this.actors[k++]; if (!A) return; const sc = o.scale ?? 1;
+      const d = cam.position.distanceTo(V(o.p[0], o.p[1] + 1.2 * sc, o.p[2])); let [w, h, kk] = tierOf(d / sc);
+      if (big) { kk = Math.min(kk, 1.6); w = h = Math.round(BIG * kk); }
       A.r = this.pool.req(o.key ?? JSON.stringify(o.s), w, h, kk, (pen: Pen) => drawPerso(pen, o.s));
       A.mesh.position.set(...o.p); A.mesh.up.set(0, 1, 0); A.mesh.rotation.set(o.tilt ?? 0, o.yaw ?? yawTo(o.p), o.roll ?? 0, "YXZ");
       A.mesh.scale.set(o.mirror ? -sc : sc, sc, sc); A.mesh.visible = true;
@@ -394,13 +439,14 @@ export class World {
       place({ p: [hip[0] + HIP * Math.sin(a), hip[1] - HIP * Math.cos(a), hip[2]], s: { ...H, ...s } as Perso, yaw: 0, roll: a }); };
     const heroSit = (yawExtra: number, s: Partial<Perso>) => place({ p: [-1.15, 0.66 - HIP, -1.2], s: { ...H, ...s } as Perso, yaw: Math.PI / 2 + yawExtra });
     if (id === "01") heroLie(Math.PI / 2, { expr: "fear", look: Math.sin(t * 13) * 0.9 * (hash(Math.floor(t * 6), 1) < 0.7 ? 1 : -1), blink: blink(1) });
-    if (id === "02") heroLie(Math.PI / 2 * (1 - smooth((u - 0.1) * 1.7)), { expr: "worry", blink: u < 0.12 });
+    if (id === "02") { const up = smooth((u - 0.08) * 1.6), push = Math.sin(Math.PI * clamp01((u - 0.05) * 1.8));
+      place({ p: [-1.15, 0, -1.2], s: { ...H, view: "side", spin: -Math.PI / 2, expr: "worry", blink: u < 0.12, j: { ...REST, lean: Math.PI / 2 * up, shL: -0.6 * push + 0.2, elL: 0.9 * push, shR: -0.4 * push + 0.15, elR: 0.7 * push, knL: 0.15 * up, knR: 0.1 * up } } as Perso, yaw: 0 }); }
     if (id === "03") heroSit(-0.55 * (1 - Math.pow(1 - clamp01(u / 0.18), 3)) + jit(0.02, 2) * (u > 0.18 ? 1 : 0), { expr: "worry", look: -0.9 * smooth(u * 3) });
     if (id === "08") heroSit(-0.15, { expr: "fear", look: Math.sin(u * 7) * 0.5 });
     if (id === "09") place({ p: [0.7, 0.05 * Math.max(0, Math.sin(Math.PI * clamp01(u * 2.5))), -0.2], s: { ...H, pose: u < 0.35 ? "run" : "stand", step: 0.15, expr: "worry" } });
-    if (id === "10") place({ p: [-1.6 + 0.1 * u, 0, 2.2 + 2.2 * u], s: { ...H, pose: "run", expr: "fear", step: (t * 1.7) % 1 } });
+    if (id === "10") place({ p: [-1.6 + 0.1 * u, 0, 2.2 + 2.2 * u], s: { ...H, view: "front", j: runJ((t * 1.7) % 1), expr: "fear" } as Perso });
     if (id === "04a") [0, 1, 2].forEach((n) => place({ p: [-6 + 12 * u + n * 2.1 - 2, 0, -18 - n * 2.5], s: { ...DOC, step: (t * 1.6 + n * 0.3) % 1, hair: n === 1 ? "bun" : "fringe", pants: n === 2 ? "#4e7fa8" : DOC.pants } }));
-    if (id === "04b") [0, 1].forEach((n) => place({ p: [-3 + 8 * u - n * 1.6, 0, 5.9 - 0.4 * n], s: { ...DOC, step: (t * 1.7 + n * 0.5) % 1, hair: n ? "bun" : "spiky", mask: n === 1 } }));
+    if (id === "04b") [0, 1].forEach((n) => place({ p: [5 - 8 * u + n * 1.7, 0, 5.9 - 0.4 * n], s: { ...DOC, view: "side", j: runJ((t * 1.7 + n * 0.5) % 1), hair: n ? "bun" : "spiky", mask: n === 1 } as Perso, yaw: Math.PI }));
     // dehors : infectés qui avancent vers la police, policiers de dos / de face
     const outsideInf = (n: number, z0: number) => { for (let q = 0; q < n; q++) place({ p: [-19 + q * 4.0 + hash(q, 9) * 2, 0, z0 - q % 3 * 1.6 - (hash(q, 8) * 3) - 2 * u], s: { ...INF[q % 4], pose: q % 2 ? "reach" : "armsUp", step: 0 } }); };
     const POL: [number, number, Partial<Perso>, number][] = [[-4.6, -33.6, { pose: "handMouth", expr: "worry" }, 0], [-2.9, -32.0, { pose: "reach", gun: true }, -0.62], [-1.4, -33.2, { pose: "reach", gun: true, hair: "bun", hairColor: "#a07850" }, 0],
@@ -412,15 +458,17 @@ export class World {
     // couloir : le soignant
     const SO: V3 = [8.6, 0, 5.6];
     if (id === "11a") { place({ p: [SO[0] + 1.5 - 1.2 * u, 0, CORR_Z + 0.2 * Math.sin(u * 5)], s: { ...SOIGNANT, bite: true, expr: "shock", pose: "handMouth" }, yaw: -Math.PI / 2 + 0.3 * Math.sin(t * 3) }); }
-    if (id === "11b") { const a = Math.PI / 2 * smooth((u - 0.12) / 0.5); place({ p: [SO[0], 0.2 * Math.sin(a), SO[2]], s: { ...SOIGNANT, bite: true, expr: "shock", pose: u < 0.3 ? "handMouth" : "stand" }, yaw: Math.PI, roll: a }); }
+    if (id === "11b") { const buckle = smooth(u / 0.35), fall = smooth((u - 0.3) / 0.45), sp = -Math.PI / 2 * fall;
+      const j = mixJ(mixJ(REST, { ...REST, knL: 0.9, knR: 1.1, hipL: 0.5, hipR: 0.6, lean: -0.15, shR: 0.9, elR: 1.2, shL: 0.6, elL: 1.0, head: -0.2 }, buckle), { ...REST, shR: -1.4, shL: -1.1, elR: 0.3, elL: 0.2, knL: 0.2 }, fall);
+      place({ p: [9.4, -0.6 * fall - 0.18 * buckle * (1 - fall), SO[2]], s: { ...SOIGNANT, view: "side", spin: sp, bite: true, expr: "shock", j } as Perso, yaw: Math.PI }); }
     if (id === "12" || id === "13") place({ p: [SO[0], 0.2, SO[2]], s: { ...SOIGNANT, bite: true, expr: id === "12" ? "fear" : "shock", infect: id === "13" ? clamp01(u * 1.15) : 0, blood: 1 }, yaw: Math.PI, roll: Math.PI / 2 });
     if (id === "14") { const lp2 = smooth(u * 2.2); place({ p: [10.8 - 1.6 * lp2, 0.35 * Math.sin(Math.PI * clamp01(u * 2.2)), CORR_Z + 0.2], s: { ...SOIGNANT, bite: true, infect: 1, blood: 2, pose: "reach" } });
       const fl = smooth((u - 0.4) / 0.4); place({ p: [8.4 - 0.4 * fl, 0.01, CORR_Z - 0.3], s: { ...CIVIL, pose: fl > 0.5 ? "stand" : "run", expr: "shock", step: 0.25 }, yaw: -Math.PI / 2 - 0.4, tilt: -Math.PI / 2 * fl }); }
-    if (id === "16a") place({ p: [23 + 2.2 * u, 0.04 * Math.abs(Math.sin(t * 6)), CORR_Z + 0.3], s: { ...H, back: true, expr: "worry" }, yaw: Math.PI / 2 + Math.PI });
+    if (id === "16a") place({ p: [23 + 2.2 * u, 0, CORR_Z + 0.3], s: { ...H, view: "back", back: true, j: walkJ((t * 0.9) % 1, 0.8), expr: "worry" } as Perso });
     if (id === "16b") place({ p: [30 + jit(0.012, 4), -0.42, 5.8], s: { ...G, pose: "handMouth", expr: "fear" }, scale: 0.6 });
     if (id === "17") { const hx = 30.6; place({ p: [hx, 0, 5.9], s: { ...H, expr: "worry", look: -0.6 } }); place({ p: [hx - 0.58, 0, 5.9], s: { ...G, pose: "reach", expr: "worry", look: 0.6 }, scale: 0.68, mirror: true }); }
     if (id === "18") place({ p: [-15.4 + jit(0.006, 5), 0, CORR_Z], s: { ...INF[3], pose: "stand", look: Math.sin(t * 23) * 0.6 } });
-    if (id === "19") INF.forEach((s, q) => place({ p: [-22 + 14 * u + q * 1.3 + hash(q, 2) * 1.5, 0.05 * Math.abs(Math.sin(t * 7 + q)), CORR_Z + (q % 2 ? 0.7 : -0.6)], s: { ...s, pose: q % 2 ? "run" : "reach", step: (t * 1.9 + q * 0.3) % 1 } }));
+    if (id === "19") INF.forEach((s, q) => place({ p: [-22 + 14 * u + q * 1.3 + hash(q, 2) * 1.5, 0.05 * Math.abs(Math.sin(t * 7 + q)), CORR_Z + (q % 2 ? 0.7 : -0.6)], s: { ...s, view: "front", j: { ...runJ((t * 1.9 + q * 0.3) % 1), shR: 1.4 + 0.3 * Math.sin(t * 9 + q), elR: 0.2, shL: q % 2 ? 1.2 : 0.4, elL: 0.3 } } as Perso }));
     // escalier, palier
     if (id === "21") [0, 1].forEach((q) => { const a = t * 2.4 - q * 0.45, y = Math.max(0, 9 - (t - tW(134)) * 4.6) + q * 0.4; place({ p: [STAIR[0] + 2.1 * Math.sin(a), y, STAIR[2] + 2.1 * Math.cos(a)], s: q ? { ...G, pose: "run", step: (t * 2) % 1 } : { ...H, pose: "run", step: (t * 2) % 1 }, scale: q ? 0.68 : 1 }); });
     const breathe = 1 + 0.025 * Math.sin(t * 9);
@@ -432,12 +480,13 @@ export class World {
     if (id === "30") place({ p: [166.2 + 0.6 * (1 - smooth(u * 2)), 0, LAND_Z + 0.2], s: { ...H, back: true, expr: "worry" }, yaw: -Math.PI / 2 });
     if (id.startsWith("31")) { const look = id === "31b" ? -1 : id === "31c" ? 1 : Math.sin(u * 6) * 0.8;
       place({ p: [200, 0, LAND_Z + 0.9], s: { ...H, expr: "worry", look, blink: blink(4) } }); place({ p: [200.75, 0, LAND_Z + 1.1], s: { ...G, expr: "fear", look: look * 0.7 }, scale: 0.68 }); }
-    { let q = 0; for (let k2 = 0; k2 < k; k2++) { const m = this.actors[k2].mesh; const shm = this.shadows[q]; if (!shm || !m.visible || Math.abs(m.rotation.z) > 0.3 || Math.abs(m.rotation.x) > 0.3) continue;
+    { let q = 0; const all = [...this.actors.slice(0, k), ...this.bigs.slice(0, kb)]; for (let k2 = 0; k2 < all.length; k2++) { const m = all[k2].mesh; const shm = this.shadows[q]; if (!shm || !m.visible || Math.abs(m.rotation.z) > 0.3 || Math.abs(m.rotation.x) > 0.3) continue;
         shm.position.set(m.position.x, Math.max(0.006, m.position.y < 0.05 ? 0.006 : -9), m.position.z); shm.scale.set(1.1 * Math.abs(m.scale.x), 1, 0.55 * m.scale.y); shm.rotation.y = m.rotation.y; shm.visible = m.position.y < 0.05; q++; }
       for (; q < this.shadows.length; q++) this.shadows[q].visible = false; }
     for (; k < this.actors.length; k++) this.actors[k].mesh.visible = false;
+    for (; kb < this.bigs.length; kb++) this.bigs[kb].mesh.visible = false;
     this.pool.flush();
-    for (const a of this.actors) if (a.mesh.visible) a.bind();
+    for (const a of [...this.actors, ...this.bigs]) if (a.mesh.visible) a.bind();
     void HEAD; void NECK; void smooth;
     return focus;
   }

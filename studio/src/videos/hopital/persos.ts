@@ -2,11 +2,14 @@
 // avec des accessoires par rôle : blouse de patient, policier, médecin, petite fille, infectés (veines noires, yeux blancs, sang).
 import type { Pen } from "../bridge/toon";
 import { drawPerson, Person } from "../mur/people";
+import { drawBody, Joints, REST, View } from "./pantin";
 
 const INK = "#221e1d", OL = 11;
 const cx = 300, R = 122, hy = 196, top = 338, hip = 612, tw = 150;
 export type Role = "patient" | "police" | "medecin" | "fille" | "civil";
-export type Perso = Person & { role: Role; infect?: number; bite?: boolean; mask?: boolean; gun?: boolean; blood?: number; bandage?: boolean };
+export type Perso = Person & { role: Role; infect?: number; bite?: boolean; mask?: boolean; gun?: boolean; blood?: number; bandage?: boolean; view?: View; j?: Joints; spin?: number };
+/** carte agrandie des pantins articulés (poses couchées, profil) : 1400 x 1400, le dessin 600 x 1000 est décalé de (400, 200) */
+export const BIG = 1400, BIG_DX = 400, BIG_DY = 200;
 
 const stroke = (g: CanvasRenderingContext2D, w = OL) => { g.lineWidth = w; g.strokeStyle = INK; g.stroke(); };
 const rrect = (g: CanvasRenderingContext2D, x0: number, y0: number, x1: number, y1: number, r: number) => {
@@ -72,18 +75,25 @@ const hairPath = (g: CanvasRenderingContext2D, s: Person) => {
 
 export const drawPerso = (p: Pen, s: Perso) => {
   const g = p.g; g.save(); g.lineCap = "round"; g.lineJoin = "round";
+  const art = !!(s.view || s.j), J = { ...REST, ...(s.j ?? {}) };
+  if (art) { g.translate(BIG_DX, BIG_DY); g.translate(cx, hip - 6); g.rotate(s.spin ?? 0); g.translate(-cx, -(hip - 6)); }
+  const upper = () => { if (art) { g.translate(0, J.bob ?? 0); g.translate(cx, hip - 6); g.rotate(J.lean ?? 0); g.translate(-cx, -(hip - 6)); } };
+  g.save(); upper();
   // ---- derrière le corps : pans de blouse (médecin) / jupe de blouse (patient) qui dépassent sous la taille
   if (s.role === "medecin" || s.role === "patient") {
     const w = s.role === "medecin" ? tw / 2 + 22 : tw / 2 + 12, b = s.role === "medecin" ? hip + 170 : hip + 110;
     g.beginPath(); g.moveTo(cx - tw / 2, top + 60); g.lineTo(cx + tw / 2, top + 60); g.lineTo(cx + w, b); g.lineTo(cx - w, b); g.closePath();
     g.fillStyle = s.jacket; g.fill(); stroke(g);
   }
+  g.restore();
   const noTufts = s.bandage ? ({ g: new Proxy(g, {
     get: (t, k) => k === "ellipse" ? (...a: number[]) => { if (a[2] === 22 && a[3] === 34) return; (t.ellipse as unknown as (...b: number[]) => void)(...a); }
       : typeof (t as never)[k] === "function" ? ((t as never)[k] as (...b: unknown[]) => unknown).bind(t) : (t as never)[k],
     set: (t, k, v) => { (t as unknown as Record<string | symbol, unknown>)[k] = v; return true; } }) } as unknown as Pen) : p;
-  drawPerson(noTufts, { ...s, expr: s.infect && s.infect > 0.5 ? "shock" : s.expr });
-  const front = !s.back;
+  if (art) drawBody(p, { ...s, expr: s.infect && s.infect > 0.5 ? "shock" : s.expr }, J, s.view ?? (s.back ? "back" : "front"));
+  else drawPerson(noTufts, { ...s, expr: s.infect && s.infect > 0.5 ? "shock" : s.expr });
+  upper();
+  const front = !s.back && s.view !== "side";
   // ---- détails de tenue
   if (s.role === "patient" && front) {                                   // blouse à petits motifs + bracelet d'hôpital
     g.fillStyle = "rgba(60,90,120,0.35)"; for (let i = 0; i < 18; i++) { g.beginPath(); g.arc(cx - 58 + (i % 4) * 38 + (Math.floor(i / 4) % 2) * 18, top + 60 + Math.floor(i / 4) * 52, 5, 0, 7); g.fill(); }
@@ -178,7 +188,7 @@ export const drawPerso = (p: Pen, s: Perso) => {
     blot(g, cx + 30, hy + R + 30, 16, 3); g.fillStyle = "#f4f4f6"; for (const dx of [-12, 0, 12]) { g.beginPath(); g.arc(cx + 34 + dx, hy + R - 10, 3, 0, 7); g.fill(); } }
   // ---- infection : peau verdâtre, veines noires qui montent du cou, yeux blancs vides, bouche ouverte
   const k = s.infect ?? 0;
-  if (k > 0 && front) {
+  if (k > 0 && !s.back) {
     g.save(); g.beginPath(); g.arc(cx, hy, R - 5, 0, 7); g.clip();
     g.fillStyle = `rgba(120,140,110,${0.42 * k})`; g.fillRect(cx - R, hy - R, 2 * R, 2 * R);
     { const hasHair = hairPath(g, s);                                                    // peau = tête moins cheveux (evenodd)
@@ -187,7 +197,8 @@ export const drawPerso = (p: Pen, s: Perso) => {
     g.restore(); g.save(); g.beginPath(); g.arc(cx, hy, R, 0, 7); g.clip();
     if (hairPath(g, s)) { g.lineWidth = OL; g.strokeStyle = INK; g.stroke(); }             // contour des cheveux redessiné par-dessus
     g.restore();
-    if (k > 0.5) {
+    if (k > 0.5 && s.view === "side") { g.beginPath(); g.ellipse(cx + 58, hy + 30, 13, 16, 0, 0, 7); g.fillStyle = "#e9e7d6"; g.fill(); stroke(g, 5); g.fillStyle = "rgba(160,20,30,0.85)"; g.beginPath(); g.arc(cx + 62, hy + 32, 3.5, 0, 7); g.fill(); }
+    if (k > 0.5 && front) {
       for (const sx of [-1, 1]) { g.beginPath(); g.ellipse(cx + sx * 38, hy + 30, 15, 17, 0, 0, 7); g.fillStyle = "#e9e7d6"; g.fill(); stroke(g, 5);
         g.fillStyle = "rgba(160,20,30,0.85)"; g.beginPath(); g.arc(cx + sx * 38, hy + 32, 3.5, 0, 7); g.fill();
         g.strokeStyle = INK; g.lineWidth = 9; g.beginPath(); g.moveTo(cx + sx * 58, hy - 2); g.lineTo(cx + sx * 20, hy + 6); g.stroke(); }   // sourcils froncés
