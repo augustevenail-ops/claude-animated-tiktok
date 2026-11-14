@@ -14,10 +14,10 @@
 (serious)(soft tone) Vous dévalez les escaliers de service.
 (serious)(soft tone) Tu te plaques contre un mur pour reprendre ton souffle.
 (serious)(soft tone) Et tu remarques qu'ils s'arrêtent net face aux néons de secours.
-(serious)(soft tone) Règle numéro 2 : la lumière les aveugle et les bloque.
+(serious)(soft tone) Règle numéro 2 : la lumière puissante les aveugle et les bloque.
 (serious)(soft tone) Devant toi, deux options.
 (serious)(soft tone) Le couloir de gauche est plongé dans le noir total, mais mène à une sortie de secours.
-(serious)(soft tone) Le couloir de droite est totalement éclairé, mais c'est une impasse vitrée.
+(serious)(soft tone) Le couloir de droite est inondé d'une lumière puissante, mais c'est une impasse vitrée.
 (serious)(soft tone) Alors toi, qu'est-ce que tu fais ?
 (serious)(soft tone) Est-ce que tu t'engouffres dans le couloir noir, ou est-ce que tu fonces dans la lumière ?
 (serious)(soft tone) Dis-le-moi en commentaire.
