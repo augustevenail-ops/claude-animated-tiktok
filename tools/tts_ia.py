@@ -22,10 +22,10 @@ FISH = "https://api.fish.audio/v1/tts"
 
 
 def lines(script: Path):
-    out = [l.strip() for l in script.read_text(encoding="utf-8").splitlines() if re.match(r"^(\[|\([a-z]|\{pause)", l.strip())]
+    out = [l.strip() for l in script.read_text(encoding="utf-8").splitlines() if re.match(r"^(\[|\([a-z]|\{pause|\{vitesse)", l.strip())]
     bad = []
     for i, l in enumerate(out, 1):
-        if l.startswith("{pause"): continue
+        if l.startswith("{"): continue
         if not re.match(r"^((\[[^\]]+\]|\([a-z][a-z -]*\))\s*)+\S", l):
             bad.append((i, "pas de texte après la balise", l))
         body = TAG.sub("", l).strip()
@@ -85,6 +85,8 @@ def main():
         text = next(l[6:].strip() for l in (d / cfg["script"]).read_text(encoding="utf-8").splitlines() if l.startswith("OUTRO:")); out = d / "outro"
         if prov == "fish":                          # même timbre que le récit : générée à la suite des 2 dernières phrases, puis découpée
             ref = cfg["fallback_reference_id"] if "--fallback" in sys.argv else cfg["reference_id"]
+            vit = [float(v) for v in re.findall(r"\{vitesse ([0-9.]+)\}", "\n".join(L))]   # vitesse en vigueur à la fin du récit
+            if vit: cfg = {**cfg, "prosody": {**cfg["prosody"], "speed": vit[-1]}}
             x = decode(fish(cfg, "\n".join(L[-2:] + [text]), ref)); x = x[cut_outro(x):]
             encode(x, out.with_suffix(".mp3")); y = serre(x, keep=cfg.get("blanc_max", 0.15)); encode(y, out.with_name(out.name + "_serre.mp3"))
             subprocess.run(["ffmpeg", "-loglevel", "error", "-y", "-i", str(out.with_name(out.name + "_serre.mp3")), "-ar", "48000", "-c:a", "pcm_s16le", str(out.with_suffix(".wav"))], check=True)
@@ -93,11 +95,14 @@ def main():
         n = int(sys.argv[sys.argv.index("--test") + 1]); text, out = L[n - 1], d / f"essai_{n:02d}_{prov}"
     else:
         text, out = "\n".join(L), d / "voice"
-    PAUSE = re.compile(r"\{pause ([0-9.]+)\}")                 # pause imposée (s) : ni générée ni resserrée
-    parts = PAUSE.split(text)                                      # [texte, durée, texte, durée, ...]
+    PAUSE = re.compile(r"\{(pause|vitesse) ([0-9.]+)\}")       # {pause X} : silence imposé (s) ; {vitesse X} : vitesse de la suite
+    sp = PAUSE.split(text); parts = [sp[0]]                       # [texte, (genre, valeur), texte, ...]
+    for q in range(1, len(sp), 3): parts += [(sp[q], float(sp[q + 1])), sp[q + 2]]
     raw, tight = [], []
     for k, seg in enumerate(parts):
-        if k % 2: z = np.zeros(int(float(seg) * SR), np.float32); raw.append(z); tight.append(z); continue
+        if k % 2:
+            if seg[0] == "vitesse": cfg = {**cfg, "prosody": {**cfg["prosody"], "speed": seg[1]}}; continue
+            z = np.zeros(int(seg[1] * SR), np.float32); raw.append(z); tight.append(z); continue
         if not seg.strip(): continue
         if prov == "fish":
             ref = cfg["fallback_reference_id"] if "--fallback" in sys.argv else cfg["reference_id"]

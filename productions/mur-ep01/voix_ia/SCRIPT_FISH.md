@@ -1,6 +1,6 @@
 # Le Mur ép. 1 — narration balisée pour Fish Audio (modèle s1)
 Règle : UNE balise d'émotion (..) en tête de CHAQUE phrase (vérifié par tools/tts_ia.py), éventuellement suivie
-d'un ton : (whispering) (soft tone) (in a hurry tone) (shouting). Silences naturels : blancs ramenés à 0,3 s max (voix_ia.json : blanc_max), pauses imposées {pause X} en secondes. Vitesse 1,0 (validée 2026-11-14). « Imagine. » avec un point : la fin du mot retombe dans les graves. Effets : (sighing) (panting).
+d'un ton : (whispering) (soft tone) (in a hurry tone) (shouting). Silences naturels : blancs ramenés à 0,3 s max (voix_ia.json : blanc_max), pauses imposées {pause X} en secondes. Vitesse 1,0 jusqu'à « Imagine. », puis 1,05 ({vitesse 1.05}, retour utilisateur 2026-11-14). « Imagine. » avec un point : la fin du mot retombe dans les graves. Effets : (sighing) (panting).
 Narrateur posé et grave (retour utilisateur 2026-11-14) : (serious)(soft tone) par défaut, (curious)(soft tone) pour les phrases intrigantes,
 et (scared)(whispering) seulement pour l'accroche. Pas de cris, d'essoufflement ni de ton pressé.
 
@@ -8,6 +8,7 @@ et (scared)(whispering) seulement pour l'accroche. Pas de cris, d'essoufflement 
 (scared)(whispering) Surtout… (break) ne bouge pas.
 {pause 0.2}
 (serious)(soft tone) Imagine.
+{vitesse 1.05}
 (serious)(soft tone) Tu te réveilles au milieu d'un labyrinthe géant.
 (serious)(soft tone) Des murs de trente mètres, à perte de vue.
 (serious)(soft tone) Et aucun souvenir de comment tu es arrivé là.
