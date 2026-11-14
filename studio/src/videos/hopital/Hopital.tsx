@@ -59,10 +59,12 @@ const GRAIN = "data:image/svg+xml;utf8," + encodeURIComponent("<svg xmlns='http:
 /** HUD discret en haut : compteur d'infectés */
 const HudInf: React.FC<{ t: number }> = ({ t }) => {
   const n = hudCount(t), alert = t > 7.5;
-  return (<div style={{ position: "absolute", right: 110, top: 150, textAlign: "right", textShadow: "0 3px 8px rgba(0,0,0,0.75)" }}>
-    <div style={{ fontFamily: MONT, fontWeight: 800, fontSize: 25, letterSpacing: 3.5, color: alert ? "#ffb0a6" : "#dfe6f2" }}>● INFECTÉS</div>
-    <div style={{ fontFamily: BEBAS, fontSize: 104, lineHeight: 0.95, marginTop: 2, color: alert ? "#ff5a48" : "#ffffff" }}>{n}</div>
-  </div>);
+  return (<>
+    <div style={{ position: "absolute", left: 110, top: 150, textShadow: "0 3px 8px rgba(0,0,0,0.75)", fontFamily: MONT, fontWeight: 800, fontSize: 25, letterSpacing: 3.5, color: "#dfe6f2" }}>● ÉPISODE 1</div>
+    <div style={{ position: "absolute", right: 110, top: 150, textAlign: "right", textShadow: "0 3px 8px rgba(0,0,0,0.75)" }}>
+      <div style={{ fontFamily: MONT, fontWeight: 800, fontSize: 25, letterSpacing: 3.5, color: alert ? "#d98a80" : "#dfe6f2" }}>● INFECTÉS</div>
+      <div style={{ fontFamily: BEBAS, fontSize: 104, lineHeight: 0.95, marginTop: 2, color: alert ? "#c4211b" : "#ffffff" }}>{n}</div>
+    </div></>);
 };
 /** tag en pilule : coins très arrondis, fond sombre, contour fin, texte court en majuscules ; apparition sobre, fondu de sortie */
 const Tag: React.FC<{ t: number; text: string; a: number; b: number; col: string; x: number; y: number }> = ({ t, text, a, b, col, x, y }) => {

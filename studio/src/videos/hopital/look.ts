@@ -6,7 +6,7 @@ export const LIGHTS: Light[] = [
   { lit: [1.25, 1.22, 1.12], shade: [0.34, 0.38, 0.44], lift: [0.02, 0.025, 0.03], sat: 1.08, charTint: [1.0, 0.98, 0.95], sunCol: "#f2f4ff", sunI: 1.4,
     hemiSky: "#dfe8f0", hemiI: 0.4, sunDir: [0.3, 0.85, 0.4], fogCol: "#6a7a84", fogNear: 25, fogFar: 140, skyTop: "#03050b", skyMid: "#0c1630", skyLow: "#1d2d4a", bg: "#0a0f18" },
   { lit: [0.78, 0.95, 1.5], shade: [0.2, 0.23, 0.38], lift: [0.018, 0.022, 0.04], sat: 1.14, charTint: [0.9, 0.95, 1.08], sunCol: "#9cc0ea", sunI: 1.25,
-    hemiSky: "#6f8ec0", hemiI: 0.32, sunDir: [0.4, 0.7, -0.6], fogCol: "#0b1324", fogNear: 40, fogFar: 260, skyTop: "#03050b", skyMid: "#0c1630", skyLow: "#22304e", bg: "#070b16" },
+    hemiSky: "#6f8ec0", hemiI: 0.32, sunDir: [0.4, 0.7, -0.6], fogCol: "#141c34", fogNear: 70, fogFar: 1500, skyTop: "#03050b", skyMid: "#0c1630", skyLow: "#22304e", bg: "#070b16" },
   { lit: [1.1, 1.18, 1.32], shade: [0.22, 0.25, 0.32], lift: [0.015, 0.02, 0.03], sat: 1.06, charTint: [0.94, 0.98, 1.06], sunCol: "#e6f0ff", sunI: 1.3,
     hemiSky: "#b8c8e0", hemiI: 0.35, sunDir: [0.2, 0.9, 0.3], fogCol: "#3a4250", fogNear: 20, fogFar: 90, skyTop: "#03050b", skyMid: "#0c1630", skyLow: "#1d2d4a", bg: "#0b0e14" },
   { lit: [0.68, 0.86, 1.25], shade: [0.16, 0.19, 0.3], lift: [0.018, 0.024, 0.04], sat: 1.1, charTint: [0.82, 0.92, 1.02], sunCol: "#8fb0e0", sunI: 1.0,
