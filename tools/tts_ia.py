@@ -12,7 +12,8 @@ Script : une phrase par ligne, chaque phrase précédée de sa balise d'émotion
 Options : --fallback (voix de secours), --free (ElevenLabs : voix premade), --provider elevenlabs.
 Clés : injectées par le proxy (api.fish.audio, api.elevenlabs.io), aucune variable d'environnement nécessaire.
 """
-import base64, json, re, sys, urllib.request, urllib.error
+import base64, json, re, subprocess, sys, urllib.request, urllib.error
+import numpy as np
 from pathlib import Path
 
 API = "https://api.elevenlabs.io/v1/text-to-speech/{v}/with-timestamps?output_format=mp3_44100_128"
@@ -21,9 +22,10 @@ FISH = "https://api.fish.audio/v1/tts"
 
 
 def lines(script: Path):
-    out = [l.strip() for l in script.read_text(encoding="utf-8").splitlines() if re.match(r"^(\[|\([a-z])", l.strip())]
+    out = [l.strip() for l in script.read_text(encoding="utf-8").splitlines() if re.match(r"^(\[|\([a-z]|\{pause)", l.strip())]
     bad = []
     for i, l in enumerate(out, 1):
+        if l.startswith("{pause"): continue
         if not re.match(r"^((\[[^\]]+\]|\([a-z][a-z -]*\))\s*)+\S", l):
             bad.append((i, "pas de texte après la balise", l))
         body = TAG.sub("", l).strip()
@@ -76,32 +78,46 @@ def main():
     ep = Path(sys.argv[1]); d = ep / "voix_ia"; full = json.loads((d / "voix_ia.json").read_text())
     prov = sys.argv[sys.argv.index("--provider") + 1] if "--provider" in sys.argv else full["provider"]; cfg = full[prov]
     L = lines(d / cfg["script"])
-    if "--check" in sys.argv: print(f"{len(L)} phrases, toutes balisées ({prov})."); return
+    if "--check" in sys.argv: print(f"{sum(not l.startswith('{') for l in L)} phrases, toutes balisées ({prov})."); return
     if "--texte" in sys.argv:                       # essai libre (court, pour économiser les crédits)
         text, out = sys.argv[sys.argv.index("--texte") + 1], d / f"essai_texte_{prov}"
     elif "--test" in sys.argv:
         n = int(sys.argv[sys.argv.index("--test") + 1]); text, out = L[n - 1], d / f"essai_{n:02d}_{prov}"
     else:
         text, out = "\n".join(L), d / "voice"
-    if prov == "fish":
-        ref = cfg["fallback_reference_id"] if "--fallback" in sys.argv else cfg["reference_id"]
-        out.with_suffix(".mp3").write_bytes(fish(cfg, text, ref))    # pas de minutage : words.json via tools/voix_transcrire.py
-    else:
-        voice = cfg["fallback_voice_id"] if "--fallback" in sys.argv else cfg["free_voice_id"] if "--free" in sys.argv else cfg["voice_id"]
-        r = tts(cfg, text, voice)
-        out.with_suffix(".mp3").write_bytes(base64.b64decode(r["audio_base64"]))
-        if r.get("alignment"): out.with_suffix(".json").write_text(json.dumps(words(r["alignment"], text), ensure_ascii=False, indent=0))
-    serre(out.with_suffix(".mp3"))
-    print(f"{out.with_suffix('.mp3')}  ({len(text.encode())} octets) -> {out.name}_serre.mp3")
+    PAUSE = re.compile(r"\{pause ([0-9.]+)\}")                 # pause imposée (s) : ni générée ni resserrée
+    parts = PAUSE.split(text)                                      # [texte, durée, texte, durée, ...]
+    raw, tight = [], []
+    for k, seg in enumerate(parts):
+        if k % 2: z = np.zeros(int(float(seg) * SR), np.float32); raw.append(z); tight.append(z); continue
+        if not seg.strip(): continue
+        if prov == "fish":
+            ref = cfg["fallback_reference_id"] if "--fallback" in sys.argv else cfg["reference_id"]
+            x = decode(fish(cfg, seg.strip(), ref))                # pas de minutage : words.json via tools/voix_transcrire.py
+        else:
+            voice = cfg["fallback_voice_id"] if "--fallback" in sys.argv else cfg["free_voice_id"] if "--free" in sys.argv else cfg["voice_id"]
+            x = decode(base64.b64decode(tts(cfg, seg.strip(), voice)["audio_base64"]))
+        raw.append(x); tight.append(serre(x, lead=0.04 if not tight else 0.0))
+    encode(np.concatenate(raw), out.with_suffix(".mp3")); encode(np.concatenate(tight), out.with_name(out.name + "_serre.mp3"))
+    print(f"{out.with_suffix('.mp3')}  ({len(PAUSE.sub('', text).encode())} octets) -> {out.name}_serre.mp3")
 
 
-def serre(mp3: Path, keep=0.15, lead=0.04, thr_db=-38.0):
+SR = 44100
+
+
+def decode(b: bytes):
+    return np.frombuffer(subprocess.run(["ffmpeg", "-loglevel", "error", "-i", "-", "-f", "f32le", "-ac", "1", "-ar", str(SR), "-"], input=b, capture_output=True, check=True).stdout, np.float32)
+
+
+def encode(x, path: Path):
+    subprocess.run(["ffmpeg", "-loglevel", "error", "-y", "-f", "f32le", "-ar", str(SR), "-ac", "1", "-i", "-", "-b:a", "192k", str(path)], input=x.astype(np.float32).tobytes(), check=True)
+
+
+def serre(x, keep=0.15, lead=0.04, thr_db=-38.0):
     """resserre les blancs (consigne utilisateur 2026-11-14 : silences légers et rapides) :
-    chaque blanc (trames de 10 ms sous thr_db) plus long que keep s est ramené à keep s ; début ramené à lead s"""
-    import subprocess, numpy as np
-    sr = 44100
-    raw = subprocess.run(["ffmpeg", "-loglevel", "error", "-i", str(mp3), "-f", "f32le", "-ac", "1", "-ar", str(sr), "-"], capture_output=True, check=True).stdout
-    x = np.frombuffer(raw, np.float32); n = sr // 100
+    chaque blanc (trames de 10 ms sous thr_db) plus long que keep s est ramené à keep s ; début ramené à lead s.
+    Les pauses voulues plus longues s'écrivent {pause 0.8} dans le script."""
+    n = SR // 100
     rms = np.sqrt(np.mean(x[: len(x) // n * n].reshape(-1, n) ** 2, axis=1) + 1e-12)
     quiet = 20 * np.log10(rms) < thr_db
     keepf = np.ones(len(quiet), bool); i = 0
@@ -113,8 +129,7 @@ def serre(mp3: Path, keep=0.15, lead=0.04, thr_db=-38.0):
         if j - i > lim:
             a = i + lim // 2 if i else 0; keepf[a: a + (j - i - lim)] = False   # on retire le milieu du blanc
         i = j
-    y = np.concatenate([x[k * n:(k + 1) * n] for k in np.flatnonzero(keepf)] + [x[len(quiet) * n:]])
-    subprocess.run(["ffmpeg", "-loglevel", "error", "-y", "-f", "f32le", "-ar", str(sr), "-ac", "1", "-i", "-", "-b:a", "192k", str(mp3.with_name(mp3.stem + "_serre.mp3"))], input=y.tobytes(), check=True)
+    return np.concatenate([x[k * n:(k + 1) * n] for k in np.flatnonzero(keepf)] + [x[len(quiet) * n:]])
 
 
 if __name__ == "__main__":

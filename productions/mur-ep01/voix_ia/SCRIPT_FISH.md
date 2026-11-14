@@ -1,9 +1,10 @@
 # Le Mur ép. 1 — narration balisée pour Fish Audio (modèle s1)
 Règle : UNE balise d'émotion (..) en tête de CHAQUE phrase (vérifié par tools/tts_ia.py), éventuellement suivie
-d'un ton : (whispering) (soft tone) (in a hurry tone) (shouting). Silences : « … », (break), (long-break). Effets : (sighing) (panting).
+d'un ton : (whispering) (soft tone) (in a hurry tone) (shouting). Silences : « … », (break) ; blancs resserrés automatiquement à 0,15 s, sauf les pauses imposées {pause X} (en secondes). Effets : (sighing) (panting).
 Émotions s1 utilisées : scared, worried, nervous, serious, curious, interested, confident, sad, depressed, upset, surprised.
 
 (nervous)(whispering) Surtout… ne bouge pas.
+{pause 0.9}
 (curious)(soft tone) Imagine…
 (curious) Tu te réveilles au milieu d'un labyrinthe géant.
 (surprised)(soft tone) Des murs de trente mètres, à perte de vue.
