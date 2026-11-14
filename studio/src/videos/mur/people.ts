@@ -104,7 +104,7 @@ export const drawPerson = (p: Pen, s: Person) => {
       const rx = s.expr === "fear" || s.expr === "shock" ? 7 : 9, ry = s.expr === "fear" ? 10 : 13;
       g.beginPath(); g.ellipse(x, ey, rx, ry, 0, 0, 7); g.fill();
       g.fillStyle = "#ffffff"; g.beginPath(); g.arc(x - 2.5, ey - 5, 2.4, 0, 7); g.fill(); g.fillStyle = INK;
-      if (s.expr === "worry" || s.expr === "fear") { g.save(); g.lineWidth = 9; g.beginPath(); g.moveTo(x + sx * 16, ey - 24); g.lineTo(x - sx * 8, ey - 34); g.stroke(); g.restore(); }
+      if (s.expr === "worry" || s.expr === "fear") { const b = s.expr === "fear" ? 9 : 0; g.save(); g.lineWidth = 9; g.beginPath(); g.moveTo(x + sx * 16, ey - 24 + b); g.lineTo(x - sx * 8, ey - 34 + b); g.stroke(); g.restore(); }   // peur : sourcils plus bas, sur la peau (lisibles sous la frange)
       if (s.expr === "frown") { g.beginPath(); g.moveTo(x - sx * 16, ey - 24); g.lineTo(x + sx * 10, ey - 30); g.stroke(); }
     }
     const mx = cx + lx * 0.8, my = hy + 72;
