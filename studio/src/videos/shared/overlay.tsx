@@ -91,7 +91,7 @@ export const ChoiceCards: React.FC<{ t: number; at: number; a: string; b: string
 export const TITLE_DUR = 2.8;
 /** instant (après le début du carton) où « ÉPISODE N » devient « ÉPISODE N+1 » en rouge, calé sur le mot « épisode » de la phrase de fin */
 export const FLIP_AFTER = 0.9;
-export const TitleCard: React.FC<{ t: number; at: number; title: string; episode: number }> = ({ t, at, title, episode }) => {
+export const TitleCard: React.FC<{ t: number; at: number; title: string; episode: number; bg?: React.ReactNode }> = ({ t, at, title, episode, bg }) => {
   if (t < at) return null;
   const k = Math.min(1, (t - at) / 0.2);
   const cells: React.ReactNode[] = [];
@@ -99,8 +99,8 @@ export const TitleCard: React.FC<{ t: number; at: number; title: string; episode
     cells.push(<div key={`${r}-${c}`} style={{ position: "absolute", left: 18 + c * 118, top: 20 + r * 108, width: 54, height: 66, background: `rgba(0,0,0,${0.18 + Math.abs(h) * 0.22})` }} />); }
   return (
     <div style={{ position: "absolute", inset: 0, opacity: k, background: "radial-gradient(ellipse at 50% 40%, #2b3038 0%, #181b21 55%, #101216 100%)" }}>
-      {cells}
-      <div style={{ position: "absolute", left: 513, top: 640, width: 54, height: 66, background: "#8ff0b0", boxShadow: "0 0 60px 30px rgba(110,240,160,0.35), 0 0 12px rgba(200,255,220,0.9)" }} />
+      {bg ?? cells}
+      {bg ? null : <div style={{ position: "absolute", left: 513, top: 640, width: 54, height: 66, background: "#8ff0b0", boxShadow: "0 0 60px 30px rgba(110,240,160,0.35), 0 0 12px rgba(200,255,220,0.9)" }} />}
       <div style={{ position: "absolute", left: 0, right: 0, top: 760, textAlign: "center", fontFamily: BEBAS, fontSize: 250, lineHeight: 1, color: "#ece6da", letterSpacing: 2,
         textShadow: "0 8px 0 rgba(0,0,0,0.35), 0 12px 30px rgba(0,0,0,0.6)" }}>{title}</div>
       {(() => { const fl = t - at - FLIP_AFTER, on = fl >= 0, pop = on ? 1 + 0.18 * Math.exp(-fl * 9) : 1;

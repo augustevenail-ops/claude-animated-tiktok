@@ -117,9 +117,10 @@ cue("footstep_one", S(27) + 0.25 * (Se(27) - S(27)), -20)    # 27 : un pas, puis
 CUTW = {3: [9], 5: [26], 6: [34], 11: [55], 12: [61], 14: [72, 75], 15: [85, 88], 16: [100, 103], 17: [110, 115], 19: [129, 135, 136], 20: [140],
         21: [143, 150], 22: [155], 23: [162, 165], 24: [170], 25: [176], 26: [183, 187, 190], 27: [198, 200, 202, 204, 207]}   # = CUTS de story.ts
 SNAP = {55, 85, 140, 170}                                                                 # zooms éclair : souffle plus fort
-for k_ in range(2, 28): k.whoosh(S(k_), 0.35, 0.35)                                       # chaque changement de scène
+WG = 2 / 3                                                                                # souffles des coupes : -1/3 (retour utilisateur v2)
+for k_ in range(2, 28): k.whoosh(S(k_), 0.35, 0.35 * WG)                                       # chaque changement de scène
 for ws in CUTW.values():
-    for w in ws: k.whoosh(W(w) - 2 / 30, 0.4 if w in SNAP else 0.3, 0.9 if w in SNAP else 0.45)
+    for w in ws: k.whoosh(W(w) - 2 / 30, 0.4 if w in SNAP else 0.3, (0.9 if w in SNAP else 0.45) * WG)
 k.impact(0.02, 1.3, 46.0, 1.6); cue("sting_hit", 0.0, -2)                                 # sursaut à la première image
 k.whoosh(0.32, 0.3, 0.9); k.reverse(0.75, 0.35, 0.6)                                       # zoom sur ta tête, puis dézoom
 k.impact(W(140) - 0.03, 1.0, 44.0, 1.8); k.impact(W(168) - 0.03, 0.9, 38.0, 2.0)           # flash blanc « hurle », noir « tourne »
