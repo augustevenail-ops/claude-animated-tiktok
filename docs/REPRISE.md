@@ -7,8 +7,11 @@
 - Personnages validés : `studio/src/videos/hopital/persos.ts`, planche `HopitalPlanche` (`productions/hopital-ep01/planche_persos.png`) :
   héros patient + bandage de travers sur tout le crâne (mèches sur les côtés, pas de frange), policiers, médecins, soignant (normal → infecté,
   veines en réseau qui poussent avec `grow`), fillette, 4 infectés. Lumière/reflets réalistes à ajouter au rendu des plans (pas au design).
-- Étapes suivantes : images de référence des 38 plans (validation utilisateur avant toute animation) ; bande son (bruitages + musique) ;
-  puis animation, rendu.
+- Code : `studio/src/videos/hopital/` (story.ts plans + caméras + tags + HUD, world.ts monde 3D, look.ts lumières, Hopital.tsx composition `HopitalEp1`).
+- Images de référence v1 (en attente de validation) : `productions/hopital-ep01/planche_plans_v1.png` + `plans_v1/plan_*.jpg`
+  (stills : `cd studio && node scripts/stills.mjs HopitalEp1 out/ref/p_ <images> 0.5`).
+- Bande son v1 : `python3 tools/hopital_mix.py` -> `productions/hopital-ep01/voix_ia/mix.wav` (+ `mix_ecoute.mp3`, stems) et `studio/public/hopital/mix.wav`.
+- Étapes suivantes : retours sur les images et le son -> animation complète des plans -> rendu (render_parallel.sh) -> livraison TikTok + 2K.
 
 
 ## État
