@@ -55,12 +55,34 @@ const farTex = () => ctex("mu_far", 512, 512, (g) => {
 });
 const NAMES = ["LÉO", "INÈS", "SACHA", "NOAH", "JADE", "TOM", "LINA", "HUGO", "ROSE", "ADAM", "ZOÉ", "NATHAN", "MILA", "ENZO", "LOU", "RAPHAËL", "EMMA", "THÉO", "ALMA", "LUCAS",
   "NINA", "GABRIEL", "LÉNA", "MAËL", "CHLOÉ", "SAMUEL", "ANNA", "YANIS", "CLARA", "AXEL", "ROMANE", "ILYES", "JULIA", "MALO", "ELSA", "NOÉ", "LOLA", "TIMÉO", "AMBRE", "ELIOTT"];
-const namesTex = () => ctex("mu_names", 1024, 512, (g) => {          // centaines de prénoms gravés (creux sombre + arête claire), traits de comptage
-  g.clearRect(0, 0, 1024, 512); g.textAlign = "center";
-  for (let i = 0; i < 260; i++) {
-    const x = 30 + hash(i, 51) * 964, y = 24 + hash(i, 52) * 470, sz = 14 + hash(i, 53) * 14, nm = NAMES[Math.floor(hash(i, 54) * NAMES.length)];
-    g.save(); g.translate(x, y); g.rotate((hash(i, 55) - 0.5) * 0.12); g.font = `bold ${sz}px ${FONT}`;
-    g.fillStyle = "rgba(255,235,210,0.35)"; g.fillText(nm, 1, 1); g.fillStyle = "rgba(25,18,14,0.85)"; g.fillText(nm, 0, 0); g.restore();
+const namesTex = () => ctex("mu_names", 2048, 576, (g) => {          // prénoms gravés au couteau, en lignes serrées sans chevauchement (creux sombre, arête claire en bas)
+  g.clearRect(0, 0, 2048, 576); g.textBaseline = "alphabetic";
+  const carve = (txt: string, x: number, y: number, sz: number, rot: number) => {
+    g.save(); g.translate(x, y); g.rotate(rot); g.font = `bold ${sz}px DejaVu Sans Condensed, DejaVu Sans, sans-serif`;
+    g.fillStyle = "rgba(255,238,215,0.42)"; g.fillText(txt, 1.4, 1.8);              // arête éclairée (bas du creux)
+    g.fillStyle = "rgba(28,20,15,0.92)"; g.fillText(txt, 0, 0);                    // creux
+    g.fillStyle = "rgba(10,7,5,0.55)"; g.fillText(txt, -0.8, -0.9);               // ombre portée dans le creux (haut)
+    g.restore();
+  };
+  let n = 0;
+  for (let row = 0, y = 34; y < 560; row++) {
+    const sz = 22 + Math.floor(hash(row, 56) * 8); let x = 14 + hash(row, 57) * 40;
+    while (x < 2010) {
+      const k = n++, nm = NAMES[Math.floor(hash(k, 54) * NAMES.length)].toUpperCase(), r = hash(k, 58);
+      if (r < 0.06) {                                                              // traits de comptage
+        g.strokeStyle = "rgba(28,20,15,0.85)"; g.lineWidth = 2.4; const c = 3 + Math.floor(hash(k, 59) * 3);
+        for (let q = 0; q < c; q++) { g.beginPath(); g.moveTo(x + q * 7, y - sz * 0.8); g.lineTo(x + q * 7 + 1, y); g.stroke(); }
+        if (c === 5) { g.beginPath(); g.moveTo(x - 3, y - 4); g.lineTo(x + 34, y - sz * 0.7); g.stroke(); }
+        x += c * 7 + 26; continue;
+      }
+      g.font = `bold ${sz}px DejaVu Sans Condensed, DejaVu Sans, sans-serif`; const w = g.measureText(nm).width;
+      if (x + w > 2034) break;
+      const yy = y + (hash(k, 60) - 0.5) * 4, rot = (hash(k, 55) - 0.5) * 0.05;
+      carve(nm, x, yy, sz, rot);
+      if (r > 0.93) { g.strokeStyle = "rgba(28,20,15,0.8)"; g.lineWidth = 2; g.beginPath(); g.moveTo(x - 2, yy - sz * 0.35); g.lineTo(x + w + 2, yy - sz * 0.3); g.stroke(); }   // nom barré
+      x += w + 18 + hash(k, 61) * 26;
+    }
+    y += sz + 9 + hash(row, 62) * 5;
   }
 });
 const skyTex = (k: number) => ctex("mu_sky" + k, 64, 512, (g) => {
