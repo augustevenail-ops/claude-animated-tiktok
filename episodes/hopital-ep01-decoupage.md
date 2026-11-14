@@ -33,7 +33,7 @@ recalés sont coupés en sous-plans `a/b/c/d`, même contenu). Fin de la vidéo 
 | 11a | 14,91 → 16,03 | « Dans le couloir, un soignant » | Travelling avant dans le couloir sombre, le soignant titube au fond | — |
 | 11b | 16,03 → 17,71 | « s'effondre juste devant toi, » | Le soignant plie les genoux et s'écroule, poussière | — |
 | 12 | 17,71 → 19,29 | « une morsure béante au cou. » | Insert : sang qui jaillit de la morsure par pulsations | — |
-| 13 | 19,29 → 20,79 | « Sous tes yeux, ses veines noircissent » | Zoom rapide sur le cou : réseau de veines noires qui se propage | **INFECTÉ** (rouge sang, 20,12 → 20,86) |
+| 13 | 19,29 → 20,79 | « Sous tes yeux, ses veines noircissent » | Zoom rapide sur le cou : réseau de veines noires qui se propage | **INFECTÉ** (rouge sang, 19,90 → 20,72) |
 | 14 | 20,79 → 22,73 | « et il se jette sur un fuyard. » | Le soignant infecté bondit, le civil projeté au sol | — |
 | 15 | 22,73 → 25,53 | « Règle numéro 1 : le virus passe par le sang. » | Caméra qui pivote vers le fond du couloir, **RÈGLE 1** s'allume en rouge sur le mur | — |
 | 16a | 25,53 → 26,91 | « Tu continues d'avancer et » | Le héros avance dans le couloir (plan de transition) | — |
