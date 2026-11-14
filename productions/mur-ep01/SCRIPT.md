@@ -1,6 +1,6 @@
 # Le Mur — épisode 1 : script v3 (validé 2026-11-13) — l'enjeu, c'est toi
 
-Voix : enregistrée par l'utilisateur (docs/VOIX.md). ≈ 205 mots ≈ 72 s. Objectif : > 65 % à 2 s, > 35 % à 10 s.
+Voix : voix clonée de l'utilisateur sur Fish Audio (docs/audio.md, voix_ia/). ≈ 205 mots ≈ 72 s. Objectif : > 65 % à 2 s, > 35 % à 10 s.
 Longs : ≥ 5 personnages de haut, blancs, sans visage (fente), bras plus longs que les jambes (réf. utilisateur, non versionnée).
 
 ## Script à lire

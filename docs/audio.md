@@ -1,6 +1,6 @@
 # Audio — réglages validés (2026-11-14, *Le Mur* ép. 1 v6) : défaut de toutes les nouvelles vidéos
 
-Remplace `docs/VOIX.md` (ElevenLabs/George, historique) pour la voix.
+Seule voix utilisée : plus d'ElevenLabs (ancienne doc retirée le 2026-11-14).
 
 ## Voix off
 - **Fish Audio**, modèle `s1`, voix clonée de l'utilisateur « Narrateur Dramatique et Captivant » (`reference_id` dans

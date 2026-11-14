@@ -16,9 +16,8 @@ sur *L'appel* (ép. 1-3) et *Le Mur* (ép. 1, v6) ; le détail est dans `personn
 ## Séries existantes
 | Série | Concept | Code | Production |
 |---|---|---|---|
-| *L'appel* | huis clos, appels/règles | `studio/src/videos/appel*/` | `productions/appel-ep0{1,2,3}/` |
+| *L'appel* | huis clos, appels/règles (ép. 1-3 publiés ; code retiré le 2026-11-14, récupérable dans l'historique git) | — | — |
 | *Le Mur* | labyrinthe infini, clairière, les « Longs » (géants pâles) la nuit | `studio/src/videos/mur/` | `productions/mur-ep01/` |
-| *Le phare* | brouillon non produit | — | `productions/phare-ep01/` |
 Idées de nouvelles histoires et règle suite / nouvelle série : `docs/STRATEGIE_SERIE.md`.
 
 ## Recette : nouvelle série

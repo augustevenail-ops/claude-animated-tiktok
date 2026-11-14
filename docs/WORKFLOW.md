@@ -94,7 +94,7 @@ Valeurs de style : `docs/STYLE_ARTISTIQUE.md`. Code : `docs/ARCHITECTURE_TECHNIQ
 5. Héros de profil, 1 s. 6. Fenêtre + menace qui passe, puis son œil arrive (même plan), 2 s. 7. Enjeu intime (proche qui allume la lampe), 2-3 s.
 8. Proche + menace qui tremble, 2 s. 9. **Plan monumental** : dézoom immense, tout le décor dans l'écran, menaces minuscules, une seule lumière allumée, 3-4 s.
 10. Panneau diégétique des règles, 1,5 s.
-Principe : plusieurs plans courts, puis UN grand plan qui explose l'échelle. Règles numérotées, chiffre, signal secret, règle enfreinte, dilemme (voir `productions/phare-ep01/SCRIPT.md`).
+Principe : plusieurs plans courts, puis UN grand plan qui explose l'échelle. Règles numérotées, chiffre, signal secret, règle enfreinte, dilemme.
 
 ## Mouvement de caméra et vie dans l'image (retour utilisateur 2026-11-12)
 - Gros mouvements de caméra, surtout de **grands dézooms** (de la fenêtre à toute la ville), mais **3-4 par vidéo au plus** pour rester crédible.
