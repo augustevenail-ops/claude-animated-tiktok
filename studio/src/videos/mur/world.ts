@@ -218,7 +218,7 @@ export class World {
       if (A) { A.mesh.rotation.set(Math.PI / 2, 0, 0); A.mesh.scale.set(LONG_K * 1.1, LONG_K * sc, 1); } };
     const blink = (seed: number) => (f + seed * 37) % 97 < 4;
     const W2: V3 = [YOU_WAKE[0], 0.02, YOU_WAKE[2] + 0.0];
-    if (id === 1) { place("Y", [YOU_WAKE[0], 0, YOU_WAKE[2]], { mode: "stand", expr: "worry" }, 1); long([2.5, H - (975 - PEEK_CUT) * 0.00216 * LONG_K, WAKE_Z + 3.0], { pose: "peek", turn: 0.25, tilt: 0.28 * smooth(u * 2), tap: t * 0.9 }); }
+    if (id === 1) { place("Y", [YOU_WAKE[0], 0, YOU_WAKE[2]], { mode: "stand", expr: "worry" }, 1); long([2.5, H - (975 - PEEK_CUT) * 0.00216 * LONG_K, WAKE_Z + 2.93], { pose: "peek", turn: 0.25, tilt: 0.28 * smooth(u * 2), tap: t * 0.9 }, Math.PI); }   // carte parallèle au mur : la main reste devant la paroi
     if (id === 2 || id === 3) place("Y", W2, { mode: "stand", expr: "worry", blink: id === 2 && u < 0.45 }, 1, true);
     if (id === 5) place("Y", [YOU_WAKE[0], 0, YOU_WAKE[2]], { mode: "stand", expr: "worry", blink: blink(1), look: Math.sin(u * 5) * 0.8 });
     if (id === 9 || id === 10) {

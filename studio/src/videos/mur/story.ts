@@ -59,7 +59,7 @@ const pullBack = (u: number): Cam => {
   return XL(pos, look, 50 - 8 * smooth(k));
 };
 const CAMS: Record<number, (u: number) => Cam> = {
-  1: (u) => P(lerp3([-1, 27, WAKE_Z - 8.5], [-0.8, 23, WAKE_Z - 7], smooth(u)), [0.9, 3.4, WAKE_Z + 3.2], 50),                       // nuit, 3/4 haut : toi minuscule, le Long derrière le mur
+  1: (u) => P(lerp3([-1.4, 11.8, WAKE_Z - 2.6], [-0.4, 9.7, WAKE_Z - 1.0], smooth(u)), lerp3([0.6, 6.9, WAKE_Z + 2.9], [0.3, 7.5, WAKE_Z + 2.9], smooth(u)), 40),   // nuit : on s'approche de la main à 7 doigts posée sur l'arête
   2: (u) => P(lerp3([0.02, 1.05, WAKE_Z - 1.25], [0.02, 0.95, WAKE_Z - 1.3], u), [0, 0, WAKE_Z - 1.42], 38),                 // gros plan visage au sol
   3: (u) => P(lerp3([-0.4, 1.2, WAKE_Z - 1.0], [-3, H + 3.5, WAKE_Z + 0.4], glide(u)), lerp3([0, 0, WAKE_Z - 1.42], [30, H * 0.6, WAKE_Z], glide(u)), 50),
   4: pullBack,

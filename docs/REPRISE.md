@@ -8,7 +8,7 @@
 - Style complet : `docs/STYLE_PERSONNAGES.md` (section « Fiche de reproduction complète ») ; voix : `docs/VOIX.md`.
 
 ## Reste à faire (dans l'ordre)
-1. Plan 1 : rapprocher la caméra pour voir en grand la main à 7 doigts posée sur l'arête du mur.
+1. ~~Plan 1 : main à 7 doigts en grand~~ (fait 2026-11-14 : caméra dans le couloir, carte parallèle au mur).
 2. Détails vivants **différents** dans chaque plan (liste dans le dernier échange : doigts qui tapotent, yeux qui s'ouvrent, tête qui tourne,
    jeune qui tisonne le feu + étincelles, bougie qui s'éteint, lumière rouge qui balaie le visage, poussière sous tes pas,
    **ombre de l'entrée qui monte du bas vers le haut sur ton visage** aux plans 25-26, main qui hésite au plan 27…).
