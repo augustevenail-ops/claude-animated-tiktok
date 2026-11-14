@@ -168,6 +168,15 @@ if a.any(): mus = mus + ten * db(vref - 6 - rms(ten[a]))
 duck = np.ones(N)
 for i in range(len(words)): duck[int(max(0, W(i) - 0.08) * SR):int(min(DUR, E(i) + 0.12) * SR)] = db(-3.0)
 mus *= np.convolve(duck, np.ones(2000) / 2000, "same")
+def tiin(t0, d=2.6, g_db=-15, f=1568.0):                                                 # note aiguë tenue qui fait peur (« tiiin », retour v4) : sous la voix
+    n = int(d * SR); t = np.arange(n) / SR
+    env = np.minimum(t / 0.04, 1) * np.exp(-t / (d * 0.45)) * np.minimum(1, (d - t) / 0.4)
+    x = np.sin(2 * np.pi * f * t) + 0.7 * np.sin(2 * np.pi * f * 1.0595 * t + 1) + 0.25 * np.sin(2 * np.pi * f * 2.01 * t)   # demi-ton frottant
+    x *= env * (1 + 0.25 * np.sin(2 * np.pi * 5.5 * t))                                  # léger trémolo
+    x *= db(vref + g_db + SFX_DB - rms(x[: int(0.8 * SR)])); i = int(t0 * SR); j = min(N, i + n)
+    if 0 <= i < N: sfx[i:j] += x[: j - i]
+for t_ in [W(4) - 0.05, S(10) + 0.2, S(12) + 0.15, W(140) - 0.05, W(162), S(24) + 0.55 * (Se(24) - S(24)), S(27) + 0.5]:
+    tiin(t_)                                                                              # Long qui apparaît, sirène, fente, Long derrière toi
 hs = k.hit + 0.8 * k.air; hit = lvl(hs, vref - 13)
 o = dec(os.path.join(VD, "outro.wav")); j0 = int((TITLE_AT + 0.05) * SR); voice[j0:j0 + len(o)] += o[: max(0, N - j0)] * db(vref - rms(o[np.abs(o) > 1e-3]))
 mix = np.stack([voice + mus + hit + sfx + HISS[0], voice + mus * 0.97 + hit + sfx * 0.92 + HISS[1]], 1)
