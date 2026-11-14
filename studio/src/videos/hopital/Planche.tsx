@@ -23,8 +23,7 @@ const ROWS: Row[] = [
   ["LES INFECTÉS", [["PATIENT", { ...TOI, jacket: "#9cb8c4", pants: "#9cb8c4", hair: "bald", hairColor: "#9a9a9a", infect: 1, blood: 2, pose: "reach" }],
     ["INFIRMIÈRE", { ...DOC, pants: "#c97a9a", hair: "ponytail", hairColor: "#24201f", infect: 1, blood: 3, pose: "armsUp" }],
     ["CIVIL", { role: "civil", pose: "run", step: 0.25, expr: "shock", jacket: "#5a7d6a", pants: "#3f4458", shoes: "#2a2a30", hair: "spiky", hairColor: "#2a2220", infect: 1, blood: 2 }],
-    ["CIVILE", { role: "civil", pose: "reach", expr: "shock", jacket: "#7b5a8a", pants: "#3a3348", shoes: "#2a2a30", hair: "bob", hairColor: "#c9b48e", infect: 1, blood: 1 }],
-    ["POLICIER", { ...FLIC, infect: 1, blood: 3, pose: "armsUp" }]]],
+    ["CIVILE", { role: "civil", pose: "reach", expr: "shock", jacket: "#7b5a8a", pants: "#3a3348", shoes: "#2a2a30", hair: "bob", hairColor: "#c9b48e", infect: 1, blood: 1 }]]]
 ];
 
 export const HopitalPlanche: React.FC = () => {
