@@ -163,27 +163,77 @@ for q, (n, a, r) in enumerate(SECT):
 lev[int(At("26", 0) * SR):int(TITLE_AT * SR)] = np.linspace(0.6, 0.85, int(TITLE_AT * SR) - int(At("26", 0) * SR))   # suspense qui monte avant le choix
 lev[int(TITLE_AT * SR):] = np.linspace(0.85, 1.25, N - int(TITLE_AT * SR))                                                # montée dramatique du carton
 lev = np.convolve(lev, np.ones(int(0.6 * SR)) / int(0.6 * SR), "same")                                                    # transitions fluides
-REVEAL = [63, 106, 161, 177, 194]
-mus = k.music4(DUR, dips=[W(i) - 0.25 for i in REVEAL], transpose=0)
-ten, _ = Kit(N, SR, seed=7).tension_layer(DUR, [W(i) for i in REVEAL], W(208), TITLE_AT)
-a = np.abs(mus) > 1e-4; mus = mus * db(vref - 20 - rms(mus[a]))
-a = np.abs(ten) > 1e-4
-if a.any(): mus = mus + ten * db(vref - 21 - rms(ten[a]))
-pulse = np.zeros(N); t = 0.0                                                                                              # pulsation grave qui accélère avec le stress
-while t < DUR - 0.3:
-    r = pr[int(t * SR)]
-    if r > 0:
-        m = int(0.22 * SR); tt = np.arange(m) / SR; i = int(t * SR); pulse[i:i + m] += (np.sin(2 * np.pi * (52 - 18 * tt) * tt) * np.exp(-tt / 0.06))[: N - i]; t += 1 / r
-    else: t += 0.05
-a = np.abs(pulse) > 1e-4
-if a.any(): mus = mus + pulse * db(vref - 15 - rms(pulse[a]))
-mus *= lev
+# ---- musique composée (v2, retour utilisateur : moins monotone, plus « normale », même tonalité) : si mineur, 84 bpm,
+#      accords i–VI–III–VII (Bm–G–D–A), puis i–VI–iv–V (Bm–G–Em–F#) pendant la poursuite et le choix ; couches selon la section :
+#      nappe de cordes (toujours) + piano en arpèges (calme) + ostinato grave de violoncelles (tension) + tambours graves (poursuite) + final.
+from scipy.signal import lfilter
+BPM = 84.0; BEAT = 60 / BPM; BAR = 4 * BEAT
+mf = lambda m: 440.0 * 2 ** ((m - 69) / 12)
+PROG_A = [[47, 59, 62, 66], [43, 55, 59, 62], [50, 57, 62, 66], [45, 57, 61, 64]]
+PROG_B = [[47, 59, 62, 66], [43, 55, 59, 62], [40, 55, 59, 64], [42, 54, 58, 61]]
+CHASE = (S("18"), S("22")); SUSP = (S("26"), TITLE_AT)
+MOOD = {"01": "calm", "05": "tension", "07": "stop", "08": "calm", "11a": "tension", "15": "stop", "16a": "calm", "18": "chase", "22": "stop", "24": "tension", "25": "stop", "26": "susp", "32": "final"}
+moodAt = lambda t: [m for n, m in MOOD.items() if t >= S(n)][-1]
+def lp(x, fc): a = np.exp(-2 * np.pi * fc / SR); return lfilter([1 - a], [1, -a], x)
+def env_ar(n, a, r): e = np.ones(n); ia, ir = min(n, int(a * SR)), min(n, int(r * SR)); e[:ia] = np.linspace(0, 1, ia); e[n - ir:] *= np.linspace(1, 0, ir); return e
+def saw(f, n, ph=0.0): t = np.arange(n) / SR; return 2 * ((t * f + ph) % 1) - 1
+chord_at = lambda t: (PROG_B if CHASE[0] <= t < CHASE[1] or t >= SUSP[0] else PROG_A)[int(t / (2 * BAR)) % 4]
+strings = np.zeros(N); piano = np.zeros(N); cello = np.zeros(N); drums = np.zeros(N)
+t0 = 0.0
+while t0 < DUR:
+    ch = chord_at(t0 + 0.01); n = int(min(2 * BAR + 1.2, DUR - t0) * SR); i0 = int(t0 * SR); t = np.arange(n) / SR; seg = np.zeros(n)
+    for m in ch[1:]:
+        for det in (-0.12, 0.0, 0.11): seg += saw(mf(m) * (1 + det / 100) * (1 + 0.003 * np.sin(2 * np.pi * 5.2 * t)), n, rng.random())
+    seg += 0.8 * saw(mf(ch[0] - 12), n) + 0.5 * np.sin(2 * np.pi * mf(ch[0] - 12) * t)
+    strings[i0:i0 + n] += (seg * env_ar(n, 1.4, 1.2))[: N - i0]; t0 += 2 * BAR
+strings = lp(lp(strings, 900), 1400)
+def pnote(m, t0, v=1.0, d=2.4):
+    n = int(d * SR); i = int(t0 * SR)
+    if i >= N: return
+    t = np.arange(n) / SR; f = mf(m); x = sum(np.sin(2 * np.pi * f * h * t * (1 + 0.0004 * h * h)) * np.exp(-t * (1.6 + 1.2 * h)) / h ** 1.3 for h in (1, 2, 3, 4, 5))
+    x *= np.minimum(1, t / 0.006) * v; j = min(N, i + n); piano[i:j] += x[: j - i]
+def cnote(m, t0, d, v=1.0):
+    n = int(d * SR); i = int(t0 * SR)
+    if i >= N: return
+    x = lp(saw(mf(m), n) + 0.6 * saw(mf(m) * 1.002, n), 700) * env_ar(n, 0.02, d * 0.6) * v; j = min(N, i + n); cello[i:j] += x[: j - i]
+def drum(t0, v=1.0, f=58.0):
+    n = int(1.2 * SR); i = int(t0 * SR)
+    if i >= N: return
+    t = np.arange(n) / SR; x = np.sin(2 * np.pi * (f + 40 * np.exp(-t * 18)) * t) * np.exp(-t * 4.5) + 0.25 * rng.standard_normal(n) * np.exp(-t * 30)
+    j = min(N, i + n); drums[i:j] += x[: j - i] * v
+b8 = 0; t = 0.0
+while t < DUR:
+    md = moodAt(t); ch = chord_at(t); bar_pos = b8 % 8
+    if md == "calm" and b8 % 2 == 0: pnote([ch[1] + 12, ch[2] + 12, ch[3] + 12, ch[2] + 12][(b8 // 2) % 4], t, 0.55 + 0.15 * (bar_pos == 0))
+    if md in ("tension", "chase", "susp"):
+        root = ch[0]; pat = [root, root, root + 12, root, root, root + 7, root, root + 12]
+        if md == "chase" or b8 % 2 == 0: cnote(pat[bar_pos], t, BEAT * (0.45 if md == "chase" else 0.9), 0.9 if md == "chase" else 0.6)
+    if md == "chase" and bar_pos in (0, 3, 4, 6): drum(t, 1.0 if bar_pos in (0, 4) else 0.6, 52 if bar_pos == 0 else 64)
+    if md == "susp" and bar_pos == 0: pnote(ch[3] + 24, t, 0.35, 3.5)
+    if md == "stop" and b8 % 16 == 0: pnote(ch[1], t, 0.4, 3.0)
+    t += BEAT / 2; b8 += 1
+for k_ in range(4): drum(TITLE_AT + k_ * BEAT * 0.5, 0.6 + 0.2 * k_, 50 + 6 * k_)
+drum(TITLE_AT + 1.3, 1.6, 44); [pnote(m, TITLE_AT + 1.3, v, 4.0) for m, v in ((59, 0.9), (71, 0.7), (78, 0.6))]
+def verb(x, d=2.2, mix=0.28):
+    n = int(d * SR); ir = lp(rng.standard_normal(n) * np.exp(-np.arange(n) / SR * 3.2), 3000); ir /= np.sqrt(np.sum(ir ** 2))
+    L = 1 << int(np.ceil(np.log2(len(x) + n))); w = np.fft.irfft(np.fft.rfft(x, L) * np.fft.rfft(ir, L), L)[: len(x)]; return x * (1 - mix) + w * mix * 0.6
+def norm(x, g): a = np.abs(x) > 1e-5; return x * db(g - rms(x[a])) if a.any() else x
+W_ = {"calm": (1.0, 1.0, 0.0, 0.0), "tension": (1.0, 0.3, 1.0, 0.0), "chase": (1.0, 0.0, 1.0, 1.0), "stop": (0.7, 0.6, 0.0, 0.0), "susp": (1.0, 0.4, 0.7, 0.0), "final": (1.2, 1.0, 0.8, 1.0)}
+wl = [np.zeros(N) for _ in range(4)]
+for n_, m_ in MOOD.items():
+    i = int(S(n_) * SR); nxt = [S(x) for x in MOOD if S(x) > S(n_)]; j = int(min(nxt) * SR) if nxt else N
+    for q in range(4): wl[q][i:j] = W_[m_][q]
+sm = np.ones(int(0.8 * SR)) / int(0.8 * SR); wl = [np.convolve(x, sm, "same") for x in wl]
+mus = verb(norm(strings, vref - 21) * wl[0] + norm(piano, vref - 19) * wl[1] + norm(cello, vref - 21) * wl[2] + norm(drums, vref - 17) * wl[3])
+a = np.abs(mus) > 1e-5; mus = mus * db(vref - 18 - rms(mus[a]))
+mus *= np.clip(lev / 0.7, 0.55, 1.4)
 duck = np.ones(N)
 for i in range(len(words)): duck[int(max(0, W(i) - 0.08) * SR):int(min(DUR, E(i) + 0.12) * SR)] = db(-3.0)
 mus *= np.convolve(duck, np.ones(2000) / 2000, "same")
 hit = k.hit + 0.8 * k.air; a = np.abs(hit) > 1e-5; hit = hit * db(vref - 14 - rms(hit[a])) if a.any() else hit
 
-mix = np.stack([voice + mus + amb + hit + sfx, voice + mus * 0.97 + amb * 0.95 + hit + sfx * 0.93], 1)
+G_SFX, G_AMB = db(3.5), db(2.0)
+mix = np.stack([voice + mus + amb * G_AMB + (hit + sfx) * G_SFX, voice + mus * 0.97 + amb * 0.95 * G_AMB + (hit + sfx * 0.93) * G_SFX], 1)
 pre = os.path.join(VD, "_pre.wav")
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "f64le", "-ar", str(SR), "-ac", "2", "-i", "-", pre], input=mix.tobytes(), check=True)
 m = subprocess.run(["ffmpeg", "-i", pre, "-af", "loudnorm=I=-15:TP=-1.2:LRA=7:print_format=json", "-f", "null", "-"], capture_output=True, text=True).stderr
@@ -192,7 +242,7 @@ af = f"loudnorm=I=-15:TP=-1.2:LRA=7:measured_I={j['input_i']}:measured_TP={j['in
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", pre, "-af", af, "-c:a", "pcm_s24le", os.path.join(VD, "mix.wav")], check=True); os.remove(pre)
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", os.path.join(VD, "mix.wav"), "-b:a", "192k", os.path.join(VD, "mix_ecoute.mp3")])
 # stems d'écoute (pour régler les niveaux) : musique seule, bruitages + ambiances seuls
-for name, x in (("stem_musique", mus), ("stem_bruitages", amb + hit + sfx)):
+for name, x in (("stem_musique", mus), ("stem_bruitages", amb * G_AMB + (hit + sfx) * G_SFX)):
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "f64le", "-ar", str(SR), "-ac", "1", "-i", "-", "-b:a", "160k", os.path.join(VD, name + ".mp3")], input=x.tobytes(), check=True)
 pub = os.path.join(ROOT, "studio", "public", "hopital"); os.makedirs(pub, exist_ok=True); shutil.copy(os.path.join(VD, "mix.wav"), os.path.join(pub, "mix.wav"))
 print(f"L'hôpital ép. 1 : durée {DUR} s ; voix {vref:.1f} dB ; musique {rms(mus[np.abs(mus) > 1e-4]):.1f} ; bruitages {rms((amb + sfx)[np.abs(amb + sfx) > 1e-4]):.1f}")
