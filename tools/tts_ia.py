@@ -87,7 +87,7 @@ def main():
             ref = cfg["fallback_reference_id"] if "--fallback" in sys.argv else cfg["reference_id"]
             vit = [float(v) for v in re.findall(r"\{vitesse ([0-9.]+)\}", "\n".join(L))]   # vitesse en vigueur à la fin du récit
             if vit: cfg = {**cfg, "prosody": {**cfg["prosody"], "speed": vit[-1]}}
-            x = decode(fish(cfg, "\n".join(L[-2:] + [text]), ref)); x = x[cut_outro(x):]
+            x = decode(fish(cfg, "\n".join([L[-3]] + [text]), ref)); x = x[cut_outro(x):]   # contexte affirmatif (pas la question finale : intonation montante)
             encode(x, out.with_suffix(".mp3")); y = serre(x, keep=cfg.get("blanc_max", 0.15)); encode(y, out.with_name(out.name + "_serre.mp3"))
             subprocess.run(["ffmpeg", "-loglevel", "error", "-y", "-i", str(out.with_name(out.name + "_serre.mp3")), "-ar", "48000", "-c:a", "pcm_s16le", str(out.with_suffix(".wav"))], check=True)
             print(f"{out}.wav (dans la continuité du récit)"); return
