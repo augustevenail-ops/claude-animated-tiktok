@@ -94,13 +94,18 @@ Points clés à retenir :
 ## Documentation du projet
 | Fichier | Contenu |
 |---|---|
+| `docs/serie.md` | **Point d'entrée nouvelle série / épisode** : format commun, recette, commandes clés |
+| `docs/personnages.md` | Règles personnages et monstre signature (renvoie à `STYLE_PERSONNAGES.md`) |
+| `docs/direction-artistique.md` | Image, montage en ~59 sous-plans, accroche, carton final propre à la série |
+| `docs/audio.md` | **Voix (Fish Audio, voix clonée) et mix validés** : défaut actuel (remplace `VOIX.md`) |
+| `docs/episodes.md` | Suivi des épisodes ; briefs dans `episodes/` (commande `/nouvel-episode`) |
 | `docs/WORKFLOW.md` | Workflow complet et réutilisable de création vidéo |
 | `docs/STYLE_ARTISTIQUE.md` | Fiche de style condensée et chiffrée |
 | `docs/ARCHITECTURE_TECHNIQUE.md` | Pile technique, modules, chaîne de rendu et audio, commandes |
 | `docs/INVENTAIRE.md` | Inventaire des ressources et statut d'analyse |
 | `docs/REFERENCE_APOKALYPS.md` | Analyse de la vidéo de référence n° 2 et règles réutilisables |
 | `docs/STRATEGIE_SERIE.md` | Règle de décision suite/nouvelle histoire selon les stats + idées d histoires angoissantes |
-| `docs/VOIX.md` | **Réglages voix validés** (George, ElevenLabs, pauses, −1,5 demi-ton, tempo) : défaut de toutes les vidéos |
+| `docs/VOIX.md` | Historique voix ElevenLabs (George) — remplacé par `docs/audio.md` |
 | `README.md` | Présentation, installation, structure du dépôt |
 | `SKILL.md` | Pipeline complet, valeurs de look finales, boucle d'ajustement, pièges connus |
 | `references/STYLE_BIBLE.md` | Formule de script et de mise en image mesurée sur 20 shorts |

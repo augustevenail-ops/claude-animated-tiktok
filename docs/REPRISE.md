@@ -8,6 +8,7 @@
 - Style complet : `docs/STYLE_PERSONNAGES.md` (section « Fiche de reproduction complète ») ; voix : `docs/VOIX.md`.
 
 ## Reste à faire
+- **Prochaine session : chercher une nouvelle série** (lire `docs/serie.md`, puis `/nouvel-episode 01 "<sujet>"`). *Le Mur* ép. 1 terminé (v6).
 - *Le Mur* ép. 1 : **rendu final fait (2026-11-14)**, 68,2 s : `archives_videos/le_mur_ep1_tiktok.mp4` (62 Mo) et `le_mur_ep1_2K.mp4` (44 Mo),
   puis **v2 rendue (2026-11-14)** après retours : 59 sous-plans courts (CUTS dans story.ts), accroche zoom/dézoom, drones ras du sol, mur des noms gravés,
   flashs 2 images, SFX enrichis : `archives_videos/le_mur_ep1_v2_tiktok.mp4` (64 Mo) et `le_mur_ep1_v2_2K.mp4` (49 Mo) ; **v3** (souffles des coupes −1/3, carton final sur labyrinthe vu d'en haut `mur/MazeTop.tsx`) :
