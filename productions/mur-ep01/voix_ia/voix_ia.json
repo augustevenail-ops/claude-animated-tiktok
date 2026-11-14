@@ -15,9 +15,10 @@
     "temperature": 0.7,
     "top_p": 0.7,
     "prosody": {
-      "speed": 0.95,
+      "speed": 1.1,
       "volume": 0
-    }
+    },
+    "blanc_max": 0.25
   },
   "elevenlabs": {
     "voice_id": "wyZnrAs18zdIj8UgFSV8",

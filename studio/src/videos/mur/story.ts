@@ -96,10 +96,10 @@ export type Dof = { cInf: number; focus?: V3 };
 const DOFS: Record<number, number> = { 1: 6, 2: 14, 3: 6, 4: 1, 5: 12, 6: 2, 7: 2, 8: 2, 9: 2, 10: 3, 11: 8, 12: 10, 13: 2, 14: 12, 15: 10, 16: 12, 17: 8, 18: 14,
   19: 2, 20: 10, 21: 8, 22: 6, 23: 8, 24: 12, 25: 4, 26: 14, 27: 10 };
 /** plan 1 : bascule de netteté de ton visage vers la tête du Long, juste avant « ne bouge pas » */
-export const HOOK_RACK = (t: number) => smooth((t - 1.0) / 0.4);
+export const HOOK_RACK = (t: number) => smooth((t - (WORDS[1].s - 0.25)) / 0.35);   // calé sur « ne bouge pas »
 /** plan 1 : le Long se penche au-dessus de toi en pivotant sur l'arête (rad) ; HOOK_M = agrandissement ; HOOK_HEAD = hauteur de la tête au-dessus de l'arête */
 export const HOOK_M = 1.5, HOOK_HEAD = 245 * 0.00216 * LONG_K * HOOK_M;
-export const hookLean = (t: number) => 0.22 + 0.36 * smooth(t / 1.8);
+export const hookLean = (t: number) => 0.22 + 0.36 * smooth(t / WORDS[4].s);
 const hookHead = (t: number): V3 => [0.2, H + HOOK_HEAD * Math.cos(hookLean(t)), WAKE_Z + 2.93 - HOOK_HEAD * Math.sin(hookLean(t))];
 export const dofAt = (sid: number, f = 0): Dof => ROLE[sid] === 1
   ? { cInf: 6, focus: lerp3([0, 1.48, WAKE_Z], hookHead(f / FPS), 0.35 * HOOK_RACK(f / FPS)) }

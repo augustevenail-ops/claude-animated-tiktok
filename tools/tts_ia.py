@@ -81,6 +81,8 @@ def main():
     if "--check" in sys.argv: print(f"{sum(not l.startswith('{') for l in L)} phrases, toutes balisées ({prov})."); return
     if "--texte" in sys.argv:                       # essai libre (court, pour économiser les crédits)
         text, out = sys.argv[sys.argv.index("--texte") + 1], d / f"essai_texte_{prov}"
+    elif "--outro" in sys.argv:                     # ligne « OUTRO: » du script (carton final)
+        text = next(l[6:].strip() for l in (d / cfg["script"]).read_text(encoding="utf-8").splitlines() if l.startswith("OUTRO:")); out = d / "outro"
     elif "--test" in sys.argv:
         n = int(sys.argv[sys.argv.index("--test") + 1]); text, out = L[n - 1], d / f"essai_{n:02d}_{prov}"
     else:
@@ -97,8 +99,10 @@ def main():
         else:
             voice = cfg["fallback_voice_id"] if "--fallback" in sys.argv else cfg["free_voice_id"] if "--free" in sys.argv else cfg["voice_id"]
             x = decode(base64.b64decode(tts(cfg, seg.strip(), voice)["audio_base64"]))
-        raw.append(x); tight.append(serre(x, lead=0.04 if not tight else 0.0))
+        raw.append(x); tight.append(serre(x, keep=cfg.get("blanc_max", 0.15), lead=0.04 if not tight else 0.0))
     encode(np.concatenate(raw), out.with_suffix(".mp3")); encode(np.concatenate(tight), out.with_name(out.name + "_serre.mp3"))
+    if "--wav" in sys.argv:                                       # pour le mix : WAV 48 kHz de la version resserrée
+        subprocess.run(["ffmpeg", "-loglevel", "error", "-y", "-i", str(out.with_name(out.name + "_serre.mp3")), "-ar", "48000", "-c:a", "pcm_s16le", str(out.with_suffix(".wav"))], check=True)
     print(f"{out.with_suffix('.mp3')}  ({len(PAUSE.sub('', text).encode())} octets) -> {out.name}_serre.mp3")
 
 

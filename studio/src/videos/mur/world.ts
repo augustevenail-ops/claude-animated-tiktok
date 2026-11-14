@@ -251,7 +251,7 @@ export class World {
       if (A) { A.mesh.rotation.set(Math.PI / 2, 0, 0); A.mesh.scale.set(LONG_K * 1.1, LONG_K * sc, 1); } };
     const blink = (seed: number) => (f + seed * 37) % 97 < 4;
     const W2: V3 = [YOU_WAKE[0], 0.02, YOU_WAKE[2] + 0.0];
-    if (id === 1) { place("Y", [YOU_WAKE[0], 0, YOU_WAKE[2]], { mode: "stand", expr: "fear", blink: false }, 1); long([0.2, 0, 0], { pose: "peek", turn: 0.35 - 0.35 * smooth(t / 1.3), tilt: 0.38 * smooth(t / 1.4), tap: t * 0.9, mouth: smooth((t - 1.35) / 0.4) }, Math.PI, HOOK_M);
+    if (id === 1) { place("Y", [YOU_WAKE[0], 0, YOU_WAKE[2]], { mode: "stand", expr: "fear", blink: false }, 1); long([0.2, 0, 0], { pose: "peek", turn: 0.35 - 0.35 * smooth(t / tW(1)), tilt: 0.38 * smooth(t / tW(2)), tap: t * 0.9, mouth: smooth((t - tW(2) + 0.05) / 0.3) }, Math.PI, HOOK_M);
       { const A = this.longs[kl - 1], lean = hookLean(t), hc = (975 - PEEK_CUT) * 0.00216 * LONG_K * HOOK_M;   // pivot sur l'arête : la coupe reste sur le mur, la tête vient au-dessus de toi
         if (A) { A.mesh.rotation.set(lean, Math.PI, 0, "YXZ"); A.mesh.position.set(0.2, H - hc * Math.cos(lean), WAKE_Z + 2.93 + hc * Math.sin(lean)); } } }   // accroche : la tête se penche, se tourne vers toi, la bouche s'ouvre sur « bouge pas »   // carte parallèle au mur : la main reste devant la paroi
     if (id === 2 || id === 3) place("Y", W2, { mode: "stand", expr: "worry", blink: id === 2 && u < 0.45 }, 1, true);

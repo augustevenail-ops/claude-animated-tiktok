@@ -1,12 +1,12 @@
 # Mix de « Le Mur » ép. 1 (mêmes règles que series_mix.py : voix perso, musique douce -1/4, couche de tension, accroche D, -15 LUFS).
-# Indices de mots = words.json de productions/mur-ep01/voix_perso (même découpage que le script). Usage : python3 tools/mur_mix.py
+# Indices de mots = words.json de productions/mur-ep01/voix_ia (ou voix_perso) (même découpage que le script). Usage : python3 tools/mur_mix.py
 import json, os, shutil, subprocess, sys
 import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from sound_kit import Kit
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
-EP = os.path.join(ROOT, "productions", "mur-ep01"); VD = os.path.join(EP, "voix_perso")
+EP = os.path.join(ROOT, "productions", "mur-ep01"); VD = os.path.join(EP, os.environ.get("MUR_VOIX", "voix_ia"))   # voix IA Fish Audio (2026-11-14) ; MUR_VOIX=voix_perso pour l'ancienne
 SR = 48000; OFF = 0.15; TITLE = 2.8          # voix dès 0,15 s (retour utilisateur)
 words = json.load(open(os.path.join(VD, "words.json"), encoding="utf-8"))
 DUR = round(words[-1]["e"] + OFF + 0.35 + TITLE, 2); N = int(DUR * SR); TITLE_AT = DUR - TITLE
