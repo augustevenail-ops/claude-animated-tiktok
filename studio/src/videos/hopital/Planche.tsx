@@ -4,7 +4,7 @@ import { AbsoluteFill, continueRender, delayRender } from "remotion";
 import { Pen } from "../bridge/toon";
 import { drawPerso, Perso } from "./persos";
 
-const TOI: Perso = { role: "patient", pose: "stand", expr: "worry", jacket: "#a9cfe0", pants: "#a9cfe0", shoes: "#f2f2f4", hair: "bob", hairColor: "#3b2b25", bandage: true };
+const TOI: Perso = { role: "patient", pose: "stand", expr: "worry", jacket: "#a9cfe0", pants: "#a9cfe0", shoes: "#f2f2f4", hair: "bald", hairColor: "#3b2b25", bandage: true };
 const FLIC: Perso = { role: "police", pose: "stand", expr: "frown", jacket: "#26324f", pants: "#1f2638", shoes: "#15181f", hair: "fringe", hairColor: "#2a2220" };
 const DOC: Perso = { role: "medecin", pose: "stand", expr: "worry", jacket: "#eef0f2", pants: "#3f8a8c", shoes: "#e9e9ec", hair: "fringe", hairColor: "#6b4a32" };
 const SOIGNANT: Perso = { role: "medecin", pose: "stand", expr: "calm", jacket: "#eef0f2", pants: "#4e7fa8", shoes: "#e9e9ec", hair: "spiky", hairColor: "#24201f" };
