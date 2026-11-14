@@ -6,7 +6,7 @@ import { drawPerson, Person } from "../mur/people";
 const INK = "#221e1d", OL = 11;
 const cx = 300, R = 122, hy = 196, top = 338, hip = 612, tw = 150;
 export type Role = "patient" | "police" | "medecin" | "fille" | "civil";
-export type Perso = Person & { role: Role; infect?: number; bite?: boolean; mask?: boolean; gun?: boolean; blood?: number };
+export type Perso = Person & { role: Role; infect?: number; bite?: boolean; mask?: boolean; gun?: boolean; blood?: number; bandage?: boolean };
 
 const stroke = (g: CanvasRenderingContext2D, w = OL) => { g.lineWidth = w; g.strokeStyle = INK; g.stroke(); };
 const rrect = (g: CanvasRenderingContext2D, x0: number, y0: number, x1: number, y1: number, r: number) => {
@@ -73,6 +73,22 @@ export const drawPerso = (p: Pen, s: Perso) => {
   }
   if (s.mask && front) { rrect(g, cx - 64, hy + 44, cx + 64, hy + 106, 16); g.fillStyle = "#a8cfe0"; g.fill(); stroke(g, 6);
     g.strokeStyle = "#7fa9bd"; g.lineWidth = 3; for (const y of [hy + 62, hy + 78, hy + 94]) { g.beginPath(); g.moveTo(cx - 50, y); g.lineTo(cx + 50, y); g.stroke(); } }
+  // ---- bandage de travers : haut à droite de l'image (au-dessus du sourcil), bas à gauche (mange la moitié du sourcil)
+  if (s.bandage) {
+    const by = [[hy - 17, hy + 27], [hy - 81, hy - 37]];                                  // [haut, bas] côté gauche puis côté droit de l'image
+    g.save(); g.beginPath(); g.arc(cx, hy, R - 1, 0, 7); g.clip();
+    g.beginPath(); g.moveTo(cx - R - 6, by[0][0]); g.lineTo(cx + R + 6, by[1][0]); g.lineTo(cx + R + 6, by[1][1]); g.lineTo(cx - R - 6, by[0][1]); g.closePath();
+    const bg = g.createLinearGradient(0, hy - 80, 0, hy + 1); bg.addColorStop(0, "#f6f1e6"); bg.addColorStop(1, "#d8d1c0"); g.fillStyle = bg; g.fill();
+    g.strokeStyle = "rgba(150,140,120,0.45)"; g.lineWidth = 3;                                                       // fibres du tissu, inclinées
+    for (let k = -8; k < 22; k++) { const x = cx - R + k * 16; g.beginPath(); g.moveTo(x, hy - 90); g.lineTo(x + 26, hy + 10); g.stroke(); }
+    g.fillStyle = "rgba(150,18,24,0.9)"; g.beginPath(); g.ellipse(cx + 54, hy - 44, 15, 19, 0.2, 0, 7); g.fill();       // tache de sang (côté haut)
+    g.beginPath(); g.ellipse(cx + 49, hy - 24, 3.5, 8, 0, 0, 7); g.fill();
+    g.restore();
+    g.save(); g.beginPath(); g.arc(cx, hy, R + 12, 0, 7); g.arc(cx, hy, R - 1, 0, 7, true); g.clip();                    // bandes qui dépassent du crâne (bords)
+    g.beginPath(); g.moveTo(cx - R - 6, by[0][0]); g.lineTo(cx + R + 6, by[1][0]); g.lineTo(cx + R + 6, by[1][1]); g.lineTo(cx - R - 6, by[0][1]); g.closePath(); g.fillStyle = "#e6dfcf"; g.fill(); g.restore();
+    g.beginPath(); g.moveTo(cx - R - 6, by[0][0]); g.lineTo(cx + R + 6, by[1][0]); g.moveTo(cx - R - 6, by[0][1]); g.lineTo(cx + R + 6, by[1][1]); g.lineCap = "butt"; stroke(g, 9);
+    g.lineCap = "round";
+  }
   // ---- sang (taches sur la tenue)
   for (let i = 0; i < (s.blood ?? 0); i++) blot(g, cx - 40 + ((i * 53) % 90), top + 70 + ((i * 97) % 200), 14 + (i % 3) * 6, i + 1);
   // ---- morsure au cou

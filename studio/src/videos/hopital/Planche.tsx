@@ -4,7 +4,7 @@ import { AbsoluteFill, continueRender, delayRender } from "remotion";
 import { Pen } from "../bridge/toon";
 import { drawPerso, Perso } from "./persos";
 
-const TOI: Perso = { role: "patient", pose: "stand", expr: "worry", jacket: "#a9cfe0", pants: "#a9cfe0", shoes: "#f2f2f4", hair: "bob", hairColor: "#3b2b25" };
+const TOI: Perso = { role: "patient", pose: "stand", expr: "worry", jacket: "#a9cfe0", pants: "#a9cfe0", shoes: "#f2f2f4", hair: "bob", hairColor: "#3b2b25", bandage: true };
 const FLIC: Perso = { role: "police", pose: "stand", expr: "frown", jacket: "#26324f", pants: "#1f2638", shoes: "#15181f", hair: "fringe", hairColor: "#2a2220" };
 const DOC: Perso = { role: "medecin", pose: "stand", expr: "worry", jacket: "#eef0f2", pants: "#3f8a8c", shoes: "#e9e9ec", hair: "fringe", hairColor: "#6b4a32" };
 const SOIGNANT: Perso = { role: "medecin", pose: "stand", expr: "calm", jacket: "#eef0f2", pants: "#4e7fa8", shoes: "#e9e9ec", hair: "spiky", hairColor: "#24201f" };
@@ -12,7 +12,7 @@ const FILLE: Perso = { role: "fille", pose: "stand", expr: "fear", jacket: "#e8b
 
 type Row = [string, [string, Perso, number?][]];
 const ROWS: Row[] = [
-  ["TOI — PATIENT (blouse d'hôpital)", [["CALME", TOI], ["PEUR", { ...TOI, expr: "fear" }], ["CHOC", { ...TOI, pose: "handMouth", expr: "shock" }],
+  ["TOI — PATIENT (blouse + bandage)", [["CALME", TOI], ["PEUR", { ...TOI, expr: "fear" }], ["CHOC", { ...TOI, pose: "handMouth", expr: "shock" }],
     ["COURSE", { ...TOI, pose: "run", expr: "fear", step: 0.25 }], ["DE DOS", { ...TOI, back: true, expr: "calm" }]]],
   ["POLICIERS · MÉDECINS QUI FUIENT", [["POLICIER", FLIC], ["POLICIER — TIR", { ...FLIC, pose: "reach", gun: true }], ["POLICIÈRE", { ...FLIC, hair: "bun", hairColor: "#a07850", expr: "worry" }],
     ["MÉDECIN — FUITE", { ...DOC, pose: "run", expr: "fear", step: 0.25 }], ["CHIRURGIENNE", { ...DOC, pants: "#4e7fa8", hair: "bun", hairColor: "#c9c3b8", mask: true, pose: "run", expr: "fear", step: 0.7 }]]],
@@ -20,7 +20,7 @@ const ROWS: Row[] = [
     ["VEINES", { ...SOIGNANT, bite: true, infect: 0.45, expr: "fear", blood: 1 }], ["INFECTÉ", { ...SOIGNANT, bite: true, infect: 1, blood: 2 }], ["ATTAQUE", { ...SOIGNANT, bite: true, infect: 1, blood: 3, pose: "reach" }]]],
   ["LA PETITE FILLE", [["PEUR", FILLE, 0.68], ["CACHÉE", { ...FILLE, pose: "handMouth", expr: "fear" }, 0.68], ["COURSE", { ...FILLE, pose: "run", expr: "worry", step: 0.25 }, 0.68],
     ["SOULAGÉE", { ...FILLE, expr: "relief" }, 0.68], ["AVEC TOI", { ...TOI, pose: "reach", expr: "worry" }]]],
-  ["LES INFECTÉS", [["PATIENT", { ...TOI, jacket: "#9cb8c4", pants: "#9cb8c4", hair: "bald", hairColor: "#9a9a9a", infect: 1, blood: 2, pose: "reach" }],
+  ["LES INFECTÉS", [["PATIENT", { ...TOI, jacket: "#9cb8c4", pants: "#9cb8c4", hair: "bald", hairColor: "#9a9a9a", bandage: false, infect: 1, blood: 2, pose: "reach" }],
     ["INFIRMIÈRE", { ...DOC, pants: "#c97a9a", hair: "ponytail", hairColor: "#24201f", infect: 1, blood: 3, pose: "armsUp" }],
     ["CIVIL", { role: "civil", pose: "run", step: 0.25, expr: "shock", jacket: "#5a7d6a", pants: "#3f4458", shoes: "#2a2a30", hair: "spiky", hairColor: "#2a2220", infect: 1, blood: 2 }],
     ["CIVILE", { role: "civil", pose: "reach", expr: "shock", jacket: "#7b5a8a", pants: "#3a3348", shoes: "#2a2a30", hair: "bob", hairColor: "#c9b48e", infect: 1, blood: 1 }]]]
