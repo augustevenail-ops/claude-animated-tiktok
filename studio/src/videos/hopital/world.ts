@@ -355,7 +355,7 @@ export class World {
     this.sky = new THREE.Mesh(new THREE.SphereGeometry(900, 24, 16), new THREE.MeshBasicMaterial({ map: ctex("ho_sky", 64, 512, (g) => { const v = g.createLinearGradient(0, 0, 0, 512); v.addColorStop(0, "#03050b"); v.addColorStop(0.45, "#0c1630"); v.addColorStop(0.5, "#22304e"); v.addColorStop(0.56, "#0c1630"); v.addColorStop(1, "#03050b"); g.fillStyle = v; g.fillRect(0, 0, 64, 512); }), side: THREE.BackSide, fog: false, depthWrite: false }));
     this.sky.layers.set(NOINK); this.sky.renderOrder = -1; R.add(this.sky);
     this.moon = new THREE.Mesh(new THREE.PlaneGeometry(90, 90), new THREE.MeshBasicMaterial({ map: glowTex("215,235,255"), transparent: true, fog: false, blending: THREE.AdditiveBlending, depthWrite: false })); this.moon.layers.set(NOINK); R.add(this.moon);
-    for (let i = 0; i < 34; i++) this.actors.push(new Actor(R));
+    for (let i = 0; i < 58; i++) this.actors.push(new Actor(R));
     { const bg = new THREE.PlaneGeometry(BIG * SU, BIG * SU); bg.translate((BIG / 2 - (BIG_DX + 300)) * SU, ((BIG_DY + 975) - BIG / 2) * SU, 0); for (let i = 0; i < 12; i++) this.bigs.push(new Actor(R, bg)); }
     const mk = (key: string, n: number, col: string, size: number, add: boolean, op = 1) => { const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.BufferAttribute(new Float32Array(n * 3), 3));
       const pt = new THREE.Points(g, new THREE.PointsMaterial({ map: glowTex(col), size, transparent: true, opacity: op, depthWrite: false, blending: add ? THREE.AdditiveBlending : THREE.NormalBlending })); pt.layers.set(NOINK); pt.visible = false; pt.frustumCulled = false; R.add(pt); this.parts[key] = pt; };
@@ -452,8 +452,12 @@ export class World {
     const POL: [number, number, Partial<Perso>, number][] = [[-4.6, -33.6, { pose: "handMouth", expr: "worry" }, 0], [-2.9, -32.0, { pose: "reach", gun: true }, -0.62], [-1.4, -33.2, { pose: "reach", gun: true, hair: "bun", hairColor: "#a07850" }, 0],
       [0.2, -34.4, { pose: "stand", expr: "worry" }, 0], [1.6, -32.9, { pose: "armsUp", expr: "shock" }, 0], [3.4, -33.3, { pose: "reach", gun: true }, 0], [-6.2, -35.2, { pose: "run", step: 0.25, expr: "fear" }, 0], [4.9, -34.8, { pose: "stand", expr: "frown" }, 0],
       [-10.6, -34.0, { pose: "reach", gun: true }, -0.6], [-12.8, -35.0, { pose: "stand", expr: "worry", hair: "bun", hairColor: "#24201f" }, 0], [11.4, -34.6, { pose: "reach", gun: true }, 0], [13.6, -35.8, { pose: "handMouth", expr: "worry" }, 0], [19.2, -33.8, { pose: "reach", gun: true }, -0.6], [-8.4, -36.4, { pose: "run", step: 0.7, expr: "fear" }, 0]];
-    if (id === "05") { outsideInf(10, -13); POL.slice(1, 13).forEach(([x, z, s]) => place({ p: [x, 0, z], s: { ...FLIC, ...s } as Perso })); }
-    if (id === "06") { outsideInf(10, -14); POL.slice(1, 13).forEach(([x, z, s], q) => place({ p: [x, jit(0.01, q), z], s: { ...FLIC, ...s, back: true } as Perso, yaw: Math.PI })); }
+    {  // renfort : 21 policiers de plus en rangs derrière les voitures (35 au total), postures variées
+      const POSES: Partial<Perso>[] = [{ pose: "reach", gun: true }, { pose: "stand", expr: "frown" }, { pose: "reach", gun: true, hair: "bun", hairColor: "#a07850" }, { pose: "handMouth", expr: "worry" }, { pose: "armsUp", expr: "shock" }, { pose: "stand", expr: "worry", hair: "spiky", hairColor: "#24201f" }];
+      for (let q = 0; q < 21; q++) { const row = Math.floor(q / 7), x = -22 + (q % 7) * 7.2 + hash(q, 131) * 3, z = -37.2 - row * 2.6 - hash(q, 132) * 1.2;
+        POL.push([x, z, POSES[Math.floor(hash(q, 133) * POSES.length)], 0]); } }
+    if (id === "05") { outsideInf(10, -13); POL.slice(1).forEach(([x, z, s]) => place({ p: [x, 0, z], s: { ...FLIC, ...s } as Perso })); }
+    if (id === "06") { outsideInf(10, -14); POL.slice(1).forEach(([x, z, s], q) => place({ p: [x, jit(0.01, q), z], s: { ...FLIC, ...s, back: true } as Perso, yaw: Math.PI })); }
     if (id === "20" || id === "32") { if (id === "20") { outsideInf(10, -12); POL.forEach(([x, z, s, dy]) => place({ p: [x, dy, z], s: { ...FLIC, ...s } as Perso })); } }
     // couloir : le soignant
     const SO: V3 = [8.6, 0, 5.6];
