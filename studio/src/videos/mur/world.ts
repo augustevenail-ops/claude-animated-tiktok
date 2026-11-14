@@ -299,7 +299,7 @@ export class World {
     if (id === 2 || id === 3) place("Y", W2, { mode: "stand", expr: "worry", blink: id === 2 && u < 0.45 }, 1, true);
     if (id === 5) place("Y", [YOU_WAKE[0], 0, YOU_WAKE[2]], { mode: "stand", expr: "worry", blink: blink(1), look: Math.sin(u * 5) * 0.8 });
     if (id === 10 || id === 12) {                                                          // drones au ras du sol : des Longs dans le couloir et derrière les murs
-      const P: [number, number][] = id === 10 ? [[20, 1.4], [8, -9], [-2, 9], [28, -9], [-14, -1.2], [40, 9]] : [[-40, 1.2], [-48, 9], [-33, -9], [-55, -9]];
+      const P: [number, number][] = id === 10 ? [[14, 1.4], [6, -9], [-2, 9], [-8, -1.2], [-16, -9], [-24, 9], [-32, 1.0], [24, 9]] : [[-40, 1.2], [-48, 9], [-33, -9], [-55, -9], [-18, -9], [-12, 9]];
       P.forEach(([x, dz], i) => long([x + (i % 2 ? 1 : -1) * 2.5 * u, 0, WAKE_Z + dz], { pose: "walk", step: ((t * 0.45 + i * 0.3) % 1 + 1) % 1 }));
       if (id === 12) { place("C", [-22 + jit(0.03, 2), 0, WAKE_Z - 1.0], { mode: "stand", expr: "fear", blink: false });
         long([-24.5, 0, WAKE_Z + 1.6], { pose: "stand", tilt: 0.42 * smooth(u * 1.4), turn: 0.3 * Math.sin(u * 3), mouth: 0.4 * smooth((u - 0.6) * 3) }); }
