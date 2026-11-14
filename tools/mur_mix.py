@@ -62,6 +62,51 @@ crack(W(10), 0.7)                                                               
 k.stinger(TITLE_AT, 0.5)
 FLIP = TITLE_AT + 0.9                                                                     # le 1 devient 2 sur le carton (FLIP_AFTER, overlay.tsx)
 k.reverse(FLIP, 0.35, 0.5); cue("lock_click", FLIP - 0.01, -6); cue("sting_hit", FLIP, -12)
+# ---- bruitages de détail, discrets, calés sur les plans (retour utilisateur 2026-11-14 : « qu'on entend mais pas beaucoup »)
+ANCH = [0, 4, 5, 13, 22, 31, 37, 40, 42, 45, 49, 57, 66, 70, 82, 95, 107, 120, 126, 138, 141, 152, 157, 167, 173, 179, 195]   # = story.ts
+S = lambda k: max(0.0, W(ANCH[k - 1]) - 2 / 30); Se = lambda k: S(k + 1) if k < 27 else TITLE_AT
+drng = np.random.default_rng(77)
+def bp(x, lo, hi): a = np.convolve(x, np.ones(max(1, int(SR / hi))) / max(1, int(SR / hi)), "same"); return a - np.convolve(a, np.ones(int(SR / lo)) / int(SR / lo), "same")
+def put(x, t0, g_db, fade=0.25):
+    a = np.abs(x) > 1e-6
+    if not a.any(): return
+    x = x * db(vref + g_db + SFX_DB - rms(x[a])); f = min(len(x) // 2, int(fade * SR))
+    if f: x[:f] *= np.linspace(0, 1, f); x[-f:] *= np.linspace(1, 0, f)
+    i = int(t0 * SR); j = min(N, i + len(x))
+    if 0 <= i < N: sfx[i:j] += x[: j - i]
+def fire(t0, t1, g_db):                                      # feu de camp : souffle grave + petits crépitements
+    n = int((t1 - t0) * SR); x = bp(drng.standard_normal(n), 60, 900) * (0.7 + 0.3 * np.sin(np.arange(n) / SR * 2.1))
+    for _ in range(int((t1 - t0) * 9)):
+        m = int(0.004 * SR); c = drng.standard_normal(m) * np.exp(-np.arange(m) / (0.0008 * SR)); i = drng.integers(0, max(1, n - m))
+        x[i:i + m] += c * (2.5 + 4 * drng.random())
+    put(x, t0, g_db, 0.4)
+def sand(t0, t1, g_db, dens=60):                             # poussière / sable qui tombe : grains fins aigus
+    n = int((t1 - t0) * SR); x = np.zeros(n)
+    for _ in range(int((t1 - t0) * dens)):
+        m = int(0.002 * SR); i = drng.integers(0, max(1, n - m)); x[i:i + m] += drng.standard_normal(m) * drng.random()
+    put(bp(x, 1500, 9000), t0, g_db, 0.3)
+def wings(t0, t1, g_db, rate=5.5):                           # nuée d'oiseaux : battements d'ailes
+    n = int((t1 - t0) * SR); x = np.zeros(n); t = 0.0
+    while t < t1 - t0 - 0.1:
+        m = int(0.07 * SR); i = int(t * SR); x[i:i + m] += bp(drng.standard_normal(m), 300, 3000) * np.hanning(m) * (0.5 + drng.random())
+        t += 1 / rate * (0.6 + 0.8 * drng.random()) / 3
+    put(x, t0, g_db, 0.5)
+def puff(t0, g_db):                                          # bougie soufflée : petit « fff »
+    m = int(0.35 * SR); put(bp(drng.standard_normal(m), 400, 4000) * np.exp(-np.arange(m) / (0.09 * SR)), t0, g_db, 0.02)
+sand(S(3), Se(3), -26)                                       # 3 : poussière qui tombe du mur
+wings(S(4) + 0.3, Se(4) - 0.2, -24)                          # 4 : nuée d'oiseaux
+sand(S(6), Se(6), -30, 25)                                   # 6 : poussière dorée en suspension (à peine)
+cue("vent_air", S(7), -26, Se(7) - S(7))                     # 7 : la lumière baisse, souffle d'air
+cue("breath_nervous", S(11) + 0.3, -22)                      # 11 : le jeune tremble
+fire(S(13), Se(14), -24)                                     # 13-14 : feu de camp (léger)
+sand(S(14) + 0.2, Se(14), -30, 30)                           # 14 : étincelles qui crépitent
+fire(S(16), Se(16), -30)                                     # 16 : la nuit, le feu presque éteint
+cue("breath_nervous", S(16) + 0.4, -24)                      # 16 : un jeune tremble puis se fige
+puff(S(17) + 0.47 * (Se(17) - S(17)), -20)                   # 17 : la bougie s'éteint
+for e in range(int((Se(19) - S(19)) / 0.55)): cue("footstep_one", S(19) + 0.2 + e * 0.55, -26)   # 19 : tes pas, loin
+sand(S(22), Se(22), -24, 80)                                 # 22 : poussière soulevée par l'entrée
+cue("breath_nervous", S(26) + 0.2, -18)                      # 26 : l'ombre monte sur toi, ta respiration
+cue("footstep_one", S(27) + 0.25 * (Se(27) - S(27)), -20)    # 27 : un pas, puis tu te retiens
 # ---- musique douce (-1/4) + tension qui suit l'histoire
 REVEAL = [2, 41, 47, 102, 119, 140, 163, 172, 194]
 mus = k.music4(DUR, dips=[W(i) - 0.25 for i in REVEAL], transpose=12)
