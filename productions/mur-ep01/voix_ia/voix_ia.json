@@ -1,0 +1,19 @@
+{
+  "_note": "Voix IA du narrateur (décision utilisateur 2026-11-14). Modèle eleven_v3 : seul modèle qui comprend les balises d'émotion [..]. stability v3 = 0.0 (créatif) / 0.5 (naturel) / 1.0 (robuste).",
+  "voice_id": "wyZnrAs18zdIj8UgFSV8",
+  "voice_name": "Martin Dupont - Thriller Narrator (bibliothèque ElevenLabs, FR, grave, narratif sombre)",
+  "fallback_voice_id": "2AGrjHJgmTgUqzy68M9W",
+  "fallback_voice_name": "Nicolas Petit - Deep Narrator (FR, grave, enquête / cold case)",
+  "model_id": "eleven_v3",
+  "language_code": "fr",
+  "voice_settings": {
+    "stability": 0.5,
+    "similarity_boost": 0.85,
+    "style": 0.35,
+    "use_speaker_boost": true,
+    "speed": 0.95
+  },
+  "free_voice_id": "JBFqnCBsd6RMkjVDRZzb",
+  "free_voice_name": "George (premade, utilisable sur le forfait gratuit ; accent non natif)",
+  "_note_forfait": "Forfait gratuit : les voix de la bibliothèque (Martin Dupont, Nicolas Petit) sont refusées par l'API (402) ; option --free = George."
+}
