@@ -418,7 +418,7 @@ export class World {
     this.sheet.position.set(-0.9 + 1.05 * fall, 0.82 - 0.66 * fall, -1.2 + 0.35 * fall); this.sheet.rotation.set(0, 0.2 * fall, -1.1 * Math.sin(Math.PI * Math.min(fall * 1.2, 1)) * (1 - 0.7 * fall)); this.sheet.scale.set(1, 1 - 0.75 * fall, 1);
     this.door.rotation.y = id === "10" ? -1.4 * smooth(u * 2) + 0.12 * Math.sin(u * 14) * smooth(u * 2 - 1) : id === "07" || id === "09" || id === "08" ? 0 : -1.3;
     // règles
-    const r1 = id === "15" ? clamp01((t - tW(76) + 0.1) / 1.6) : 0, r2 = id === "25" ? clamp01((t - tW(161) + 0.05) / 1.7) : 0;
+    const r1 = id === "15" ? clamp01(0.04 + u * 1.0) : 0, r2 = id === "25" ? clamp01(0.04 + u * 1.0) : 0;   // l'écriture apparaît du début à la fin du plan
     this.rule1.mesh.visible = id === "15"; this.rule1.set(r1 * this.rule1.count, 0.85 + 0.15 * Math.sin(t * 6));
     this.rule2.mesh.visible = id === "25"; this.rule2.set(r2 * this.rule2.count, 0.85 + 0.15 * Math.sin(t * 22) * (hash(Math.floor(t * 10), 2) < 0.2 ? 1 : 0.2));
     // particules
