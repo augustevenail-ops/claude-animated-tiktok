@@ -107,7 +107,7 @@ export const camAt = (i: number, f: number): Cam => {
 
 // ---------------- tags (pilules) : [plan, texte, début s, fin s, couleur, x %, y %] ----------------
 export const TAGS: [string, string, number, number, string, number, number][] = [
-  ["01", "PATIENT 047", 0.3, 3.1, "#6fb6e6", 50, 64],
+  ["01", "PATIENT 047", 0.3, 3.1, "#6fb6e6", 50, 21],
   ["05", "ZONE CONFINÉE", 6.4, 8.4, "#ff4a3d", 50, 40],
   ["06", "POLICE", 8.5, 10.7, "#ff2a2a", 76, 30],
   ["13", "INFECTÉ", 20.0, 21.5, "#c0121e", 60, 44],
