@@ -7,7 +7,7 @@ import { drawBody, Joints, REST, View } from "./pantin";
 const INK = "#221e1d", OL = 11;
 const cx = 300, R = 122, hy = 196, top = 338, hip = 612, tw = 150;
 export type Role = "patient" | "police" | "medecin" | "fille" | "civil";
-export type Perso = Person & { role: Role; infect?: number; bite?: boolean; mask?: boolean; gun?: boolean; blood?: number; bandage?: boolean; view?: View; j?: Joints; spin?: number };
+export type Perso = Person & { role: Role; infect?: number; bite?: boolean; mask?: boolean; gun?: boolean; blood?: number; bandage?: boolean; view?: View; j?: Joints; spin?: number; drip?: number };
 /** carte agrandie des pantins articulés (poses couchées, profil) : 1400 x 1400, le dessin 600 x 1000 est décalé de (400, 200) */
 export const BIG = 1400, BIG_DX = 400, BIG_DY = 200;
 
@@ -181,6 +181,12 @@ export const drawPerso = (p: Pen, s: Perso) => {
     g.beginPath(); g.ellipse(cx + 49, hy - 24, 3.5, 8, 0, 0, 7); g.fill();
     g.restore();
   }
+  // ---- filet de sang qui coule du bandage le long de la joue (drip 0..1, s'arrête à mi-joue)
+  if ((s.drip ?? 0) > 0 && !s.back) { const L = 95 * Math.min(1, s.drip!), x0 = cx - 70, y0 = hy - 8;
+    g.save(); g.beginPath(); g.arc(cx, hy, R - 3, 0, 7); g.clip();
+    g.strokeStyle = "rgba(150,18,24,0.88)"; g.lineCap = "round"; g.lineWidth = 7; g.beginPath(); g.moveTo(x0, y0); g.quadraticCurveTo(x0 - 6, y0 + L * 0.5, x0 - 3, y0 + L); g.stroke();
+    g.fillStyle = "rgba(150,18,24,0.92)"; g.beginPath(); g.ellipse(x0 - 3, y0 + L + 4, 6, 8, 0, 0, 7); g.fill();
+    g.fillStyle = "rgba(255,255,255,0.45)"; g.beginPath(); g.ellipse(x0 - 5, y0 + L + 1, 1.8, 3, 0, 0, 7); g.fill(); g.restore(); }
   // ---- sang (taches sur la tenue)
   for (let i = 0; i < (s.blood ?? 0); i++) blot(g, cx - 40 + ((i * 53) % 90), top + 70 + ((i * 97) % 200), 14 + (i % 3) * 6, i + 1);
   // ---- morsure au cou

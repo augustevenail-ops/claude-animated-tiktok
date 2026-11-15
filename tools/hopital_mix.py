@@ -13,9 +13,9 @@ words = json.load(open(os.path.join(VD, "words.json"), encoding="utf-8"))
 W = lambda i: words[i]["s"] + OFF
 E = lambda i: words[i]["e"] + OFF
 # plans = story.ts (PLANS) : nom -> indice du premier mot
-PLANS = [("01", 0), ("02", 6), ("03", 8), ("04a", 13), ("04b", 17), ("05", 18), ("06", 23), ("07", 31), ("08", 34), ("09", 39), ("10", 45), ("11a", 49), ("11b", 54),
-         ("12", 58), ("13", 63), ("14", 69), ("15", 76), ("16a", 86), ("16b", 90), ("17", 98), ("18", 106), ("19", 111), ("20", 119), ("21", 134), ("22", 140), ("23", 150),
-         ("24", 153), ("25", 161), ("26", 173), ("27", 177), ("28", 191), ("29", 194), ("30", 203), ("31a", 208), ("31b", 215), ("31c", 223), ("31d", 232), ("32", 235)]
+PLANS = [("01", 0), ("02", 1), ("03", 8), ("04b", 13), ("05", 18), ("06", 27), ("08", 34), ("09", 39), ("10", 45), ("11a", 49), ("11b", 54),
+         ("12", 58), ("13", 63), ("14", 72), ("15", 76), ("16a", 86), ("16b", 90), ("17", 98), ("18", 106), ("19", 111), ("20", 119), ("21", 134), ("22", 140), ("22b", 146),
+         ("23", 150), ("24", 153), ("25", 161), ("26", 173), ("27", 177), ("28", 191), ("29", 194), ("30", 203), ("31a", 208), ("31b", 215), ("31c", 223), ("31d", 232), ("32", 235)]
 TITLE_AT = W(235) - 0.15
 DUR = round(max(E(len(words) - 1) + 0.9, TITLE_AT + 2.8), 3); N = int(DUR * SR)
 ST = {n: (0.0 if k == 0 else W(w) - 2 / 30) for k, (n, w) in enumerate(PLANS)}
@@ -93,10 +93,10 @@ def click(t0, g=-20.0, f=2600.0): m = int(0.03 * SR); tt = np.arange(m) / SR; pu
 
 # ================= AMBIANCES (lieux) =================
 silence_room(S("01"), Se("03"), -24); loop("siren_far", S("01"), Se("03"), -30)                       # chambre : bourdonnement + sirènes étouffées
-loop("siren_far", S("04a"), Se("04a"), -24); loop("crowd_shuffle", S("04a"), Se("04a"), -26)          # dehors à travers la vitre
+loop("siren_far", S("04b"), Se("04b"), -28)                                                            # sirènes à travers les vitres
 loop("hall_ambience", S("04b"), Se("04b"), -24)
 loop("wind_city", S("05"), Se("06"), -22); loop("siren_far", S("05"), Se("06"), -20); loop("crowd_shuffle", S("05"), Se("05"), -28); gyro(S("05"), Se("06"), -28)
-silence_room(S("07"), Se("10"), -26)                                                                   # chambre : silence lourd
+silence_room(S("08"), Se("10"), -26)                                                                   # chambre : silence lourd
 for a, b in (("11a", "19"),):                                                                          # couloir : néons, ventilation, alarme lointaine
     loop("neon_flicker", S(a), Se(b), -27); loop("vent_air", S(a), Se(b), -28); loop("hall_ambience", S(a), Se(b), -27)
 loop("wind_city", S("20"), Se("20"), -20); loop("siren_far", S("20"), Se("20"), -20); rotor(At("20", 0.35), Se("20"), -27); gyro(At("20", 0.4), Se("20"), -27)
@@ -108,15 +108,15 @@ loop("drip", S("31a"), Se("31d"), -30); buzz(S("31a"), Se("31d"), -28, 120)
 loop("wind_city", S("32"), DUR, -24); loop("siren_far", S("32"), DUR, -30)
 
 # ================= BRUITAGES (actions) =================
-cue("breath_nervous", 0.25, -16); cue("beep_ok", 0.35, -22); click(At("01", 0.16), -18)                # 01 : respiration, HUD, tag PATIENT 047
+cue("gasp_boy", 0.02, -10); cue("breath_nervous", 0.35, -17); cue("beep_ok", 0.35, -22); click(At("01", 0.16), -18)                # 01 : respiration, HUD, tag PATIENT 047
 cue("bed_creak", S("02") + 0.05, -14); cue("cloth_rustle", At("02", 0.25), -13); k.thud(At("02", 0.8), 0.25, 80)   # 02 : lit, drap qui glisse puis tombe
 click(S("03") + 0.04, -14, 1800); k.whoosh(S("03"), 0.3, 0.35)                                         # 03 : la tête pivote d'un bloc
-steps(S("04a") + 0.1, Se("04a"), 0.24, -24)                                                            # 04a : course étouffée dehors
+
 steps(S("04b"), Se("04b"), 0.22, -18); cue("door_slam_far", At("04b", 0.5), -16)                       # 04b : couloir, porte battante
 click(At("05", 0.25), -19)                                                                             # 05 : tag ZONE CONFINÉE
-for q, tt in enumerate((At("06", 0.15), At("06", 0.2), At("06", 0.5), At("06", 0.54), At("06", 0.58), At("06", 0.85))): gunshot(tt, -7 - 2 * (q % 2))   # 06 : 3 salves
+for q, tt in enumerate((At("05", 0.7), At("05", 0.78), At("06", 0.08), At("06", 0.13), At("06", 0.35), At("06", 0.4), At("06", 0.44), At("06", 0.7), At("06", 0.76), At("06", 0.9))): gunshot(tt, -8 - 2 * (q % 2))   # tirs
 growl(At("06", 0.1), 1.6, -26); click(At("06", 0.1), -19)
-cue("pa_static", S("07"), -13, Se("07") - S("07"), 0.03); cue("mic_tap", At("07", 0.4), -16); click(At("07", 0.3), -18)   # 07 : radio qui grésille, coupure
+cue("pa_static", W(31) - 0.05, -18, 1.0, 0.05)                                                          # « Oublie les secours » : radio de police qui grésille au loin
 cue("breath_nervous", S("08") + 0.2, -17)                                                               # 08 : respiration retenue
 steps(S("09") + 0.15, S("09") + 0.6, 0.22, -13)                                                        # 09 : pieds au sol
 cue("door_push", S("10") + 0.05, -11); steps(S("10") + 0.3, Se("10"), 0.26, -16)                        # 10 : porte poussée, pas rapides
@@ -137,7 +137,7 @@ glass(S("20") + 0.25, -9); k.whoosh(At("20", 0.15), 1.2, 0.8); k.whoosh(At("20",
 cue("pa_static", At("20", 0.6), -17, 1.4); cue("mic_tap", At("20", 0.62), -16); click(At("20", 0.52), -19)   # talkie, tag POLICE
 cue("steps_stairs", S("21"), -13, Se("21") - S("21")); steps(S("21") + 0.1, Se("21"), 0.18, -17)      # 21 : on dévale l'escalier
 for e in range(3): k.whoosh(At("21", 0.15 + 0.3 * e), 0.35, 0.3)
-k.thud(S("22") + 0.06, 0.55, 60); cue("breath_nervous", S("22") + 0.2, -11); heartbeat(S("22"), Se("23"), 120, -18)   # 22 : dos contre le béton, souffle
+k.thud(S("22") + 0.06, 0.55, 60); cue("breath_nervous", S("22") + 0.2, -11); heartbeat(S("22"), Se("23"), 120, -18); cue("breath_nervous", S("22b") + 0.1, -13)   # 22 : dos contre le béton, souffle
 cue("gasp_teen", S("23") + 0.1, -21)                                                                    # 23 : la fillette
 steps(S("24"), Se("24"), 0.38, -20, "footstep_one"); [growl(At("24", 0.1 + 0.22 * q), 1.0, -19 - q, 70 + 9 * q) for q in range(4)]   # 24 : ils piétinent
 k.whoosh(S("25") + 0.1, 0.8, 0.3); cue("light_on", W(161) - 0.05, -15); cue("neon_flicker", W(161), -20, 1.6)   # 25 : la règle 2 s'imprime
@@ -180,7 +180,7 @@ girl_motif(At("16b", 0.2)); girl_motif(At("17", 0.15), -17); girl_motif(S("23") 
 for n, _ in PLANS[1:]: k.whoosh(S(n), 0.3, 0.22)
 
 # ================= MUSIQUE DE FOND (très discrète) =================
-SECT = [("01", 0.45, 0.0), ("05", 0.6, 1.0), ("07", 0.15, 0.0), ("08", 0.5, 1.15), ("11a", 0.7, 1.4), ("15", 0.45, 0.0), ("16a", 0.4, 0.0),
+SECT = [("01", 0.45, 0.0), ("05", 0.6, 1.0), ("08", 0.5, 1.15), ("11a", 0.7, 1.4), ("15", 0.45, 0.0), ("16a", 0.4, 0.0),
         ("18", 0.95, 1.9), ("22", 0.35, 0.0), ("24", 0.6, 1.1), ("25", 0.45, 0.0), ("26", 0.6, 1.0), ("32", 1.0, 0.0)]   # (début, intensité, pulsation coups/s)
 lev = np.zeros(N); pr = np.zeros(N)
 for q, (n, a, r) in enumerate(SECT):
@@ -197,7 +197,7 @@ mf = lambda m: 440.0 * 2 ** ((m - 69) / 12)
 PROG_A = [[47, 59, 62, 66], [43, 55, 59, 62], [50, 57, 62, 66], [45, 57, 61, 64]]
 PROG_B = [[47, 59, 62, 66], [43, 55, 59, 62], [40, 55, 59, 64], [42, 54, 58, 61]]
 CHASE = (S("18"), S("22")); SUSP = (S("26"), TITLE_AT)
-MOOD = {"01": "calm", "05": "tension", "07": "stop", "08": "calm", "11a": "tension", "15": "stop", "16a": "calm", "18": "chase", "22": "stop", "24": "tension", "25": "stop", "26": "susp", "32": "final"}
+MOOD = {"01": "calm", "05": "tension", "08": "calm", "11a": "tension", "15": "stop", "16a": "calm", "18": "chase", "22": "stop", "24": "tension", "25": "stop", "26": "susp", "32": "final"}
 moodAt = lambda t: [m for n, m in MOOD.items() if t >= S(n)][-1]
 def lp(x, fc): a = np.exp(-2 * np.pi * fc / SR); return lfilter([1 - a], [1, -a], x)
 def env_ar(n, a, r): e = np.ones(n); ia, ir = min(n, int(a * SR)), min(n, int(r * SR)); e[:ia] = np.linspace(0, 1, ia); e[n - ir:] *= np.linspace(1, 0, ir); return e
@@ -243,7 +243,7 @@ def verb(x, d=2.2, mix=0.28):
     n = int(d * SR); ir = lp(rng.standard_normal(n) * np.exp(-np.arange(n) / SR * 3.2), 3000); ir /= np.sqrt(np.sum(ir ** 2))
     L = 1 << int(np.ceil(np.log2(len(x) + n))); w = np.fft.irfft(np.fft.rfft(x, L) * np.fft.rfft(ir, L), L)[: len(x)]; return x * (1 - mix) + w * mix * 0.6
 def norm(x, g): a = np.abs(x) > 1e-5; return x * db(g - rms(x[a])) if a.any() else x
-W_ = {"calm": (1.0, 1.0, 0.0, 0.0), "tension": (1.0, 0.3, 1.0, 0.0), "chase": (1.0, 0.0, 1.0, 1.0), "stop": (0.7, 0.6, 0.0, 0.0), "susp": (1.0, 0.4, 0.7, 0.0), "final": (1.2, 1.0, 0.8, 1.0)}
+W_ = {"calm": (1.0, 0.9, 0.0, 0.0), "tension": (1.0, 0.5, 0.45, 0.0), "chase": (1.0, 0.2, 0.6, 0.4), "stop": (0.7, 0.6, 0.0, 0.0), "susp": (1.0, 0.5, 0.3, 0.0), "final": (1.1, 1.0, 0.4, 0.6)}   # v3 : plus légère, tension sobre
 wl = [np.zeros(N) for _ in range(4)]
 for n_, m_ in MOOD.items():
     i = int(S(n_) * SR); nxt = [S(x) for x in MOOD if S(x) > S(n_)]; j = int(min(nxt) * SR) if nxt else N

@@ -108,11 +108,16 @@ class RuleText {
     n = Math.floor(n); if (n === this.n) { (this.mesh.material as THREE.MeshBasicMaterial).opacity = pulse; return; } this.n = n;
     const g = this.cv.getContext("2d")!, W = this.cv.width, H = this.cv.height; g.clearRect(0, 0, W, H);
     let k = 0; const lh = H / (this.lines.length + 0.6);
+    const tc = document.createElement("canvas"); tc.width = W; tc.height = H; const t2 = tc.getContext("2d")!;
     this.lines.forEach((line, li) => {
-      let sz = li === 0 ? lh * 0.62 : lh * 0.5; g.font = `900 ${sz}px Montserrat, ${FONT}`; const mw = g.measureText(line).width; if (mw > W * 0.9) { sz *= W * 0.9 / mw; g.font = `900 ${sz}px Montserrat, ${FONT}`; } g.textAlign = "left";
-      const wTot = g.measureText(line).width; let x = (W - wTot) / 2; const y = lh * (li + 0.95);
-      for (const ch of line) { if (k++ >= n) break; g.shadowColor = this.col; g.shadowBlur = 38; g.fillStyle = this.col; g.fillText(ch, x, y); g.shadowBlur = 8; g.fillStyle = "#ffffff"; g.globalAlpha = 0.55; g.fillText(ch, x, y); g.globalAlpha = 1; x += g.measureText(ch).width; }
+      let sz = li === 0 ? lh * 0.62 : lh * 0.5; t2.font = `900 ${sz}px Montserrat, ${FONT}`; const mw = t2.measureText(line).width; if (mw > W * 0.9) { sz *= W * 0.9 / mw; t2.font = `900 ${sz}px Montserrat, ${FONT}`; }
+      const wTot = t2.measureText(line).width; let x = (W - wTot) / 2; const y = lh * (li + 0.95); t2.fillStyle = this.col;
+      for (const ch of line) { if (k++ >= n) break; t2.fillText(ch, x, y); x += t2.measureText(ch).width; }
     });
+    t2.globalCompositeOperation = "destination-in"; t2.fillStyle = "#fff";                              // masque LED : grille de points
+    for (let yy = 3; yy < H; yy += 7) for (let xx = 3 + ((yy / 7) % 2) * 3.5; xx < W; xx += 7) { t2.beginPath(); t2.arc(xx, yy, 2.7, 0, 7); t2.fill(); }
+    g.shadowColor = this.col; g.shadowBlur = 26; g.drawImage(tc, 0, 0); g.shadowBlur = 8; g.drawImage(tc, 0, 0);
+    g.globalAlpha = 0.5; g.globalCompositeOperation = "lighter"; g.drawImage(tc, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = "source-over";
     this.tex.needsUpdate = true; (this.mesh.material as THREE.MeshBasicMaterial).opacity = pulse;
   }
   get count() { return this.lines.join("").length; }
@@ -140,7 +145,7 @@ export class World {
   private pool = new Pool(); private actors: Actor[] = []; private bigs: Actor[] = [];
   private gyros: { m: THREE.Mesh; col: string; ph: number }[] = []; private neons: THREE.Mesh[] = []; private exit: THREE.Mesh; private exitGlow: THREE.Mesh;
   private sheet: THREE.Mesh; private door: THREE.Mesh; private talkie: THREE.Group; private led: THREE.Mesh; private curtain: THREE.Mesh;
-  private rule1: RuleText; private city = new City(); private clock!: THREE.Mesh; private ecg!: { cv: HTMLCanvasElement; tex: THREE.CanvasTexture }; private curtains: THREE.Mesh[] = []; private alarms: THREE.Mesh[] = []; private papers: THREE.Mesh[] = []; private shadows: THREE.Mesh[] = []; private drip!: THREE.Mesh; private rule2: RuleText; private parts: Record<string, THREE.Points> = {}; private moon: THREE.Mesh; private sky: THREE.Mesh;
+  private rule1: RuleText; private city = new City(); private clock!: THREE.Mesh; private ecg!: { cv: HTMLCanvasElement; tex: THREE.CanvasTexture }; private curtains: THREE.Mesh[] = []; private alarms: THREE.Mesh[] = []; private papers: THREE.Mesh[] = []; private shadows: THREE.Mesh[] = []; private flashes: THREE.Mesh[] = []; private drip!: THREE.Mesh; private rule2: RuleText; private parts: Record<string, THREE.Points> = {}; private moon: THREE.Mesh; private sky: THREE.Mesh;
   constructor() {
     const R = this.root, b = new Batch();
     this.hemi = new THREE.HemisphereLight("#ffffff", "#3a3a40", 0.3); R.add(this.hemi);
@@ -195,7 +200,7 @@ export class World {
     box(b, metal, 28.9, 0.85, 5.3, 31.1, 0.92, 6.1); box(b, mattress, 28.95, 0.92, 5.35, 31.05, 1.0, 6.05);
     for (const x of [29.0, 31.0]) for (const z of [5.35, 6.05]) { box(b, metal, x - 0.02, 0.12, z - 0.02, x + 0.02, 0.85, z + 0.02); box(b, dark, x - 0.06, 0, z - 0.06, x + 0.06, 0.12, z + 0.06); }
     for (const x of [14, -8, 40]) { box(b, metal, x, 0.1, 5.7, x + 0.8, 0.9, 6.25); box(b, white, x + 0.05, 0.9, 5.75, x + 0.75, 0.98, 6.2); }
-    this.rule1 = new RuleText(["RÈGLE 1", "LE VIRUS PASSE", "PAR LE SANG"], "#b3121c", 2.8, 1.9); this.rule1.mesh.position.set(59.97, 1.7, CORR_Z); this.rule1.mesh.rotation.y = -Math.PI / 2; R.add(this.rule1.mesh);
+    this.rule1 = new RuleText(["RÈGLE 1", "LE VIRUS PASSE", "PAR LE SANG"], "#ff1c1c", 2.8, 1.9); this.rule1.mesh.position.set(59.97, 1.7, CORR_Z); this.rule1.mesh.rotation.y = -Math.PI / 2; R.add(this.rule1.mesh);
     // ---------- EXTÉRIEUR ----------
     const fac = rep(facadeTex(), 1, 1);
     { const g = new THREE.PlaneGeometry(140, 24); const uv = g.attributes.uv as THREE.BufferAttribute; for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * 140 / 16, uv.getY(i) * 24 / 16 * 1.5);
@@ -246,7 +251,7 @@ export class World {
     for (let x = SX - 2.6; x <= SX + 2.6; x += 1.3) neon(x, HC - 0.05, 3.6, 1.2, 0.12, "#eaf4ff");                         // néons de secours puissants au seuil
     this.curtain = new THREE.Mesh(new THREE.PlaneGeometry(6.2, HC), new THREE.MeshBasicMaterial({ map: ctex("ho_curtain", 64, 256, (g) => { const v = g.createLinearGradient(0, 0, 0, 256); v.addColorStop(0, "rgba(235,245,255,0.75)"); v.addColorStop(0.5, "rgba(220,235,255,0.28)"); v.addColorStop(1, "rgba(220,235,255,0.08)"); g.fillStyle = v; g.fillRect(0, 0, 64, 256); }),
       transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide, fog: false })); this.curtain.position.set(SX, HC / 2, 3.6); this.curtain.layers.set(NOINK); R.add(this.curtain);   // rideau de lumière
-    this.rule2 = new RuleText(["RÈGLE 2", "LA LUMIÈRE PUISSANTE", "LES AVEUGLE ET LES BLOQUE"], "#cfe6ff", 2.2, 1.25); this.rule2.mesh.position.set(203.8, 1.65, 9.18); this.rule2.mesh.rotation.y = Math.PI; R.add(this.rule2.mesh);
+    this.rule2 = new RuleText(["RÈGLE 2", "LA LUMIÈRE PUISSANTE", "LES AVEUGLE ET LES BLOQUE"], "#ff1c1c", 2.2, 1.25); this.rule2.mesh.position.set(203.8, 1.65, 9.18); this.rule2.mesh.rotation.y = Math.PI; R.add(this.rule2.mesh);
     // couloir noir (x ∈ [206 ; 242]) : sortie de secours au bout
     wallZ(beton, 4.6, 206, 242, HC, 1); wallZ(beton, 8.2, 206, 242, HC, -1); wallX(beton, 242, 4.6, 8.2, HC, -1);
     box(b, solid("exitdoor", "#5d6b62"), 241.9, 0, 5.6, 242, 2.2, 7.2); box(b, metal, 241.8, 1.0, 5.8, 241.9, 1.06, 7.0);
@@ -344,6 +349,17 @@ export class World {
     // couloir noir : chariot renversé, draps, papiers
     box(b, metal, 226, 0, 4.9, 227.2, 0.08, 5.5); box(b, solid("sheet2", "#c9d3d8"), 229, 0.005, 6.8, 230.4, 0.03, 7.9);
     for (let q = 0; q < 4; q++) deco(signTex("niv" + q, String(-1 + q), "rgba(0,0,0,0)", "#f2c12e", 256, 256), 0.9, 0.9, [SX + Math.sin(3.6 + q * 0.6) * 3.6, 1.6 + q * 3, SZ + Math.cos(3.6 + q * 0.6) * 3.6], 3.6 + q * 0.6 + Math.PI);
+    // parking : marquages au sol, passage piéton, flèches, taches d'huile, fissures, douilles et débris
+    floorDeco(ctex("ho_parking", 1024, 1024, (g) => { g.clearRect(0, 0, 1024, 1024);
+      g.strokeStyle = "rgba(235,235,225,0.75)"; g.lineWidth = 6; for (let i = 0; i < 18; i++) { const x = 40 + i * 54; g.beginPath(); g.moveTo(x, 60); g.lineTo(x, 230); g.stroke(); g.beginPath(); g.moveTo(x, 794); g.lineTo(x, 964); g.stroke(); }
+      g.fillStyle = "rgba(235,235,225,0.7)"; for (let i = 0; i < 9; i++) g.fillRect(440 + i * 18 - 80, 420, 10, 180);                                   // passage piéton
+      g.fillStyle = "rgba(240,200,40,0.75)"; for (const [x, y, r] of [[200, 500, 0], [820, 520, Math.PI]] as number[][]) { g.save(); g.translate(x, y); g.rotate(r); g.beginPath(); g.moveTo(-60, -8); g.lineTo(20, -8); g.lineTo(20, -26); g.lineTo(60, 0); g.lineTo(20, 26); g.lineTo(20, 8); g.lineTo(-60, 8); g.fill(); g.restore(); }
+      for (let i = 0; i < 30; i++) { const r = g.createRadialGradient(0, 0, 0, 0, 0, 40); r.addColorStop(0, "rgba(10,10,14,0.5)"); r.addColorStop(1, "rgba(10,10,14,0)"); g.save(); g.translate(hash(i, 141) * 1024, hash(i, 142) * 1024); g.scale(1 + hash(i, 143), 0.6 + hash(i, 144) * 0.5); g.fillStyle = r; g.fillRect(-40, -40, 80, 80); g.restore(); }
+      g.strokeStyle = "rgba(15,15,18,0.6)"; g.lineWidth = 2.2; for (let i = 0; i < 26; i++) { let x = hash(i, 145) * 1024, y = hash(i, 146) * 1024; g.beginPath(); g.moveTo(x, y); for (let k2 = 0; k2 < 7; k2++) { x += (hash(i * 7 + k2, 147) - 0.5) * 70; y += (hash(i * 7 + k2, 148) - 0.5) * 70; g.lineTo(x, y); } g.stroke(); }
+      g.fillStyle = "rgba(200,160,60,0.95)"; for (let i = 0; i < 160; i++) { g.save(); g.translate(300 + hash(i, 149) * 450, 640 + hash(i, 150) * 160); g.rotate(hash(i, 151) * 6); g.fillRect(-3, -1.5, 6, 3); g.restore(); }   // douilles
+      g.fillStyle = "rgba(230,230,220,0.85)"; for (let i = 0; i < 40; i++) { g.save(); g.translate(hash(i, 152) * 1024, hash(i, 153) * 1024); g.rotate(hash(i, 154) * 6); g.fillRect(-7, -5, 14, 10); g.restore(); } }), 90, 70, [0, 0.006, -38], false, 0.95);
+    for (let q = 0; q < 40; q++) box(b, solid(q % 3 ? "debris" : "debrisR", q % 3 ? "#4a4e54" : "#7a2a22"), -40 + hash(q, 161) * 80, 0, -55 + hash(q, 162) * 45, -39.8 + hash(q, 161) * 80 + hash(q, 163) * 0.4, 0.04 + hash(q, 164) * 0.12, -54.8 + hash(q, 162) * 45 + hash(q, 165) * 0.3);
+    for (let q = 0; q < 40; q++) { const fm = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.9), new THREE.MeshBasicMaterial({ map: glowTex("255,210,120"), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, fog: false })); fm.layers.set(NOINK); fm.visible = false; R.add(fm); this.flashes.push(fm); }
     // ombres de contact sous les personnages
     for (let q = 0; q < 26; q++) { const sh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ map: shadowTex(), transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -3 })); sh.visible = false; R.add(sh); this.shadows.push(sh); }
     b.build(R, true);
@@ -355,11 +371,11 @@ export class World {
     this.sky = new THREE.Mesh(new THREE.SphereGeometry(900, 24, 16), new THREE.MeshBasicMaterial({ map: ctex("ho_sky", 64, 512, (g) => { const v = g.createLinearGradient(0, 0, 0, 512); v.addColorStop(0, "#03050b"); v.addColorStop(0.45, "#0c1630"); v.addColorStop(0.5, "#22304e"); v.addColorStop(0.56, "#0c1630"); v.addColorStop(1, "#03050b"); g.fillStyle = v; g.fillRect(0, 0, 64, 512); }), side: THREE.BackSide, fog: false, depthWrite: false }));
     this.sky.layers.set(NOINK); this.sky.renderOrder = -1; R.add(this.sky);
     this.moon = new THREE.Mesh(new THREE.PlaneGeometry(90, 90), new THREE.MeshBasicMaterial({ map: glowTex("215,235,255"), transparent: true, fog: false, blending: THREE.AdditiveBlending, depthWrite: false })); this.moon.layers.set(NOINK); R.add(this.moon);
-    for (let i = 0; i < 58; i++) this.actors.push(new Actor(R));
+    for (let i = 0; i < 66; i++) this.actors.push(new Actor(R));
     { const bg = new THREE.PlaneGeometry(BIG * SU, BIG * SU); bg.translate((BIG / 2 - (BIG_DX + 300)) * SU, ((BIG_DY + 975) - BIG / 2) * SU, 0); for (let i = 0; i < 12; i++) this.bigs.push(new Actor(R, bg)); }
     const mk = (key: string, n: number, col: string, size: number, add: boolean, op = 1) => { const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.BufferAttribute(new Float32Array(n * 3), 3));
       const pt = new THREE.Points(g, new THREE.PointsMaterial({ map: glowTex(col), size, transparent: true, opacity: op, depthWrite: false, blending: add ? THREE.AdditiveBlending : THREE.NormalBlending })); pt.layers.set(NOINK); pt.visible = false; pt.frustumCulled = false; R.add(pt); this.parts[key] = pt; };
-    mk("dust", 140, "255,240,220", 0.03, true, 0.8); mk("glass", 90, "200,230,255", 0.06, true); mk("blood", 40, "150,10,20", 0.05, false); mk("sweat", 1, "220,240,255", 0.02, true);
+    mk("dust", 140, "255,240,220", 0.03, true, 0.8); mk("ash", 220, "190,180,170", 0.08, false, 0.7); mk("puff2", 90, "200,190,175", 0.25, false, 0.5); mk("glass", 90, "200,230,255", 0.06, true); mk("blood", 40, "150,10,20", 0.05, false); mk("sweat", 1, "220,240,255", 0.02, true);
   }
 
   update(i: number, f: number, cam: THREE.PerspectiveCamera, scene: THREE.Scene) {
@@ -382,7 +398,7 @@ export class World {
     this.sky.position.copy(cam.position); this.moon.position.copy(cam.position).add(V(0.5, 0.45, -1).normalize().multiplyScalar(700)); this.moon.lookAt(cam.position);
     // lueurs animées
     this.gyros.forEach((g) => { const k = 0.5 + 0.5 * Math.sin(t * 9 + g.ph); (g.m.material as THREE.MeshBasicMaterial).opacity = 0.25 + 0.75 * k * k; g.m.lookAt(cam.position); g.m.scale.setScalar(0.8 + 0.5 * k); });
-    this.neons.forEach((n, k) => { if ((n.material as THREE.MeshBasicMaterial).map) n.lookAt(cam.position); const fl = id === "11a" || id === "19" ? (hash(Math.floor(t * 14) + k, 7) < 0.12 ? 0.25 : 1) : 1; (n.material as THREE.MeshBasicMaterial).color.setScalar(fl); });
+    this.neons.forEach((n, k) => { if ((n.material as THREE.MeshBasicMaterial).map) n.lookAt(cam.position); const ev = hash(Math.floor(t * 9) + k * 13, 7), fl = !outside && ev < (id === "11a" || id === "19" ? 0.16 : 0.07) ? 0.6 + 0.25 * hash(Math.floor(t * 40), k) : 1; (n.material as THREE.MeshBasicMaterial).color.setScalar(fl); });
     const buzz = hash(Math.floor(t * 18), 3), on = id === "28" ? (buzz < 0.3 ? 0.15 : buzz < 0.5 ? 0.55 : 1) : 0.6 + 0.4 * (buzz > 0.2 ? 1 : 0.3);   // panneau vert qui grésille
     (this.exit.material as THREE.MeshBasicMaterial).color.setScalar(0.35 + 0.65 * on); (this.exitGlow.material as THREE.MeshBasicMaterial).opacity = 0.9 * on;
     (this.led.material as THREE.MeshBasicMaterial).color.set(hash(Math.floor(t * 11), 5) < 0.5 ? "#ff3a2a" : "#3a0806");
@@ -413,6 +429,8 @@ export class World {
       if (size) (pt.material as THREE.PointsMaterial).size = size; const a = pt.geometry.getAttribute("position") as THREE.BufferAttribute;
       for (let k = 0; k < a.count; k++) { const v = fn(k, (kk) => hash(k, 300 + kk)) ?? [0, -999, 0]; a.setXYZ(k, v[0], v[1], v[2]); } a.needsUpdate = true; };
     setP("dust", !outside && lk !== 4, (k, r) => nearCam(0.6 + r(0) * 4, (r(1) - 0.5) * 2.4 + Math.sin(t * 0.5 + k) * 0.15, (r(2) - 0.5) * 3.2 + Math.sin(t * 0.7 + k * 2) * 0.12), 0.025);
+    setP("ash", outside, (k2, r) => nearCam(2 + r(0) * 14, (r(1) - 0.5) * 9 + Math.sin(t * 0.4 + k2) * 0.6, 5 - fr(r(2) + t * (0.05 + r(3) * 0.05)) * 10), 0.06);
+    setP("puff2", id === "11b" && u > 0.68, (k2, r) => { const a = clamp01((u - 0.68) / 0.32) * (0.5 + r(0)); return [9.0 + r(1) * 1.8 + (r(2) - 0.5) * a * 0.8, 0.03 + a * 0.45 * r(3), 5.6 + (r(4) - 0.5) * 0.9]; }, 0.12);
     setP("glass", id === "20" && u < 0.4, (k, r) => { const a = clamp01((u - 0.08) / 0.3) * (0.6 + r(0)); return [-1 + r(1) * 3.4 + (r(2) - 0.5) * a * 4, 0.9 + r(3) * 1.5 - a * a * 2.5, -3 - a * (2 + r(4) * 5)]; }, 0.07);
     setP("blood", id === "12", (k, r) => { const a = fr(r(0) + t * 1.8 + Math.floor(t * 2.2) * 0.3); return [10.2 + (r(1) - 0.5) * 0.1 - a * 0.25, 0.04 + a * 0.35 * (1 - a) * 2.2, CORR_Z - 0.05 - a * 0.3 * r(2)]; }, 0.03);
     setP("sweat", id === "08", () => [-1.15, 1.42 - 0.12 * smooth(u), -1.07], 0.035);
@@ -420,7 +438,7 @@ export class World {
     // ---------- personnages ----------
     let k = 0;
     const yawTo = (p: V3) => Math.atan2(cam.position.x - p[0], cam.position.z - p[2]);
-    let kb = 0;
+    let kb = 0; const guns: THREE.Mesh[] = [], infs: THREE.Mesh[] = [];
     const place = (o: Place) => {
       const big = !!(o.s.view || o.s.j), A = big ? this.bigs[kb++] : this.actors[k++]; if (!A) return; const sc = o.scale ?? 1;
       const d = cam.position.distanceTo(V(o.p[0], o.p[1] + 1.2 * sc, o.p[2])); let [w, h, kk] = tierOf(d / sc);
@@ -428,6 +446,8 @@ export class World {
       A.r = this.pool.req(o.key ?? JSON.stringify(o.s), w, h, kk, (pen: Pen) => drawPerso(pen, o.s));
       A.mesh.position.set(...o.p); A.mesh.up.set(0, 1, 0); A.mesh.rotation.set(o.tilt ?? 0, o.yaw ?? yawTo(o.p), o.roll ?? 0, "YXZ");
       A.mesh.scale.set(o.mirror ? -sc : sc, sc, sc); A.mesh.visible = true;
+      if (!o.roll && !o.tilt) { const ph = k * 1.7 + kb * 2.3; A.mesh.rotation.z = 0.012 * Math.sin(t * 1.6 + ph); A.mesh.scale.y *= 1 + 0.009 * Math.sin(t * 2.4 + ph); }   // micro-mouvements : jamais figés
+      if (o.s.gun) guns.push(A.mesh); if ((o.s.infect ?? 0) > 0.5) infs.push(A.mesh);
     };
     /** personnage qui bascule autour de ses hanches (se redresse) ou de ses pieds (tombe) : a = 0 debout, -π/2 couché sur le dos */
     const pivotHip = (hip: V3, a: number, yaw: number): V3 => [hip[0] - HIP * Math.sin(a) * Math.sin(yaw), hip[1] - HIP * Math.cos(a), hip[2] - HIP * Math.sin(a) * Math.cos(yaw)];
@@ -438,7 +458,7 @@ export class World {
     const heroLie = (a: number, s: Partial<Perso>) => { const hip: V3 = [-1.15, 0.66 + 0.2 * Math.sin(a), -1.2];
       place({ p: [hip[0] + HIP * Math.sin(a), hip[1] - HIP * Math.cos(a), hip[2]], s: { ...H, ...s } as Perso, yaw: 0, roll: a }); };
     const heroSit = (yawExtra: number, s: Partial<Perso>) => place({ p: [-1.15, 0.66 - HIP, -1.2], s: { ...H, ...s } as Perso, yaw: Math.PI / 2 + yawExtra });
-    if (id === "01") heroLie(Math.PI / 2, { expr: "fear", look: Math.sin(t * 13) * 0.9 * (hash(Math.floor(t * 6), 1) < 0.7 ? 1 : -1), blink: blink(1) });
+    if (id === "01") heroLie(Math.PI / 2, { expr: "fear", look: Math.sin(t * 3.2) * 0.75, blink: blink(1), drip: smooth(u * 1.1) });
     if (id === "02") { const up = smooth((u - 0.08) * 1.6), push = Math.sin(Math.PI * clamp01((u - 0.05) * 1.8));
       place({ p: [-1.15, 0, -1.2], s: { ...H, view: "side", spin: -Math.PI / 2, expr: "worry", blink: u < 0.12, j: { ...REST, lean: Math.PI / 2 * up, shL: -0.6 * push + 0.2, elL: 0.9 * push, shR: -0.4 * push + 0.15, elR: 0.7 * push, knL: 0.15 * up, knR: 0.1 * up } } as Perso, yaw: 0 }); }
     if (id === "03") heroSit(-0.55 * (1 - Math.pow(1 - clamp01(u / 0.18), 3)) + jit(0.02, 2) * (u > 0.18 ? 1 : 0), { expr: "worry", look: -0.9 * smooth(u * 3) });
@@ -446,19 +466,19 @@ export class World {
     if (id === "09") place({ p: [0.7, 0.05 * Math.max(0, Math.sin(Math.PI * clamp01(u * 2.5))), -0.2], s: { ...H, pose: u < 0.35 ? "run" : "stand", step: 0.15, expr: "worry" } });
     if (id === "10") place({ p: [-1.6 + 0.1 * u, 0, 2.2 + 2.2 * u], s: { ...H, view: "front", j: runJ((t * 1.7) % 1), expr: "fear" } as Perso });
     if (id === "04a") [0, 1, 2].forEach((n) => place({ p: [-6 + 12 * u + n * 2.1 - 2, 0, -18 - n * 2.5], s: { ...DOC, step: (t * 1.6 + n * 0.3) % 1, hair: n === 1 ? "bun" : "fringe", pants: n === 2 ? "#4e7fa8" : DOC.pants } }));
-    if (id === "04b") [0, 1].forEach((n) => place({ p: [5 - 8 * u + n * 1.7, 0, 5.9 - 0.4 * n], s: { ...DOC, view: "side", j: runJ((t * 1.7 + n * 0.5) % 1), hair: n ? "bun" : "spiky", mask: n === 1 } as Perso, yaw: Math.PI }));
+    if (id === "04b") [0, 1, 2].forEach((n) => place({ p: [4.5 - 7.5 * u + n * 2.3, 0, 5.9 - 0.45 * n], s: { ...DOC, view: "side", j: runJ((t * 1.7 + n * 0.37) % 1), hair: ["spiky", "bun", "fringe"][n] as Perso["hair"], mask: n === 1, pants: n === 2 ? "#4e7fa8" : DOC.pants } as Perso, yaw: Math.PI }));
     // dehors : infectés qui avancent vers la police, policiers de dos / de face
-    const outsideInf = (n: number, z0: number) => { for (let q = 0; q < n; q++) place({ p: [-19 + q * 4.0 + hash(q, 9) * 2, 0, z0 - q % 3 * 1.6 - (hash(q, 8) * 3) - 2 * u], s: { ...INF[q % 4], pose: q % 2 ? "reach" : "armsUp", step: 0 } }); };
+    const outsideInf = (n: number, z0: number) => { for (let q = 0; q < n; q++) place({ p: [-30 + (q % 12) * 5.2 + hash(q, 9) * 2.5, 0, z0 - Math.floor(q / 12) * 3.2 - q % 3 * 1.1 - hash(q, 8) * 2 - 2.5 * u], s: { ...INF[q % 4], pose: q % 2 ? "reach" : "armsUp", step: 0 } }); };
     const POL: [number, number, Partial<Perso>, number][] = [[-4.6, -33.6, { pose: "handMouth", expr: "worry" }, 0], [-2.9, -32.0, { pose: "reach", gun: true }, -0.62], [-1.4, -33.2, { pose: "reach", gun: true, hair: "bun", hairColor: "#a07850" }, 0],
       [0.2, -34.4, { pose: "stand", expr: "worry" }, 0], [1.6, -32.9, { pose: "armsUp", expr: "shock" }, 0], [3.4, -33.3, { pose: "reach", gun: true }, 0], [-6.2, -35.2, { pose: "run", step: 0.25, expr: "fear" }, 0], [4.9, -34.8, { pose: "stand", expr: "frown" }, 0],
       [-10.6, -34.0, { pose: "reach", gun: true }, -0.6], [-12.8, -35.0, { pose: "stand", expr: "worry", hair: "bun", hairColor: "#24201f" }, 0], [11.4, -34.6, { pose: "reach", gun: true }, 0], [13.6, -35.8, { pose: "handMouth", expr: "worry" }, 0], [19.2, -33.8, { pose: "reach", gun: true }, -0.6], [-8.4, -36.4, { pose: "run", step: 0.7, expr: "fear" }, 0]];
     {  // renfort : 21 policiers de plus en rangs derrière les voitures (35 au total), postures variées
       const POSES: Partial<Perso>[] = [{ pose: "reach", gun: true }, { pose: "stand", expr: "frown" }, { pose: "reach", gun: true, hair: "bun", hairColor: "#a07850" }, { pose: "handMouth", expr: "worry" }, { pose: "armsUp", expr: "shock" }, { pose: "stand", expr: "worry", hair: "spiky", hairColor: "#24201f" }];
-      for (let q = 0; q < 21; q++) { const row = Math.floor(q / 7), x = -22 + (q % 7) * 7.2 + hash(q, 131) * 3, z = -37.2 - row * 2.6 - hash(q, 132) * 1.2;
+      for (let q = 0; q < 16; q++) { const row = Math.floor(q / 6), x = -20 + (q % 6) * 8 + hash(q, 131) * 3, z = -37.2 - row * 2.6 - hash(q, 132) * 1.2;
         POL.push([x, z, POSES[Math.floor(hash(q, 133) * POSES.length)], 0]); } }
-    if (id === "05") { outsideInf(10, -13); POL.slice(1).forEach(([x, z, s]) => place({ p: [x, 0, z], s: { ...FLIC, ...s } as Perso })); }
-    if (id === "06") { outsideInf(10, -14); POL.slice(1).forEach(([x, z, s], q) => place({ p: [x, jit(0.01, q), z], s: { ...FLIC, ...s, back: true } as Perso, yaw: Math.PI })); }
-    if (id === "20" || id === "32") { if (id === "20") { outsideInf(10, -12); POL.forEach(([x, z, s, dy]) => place({ p: [x, dy, z], s: { ...FLIC, ...s } as Perso })); } }
+    if (id === "05") { outsideInf(24, -13); POL.slice(1).forEach(([x, z, s]) => place({ p: [x, 0, z], s: { ...FLIC, ...s } as Perso })); }
+    if (id === "06") { outsideInf(24, -14); POL.slice(1).forEach(([x, z, s], q) => place({ p: [x, jit(0.01, q), z], s: { ...FLIC, ...s, back: true } as Perso, yaw: Math.PI })); }
+    if (id === "20" || id === "32") { if (id === "20") { outsideInf(24, -12); POL.forEach(([x, z, s, dy]) => place({ p: [x, dy, z], s: { ...FLIC, ...s } as Perso })); } }
     // couloir : le soignant
     const SO: V3 = [8.6, 0, 5.6];
     if (id === "11a") { place({ p: [SO[0] + 1.5 - 1.2 * u, 0, CORR_Z + 0.2 * Math.sin(u * 5)], s: { ...SOIGNANT, bite: true, expr: "shock", pose: "handMouth" }, yaw: -Math.PI / 2 + 0.3 * Math.sin(t * 3) }); }
@@ -476,8 +496,8 @@ export class World {
     // escalier, palier
     if (id === "21") [0, 1].forEach((q) => { const a = t * 2.4 - q * 0.45, y = Math.max(0, 9 - (t - tW(134)) * 4.6) + q * 0.4; place({ p: [STAIR[0] + 2.1 * Math.sin(a), y, STAIR[2] + 2.1 * Math.cos(a)], s: q ? { ...G, pose: "run", step: (t * 2) % 1 } : { ...H, pose: "run", step: (t * 2) % 1 }, scale: q ? 0.68 : 1 }); });
     const breathe = 1 + 0.025 * Math.sin(t * 9);
-    if (id === "22" || id === "26") place({ p: [id === "26" ? 198.5 : 198.0, 0, 9.0], s: { ...H, expr: id === "26" ? "worry" : "fear", look: id === "26" ? Math.sin(u * 9) : 0, blink: id === "22" && blink(2) }, yaw: Math.PI, scale: breathe });
-    if (id === "22" || id === "23") place({ p: [199.3, 0, 9.0], s: { ...G, expr: "fear", look: id === "23" ? -0.6 + 0.4 * Math.sin(u * 6) : 0 }, yaw: Math.PI, scale: 0.68 });
+    if (id === "22" || id === "22b" || id === "26") place({ p: [id === "26" ? 198.5 : 198.0, 0, 9.0], s: { ...H, expr: id === "26" ? "worry" : "fear", look: id === "26" ? Math.sin(u * 9) : 0, blink: id === "22" && blink(2) }, yaw: Math.PI, scale: breathe });
+    if (id === "22" || id === "22b" || id === "23") place({ p: [199.3, 0, 9.0], s: { ...G, expr: "fear", look: id === "23" ? -0.6 + 0.4 * Math.sin(u * 6) : 0 }, yaw: Math.PI, scale: 0.68 });
     if (id === "23") place({ p: [198.0, 0, 9.0], s: { ...H, expr: "fear" }, yaw: Math.PI });
     if (id === "24") INF.forEach((s, q) => place({ p: [197.4 + q * 1.5, 0, 2.9 - 0.25 * Math.abs(Math.sin(t * 3 + q))], s: { ...s, pose: q % 2 ? "reach" : "stand", look: Math.sin(t * 5 + q) * 0.5 } }));
     if (id === "25") { place({ p: [198.0, 0, 9.0], s: { ...H, expr: "worry" }, yaw: Math.PI }); place({ p: [199.3, 0, 9.0], s: { ...G, expr: "fear" }, yaw: Math.PI, scale: 0.68 }); }
@@ -487,6 +507,12 @@ export class World {
     { let q = 0; const all = [...this.actors.slice(0, k), ...this.bigs.slice(0, kb)]; for (let k2 = 0; k2 < all.length; k2++) { const m = all[k2].mesh; const shm = this.shadows[q]; if (!shm || !m.visible || Math.abs(m.rotation.z) > 0.3 || Math.abs(m.rotation.x) > 0.3) continue;
         shm.position.set(m.position.x, Math.max(0.006, m.position.y < 0.05 ? 0.006 : -9), m.position.z); shm.scale.set(1.1 * Math.abs(m.scale.x), 1, 0.55 * m.scale.y); shm.rotation.y = m.rotation.y; shm.visible = m.position.y < 0.05; q++; }
       for (; q < this.shadows.length; q++) this.shadows[q].visible = false; }
+    { let q = 0; const firing = id === "06" || (id === "05" && u > 0.45);
+      if (firing) { guns.forEach((m, gi) => { if (q >= this.flashes.length || hash(Math.floor(t * 14) + gi * 7, 9) > 0.22) return; m.updateMatrixWorld(); const fl = this.flashes[q++];
+          fl.position.copy(m.localToWorld(V(0.82, 1.33, 0.03))); fl.scale.setScalar(0.6 + 0.5 * hash(Math.floor(t * 30), gi)); fl.lookAt(cam.position); fl.visible = true; });
+        infs.forEach((m, ii) => { if (q >= this.flashes.length || hash(Math.floor(t * 12) + ii * 5, 11) > 0.12) return; m.updateMatrixWorld(); const fl = this.flashes[q++];
+          fl.position.copy(m.localToWorld(V((hash(ii, 3) - 0.5) * 0.3, 1.0 + hash(ii, 4) * 0.5, 0.05))); fl.scale.setScalar(0.35); fl.lookAt(cam.position); fl.visible = true; }); }
+      for (; q < this.flashes.length; q++) this.flashes[q].visible = false; }
     for (; k < this.actors.length; k++) this.actors[k].mesh.visible = false;
     for (; kb < this.bigs.length; kb++) this.bigs[kb].mesh.visible = false;
     this.pool.flush();

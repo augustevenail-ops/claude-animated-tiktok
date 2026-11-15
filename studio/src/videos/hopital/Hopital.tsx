@@ -71,9 +71,9 @@ const Tag: React.FC<{ t: number; text: string; a: number; b: number; col: string
   if (t < a || t > b) return null;
   const kin = Math.min(1, (t - a) / 0.18), kout = Math.min(1, (b - t) / 0.3), k = Math.min(kin, kout);
   return (<div style={{ position: "absolute", left: `${x}%`, top: `${y}%`, transform: `translate(-50%, -50%) translateY(${(1 - kin) * 10}px) scale(${0.94 + 0.06 * kin})`, opacity: k,
-    padding: "10px 26px", borderRadius: 999, background: "rgba(10,12,18,0.78)", border: `2px solid ${col}`, boxShadow: `0 0 18px ${col}55`,
-    fontFamily: MONT, fontWeight: 900, fontSize: 30, letterSpacing: 3, color: "#fff", whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 12 }}>
-    <span style={{ width: 12, height: 12, borderRadius: 6, background: col, boxShadow: `0 0 10px ${col}` }} />{text}</div>);
+    padding: "12px 31px", borderRadius: 999, background: "rgba(10,12,18,0.78)", border: `2px solid ${col}`, boxShadow: `0 0 18px ${col}55`,
+    fontFamily: MONT, fontWeight: 900, fontSize: 35, letterSpacing: 3.5, color: "#fff", whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 14 }}>
+    <span style={{ width: 14, height: 14, borderRadius: 7, background: col, boxShadow: `0 0 10px ${col}` }} />{text}</div>);
 };
 const Card: React.FC<{ tag: string; text: string; top: string; bot: string; edge: string; glow: string; x: number; k: number }> = ({ tag, text, top, bot, edge, glow, x, k }) => (
   <div style={{ position: "absolute", left: x, top: 455, width: 410, height: 290, borderRadius: 26, background: `linear-gradient(180deg, ${top} 0%, ${bot} 100%)`,
@@ -103,7 +103,7 @@ export const HopitalEp1: React.FC = () => {
       </ThreeCanvas>
       <div style={{ position: "absolute", inset: 0, mixBlendMode: "overlay", opacity: 0.12, backgroundImage: `url("${GRAIN}")`, backgroundSize: "260px 260px", backgroundPosition: `${(f * 53) % 260}px ${(f * 97) % 260}px` }} />
       {t < TITLE_AT ? <HudInf t={t} /> : null}
-      {TAGS.filter((g) => g[0] === NAME[i]).map((g) => <Tag key={g[1] + g[2]} t={t} text={g[1]} a={g[2]} b={g[3]} col={g[4]} x={g[5]} y={g[6]} />)}
+      {TAGS.filter((g) => t >= g[2] && t <= g[3]).map((g) => <Tag key={g[1] + g[2]} t={t} text={g[1]} a={g[2]} b={g[3]} col={g[4]} x={g[5]} y={g[6]} />)}
       {t < TITLE_AT && t >= CARD_A ? <><Card tag="A" text="COULOIR NOIR" top="#2f8a5e" bot="#15422d" edge="#9af5bd" glow="rgba(120,255,170,0.55)" x={120} k={ka} />
         {t >= CARD_B ? <Card tag="B" text="LUMIÈRE" top="#9a3030" bot="#4a1414" edge="#ff9a8a" glow="rgba(255,90,70,0.5)" x={550} k={kb} /> : null}</> : null}
       {t < TITLE_AT ? <Captions t={t} groups={GROUPS} karaoke={KARAOKE} /> : null}
