@@ -69,10 +69,12 @@ const HudInf: React.FC<{ t: number }> = ({ t }) => {
 /** tag en pilule : coins très arrondis, fond sombre, contour fin, texte court en majuscules ; apparition sobre, fondu de sortie */
 const Tag: React.FC<{ t: number; text: string; a: number; b: number; col: string; x: number; y: number }> = ({ t, text, a, b, col, x, y }) => {
   if (t < a || t > b) return null;
-  const kin = Math.min(1, (t - a) / 0.18), kout = Math.min(1, (b - t) / 0.3), k = Math.min(kin, kout);
+  const kin = Math.min(1, (t - a) / 0.18), kout = Math.min(1, (b - t) / 0.3), k = Math.min(kin, kout), neon = text === "POLICE";
   return (<div style={{ position: "absolute", left: `${x}%`, top: `${y}%`, transform: `translate(-50%, -50%) translateY(${(1 - kin) * 10}px) scale(${0.94 + 0.06 * kin})`, opacity: k,
     padding: "12px 31px", borderRadius: 999, background: "rgba(10,12,18,0.78)", border: `2px solid ${col}`, boxShadow: `0 0 18px ${col}55`,
-    fontFamily: MONT, fontWeight: 900, fontSize: 35, letterSpacing: 3.5, color: "#fff", whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 14 }}>
+    fontFamily: MONT, fontWeight: 900, fontSize: 35, letterSpacing: 3.5, color: neon ? "#ffd6d6" : "#fff", whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 14,
+    ...(neon ? { border: `3px solid ${col}`, boxShadow: `0 0 14px ${col}, 0 0 34px ${col}aa, inset 0 0 12px ${col}88`, textShadow: `0 0 6px ${col}, 0 0 16px ${col}, 0 0 28px ${col}`,
+      filter: `brightness(${0.85 + 0.15 * (Math.sin(t * 40) > -0.6 ? 1 : 0.2)})` } : {}) }}>
     <span style={{ width: 14, height: 14, borderRadius: 7, background: col, boxShadow: `0 0 10px ${col}` }} />{text}</div>);
 };
 const Card: React.FC<{ tag: string; text: string; top: string; bot: string; edge: string; glow: string; x: number; k: number }> = ({ tag, text, top, bot, edge, glow, x, k }) => (

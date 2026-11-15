@@ -109,10 +109,10 @@ export const camAt = (i: number, f: number): Cam => {
 export const TAGS: [string, string, number, number, string, number, number][] = [
   ["01", "PATIENT 047", 0.3, 3.1, "#6fb6e6", 50, 64],
   ["05", "ZONE CONFINÉE", 6.4, 8.4, "#ff4a3d", 50, 40],
-  ["06", "POLICE", 8.5, 10.7, "#4f8dff", 50, 60],
+  ["06", "POLICE", 8.5, 10.7, "#ff2a2a", 76, 30],
   ["13", "INFECTÉ", 20.0, 21.5, "#c0121e", 60, 44],
   ["16b", "SURVIVANTE", 27.5, 30.2, "#f2c12e", 52, 56],
   ["19", "MENACE DÉTECTÉE", 33.12, 36.2, "#ff4a3d", 50, 40],
-  ["20", "POLICE", 37.6, 40.4, "#4f8dff", 50, 46],
+  ["20", "POLICE", 37.6, 40.4, "#ff2a2a", 74, 30],
   ["28", "SORTIE DE SECOURS", 55.46, 57.3, "#3ddc84", 50, 60],
 ].map((x) => [x[0], x[1], (x[2] as number) + VOICE_AT, (x[3] as number) + VOICE_AT, x[4], x[5], x[6]] as [string, string, number, number, string, number, number]);
