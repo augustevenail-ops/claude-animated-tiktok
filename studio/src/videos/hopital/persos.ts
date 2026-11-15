@@ -182,9 +182,9 @@ export const drawPerso = (p: Pen, s: Perso) => {
     g.restore();
   }
   // ---- filet de sang qui coule du bandage le long de la joue (drip 0..1, s'arrête à mi-joue)
-  if ((s.drip ?? 0) > 0 && !s.back) { const L = 95 * Math.min(1, s.drip!), x0 = cx - 70, y0 = hy - 8;
+  if ((s.drip ?? 0) > 0 && !s.back) { const L = 85 * Math.min(1, s.drip!), x0 = cx - 46, y0 = hy + 2;
     g.save(); g.beginPath(); g.arc(cx, hy, R - 3, 0, 7); g.clip();
-    g.strokeStyle = "rgba(150,18,24,0.88)"; g.lineCap = "round"; g.lineWidth = 7; g.beginPath(); g.moveTo(x0, y0); g.quadraticCurveTo(x0 - 6, y0 + L * 0.5, x0 - 3, y0 + L); g.stroke();
+    g.strokeStyle = "rgba(150,18,24,0.88)"; g.lineCap = "round"; g.lineWidth = 10; g.beginPath(); g.moveTo(x0, y0); g.quadraticCurveTo(x0 - 6, y0 + L * 0.5, x0 - 3, y0 + L); g.stroke();
     g.fillStyle = "rgba(150,18,24,0.92)"; g.beginPath(); g.ellipse(x0 - 3, y0 + L + 4, 6, 8, 0, 0, 7); g.fill();
     g.fillStyle = "rgba(255,255,255,0.45)"; g.beginPath(); g.ellipse(x0 - 5, y0 + L + 1, 1.8, 3, 0, 0, 7); g.fill(); g.restore(); }
   // ---- sang (taches sur la tenue)

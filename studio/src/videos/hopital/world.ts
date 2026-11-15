@@ -114,8 +114,9 @@ class RuleText {
       const wTot = t2.measureText(line).width; let x = (W - wTot) / 2; const y = lh * (li + 0.95); t2.fillStyle = this.col;
       for (const ch of line) { if (k++ >= n) break; t2.fillText(ch, x, y); x += t2.measureText(ch).width; }
     });
-    t2.globalCompositeOperation = "destination-in"; t2.fillStyle = "#fff";                              // masque LED : grille de points
-    for (let yy = 3; yy < H; yy += 7) for (let xx = 3 + ((yy / 7) % 2) * 3.5; xx < W; xx += 7) { t2.beginPath(); t2.arc(xx, yy, 2.7, 0, 7); t2.fill(); }
+    const mk = document.createElement("canvas"); mk.width = W; mk.height = H; const m2 = mk.getContext("2d")!; m2.fillStyle = "#fff";   // masque LED : grille de points (un seul masque)
+    for (let yy = 3; yy < H; yy += 7) for (let xx = 3 + ((yy / 7) % 2) * 3.5; xx < W; xx += 7) { m2.beginPath(); m2.arc(xx, yy, 2.8, 0, 7); m2.fill(); }
+    t2.globalCompositeOperation = "destination-in"; t2.drawImage(mk, 0, 0); t2.globalCompositeOperation = "source-over";
     g.shadowColor = this.col; g.shadowBlur = 26; g.drawImage(tc, 0, 0); g.shadowBlur = 8; g.drawImage(tc, 0, 0);
     g.globalAlpha = 0.5; g.globalCompositeOperation = "lighter"; g.drawImage(tc, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = "source-over";
     this.tex.needsUpdate = true; (this.mesh.material as THREE.MeshBasicMaterial).opacity = pulse;
@@ -251,7 +252,7 @@ export class World {
     for (let x = SX - 2.6; x <= SX + 2.6; x += 1.3) neon(x, HC - 0.05, 3.6, 1.2, 0.12, "#eaf4ff");                         // néons de secours puissants au seuil
     this.curtain = new THREE.Mesh(new THREE.PlaneGeometry(6.2, HC), new THREE.MeshBasicMaterial({ map: ctex("ho_curtain", 64, 256, (g) => { const v = g.createLinearGradient(0, 0, 0, 256); v.addColorStop(0, "rgba(235,245,255,0.75)"); v.addColorStop(0.5, "rgba(220,235,255,0.28)"); v.addColorStop(1, "rgba(220,235,255,0.08)"); g.fillStyle = v; g.fillRect(0, 0, 64, 256); }),
       transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide, fog: false })); this.curtain.position.set(SX, HC / 2, 3.6); this.curtain.layers.set(NOINK); R.add(this.curtain);   // rideau de lumière
-    this.rule2 = new RuleText(["RÈGLE 2", "LA LUMIÈRE PUISSANTE", "LES AVEUGLE ET LES BLOQUE"], "#ff1c1c", 2.2, 1.25); this.rule2.mesh.position.set(203.8, 1.65, 9.18); this.rule2.mesh.rotation.y = Math.PI; R.add(this.rule2.mesh);
+    this.rule2 = new RuleText(["RÈGLE 2", "LA LUMIÈRE PUISSANTE", "LES AVEUGLE ET LES BLOQUE"], "#ff1c1c", 2.2, 1.25); this.rule2.mesh.position.set(202, 1.65, 9.18); this.rule2.mesh.rotation.y = Math.PI; R.add(this.rule2.mesh);
     // couloir noir (x ∈ [206 ; 242]) : sortie de secours au bout
     wallZ(beton, 4.6, 206, 242, HC, 1); wallZ(beton, 8.2, 206, 242, HC, -1); wallX(beton, 242, 4.6, 8.2, HC, -1);
     box(b, solid("exitdoor", "#5d6b62"), 241.9, 0, 5.6, 242, 2.2, 7.2); box(b, metal, 241.8, 1.0, 5.8, 241.9, 1.06, 7.0);
@@ -469,7 +470,7 @@ export class World {
     if (id === "04b") [0, 1, 2].forEach((n) => place({ p: [4.5 - 7.5 * u + n * 2.3, 0, 5.9 - 0.45 * n], s: { ...DOC, view: "side", j: runJ((t * 1.7 + n * 0.37) % 1), hair: ["spiky", "bun", "fringe"][n] as Perso["hair"], mask: n === 1, pants: n === 2 ? "#4e7fa8" : DOC.pants } as Perso, yaw: Math.PI }));
     // dehors : infectés qui avancent vers la police, policiers de dos / de face
     const outsideInf = (n: number, z0: number) => { for (let q = 0; q < n; q++) place({ p: [-30 + (q % 12) * 5.2 + hash(q, 9) * 2.5, 0, z0 - Math.floor(q / 12) * 3.2 - q % 3 * 1.1 - hash(q, 8) * 2 - 2.5 * u], s: { ...INF[q % 4], pose: q % 2 ? "reach" : "armsUp", step: 0 } }); };
-    const POL: [number, number, Partial<Perso>, number][] = [[-4.6, -33.6, { pose: "handMouth", expr: "worry" }, 0], [-2.9, -32.0, { pose: "reach", gun: true }, -0.62], [-1.4, -33.2, { pose: "reach", gun: true, hair: "bun", hairColor: "#a07850" }, 0],
+    const POL: [number, number, Partial<Perso>, number][] = [[-4.6, -33.6, { pose: "handMouth", expr: "shock" }, 0], [-2.9, -32.0, { pose: "reach", gun: true }, -0.62], [-1.4, -33.2, { pose: "reach", gun: true, hair: "bun", hairColor: "#a07850" }, 0],
       [0.2, -34.4, { pose: "stand", expr: "worry" }, 0], [1.6, -32.9, { pose: "armsUp", expr: "shock" }, 0], [3.4, -33.3, { pose: "reach", gun: true }, 0], [-6.2, -35.2, { pose: "run", step: 0.25, expr: "fear" }, 0], [4.9, -34.8, { pose: "stand", expr: "frown" }, 0],
       [-10.6, -34.0, { pose: "reach", gun: true }, -0.6], [-12.8, -35.0, { pose: "stand", expr: "worry", hair: "bun", hairColor: "#24201f" }, 0], [11.4, -34.6, { pose: "reach", gun: true }, 0], [13.6, -35.8, { pose: "handMouth", expr: "worry" }, 0], [19.2, -33.8, { pose: "reach", gun: true }, -0.6], [-8.4, -36.4, { pose: "run", step: 0.7, expr: "fear" }, 0]];
     {  // renfort : 21 policiers de plus en rangs derrière les voitures (35 au total), postures variées
