@@ -11,7 +11,7 @@
 - Images de référence v1 (en attente de validation) : `productions/hopital-ep01/planche_plans_v1.png` + `plans_v1/plan_*.jpg`
   (stills : `cd studio && node scripts/stills.mjs HopitalEp1 out/ref/p_ <images> 0.5`).
 - Bande son v1 : `python3 tools/hopital_mix.py` -> `productions/hopital-ep01/voix_ia/mix.wav` (+ `mix_ecoute.mp3`, stems) et `studio/public/hopital/mix.wav`.
-- **v1 rendue (2026-11-14)** : `archives_videos/hopital_ep1_v1_tiktok.mp4` + `_2K.mp4` (70,7 s). Rendu : copier `studio/src` dans `studio/out/snap_hop/src`,
+- **v2 rendue (2026-11-15)** : `archives_videos/hopital_ep1_v2_*.mp4` (rendu `studio/out/hop_v2/run.sh`). **v1 (2026-11-14)** : `archives_videos/hopital_ep1_v1_tiktok.mp4` + `_2K.mp4` (70,7 s). Rendu : copier `studio/src` dans `studio/out/snap_hop/src`,
   puis `bash studio/out/hop_v1/run.sh` (morceaux de 150 images, 4 en parallèle, ~85 min) et `bash scripts/assemble_ep.sh out/hop_v1 public/hopital/mix.wav hopital_ep1`.
   Son seul modifié : `python3 tools/hopital_mix.py` puis remux (docs/serie.md). Pantins articulés : `studio/src/videos/hopital/pantin.ts`.
 
