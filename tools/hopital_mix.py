@@ -174,7 +174,7 @@ def police_sting(t0, g=-13.0):                               # POLICE : double c
         x = _lp(2 * ((t * f) % 1) - 1 + 0.5 * (2 * ((t * f * 1.005) % 1) - 1), 700) * np.exp(-t * 3) * np.minimum(1, t / 0.02); put(sfx, x, t0 + q * 0.16, g)
 rule_sting(W(76) - 0.03); rule_sting(W(161) - 0.03)                                         # « Règle numéro 1 » / « Règle numéro 2 »
 for t_ in (S("06") + 0.1, S("13") + 0.1, S("14") + 0.05, S("18") + 0.02, S("19") + 0.05, S("24") + 0.05): infected_sting(t_)   # chaque apparition d'infectés
-girl_motif(At("16b", 0.2)); girl_motif(At("17", 0.15), -17); girl_motif(S("23") + 0.05, -18)  # la fillette : découverte, la main, son regard
+girl_motif(At("16b", 0.2))                                                                # la fillette : uniquement quand on la découvre
 # (son « police » retiré à la demande de l utilisateur)
 # souffles discrets aux coupes (sauf les inserts très courts)
 for n, _ in PLANS[1:]: k.whoosh(S(n), 0.3, 0.22)
