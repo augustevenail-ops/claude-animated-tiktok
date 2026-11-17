@@ -1,0 +1,5 @@
+Images Fish (gpt-image-2, low), lancées 2026-11-17 ~20:29 UTC, expirent ~20:44 UTC :
+mcp-media-a86cbaab328647e50132735eceabbbe8334d3192ea0713bb3580b26198a777a6  héros, face
+mcp-media-8af0b8726d56a2e54e9adb5e03fd950c3b8a11631ec6617a300ce750aee3f2a8  héros, dos 3/4
+mcp-media-f40b2a0ece708244f11d29704c67d467148b5b61759f16cd0f098a3124498b68  père, chuchotement
+Non générés (quota gratuit 3 images/jour, reset 2026-11-18 00:00 UTC) : père escorté, garde, foule des districts, dôme, centre.
