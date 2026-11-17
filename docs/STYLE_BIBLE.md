@@ -157,7 +157,7 @@ Tableau complet des timecodes : voir §6.
 - **Rythme** : phrases courtes, ruptures par des silences, révélations en fin de phrase.
 - **Dilemme final** : un choix entre deux options, adressé au spectateur.
 - **Appel à l'interaction** : demander la réponse en commentaire.
-- **Phrase de clôture** (voir contradiction §8).
+- **Phrase de clôture obligatoire** : « Abonne-toi pour la partie 2. » (décision utilisateur ; remplace « Abonne-toi pour la suite. » du script de référence).
 
 ### 5.2 À renouveler (chaque nouvelle histoire)
 - Univers, lieu, personnages, relations, règles de l'univers, obstacles, révélations, scènes, dilemme.
@@ -212,8 +212,8 @@ Notes :
 
 ## 8. Contradictions et points à valider [?]
 
-1. **Phrase finale** : la directive du script impose « Abonne-toi pour la partie 2. » ; le script de référence se termine par « Abonne-toi pour la suite. ». À trancher.
-2. **Durée cible** : 1–1 min 40 (prompt image) vs 60–90 s (CLAUDE.md projet). À trancher.
+1. ~~**Phrase finale**~~ **Résolu (décision utilisateur)** : « Abonne-toi pour la partie 2. » (voir §5.1).
+2. ~~**Durée cible**~~ **Résolu (décision utilisateur)** : 1 min à 1 min 40 pour les futures vidéos de cette série. Conflit restant avec CLAUDE.md du dépôt de travail (60–90 s) : à aligner dans CLAUDE.md.
 3. **Timecodes xlsx** : colonne MM:SS:CC invalide ; seul « Temps (secondes) » est fiable.
 4. **Planches 2-27** : non ouvertes. Analyse de mouvement (0,4 s d'intervalle) à compléter.
 5. **Mouvement caméra** : estimé sur images fixes. Vérifier sur la vidéo originale (non fournie dans le dépôt).
@@ -229,12 +229,12 @@ Notes :
 - [ ] Univers et règles **entièrement nouveaux** ; aucune reprise de noms, répliques, scènes ou visuels de la référence.
 - [ ] Règles révélées une à une, numérotées, avec enjeu croissant.
 - [ ] Dilemme final entre deux options, invitation à répondre en commentaire.
-- [ ] Clôture conforme à la phrase validée (§8.1).
+- [ ] Dernière phrase exacte : « Abonne-toi pour la partie 2. »
 - [ ] HUD fixe, sous-titres blancs avec mot actif orange sable, textes diégétiques autorisés.
 - [ ] Palette : sombre désaturée + accents saturés (rouge, orange, teal).
 - [ ] Lumière motivée visible dans chaque plan.
 - [ ] Début de plan : zoom arrière ~1,2 s si le sujet s'y prête ; fin : volet noir haut/bas ~0,10 s.
-- [ ] Rythme moyen ~2,3 s par plan ; 41 plans pour ~96 s en référence (à adapter à la durée cible).
+- [ ] Durée finale entre 1 min 00 et 1 min 40 ; rythme moyen ~2,3 s par plan en référence (à adapter à la durée cible).
 - [ ] Timecodes mot par mot verrouillés avant le son ; pas de timecode inventé.
 - [ ] Format de production : 1080 × 1920, 30 fps (CLAUDE.md).
 
@@ -251,3 +251,4 @@ Notes :
 ## 11. Journal des mises à jour
 
 - 2026-11-17 : création de ce fichier à partir du dépôt `INSTRUCTIONS-VIDEO-STYLE` (commit `5113b0c`). Planches 2-27 non analysées. Mettre à jour dès qu'une information validée arrive.
+- 2026-11-17 : validé par l'utilisateur — clôture « Abonne-toi pour la partie 2. » ; durée 1 min à 1 min 40 (§8 points 1-2 résolus).
