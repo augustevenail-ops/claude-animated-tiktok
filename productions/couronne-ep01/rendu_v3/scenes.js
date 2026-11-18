@@ -193,8 +193,8 @@ S.w1d_vue_aerienne_tags = g => {                     // vue du dôme de haut, é
   g.beginPath(); for (let i = 0; i < 6; i++) { const a = Math.PI / 3 * i + Math.PI / 6, p = P(230, a); i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1]); } g.closePath(); g.fillStyle = "rgba(60,52,30,0.95)"; g.fill(); g.strokeStyle = rgba(GOLD, 0.95); g.lineWidth = 4; g.stroke();
   layer(g, q => { glow(q, cx, cy, 240, GOLD, 0.5); for (let i = 0; i < 12; i++) { const p = P(140 * rnd(i * 5), rnd(i * 9) * 6.28), h = 60 + rnd(i) * 120; q.fillStyle = rgba(GOLD, 0.9); q.fillRect(p[0] - 9, p[1] - h, 18, h); } }, { op: "screen" });
   layer(g, q => { q.strokeStyle = rgba(TEAL, 0.8); q.lineWidth = 14; q.beginPath(); for (let t = 0; t <= Math.PI; t += 0.05) { const p = P(620 * Math.cos(t), 0, 620 * Math.sin(t) * 0.95); t ? q.lineTo(p[0], p[1]) : q.moveTo(p[0], p[1]); } q.stroke(); }, { blur: 22, op: "screen", alpha: 0.6 });
-  pill(g, "LES RICHES", cx - 40, cy - 250, [cx - 10, cy - 60]);
-  pill(g, "LE CENTRE", cx + 150, cy - 40, [cx + 60, cy - 10]);
+  pill(g, "LES RICHES", cx + 210, cy - 250, [cx + 90, cy - 90]);
+  pill(g, "LE CENTRE", cx - 220, cy - 150, [cx - 110, cy - 50]);
   [["NORD", -Math.PI / 2], ["NORD-EST", -Math.PI / 6], ["SUD-EST", Math.PI / 6], ["SUD", Math.PI / 2], ["SUD-OUEST", 5 * Math.PI / 6], ["OUEST", 7 * Math.PI / 6]].forEach(([t, a]) => { const p = P(420, a); pill(g, t, p[0], p[1]); });
   hud(g, { alpha: 0.5 }); finish(g, { bloom: 0.4, grade: ["#0a2a2c", "#f3d28a", 0.15] }); caption(g, ["LES", "RICHES", "AU", "CENTRE"], 1);
 };
@@ -318,5 +318,12 @@ S.fin_carte = g => {                                // carte de fin : dôme fila
   caption(g, ["ABONNE-TOI"], 0, 1242);
   finish(g, { bloom: 0.35, grade: ["#06202a", "#f3e2b0", 0.12] });
 };
+// ---------- planche de validation : plan 1 (noir), plan 11 (père sans feuille) ----------
+S.p01_noir_imagine = g => { g.fillStyle = "#000"; g.fillRect(0, 0, W, H); caption(g, ["IMAGINE,"], 0); };
+S.p11_pere_buste_sans_feuille = g => { sky(g, [[0, "#0e1418"], [0.5, "#2a3640"], [1, "#0b0e10"]]);
+  layer(g, q => { q.fillStyle = "rgba(170,200,215,0.55)"; q.fillRect(620, 320, 340, 620); q.fillStyle = "#0c1013"; q.fillRect(780, 320, 14, 620); q.fillRect(620, 620, 340, 14); }, { blur: 14 });
+  rays(g, 790, 600, 2.35, 0.5, 1300, "#bcd4e0", 0.14);
+  actor(g, 540, 2650, 2.3, { ...PERE, look: -0.08, arms: [[-1, 0], [1, -20]] }, { rim: "#cfe3ee", rimAng: -0.7, key: "#dfe9ef", shadow: false });
+  dust(g, 70, "#dfeef5", 200, 1700, 31, 2.5); hud(g, { clock: "07:02" }); finish(g, { grade: ["#0a1a24", "#e6f0f5", 0.16] }); caption(g, ["TON", "PÈRE", "EST", "INGÉNIEUR."], 1); };
 window.SCENES = Object.fromEntries(Object.entries(S).filter(([k]) => !k.endsWith("_bg")));
 window.SCENES_ALL = S;
