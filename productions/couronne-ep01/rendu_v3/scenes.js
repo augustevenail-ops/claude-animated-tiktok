@@ -772,8 +772,8 @@ S.p02h_buste_vivant = g => {                              // image 2 v13
   crowdStanding(g);
   actor(g, 790, 2650, 1.8, { ...PERE, look: -0.12, arms: [[-1, 10], [1, 10]] }, { rim: "#cfe3ee", rimAng: -1.2, rimW: 7, key: "#dfe9ef", shadow: false });   // père, côté droit
   actor(g, 290, 2650, 1.8, { ...HERO, look: 0.0, arms: [[-1, 10], [1, 10]] }, { rim: TEAL, rimAng: -1.57, rimW: 7, key: "#ffd9a0", shadow: false });
-  paperSheet(g, 540, 1400, 1.0, 0.35, 4);
-  paperSheet(g, 540, 1400, 1.0, 0.35, 0);
+  pigeon(g, 540, 1400, 2.8, 1.2, 3);
+  pigeon(g, 540, 1400, 2.8, 1.2, 0);
   hud(g); finish(g, { bloom: 0.35, grade: ["#06202a", "#ffd9a0", 0.16] }); caption(g, ["SOUS", "UN", "DÔME"], 1);
 };
 S.p02i_sol_vivant = g => {                                // image 3 v13
@@ -785,7 +785,7 @@ S.p02i_sol_vivant = g => {                                // image 3 v13
   actor(g, 790, 2650, 1.8, { ...PERE, look: -0.12, arms: [[-1, 10], [1, 10]] }, { rim: "#cfe3ee", rimAng: -1.2, rimW: 7, key: "#dfe9ef", shadow: false });   // père, côté droit
   actor(g, 290, 2650, 1.8, { ...HERO, look: 0.0, arms: [[-1, 10], [1, 10]] }, { rim: TEAL, rimAng: -1.57, rimW: 7, key: "#ffd9a0", shadow: false });
   g.fillStyle = "rgba(0,0,0,0.4)"; g.beginPath(); g.ellipse(880, 1852, 90, 12, 0, 0, 7); g.fill();
-  paperSheet(g, 880, 1842, 0.9, 1.45, 0);
+  pigeon(g, 560, 1860, 2.0, 1.45, 0);
   hud(g); finish(g, { bloom: 0.35, grade: ["#06202a", "#ffd9a0", 0.16] }); caption(g, ["SOUS", "UN", "DÔME"], 1);
 };
 // ---------- v17 : plan 2 — ouverture sur l'objet (feuille pliée qui tombe, gros plan, traînée de mouvement) ----------
@@ -795,6 +795,26 @@ S.p02j_objet_debut = g => {
   paperSheet(g, 540, 560, 2.4, 0.3, 10);
   paperSheet(g, 540, 700, 2.4, 0.3, 4);
   paperSheet(g, 540, 820, 2.4, 0.3, 0);
+  hud(g); finish(g, { bloom: 0.35, grade: ["#06202a", "#ffd9a0", 0.16] }); caption(g, ["SOUS", "UN", "DÔME"], 1);
+};
+// ---------- v18 : retour de l'oiseau, en contraste (plumage crème, bec et pattes orangés), plus gros ----------
+function pigeon(g, x, y, s, rot, blur = 0) {         // oiseau mort : plumage crème et gris, bec et pattes orange
+  g.save(); g.translate(x, y); g.rotate(rot); g.scale(s, s); if (blur) g.filter = `blur(${blur}px)`;
+  g.fillStyle = "#ece4d2"; g.beginPath(); g.ellipse(0, 0, 58, 28, 0, 0, 7); g.fill(); g.strokeStyle = INK; g.lineWidth = 3; g.stroke();   // corps
+  g.fillStyle = "#c8bfa8"; g.beginPath(); g.ellipse(-6, -8, 40, 12, 0.1, 0, 7); g.fill();                                              // dos ombré
+  g.fillStyle = "#4a4d52"; g.beginPath(); g.moveTo(-10, -4); g.lineTo(-78, -62); g.lineTo(-58, 4); g.closePath(); g.fill(); g.stroke();  // aile haute grise
+  g.beginPath(); g.moveTo(-10, 6); g.lineTo(-72, 50); g.lineTo(-40, 14); g.closePath(); g.fill(); g.stroke();                       // aile basse
+  g.fillStyle = "#ece4d2"; g.beginPath(); g.arc(56, -6, 18, 0, 7); g.fill(); g.stroke();                                              // tête
+  g.fillStyle = "#e0701e"; g.beginPath(); g.moveTo(70, -8); g.lineTo(92, 0); g.lineTo(70, 4); g.closePath(); g.fill();                  // bec orange
+  g.strokeStyle = "#17130e"; g.lineWidth = 3; g.beginPath(); g.moveTo(60, -4); g.lineTo(68, -2); g.moveTo(60, -12); g.lineTo(68, -14); g.stroke();   // œil fermé
+  g.strokeStyle = "#e0701e"; g.lineWidth = 5; g.beginPath(); g.moveTo(-14, 24); g.lineTo(-22, 46); g.moveTo(-2, 24); g.lineTo(-8, 48); g.stroke();   // pattes orange
+  g.restore();
+}
+S.p02k_oiseau_debut = g => {                         // ouverture : oiseau énorme qui tombe, traînée verticale
+  domeNight(g);
+  for (let i = 0; i < 50; i++) { g.strokeStyle = rgba("#cfe9e6", 0.05 + rnd(i) * 0.1); g.lineWidth = 2 + rnd(i * 3) * 3; const x = rnd(i * 7) * W; g.beginPath(); g.moveTo(x, 0); g.lineTo(x + 4, H); g.stroke(); }
+  pigeon(g, 540, 640, 2.6, 0.5, 10);
+  pigeon(g, 540, 780, 2.6, 0.5, 0);
   hud(g); finish(g, { bloom: 0.35, grade: ["#06202a", "#ffd9a0", 0.16] }); caption(g, ["SOUS", "UN", "DÔME"], 1);
 };
 window.SCENES = Object.fromEntries(Object.entries(S).filter(([k]) => !k.endsWith("_bg")));
