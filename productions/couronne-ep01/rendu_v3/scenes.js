@@ -756,16 +756,24 @@ function lifeDetails(g, seed) {
   g.fillStyle = "rgba(255,200,120,0.25)"; g.beginPath(); g.ellipse(170, 1790, 22, 40, 0, 0, 7); g.fill();           // reflet tasse fumante
   dust(g, 80, "#cfe9e6", 0, 1700, seed + 7, 2.2);
 }
+function paperSheet(g, x, y, s, rot, blur = 0) {       // feuille pliée du père, tombe en tournant
+  g.save(); g.translate(x, y); g.rotate(rot); g.scale(s, s); if (blur) g.filter = `blur(${blur}px)`;
+  g.fillStyle = "#e9dfc6"; g.strokeStyle = INK; g.lineWidth = 4; g.beginPath(); g.rect(-62, -84, 124, 168); g.fill(); g.stroke();
+  g.fillStyle = "#c9bc9c"; g.beginPath(); g.moveTo(62, -84); g.lineTo(62, -54); g.lineTo(32, -84); g.closePath(); g.fill();   // coin replié
+  g.strokeStyle = "rgba(90,80,60,0.5)"; g.lineWidth = 2; g.beginPath(); g.moveTo(-62, 0); g.lineTo(62, 0); g.stroke();   // pli central
+  for (let k = 0; k < 6; k++) { g.beginPath(); g.moveTo(-40, -50 + k * 16); g.lineTo(40 - (k % 2) * 20, -50 + k * 16); g.stroke(); }
+  g.restore();
+}
 S.p02h_buste_vivant = g => {                              // image 2 v13
   sky(g, [[0, "#070b0d"], [0.6, "#0f1a1e"], [1, "#040506"]]);
   lifeDetails(g, 101);
   holoDome(g, 101);
   layer(g, q => { q.fillStyle = "#1b1510"; q.fillRect(0, 1700, W, H - 1700); }, { blur: 2 });
   crowdStanding(g);
-  actor(g, 960, 2700, 2.0, { ...PERE, look: -0.12, arms: [[-1, 10], [1, 10]] }, { rim: "#cfe3ee", rimAng: -1.2, rimW: 7, key: "#dfe9ef", shadow: false });   // père, côté droit
-  actor(g, 540, 2650, 2.3, { ...HERO, look: 0.0, arms: [[-1, 10], [1, 10]] }, { rim: TEAL, rimAng: -1.57, rimW: 7, key: "#ffd9a0", shadow: false });
-  deadBird(g, 540, 1420, 1.8, 1.2, 2.5);
-  deadBird(g, 540, 1420, 1.8, 1.2);
+  actor(g, 780, 2680, 1.7, { ...PERE, look: -0.12, arms: [[-1, 10], [1, 10]] }, { rim: "#cfe3ee", rimAng: -1.2, rimW: 7, key: "#dfe9ef", shadow: false });   // père, côté droit
+  actor(g, 310, 2650, 2.0, { ...HERO, look: 0.0, arms: [[-1, 10], [1, 10]] }, { rim: TEAL, rimAng: -1.57, rimW: 7, key: "#ffd9a0", shadow: false });
+  paperSheet(g, 540, 1400, 1.0, 0.35, 4);
+  paperSheet(g, 540, 1400, 1.0, 0.35, 0);
   hud(g); finish(g, { bloom: 0.35, grade: ["#06202a", "#ffd9a0", 0.16] }); caption(g, ["SOUS", "UN", "DÔME"], 1);
 };
 S.p02i_sol_vivant = g => {                                // image 3 v13
@@ -774,10 +782,10 @@ S.p02i_sol_vivant = g => {                                // image 3 v13
   holoDome(g, 103);
   layer(g, q => { q.fillStyle = "#1b1510"; q.fillRect(0, 1700, W, H - 1700); }, { blur: 2 });
   crowdStanding(g);
-  actor(g, 960, 2700, 2.0, { ...PERE, look: -0.12, arms: [[-1, 10], [1, 10]] }, { rim: "#cfe3ee", rimAng: -1.2, rimW: 7, key: "#dfe9ef", shadow: false });   // père, côté droit
-  actor(g, 540, 2650, 2.3, { ...HERO, look: 0.0, arms: [[-1, 10], [1, 10]] }, { rim: TEAL, rimAng: -1.57, rimW: 7, key: "#ffd9a0", shadow: false });
-  g.fillStyle = "rgba(0,0,0,0.45)"; g.beginPath(); g.ellipse(930, 1850, 120, 16, 0, 0, 7); g.fill();
-  deadBird(g, 930, 1838, 1.3, 1.5);
+  actor(g, 780, 2680, 1.7, { ...PERE, look: -0.12, arms: [[-1, 10], [1, 10]] }, { rim: "#cfe3ee", rimAng: -1.2, rimW: 7, key: "#dfe9ef", shadow: false });   // père, côté droit
+  actor(g, 310, 2650, 2.0, { ...HERO, look: 0.0, arms: [[-1, 10], [1, 10]] }, { rim: TEAL, rimAng: -1.57, rimW: 7, key: "#ffd9a0", shadow: false });
+  g.fillStyle = "rgba(0,0,0,0.4)"; g.beginPath(); g.ellipse(880, 1852, 90, 12, 0, 0, 7); g.fill();
+  paperSheet(g, 880, 1842, 0.9, 1.45, 0);
   hud(g); finish(g, { bloom: 0.35, grade: ["#06202a", "#ffd9a0", 0.16] }); caption(g, ["SOUS", "UN", "DÔME"], 1);
 };
 window.SCENES = Object.fromEntries(Object.entries(S).filter(([k]) => !k.endsWith("_bg")));
