@@ -325,5 +325,90 @@ S.p11_pere_buste_sans_feuille = g => { sky(g, [[0, "#0e1418"], [0.5, "#2a3640"],
   rays(g, 790, 600, 2.35, 0.5, 1300, "#bcd4e0", 0.14);
   actor(g, 540, 2650, 2.3, { ...PERE, look: -0.08, arms: [[-1, 0], [1, -20]] }, { rim: "#cfe3ee", rimAng: -0.7, key: "#dfe9ef", shadow: false });
   dust(g, 70, "#dfeef5", 200, 1700, 31, 2.5); hud(g, { clock: "07:02" }); finish(g, { grade: ["#0a1a24", "#e6f0f5", 0.16] }); caption(g, ["TON", "PÈRE", "EST", "INGÉNIEUR."], 1); };
+// ---------- v5 : retouches après revue de la planche (clés p02, p08, p09, p13, p19, p20, p21 ; anciennes clés conservées) ----------
+const stencil = (g, lines, x, y, col, glowCol) => {   // texte peint sur un mur (bombe), légère dérive de perspective
+  g.save(); g.setTransform(1, 0, -0.10, 1, 0, 0);
+  lines.forEach(([t, font, dy]) => { g.font = font; g.textAlign = "center"; g.fillStyle = rgba(glowCol, 0.45); g.filter = "blur(6px)"; g.fillText(t, x, y + dy); g.filter = "none"; g.fillStyle = col; g.fillText(t, x, y + dy); });
+  g.restore(); g.textAlign = "left";
+};
+S.p02_boussole_dome = g => {                         // plan 2 : le dôme visible, la boussole au premier plan, aiguille affolée
+  sky(g, [[0, "#070b0d"], [0.6, "#101a1e"], [1, "#050607"]]);
+  domeBarrier(g, 760, 1100, 700, 0.9);
+  layer(g, q => { q.fillStyle = "#1b1510"; q.fillRect(0, 1240, W, H - 1240); }, { blur: 2 });
+  g.beginPath(); g.ellipse(540, 1560, 420, 60, 0, 0, 7); g.fillStyle = "rgba(0,0,0,0.5)"; g.fill();
+  const cx = 540, cy = 1420, R = 250;
+  g.beginPath(); g.arc(cx, cy, R, 0, 7); const bz = g.createRadialGradient(cx - 80, cy - 80, 40, cx, cy, R); bz.addColorStop(0, "#d6d9dd"); bz.addColorStop(0.9, "#5d646b"); bz.addColorStop(1, "#2a2e33"); g.fillStyle = bz; g.fill(); outline(g, 1.2); g.stroke();
+  g.beginPath(); g.arc(cx, cy, R - 26, 0, 7); g.fillStyle = "#e7f2ef"; g.fill();
+  const na = 0.9 + Math.sin(2.7) * 0.25;                 // aiguille qui tremble
+  g.save(); g.translate(cx, cy); g.rotate(na); g.fillStyle = "#c83a2c"; g.beginPath(); g.moveTo(0, -180); g.lineTo(26, 0); g.lineTo(0, 14); g.closePath(); g.fill();
+  g.fillStyle = "#e8e4dc"; g.beginPath(); g.moveTo(0, 180); g.lineTo(26, 0); g.lineTo(0, 14); g.closePath(); g.fill(); g.restore();
+  g.beginPath(); g.arc(cx, cy, 18, 0, 7); g.fillStyle = "#1a1d20"; g.fill();
+  g.font = "900 40px Montserrat"; g.fillStyle = "#2b2f33"; g.textAlign = "center"; ["N", "E", "S", "O"].forEach((t, i) => { const a = -Math.PI / 2 + i * Math.PI / 2; g.fillText(t, cx + Math.cos(a) * 205, cy + Math.sin(a) * 205 + 14); }); g.textAlign = "left";
+  glow(g, cx, cy, 300, TEAL, 0.25);
+  dust(g, 60, "#cfe9e6", 300, 1500, 71, 2.4);
+  hud(g); finish(g, { bloom: 0.4, grade: ["#06202a", "#ffd9a0", 0.16] }); caption(g, ["SOUS", "UN", "DÔME"], 1);
+};
+S.p08_vue_aerienne = g => {                          // plan 8 : seulement CENTRE et DISTRICTS
+  sky(g, [[0, "#05080b"], [0.5, "#0c151a"], [1, "#06090b"]]);
+  const cx = 540, cy = 1000, P = (r, a, h = 0) => [cx + r * Math.cos(a), cy + r * Math.sin(a) * 0.4 - h];
+  const ring = (r, col, lw, fill) => { g.beginPath(); for (let i = 0; i <= 64; i++) { const p = P(r, i / 64 * 6.2832); i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1]); } if (fill) { g.fillStyle = fill; g.fill(); } g.strokeStyle = col; g.lineWidth = lw; g.stroke(); };
+  ring(620, rgba(TEAL, 0.7), 3, "rgba(14,24,28,0.92)");
+  for (let i = 0; i < 1400; i++) { const r = 250 + rnd(i) * 360, a = rnd(i * 3) * 6.2832, p = P(r, a); g.fillStyle = rgba(AMBER, 0.2 + rnd(i * 7) * 0.5); g.fillRect(p[0], p[1], 2.2, 2.2); }
+  g.beginPath(); for (let i = 0; i < 6; i++) { const a = Math.PI / 3 * i + Math.PI / 6, p = P(230, a); i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1]); } g.closePath(); g.fillStyle = "rgba(60,52,30,0.95)"; g.fill(); g.strokeStyle = rgba(GOLD, 0.95); g.lineWidth = 4; g.stroke();
+  layer(g, q => { glow(q, cx, cy, 240, GOLD, 0.5); for (let i = 0; i < 12; i++) { const p = P(140 * rnd(i * 5), rnd(i * 9) * 6.28), h = 60 + rnd(i) * 120; q.fillStyle = rgba(GOLD, 0.9); q.fillRect(p[0] - 9, p[1] - h, 18, h); } }, { op: "screen" });
+  layer(g, q => { q.strokeStyle = rgba(TEAL, 0.8); q.lineWidth = 14; q.beginPath(); for (let t = 0; t <= Math.PI; t += 0.05) { const p = P(620 * Math.cos(t), 0, 620 * Math.sin(t) * 0.95); t ? q.lineTo(p[0], p[1]) : q.moveTo(p[0], p[1]); } q.stroke(); }, { blur: 22, op: "screen", alpha: 0.6 });
+  pill(g, "LE CENTRE", cx - 220, cy - 150, [cx - 110, cy - 50]);
+  const d = P(420, Math.PI / 2); pill(g, "LES DISTRICTS", d[0], d[1]);
+  hud(g, { alpha: 0.5 }); finish(g, { bloom: 0.4, grade: ["#0a2a2c", "#f3d28a", 0.15] }); caption(g, ["LE", "CENTRE,"], 0);
+};
+S.p09_regle_1_mur = g => {                           // plan 9 : la règle peinte sur le mur qui borde le dôme
+  concrete(g, "#3a342c", [540, 700, 900, "#f0d9a6"], 3);
+  layer(g, q => { q.fillStyle = "#050607"; q.fillRect(0, 1480, W, H - 1480); }, { blur: 0 });
+  glow(g, 540, 1180, 700, TEAL, 0.25);
+  g.fillStyle = rgba(TEAL, 0.9); g.fillRect(0, 1150, W, 8); g.fillStyle = rgba(TEAL, 0.25); g.fillRect(0, 1130, W, 48);
+  stencil(g, [["RÈGLE 1", "600 170px Oswald", 0]], 540, 720, "#c83a2c", "#ff8a78");
+  stencil(g, [["NE SORS JAMAIS", "900 80px Montserrat", 0], ["DU DÔME.", "900 80px Montserrat", 96]], 540, 860, "#e9dccb", "#ffd9a0");
+  g.fillStyle = "rgba(0,0,0,0.25)"; for (let i = 0; i < 6; i++) g.fillRect(rnd(i * 13) * W, 200 + rnd(i * 7) * 1000, 3, 3);
+  hud(g); finish(g, { bloom: 0.3, grade: ["#071a1a", "#f0e6a0", 0.16] }); caption(g, ["NE", "SORS", "JAMAIS"], 1);
+};
+S.p13_heros_matin = g => {                           // plan 13 : le héros marche seul vers le centre, matin brumeux
+  street(g, { centre: true });
+  haze(g, 1000, 1500, "#c9c3b0", 0.25);
+  actor(g, 540, 1730, 1.0, { ...HERO, side: 1, look: 0.2 }, { rim: GOLD, rimAng: -1.7, key: "#ffe6b0" });
+  hud(g, { clock: "07:05" }); finish(g, { bloom: 0.4, grade: ["#06202a", "#ffd78a", 0.16] }); caption(g, ["LE", "LENDEMAIN", "MATIN,"], 1);
+};
+S.p19_centre_lointain = g => {                       // plan 19 : vue basse vers le centre, tours dorées au bout de la rue
+  sky(g, [[0, "#0a0c0e"], [0.45, "#3a3222"], [0.62, "#6b5530"], [1, "#0a0b0c"]]);
+  layer(g, q => { glow(q, 540, 900, 700, GOLD, 0.45); towers(q, 1020, 540, 760, 9, { k: 0.9 }); }, { blur: 3 });
+  haze(g, 880, 1150, "#c8a868", 0.2);
+  g.fillStyle = "#16130e"; g.beginPath(); g.moveTo(0, H); g.lineTo(W, H); g.lineTo(600, 1020); g.lineTo(480, 1020); g.closePath(); g.fill();   // route qui fuit vers le centre
+  for (let i = 0; i < 6; i++) { const t = i / 6, y = 1020 + t * t * 900; lamp(g, 540 + (i % 2 ? 40 : -40) * (1 - t), y, "#ffd78a", 0.25 + t * 0.7); }
+  dust(g, 110, "#ffe9b8", 500, 1400, 73, 2.2);
+  hud(g, { zone: "LE CENTRE" }); finish(g, { bloom: 0.45, grade: ["#08161c", "#ffd78a", 0.18] }); caption(g, ["LES", "PLUS", "RICHES."], 1);
+};
+S.p20_drone_porte = g => {                           // plan 20 : plan drone au-dessus du mur du centre, la porte se referme
+  sky(g, [[0, "#06080a"], [1, "#050607"]]);
+  const cx = 540, cy = 1000, P = (r, a) => [cx + r * Math.cos(a), cy + r * Math.sin(a) * 0.62];
+  g.beginPath(); for (let i = 0; i <= 72; i++) { const p = P(560, i / 72 * 6.2832); i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1]); } g.fillStyle = "#14130f"; g.fill();
+  g.beginPath(); for (let i = 0; i <= 72; i++) { const p = P(520, i / 72 * 6.2832); i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1]); } g.fillStyle = "#3a3222"; g.fill();
+  layer(g, q => { glow(q, cx, cy, 380, GOLD, 0.55); for (let i = 0; i < 40; i++) { const a = rnd(i) * 6.28, r = 120 + rnd(i * 3) * 260, p = P(r, a), h = 40 + rnd(i * 5) * 120; q.fillStyle = rgba(GOLD, 0.9); q.fillRect(p[0] - 10, p[1] - 10, 20, 20 + h * 0.3); } }, { op: "screen" });
+  // porte au sud du mur : deux vantaux qui se referment, lumière qui se coupe
+  const gate = P(520, Math.PI / 2), gap = 10;
+  g.fillStyle = "#050506"; g.fillRect(gate[0] - 60, gate[1] - 46, 120, 92);
+  g.fillStyle = "#1b1c1e"; g.fillRect(gate[0] - 60, gate[1] - 46, 60 - gap, 92); g.fillRect(gate[0] + gap, gate[1] - 46, 60 - gap, 92);
+  g.fillStyle = rgba(GOLD, 0.95); g.fillRect(gate[0] - gap / 2, gate[1] - 40, gap, 80);
+  glow(g, gate[0], gate[1] + 30, 200, GOLD, 0.6);
+  layer(g, q => { q.fillStyle = "rgba(30,36,40,0.6)"; q.fillRect(0, 0, W, 240); }, { blur: 12 });
+  hud(g, { clock: "08:14", zone: "LE CENTRE" }); finish(g, { bloom: 0.35, grade: ["#08161c", "#ffd78a", 0.18] }); caption(g, ["N'EN", "REVIENT."], 1);
+};
+S.p21_regle_2_porte = g => {                         // plan 21 : la règle gravée dans la pierre de l'arche de la porte
+  concrete(g, "#2a2620", [540, 760, 900, "#f0c878"], 9);
+  g.beginPath(); g.moveTo(180, H); g.lineTo(180, 900); g.quadraticCurveTo(180, 560, 540, 560); g.quadraticCurveTo(900, 560, 900, 900); g.lineTo(900, H); g.closePath(); g.fillStyle = "#0b0c0d"; g.fill();
+  g.strokeStyle = rgba(GOLD, 0.7); g.lineWidth = 8; g.stroke();
+  glow(g, 540, 1100, 500, GOLD, 0.35);
+  stencil(g, [["RÈGLE 2", "600 150px Oswald", 0]], 540, 720, "#f2c46a", "#ffd78a");
+  stencil(g, [["TU NE VAS JAMAIS", "900 70px Montserrat", 0], ["AU CENTRE.", "900 70px Montserrat", 90]], 540, 880, "#f3e2b0", "#ffd78a");
+  hud(g); finish(g, { bloom: 0.35, grade: ["#1a1206", "#ffd78a", 0.18] }); caption(g, ["UN", "MUR", "LE", "SÉPARE"], 1);
+};
 window.SCENES = Object.fromEntries(Object.entries(S).filter(([k]) => !k.endsWith("_bg")));
 window.SCENES_ALL = S;
