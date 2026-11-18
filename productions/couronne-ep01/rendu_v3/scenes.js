@@ -788,5 +788,14 @@ S.p02i_sol_vivant = g => {                                // image 3 v13
   paperSheet(g, 880, 1842, 0.9, 1.45, 0);
   hud(g); finish(g, { bloom: 0.35, grade: ["#06202a", "#ffd9a0", 0.16] }); caption(g, ["SOUS", "UN", "DÔME"], 1);
 };
+// ---------- v17 : plan 2 — ouverture sur l'objet (feuille pliée qui tombe, gros plan, traînée de mouvement) ----------
+S.p02j_objet_debut = g => {
+  domeNight(g);
+  for (let i = 0; i < 50; i++) { g.strokeStyle = rgba("#cfe9e6", 0.05 + rnd(i) * 0.1); g.lineWidth = 2 + rnd(i * 3) * 3; const x = rnd(i * 7) * W; g.beginPath(); g.moveTo(x, 0); g.lineTo(x + 4, H); g.stroke(); }   // chute : traînées verticales
+  paperSheet(g, 540, 560, 2.4, 0.3, 10);
+  paperSheet(g, 540, 700, 2.4, 0.3, 4);
+  paperSheet(g, 540, 820, 2.4, 0.3, 0);
+  hud(g); finish(g, { bloom: 0.35, grade: ["#06202a", "#ffd9a0", 0.16] }); caption(g, ["SOUS", "UN", "DÔME"], 1);
+};
 window.SCENES = Object.fromEntries(Object.entries(S).filter(([k]) => !k.endsWith("_bg")));
 window.SCENES_ALL = S;
