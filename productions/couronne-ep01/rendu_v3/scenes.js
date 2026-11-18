@@ -772,16 +772,17 @@ S.p02h_buste_vivant = g => {                              // image 2 v13
   crowdStanding(g);
   actor(g, 790, 2650, 1.8, { ...PERE, body: "#5d6166", bodyDark: "#383b40", ring: "#5d6166", ringW: 80, torsoW: 165, look: -0.12, arms: [[-1, 10], [1, 10]] }, { rim: "#cfe3ee", rimAng: -1.2, rimW: 7, key: "#dfe9ef", shadow: false });   // père, côté droit
   actor(g, 290, 2650, 1.8, { ...HERO, body: "#5d6166", bodyDark: "#383b40", ring: "#5d6166", ringW: 80, strings: false, torsoW: 165, look: 0.0, arms: [[-1, 10], [1, 10]] }, { rim: TEAL, rimAng: -1.57, rimW: 7, key: "#ffd9a0", shadow: false });
-  // bonnet rouge en maille : points en V sur la calotte, bord côtelé dentelé, contour noir
-  g.save(); g.beginPath(); g.ellipse(290, 1362, 172, 160, 0, Math.PI, 2 * Math.PI); g.lineTo(462, 1372); g.lineTo(118, 1372); g.closePath();
-  g.fillStyle = "#c4342d"; g.fill(); g.clip();
-  g.strokeStyle = "rgba(96,20,18,0.6)"; g.lineWidth = 3; g.lineCap = "round";
-  for (let r = 0; r < 12; r++) { const y = 1190 + r * 16; for (let c = -1; c < 19; c++) { const x = 100 + c * 20 + (r % 2) * 10;
-    g.beginPath(); g.moveTo(x - 7, y - 4); g.lineTo(x, y + 4); g.lineTo(x + 7, y - 4); g.stroke(); } }
+  // bonnet rouge replié : calotte à côtes qui convergent vers le haut, revers replié en bas (côtes plus foncées)
+  const dome = () => { g.beginPath(); g.ellipse(290, 1362, 172, 160, 0, Math.PI, 2 * Math.PI); g.lineTo(462, 1372); g.lineTo(118, 1372); g.closePath(); };
+  g.save(); dome(); g.fillStyle = "#c4342d"; g.fill(); g.clip();
+  g.strokeStyle = "rgba(110,24,20,0.9)"; g.lineWidth = 4; g.lineCap = "round";
+  for (let k = 0; k <= 12; k++) { const x0 = 118 + k * 28; g.beginPath(); g.moveTo(x0, 1380); g.quadraticCurveTo(x0 + (290 - x0) * 0.4, 1260, 290 + (x0 - 290) * 0.08, 1180); g.stroke(); }   // côtes qui rejoignent le sommet
+  g.fillStyle = "#9c2420"; g.fillRect(100, 1318, 380, 60);                                               // revers replié
+  g.strokeStyle = "rgba(70,14,12,0.9)"; g.lineWidth = 3;
+  for (let k = 0; k <= 16; k++) { const x0 = 118 + k * 22; g.beginPath(); g.moveTo(x0, 1318); g.lineTo(x0, 1378); g.stroke(); }   // côtes du revers
   g.restore();
-  g.strokeStyle = "#050405"; g.lineWidth = 7; g.beginPath(); g.ellipse(290, 1362, 172, 160, 0, Math.PI, 2 * Math.PI); g.stroke();
-  g.fillStyle = "#8e2420"; g.strokeStyle = "#050405"; g.lineWidth = 5;
-  for (let k = 0; k < 8; k++) { g.beginPath(); g.arc(137 + k * 43.5, 1372, 23, 0, Math.PI); g.closePath(); g.fill(); g.stroke(); }   // bord côtelé dentelé
+  g.strokeStyle = "#050405"; g.lineWidth = 7; dome(); g.stroke();
+  g.strokeStyle = "rgba(70,14,12,0.9)"; g.lineWidth = 4; g.beginPath(); g.moveTo(118, 1318); g.lineTo(462, 1318); g.stroke();   // pli du revers
   pigeon(g, 540, 1400, 2.8, 1.2, 3);
   pigeon(g, 540, 1400, 2.8, 1.2, 0);
   hud(g); finish(g, { bloom: 0.08, grade: ["#000000", "#ffd9a0", 0.03] }); caption(g, ["SOUS", "UN", "DÔME"], 1);
@@ -795,16 +796,17 @@ S.p02i_sol_vivant = g => {                                // image 3 v13
   actor(g, 790, 2650, 1.8, { ...PERE, body: "#5d6166", bodyDark: "#383b40", ring: "#5d6166", ringW: 80, torsoW: 165, look: -0.12, arms: [[-1, 10], [1, 10]] }, { rim: "#cfe3ee", rimAng: -1.2, rimW: 7, key: "#dfe9ef", shadow: false });   // père, côté droit
   actor(g, 290, 2650, 1.8, { ...HERO, body: "#5d6166", bodyDark: "#383b40", ring: "#5d6166", ringW: 80, strings: false, torsoW: 165, look: 0.0, arms: [[-1, 10], [1, 10]] }, { rim: TEAL, rimAng: -1.57, rimW: 7, key: "#ffd9a0", shadow: false });
   g.fillStyle = "rgba(0,0,0,0.4)"; g.beginPath(); g.ellipse(880, 1852, 90, 12, 0, 0, 7); g.fill();
-  // bonnet rouge en maille : points en V sur la calotte, bord côtelé dentelé, contour noir
-  g.save(); g.beginPath(); g.ellipse(290, 1362, 172, 160, 0, Math.PI, 2 * Math.PI); g.lineTo(462, 1372); g.lineTo(118, 1372); g.closePath();
-  g.fillStyle = "#c4342d"; g.fill(); g.clip();
-  g.strokeStyle = "rgba(96,20,18,0.6)"; g.lineWidth = 3; g.lineCap = "round";
-  for (let r = 0; r < 12; r++) { const y = 1190 + r * 16; for (let c = -1; c < 19; c++) { const x = 100 + c * 20 + (r % 2) * 10;
-    g.beginPath(); g.moveTo(x - 7, y - 4); g.lineTo(x, y + 4); g.lineTo(x + 7, y - 4); g.stroke(); } }
+  // bonnet rouge replié : calotte à côtes qui convergent vers le haut, revers replié en bas (côtes plus foncées)
+  const dome = () => { g.beginPath(); g.ellipse(290, 1362, 172, 160, 0, Math.PI, 2 * Math.PI); g.lineTo(462, 1372); g.lineTo(118, 1372); g.closePath(); };
+  g.save(); dome(); g.fillStyle = "#c4342d"; g.fill(); g.clip();
+  g.strokeStyle = "rgba(110,24,20,0.9)"; g.lineWidth = 4; g.lineCap = "round";
+  for (let k = 0; k <= 12; k++) { const x0 = 118 + k * 28; g.beginPath(); g.moveTo(x0, 1380); g.quadraticCurveTo(x0 + (290 - x0) * 0.4, 1260, 290 + (x0 - 290) * 0.08, 1180); g.stroke(); }   // côtes qui rejoignent le sommet
+  g.fillStyle = "#9c2420"; g.fillRect(100, 1318, 380, 60);                                               // revers replié
+  g.strokeStyle = "rgba(70,14,12,0.9)"; g.lineWidth = 3;
+  for (let k = 0; k <= 16; k++) { const x0 = 118 + k * 22; g.beginPath(); g.moveTo(x0, 1318); g.lineTo(x0, 1378); g.stroke(); }   // côtes du revers
   g.restore();
-  g.strokeStyle = "#050405"; g.lineWidth = 7; g.beginPath(); g.ellipse(290, 1362, 172, 160, 0, Math.PI, 2 * Math.PI); g.stroke();
-  g.fillStyle = "#8e2420"; g.strokeStyle = "#050405"; g.lineWidth = 5;
-  for (let k = 0; k < 8; k++) { g.beginPath(); g.arc(137 + k * 43.5, 1372, 23, 0, Math.PI); g.closePath(); g.fill(); g.stroke(); }   // bord côtelé dentelé
+  g.strokeStyle = "#050405"; g.lineWidth = 7; dome(); g.stroke();
+  g.strokeStyle = "rgba(70,14,12,0.9)"; g.lineWidth = 4; g.beginPath(); g.moveTo(118, 1318); g.lineTo(462, 1318); g.stroke();   // pli du revers
   pigeon(g, 560, 1860, 2.0, 1.45, 0);
   hud(g); finish(g, { bloom: 0.08, grade: ["#000000", "#ffd9a0", 0.03] }); caption(g, ["MAGNÉTIQUE."], 0);
 };
