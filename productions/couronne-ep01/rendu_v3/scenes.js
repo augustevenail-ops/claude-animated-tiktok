@@ -770,12 +770,12 @@ S.p02h_buste_vivant = g => {                              // image 2 v13
   holoDome(g, 101);
   layer(g, q => { q.fillStyle = "#1b1510"; q.fillRect(0, 1700, W, H - 1700); }, { blur: 2 });
   crowdStanding(g);
-  actor(g, 790, 2650, 1.8, { ...PERE, body: "#7a1f30", bodyDark: "#4a1220", look: -0.12, arms: [[-1, 10], [1, 10]] }, { rim: "#cfe3ee", rimAng: -1.2, rimW: 7, key: "#dfe9ef", shadow: false });   // père, côté droit
-  // capuche relevée du fils, derrière la tête : bordeaux, doublure ocre visible en liseré autour du visage
-  g.fillStyle = "#7a1f30"; g.strokeStyle = INK; g.lineWidth = 5;
-  g.beginPath(); g.arc(290, 1405, 205, Math.PI * 0.9, Math.PI * 2.1); g.lineTo(420, 1600); g.lineTo(160, 1600); g.closePath(); g.fill(); g.stroke();
-  g.strokeStyle = "#d9a33a"; g.lineWidth = 12; g.beginPath(); g.arc(290, 1405, 188, Math.PI * 0.95, Math.PI * 2.05); g.stroke();
-  actor(g, 290, 2650, 1.8, { ...HERO, body: "#7a1f30", bodyDark: "#4a1220", ring: "#5a1826", look: 0.0, arms: [[-1, 10], [1, 10]] }, { rim: TEAL, rimAng: -1.57, rimW: 7, key: "#ffd9a0", shadow: false });
+  actor(g, 790, 2650, 1.8, { ...PERE, body: "#4A6A8A", bodyDark: "#2c4256", torsoW: 165, look: -0.12, arms: [[-1, 10], [1, 10]] }, { rim: "#cfe3ee", rimAng: -1.2, rimW: 7, key: "#dfe9ef", shadow: false });   // père, côté droit
+  actor(g, 290, 2650, 1.8, { ...HERO, body: "#4A6A8A", bodyDark: "#2c4256", strings: false, torsoW: 165, look: 0.0, arms: [[-1, 10], [1, 10]] }, { rim: TEAL, rimAng: -1.57, rimW: 7, key: "#ffd9a0", shadow: false });
+  // bonnet noir du fils (pas de capuche)
+  g.fillStyle = "#17161d"; g.strokeStyle = INK; g.lineWidth = 9;
+  g.beginPath(); g.ellipse(290, 1362, 172, 160, 0, Math.PI, 2 * Math.PI); g.lineTo(462, 1372); g.lineTo(118, 1372); g.closePath(); g.fill(); g.stroke();
+  g.fillStyle = "#24232b"; g.beginPath(); g.roundRect(116, 1346, 348, 34, 16); g.fill(); g.stroke();
   pigeon(g, 540, 1400, 2.8, 1.2, 3);
   pigeon(g, 540, 1400, 2.8, 1.2, 0);
   hud(g); finish(g, { bloom: 0.35, grade: ["#06202a", "#ffd9a0", 0.16] }); caption(g, ["SOUS", "UN", "DÔME"], 1);
@@ -786,13 +786,13 @@ S.p02i_sol_vivant = g => {                                // image 3 v13
   holoDome(g, 103);
   layer(g, q => { q.fillStyle = "#1b1510"; q.fillRect(0, 1700, W, H - 1700); }, { blur: 2 });
   crowdStanding(g);
-  actor(g, 790, 2650, 1.8, { ...PERE, body: "#7a1f30", bodyDark: "#4a1220", look: -0.12, arms: [[-1, 10], [1, 10]] }, { rim: "#cfe3ee", rimAng: -1.2, rimW: 7, key: "#dfe9ef", shadow: false });   // père, côté droit
-  // capuche relevée du fils, derrière la tête : bordeaux, doublure ocre visible en liseré autour du visage
-  g.fillStyle = "#7a1f30"; g.strokeStyle = INK; g.lineWidth = 5;
-  g.beginPath(); g.arc(290, 1405, 205, Math.PI * 0.9, Math.PI * 2.1); g.lineTo(420, 1600); g.lineTo(160, 1600); g.closePath(); g.fill(); g.stroke();
-  g.strokeStyle = "#d9a33a"; g.lineWidth = 12; g.beginPath(); g.arc(290, 1405, 188, Math.PI * 0.95, Math.PI * 2.05); g.stroke();
-  actor(g, 290, 2650, 1.8, { ...HERO, body: "#7a1f30", bodyDark: "#4a1220", ring: "#5a1826", look: 0.0, arms: [[-1, 10], [1, 10]] }, { rim: TEAL, rimAng: -1.57, rimW: 7, key: "#ffd9a0", shadow: false });
+  actor(g, 790, 2650, 1.8, { ...PERE, body: "#4A6A8A", bodyDark: "#2c4256", torsoW: 165, look: -0.12, arms: [[-1, 10], [1, 10]] }, { rim: "#cfe3ee", rimAng: -1.2, rimW: 7, key: "#dfe9ef", shadow: false });   // père, côté droit
+  actor(g, 290, 2650, 1.8, { ...HERO, body: "#4A6A8A", bodyDark: "#2c4256", strings: false, torsoW: 165, look: 0.0, arms: [[-1, 10], [1, 10]] }, { rim: TEAL, rimAng: -1.57, rimW: 7, key: "#ffd9a0", shadow: false });
   g.fillStyle = "rgba(0,0,0,0.4)"; g.beginPath(); g.ellipse(880, 1852, 90, 12, 0, 0, 7); g.fill();
+  // bonnet noir du fils (pas de capuche)
+  g.fillStyle = "#17161d"; g.strokeStyle = INK; g.lineWidth = 9;
+  g.beginPath(); g.ellipse(290, 1362, 172, 160, 0, Math.PI, 2 * Math.PI); g.lineTo(462, 1372); g.lineTo(118, 1372); g.closePath(); g.fill(); g.stroke();
+  g.fillStyle = "#24232b"; g.beginPath(); g.roundRect(116, 1346, 348, 34, 16); g.fill(); g.stroke();
   pigeon(g, 560, 1860, 2.0, 1.45, 0);
   hud(g); finish(g, { bloom: 0.35, grade: ["#06202a", "#ffd9a0", 0.16] }); caption(g, ["MAGNÉTIQUE."], 0);
 };

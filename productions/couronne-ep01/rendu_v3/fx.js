@@ -36,6 +36,11 @@ function actor(g, x, F, s, outfit, o = {}) {
     const q2 = c.getContext("2d"); q2.save(); q2.globalCompositeOperation = "source-atop"; q2.filter = "blur(2px)"; q2.globalAlpha = o.rimA ?? 0.85; q2.drawImage(m, 0, 0); q2.restore();
   }
   if (o.shadow !== false) { g.save(); g.filter = "blur(14px)"; g.fillStyle = "rgba(0,0,0,0.55)"; g.beginPath(); g.ellipse(x + (o.shDx || 0), F + 4, 150 * s, 26 * s, 0, 0, 7); g.fill(); g.restore(); }
+  // contour d'encre épais et régulier autour de la silhouette (dilatation du masque, réglable par o.ink en unités de scale)
+  if (o.ink !== 0) { const ol = mk(W, H), oq = ol.getContext("2d"), w = (o.ink ?? 7) * s;
+    for (let k = 0; k < 24; k++) { const an = k / 24 * 6.2832; oq.drawImage(c, Math.cos(an) * w, Math.sin(an) * w); }
+    oq.globalCompositeOperation = "source-in"; oq.fillStyle = INK; oq.fillRect(0, 0, W, H);
+    g.save(); if (o.blur) g.filter = `blur(${o.blur}px)`; g.drawImage(ol, 0, 0); g.restore(); }
   g.save(); if (o.blur) g.filter = `blur(${o.blur}px)`; g.drawImage(c, 0, 0); g.restore();
 }
 // décor du dôme
