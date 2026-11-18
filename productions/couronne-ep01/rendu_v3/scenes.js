@@ -841,5 +841,33 @@ S.p02k_oiseau_debut = g => {                         // ouverture : oiseau énor
   pigeon(g, 540, 780, 2.6, 0.5, 0);
   hud(g); finish(g, { bloom: 0.35, grade: ["#06202a", "#ffd9a0", 0.16] }); caption(g, ["TU", "VIS"], 0);
 };
+// ---------- v37 : ouverture — l'oiseau touche le champ magnétique (hologramme teal), ondes hexagonales, puis il tombe ----------
+function hexRing(g, cx, cy, r, col, a, lw) {
+  g.beginPath(); for (let i = 0; i < 6; i++) { const t = Math.PI / 3 * i + Math.PI / 6, x = cx + Math.cos(t) * r, y = cy + Math.sin(t) * r; i ? g.lineTo(x, y) : g.moveTo(x, y); }
+  g.closePath(); g.strokeStyle = rgba(col, a); g.lineWidth = lw; g.stroke();
+}
+function fieldSurface(g, cy, ry) {                    // surface du champ : arc holographique teal, maille hexagonale
+  domeBarrier(g, cy, 1400, ry, 0.9);
+}
+S.p02m_contact = g => {                               // image 1 : l'oiseau arrive à quelques centimètres du champ et touche la surface
+  sky(g, [[0, "#05080a"], [0.6, "#0a1418"], [1, "#050607"]]);
+  fieldSurface(g, 1500, 420);
+  glow(g, 540, 1080, 300, TEAL, 0.45);
+  [70, 150, 240].forEach((r, k) => { g.save(); g.translate(540, 1080); g.scale(1, 0.45); hexRing(g, 0, 0, r, "#6fe0d6", 0.7 - k * 0.2, 4 - k); g.restore(); });
+  g.fillStyle = rgba("#bff5ef", 0.9); g.beginPath(); g.arc(540, 1080, 8, 0, 7); g.fill();
+  for (let i = 0; i < 14; i++) { g.fillStyle = rgba("#6fe0d6", 0.8 - i * 0.04); g.fillRect(540 + Math.cos(i * 1.7) * (40 + i * 9), 1080 - Math.abs(Math.sin(i * 1.3)) * 60 - 10, 4, 4); }   // étincelles
+  pigeon(g, 540, 900, 1.8, 0.95, 0);
+  hud(g); finish(g, { bloom: 0.45, grade: ["#06202a", "#c8f4ee", 0.16] }); caption(g, ["TU", "VIS"], 0);
+};
+S.p02n_chute_holo = g => {                            // image 2 : l'oiseau rebondit sur le champ et tombe, l'onde s'éteint derrière lui
+  sky(g, [[0, "#05080a"], [0.6, "#0a1418"], [1, "#050607"]]);
+  fieldSurface(g, 1500, 420);
+  glow(g, 540, 1080, 220, TEAL, 0.22);
+  [150, 240].forEach((r, k) => { g.save(); g.translate(540, 1080); g.scale(1, 0.45); hexRing(g, 0, 0, r, "#6fe0d6", 0.3 - k * 0.12, 3); g.restore(); });
+  for (let i = 1; i < 5; i++) { g.strokeStyle = rgba("#cfe9e6", 0.12 - i * 0.02); g.lineWidth = 6; g.beginPath(); g.moveTo(600 + i * 4, 900 - i * 80); g.lineTo(600 + i * 4 + 10, 1100 - i * 80); g.stroke(); }   // traînée
+  pigeon(g, 600, 1300, 1.6, 1.9, 2);
+  pigeon(g, 600, 1300, 1.6, 1.9, 0);
+  hud(g); finish(g, { bloom: 0.4, grade: ["#06202a", "#c8f4ee", 0.16] }); caption(g, ["TU", "VIS"], 1);
+};
 window.SCENES = Object.fromEntries(Object.entries(S).filter(([k]) => !k.endsWith("_bg")));
 window.SCENES_ALL = S;

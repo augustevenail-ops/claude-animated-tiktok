@@ -145,7 +145,7 @@ function figure(g, x, F, s, o) {
   if (o.beard) { g.save(); g.beginPath(); g.arc(headC[0], headC[1], R, 0, 7); g.clip(); g.fillStyle = o.beard; g.beginPath(); g.ellipse(headC[0], headC[1] + R * 0.75, R * 1.05, R * 0.62, 0, 0, 7); g.fill(); g.restore(); }
   if (o.hair) { g.save(); g.beginPath(); g.arc(headC[0], headC[1], R, 0, 7); g.clip(); g.fillStyle = o.hair;
     g.beginPath(); g.moveTo(headC[0] - R * 1.1, headC[1] + R * 0.15);
-    if (o.hairStyle === "swoosh") { g.quadraticCurveTo(headC[0] - R * 0.2, headC[1] - R * 0.25, headC[0] + R * 0.6, headC[1] - R * 0.15); g.lineTo(headC[0] + R * 1.1, headC[1] + R * 0.3); }
+    if (o.hairStyle === "swoosh") { g.lineTo(headC[0] - R * 1.1, headC[1] - R * 0.42); g.quadraticCurveTo(headC[0] - R * 0.2, headC[1] - R * 0.7, headC[0] + R * 0.6, headC[1] - R * 0.55); g.lineTo(headC[0] + R * 1.1, headC[1] - R * 0.3); }
     else { g.lineTo(headC[0] - R * 0.92, headC[1] - R * 0.25); g.quadraticCurveTo(headC[0] - R * 0.5, headC[1] - R * 0.5, headC[0] - R * 0.1, headC[1] - R * 0.42);
       g.quadraticCurveTo(headC[0] + R * 0.35, headC[1] - R * 0.52, headC[0] + R * 0.92, headC[1] - R * 0.25); g.lineTo(headC[0] + R * 1.1, headC[1] + R * 0.15); }
     g.lineTo(headC[0] + R * 1.1, headC[1] - R * 1.2); g.lineTo(headC[0] - R * 1.1, headC[1] - R * 1.2); g.closePath(); g.fill(); g.restore(); }
