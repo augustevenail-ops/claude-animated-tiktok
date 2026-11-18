@@ -25,10 +25,10 @@ function finish(g, o = {}) { if (o.bloom !== 0) bloom(g, o.bloom ?? 0.32); if (o
 // acteur : personnage rendu hors-champ puis éclairé (dégradé clé, liseré de contre-jour coloré, ombre portée au sol)
 function actor(g, x, F, s, outfit, o = {}) {
   const c = mk(W, H), q = c.getContext("2d"); figure(q, x, F, s, outfit);
-  q.save(); q.globalCompositeOperation = "source-atop";                         // modelé : haut éclairé, bas plus sombre
+  if (!o.flat) { q.save(); q.globalCompositeOperation = "source-atop";                         // modelé : haut éclairé, bas plus sombre
   const kg = q.createLinearGradient(0, F - 900 * s, 0, F); kg.addColorStop(0, rgba(o.key || "#fff2d8", 0.10)); kg.addColorStop(1, "rgba(0,0,0,0.30)"); q.fillStyle = kg; q.fillRect(0, 0, W, H);
   if (o.ambient) { q.globalCompositeOperation = "source-atop"; q.globalAlpha = 0.16; q.fillStyle = o.ambient; q.fillRect(0, 0, W, H); q.globalAlpha = 1; }
-  q.restore();
+  q.restore(); }                                                                 // o.flat : aplats purs, contour noir intact
   if (o.rim) {                                                                    // contre-jour : croissant de lumière côté source
     const m = mk(W, H), r = m.getContext("2d"), d = (o.rimW || 9) * s, ang = o.rimAng ?? -0.5;
     r.drawImage(c, 0, 0); r.globalCompositeOperation = "destination-out"; r.drawImage(c, -Math.cos(ang) * d, -Math.sin(ang) * d);

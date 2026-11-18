@@ -770,8 +770,8 @@ S.p02h_buste_vivant = g => {                              // image 2 v13
   holoDome(g, 101);
   layer(g, q => { q.fillStyle = "#1b1510"; q.fillRect(0, 1700, W, H - 1700); }, { blur: 2 });
   crowdStanding(g);
-  actor(g, 790, 2650, 1.8, { ...PERE, body: "#5d6166", bodyDark: "#383b40", ring: "#5d6166", ringW: 80, torsoW: 165, look: -0.12, arms: [[-1, 10], [1, 10]] }, { rim: "#cfe3ee", rimAng: -1.2, rimW: 7, key: "#dfe9ef", shadow: false });   // père, côté droit
-  actor(g, 290, 2650, 1.8, { ...HERO, body: "#5d6166", bodyDark: "#383b40", ring: "#5d6166", ringW: 80, strings: false, torsoW: 165, look: 0.0, arms: [[-1, 10], [1, 10]] }, { rim: TEAL, rimAng: -1.57, rimW: 7, key: "#ffd9a0", shadow: false });
+  actor(g, 790, 2650, 1.8, { ...PERE, body: "#5d6166", bodyDark: "#383b40", ring: "#5d6166", ringW: 80, torsoW: 165, look: -0.12, arms: [[-1, 10], [1, 10]] }, { flat: true, shadow: false });   // père, côté droit
+  actor(g, 290, 2650, 1.8, { ...HERO, body: "#5d6166", bodyDark: "#383b40", ring: "#5d6166", ringW: 80, strings: false, torsoW: 165, look: 0.0, arms: [[-1, 10], [1, 10]] }, { flat: true, shadow: false });
   // bonnet rouge replié : calotte à côtes qui convergent vers le haut, revers replié en bas (côtes plus foncées)
   const dome = () => { g.beginPath(); g.ellipse(290, 1362, 172, 160, 0, Math.PI, 2 * Math.PI); g.lineTo(462, 1372); g.lineTo(118, 1372); g.closePath(); };
   g.save(); dome(); g.fillStyle = "#c4342d"; g.fill(); g.clip();
@@ -793,8 +793,8 @@ S.p02i_sol_vivant = g => {                                // image 3 v13
   holoDome(g, 103);
   layer(g, q => { q.fillStyle = "#1b1510"; q.fillRect(0, 1700, W, H - 1700); }, { blur: 2 });
   crowdStanding(g);
-  actor(g, 790, 2650, 1.8, { ...PERE, body: "#5d6166", bodyDark: "#383b40", ring: "#5d6166", ringW: 80, torsoW: 165, look: -0.12, arms: [[-1, 10], [1, 10]] }, { rim: "#cfe3ee", rimAng: -1.2, rimW: 7, key: "#dfe9ef", shadow: false });   // père, côté droit
-  actor(g, 290, 2650, 1.8, { ...HERO, body: "#5d6166", bodyDark: "#383b40", ring: "#5d6166", ringW: 80, strings: false, torsoW: 165, look: 0.0, arms: [[-1, 10], [1, 10]] }, { rim: TEAL, rimAng: -1.57, rimW: 7, key: "#ffd9a0", shadow: false });
+  actor(g, 790, 2650, 1.8, { ...PERE, body: "#5d6166", bodyDark: "#383b40", ring: "#5d6166", ringW: 80, torsoW: 165, look: -0.12, arms: [[-1, 10], [1, 10]] }, { flat: true, shadow: false });   // père, côté droit
+  actor(g, 290, 2650, 1.8, { ...HERO, body: "#5d6166", bodyDark: "#383b40", ring: "#5d6166", ringW: 80, strings: false, torsoW: 165, look: 0.0, arms: [[-1, 10], [1, 10]] }, { flat: true, shadow: false });
   g.fillStyle = "rgba(0,0,0,0.4)"; g.beginPath(); g.ellipse(880, 1852, 90, 12, 0, 0, 7); g.fill();
   // bonnet rouge replié : calotte à côtes qui convergent vers le haut, revers replié en bas (côtes plus foncées)
   const dome = () => { g.beginPath(); g.ellipse(290, 1362, 172, 160, 0, Math.PI, 2 * Math.PI); g.lineTo(462, 1372); g.lineTo(118, 1372); g.closePath(); };
