@@ -1075,5 +1075,36 @@ S.v41_p31_choix = g => {                             // plan 31 : les deux choix
   g.fillStyle = "#f3efe6"; g.font = "800 46px Montserrat"; g.fillText("TE TAIS", 270, 520); g.fillText("PARLE", 810, 520); g.textAlign = "left";
   hud(g); finish(g, { grade: ["#06202a", "#ffd9a0", 0.16] }); caption(g, ["CHOISIS", "EN", "COMMENTAIRE"], 0);
 };
+// ---------- v42 : plans posés dans le monde 3D (../monde3d), personnages 2D par-dessus ----------
+function bg3d(g, name) { const i = window.IMG3D && window.IMG3D[name]; if (!i) throw new Error("image 3D manquante : " + name); g.drawImage(i, 0, 0, W, H); }
+const fin3d = g => finish(g, { bloom: 0.15, grade: ["#06202a", "#ffd9a0", 0.08] });
+S.m05_drone_district = g => { bg3d(g, "d05a_drone_district"); hud(g); fin3d(g); caption(g, ["LE", "CHAMP", "MAGNÉTIQUE"], 1); };
+S.m06_zone_large = g => { bg3d(g, "d05b_zone_large"); hud(g, { zone: "TOUTE LA ZONE" }); fin3d(g); caption(g, ["VOUS", "PROTÈGE"], 1); };
+S.m07_travers_champ = g => { bg3d(g, "d05c_travers_champ"); hud(g, { zone: "LIMITE DU DÔME" }); fin3d(g); caption(g, ["DES", "RADIATIONS"], 1); };
+S.m09_regle1 = g => { bg3d(g, "r01_regle1_mur"); hud(g); fin3d(g); caption(g, ["NE", "SORS", "JAMAIS"], 1); };
+S.m10_corps_gaz = g => { bg3d(g, "o10_dehors");
+  g.save(); g.translate(540, 1600);
+  g.fillStyle = "#2a2822"; g.beginPath(); g.ellipse(0, 0, 330, 70, 0, 0, 7); g.fill(); g.strokeStyle = INK; g.lineWidth = 7; g.stroke();
+  g.fillStyle = "#4a6a8a"; g.beginPath(); g.ellipse(-30, -10, 230, 52, 0, 0, 7); g.fill(); g.stroke();
+  g.fillStyle = "#e6d8b8"; g.beginPath(); g.arc(-330, 10, 58, 0, 7); g.fill(); g.stroke();
+  g.fillStyle = "#2b211b"; g.beginPath(); g.arc(-330, -10, 48, Math.PI, 2 * Math.PI); g.fill();
+  g.strokeStyle = INK; g.lineWidth = 9; g.beginPath(); g.moveTo(-120, -40); g.lineTo(-240, -110); g.moveTo(120, -40); g.lineTo(260, -110); g.stroke();
+  g.strokeStyle = "#2e3440"; g.lineWidth = 26; g.lineCap = "round"; g.beginPath(); g.moveTo(180, 8); g.lineTo(380, 18); g.stroke(); g.restore();
+  haze(g, 1300, 1920, "#a8b060", 0.35); hud(g, { zone: "HORS DU DÔME", label: "RADIATION", value: "03 %" }); fin3d(g); caption(g, ["DEHORS,", "L'AIR", "TUE."], 1); };
+S.m13_rue_matin = g => { bg3d(g, "s13_rue_matin"); actor(g, 540, 1800, 1.0, { ...HERO, look: 0.2 }, { rim: GOLD, rimAng: -1.7, key: "#ffe6b0" }); hud(g, { clock: "07:05" }); fin3d(g); caption(g, ["LE", "LENDEMAIN", "MATIN,"], 1); };
+S.m14_escorte = g => { bg3d(g, "s14_rue_escorte");
+  actor(g, 400, 1800, 1.05, { ...PERE, eyeDy: 0.08, headDy: 12, arms: [[-1, 4], [1, 10]] }, { rim: "#cfe3ee", rimAng: -2.4, key: "#dfe9ef", shDx: 40 });
+  actor(g, 700, 1800, 1.15, { ...GARDE, arms: [[-1, -28], [1, 4]], handTo: [470, 1150] }, { rim: "#cfe3ee", rimAng: -2.4, key: "#dfe9ef", shDx: 40 });
+  hud(g, { clock: "07:05" }); fin3d(g); caption(g, ["IL", "NE", "SE", "DÉBAT"], 3); };
+S.m15_pere_gros_plan = g => { bg3d(g, "s15_rue_proche"); layer(g, q => q.drawImage(window.IMG3D.s15_rue_proche, 0, 0, W, H), { blur: 8 });
+  actor(g, 540, 2900, 2.9, { ...PERE, look: -0.04, arms: [[-1, 40], [1, 40]] }, { rim: "#cfe3ee", rimAng: -0.9, key: "#dfe9ef", shadow: false }); hud(g, { clock: "07:04" }); fin3d(g); caption(g, ["IL", "NE", "SE", "DÉBAT", "PAS"], 3); };
+S.m16_prends_ca = g => { bg3d(g, "s16_rue_angle"); layer(g, q => q.drawImage(window.IMG3D.s16_rue_angle, 0, 0, W, H), { blur: 6 });
+  actor(g, 540, 2650, 2.0, { ...PERE, look: -0.08, arms: [[-1, 0], [1, -20]], handTo: [760, 1560], paper: true }, { rim: "#cfe3ee", rimAng: -0.7, key: "#dfe9ef", shadow: false }); hud(g, { clock: "07:02" }); fin3d(g); caption(g, ["PRENDS", "ÇA."], 0); };
+S.m18_garde_centre = g => { bg3d(g, "s18_centre_avenue"); layer(g, q => q.drawImage(window.IMG3D.s18_centre_avenue, 0, 0, W, H), { blur: 4 });
+  actor(g, 540, 1800, 1.2, { ...GARDE, baton: true }, { rim: GOLD, rimAng: -1.57, rimW: 11, key: "#ffe6b0" }); hud(g, { clock: "07:20", zone: "LE CENTRE" }); fin3d(g); caption(g, ["AU", "CENTRE."], 1); };
+S.m19_drone_centre = g => { bg3d(g, "d19_drone_centre"); hud(g, { zone: "LE CENTRE" }); fin3d(g); caption(g, ["LES", "PLUS", "RICHES."], 1); };
+S.m20_drone_approche = g => { bg3d(g, "d20_drone_approche"); hud(g, { zone: "LE CENTRE" }); fin3d(g); caption(g, ["PERSONNE", "N'EN", "REVIENT."], 2); };
+S.m21_regle2 = g => { bg3d(g, "r21_regle2_1m"); hud(g, { zone: "LE CENTRE" }); fin3d(g); caption(g, ["TU", "NE", "VAS", "JAMAIS"], 1); };
+S.m22_le_mur = g => { bg3d(g, "w22_le_mur"); hud(g); fin3d(g); caption(g, ["UN", "MUR", "LE", "SÉPARE"], 1); };
 window.SCENES = Object.fromEntries(Object.entries(S).filter(([k]) => !k.endsWith("_bg")));
 window.SCENES_ALL = S;
