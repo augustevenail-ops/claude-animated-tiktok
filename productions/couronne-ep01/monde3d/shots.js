@@ -12,6 +12,8 @@ export const SHOTS = {
   s18_centre_avenue:    { pos: [104, 1.7, 3], look: [0, 40, 0], fov: 60 },                  // plan 18 : dans le centre, face aux tours
   d19_drone_centre:     { pos: [118, 48, 4], look: [-60, 38, 0], fov: 62 },                 // plan 19 : drone entre les tours
   d20_drone_approche:   { pos: [6, 46, 175], look: [0, 40, 61], fov: 52, sign: "r2" },      // plan 20 : le drone arrive face à la tour
-  r21_regle2_1m:        { pos: [0, 40, 62.1], look: [0, 40, 61], fov: 70, sign: "r2" },     // plan 21 : règle 2 à 1 m, face pleine
-  w22_le_mur:           { pos: [51, 1.7, 187], look: [35, 14, 131], fov: 62 },              // plan 22 : le second mur
+  r21_regle2_1m:        { pos: [0, 39.85, 62.1], look: [0, 39.85, 61], fov: 85, sign: "r2" },     // plan 21 : règle 2 à 1 m, face pleine
+  w22_le_mur:           { pos: [22, 3.2, 166], look: [-4, 11, 136], fov: 66 },              // plan 22 : le second mur
+  h08_holo:             { pos: [0, 820, 1250], look: [0, -60, 40], fov: 46, holo: "08" },     // plan 8 : hologramme de la carte
+  h27_holo:             { pos: [0, 820, 1250], look: [0, -60, 40], fov: 46, holo: "27" },     // plan 27 : hologramme, champ rétracté sur le centre
 };

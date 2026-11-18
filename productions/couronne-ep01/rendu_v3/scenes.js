@@ -1082,5 +1082,219 @@ S.m19_drone_centre = g => { bg3d(g, "d19_drone_centre"); hud(g, { zone: "LE CENT
 S.m20_drone_approche = g => { bg3d(g, "d20_drone_approche"); hud(g, { zone: "LE CENTRE" }); fin3d(g); caption(g, ["PERSONNE", "N'EN", "REVIENT."], 2); };
 S.m21_regle2 = g => { bg3d(g, "r21_regle2_1m"); hud(g, { zone: "LE CENTRE" }); fin3d(g); caption(g, ["TU", "NE", "VAS", "JAMAIS"], 1); };
 S.m22_le_mur = g => { bg3d(g, "w22_le_mur"); hud(g); fin3d(g); caption(g, ["UN", "MUR", "LE", "SÉPARE"], 1); };
+// ---------- v43 : foule unique (vue haute 3/4, debout, sobre), alarme rouge tournante, hologrammes de carte, gaz toxique ----------
+// foule vue d'en haut en 3/4 : mêmes figurants que le plan 4 (gris, bruns froids), debout, un peu dispersés, de dos ou de face
+function crowd3q(g, o = {}) {
+  const y0 = o.y0 ?? 900, y1 = o.y1 ?? H + 80, s0 = o.s0 ?? 0.3, s1 = o.s1 ?? 1.0, seed = o.seed ?? 1;
+  const pal = ["#3a3f44", "#4a4640", "#2e3134", "#55524c", "#3d3a36", "#5a5f63", "#2a2c2e"], hairs = ["#121010", "#2a2420", "#4a4036", "#6a6258"];
+  const ppl = [];
+  for (let y = y0, r = 0; y < y1; r++) { const t = (y - y0) / (y1 - y0), s = s0 + (s1 - s0) * Math.pow(t, 1.15), step = 78 * s;
+    for (let x = -60 + (r % 2) * step / 2; x < W + 60; x += step) { const k = seed * 1000 + r * 97 + Math.round(x);
+      if (rnd(k) < (o.sparse ?? 0.12)) continue;                                                                       // trous : foule dispersée
+      const px = x + (rnd(k * 3) - 0.5) * step * 0.7, py = y + (rnd(k * 5) - 0.5) * 18 * s;
+      if (o.gap && Math.hypot((px - o.gap[0]) / 1.6, py - o.gap[1]) < o.gap[2]) continue;
+      ppl.push([px, py, s, k]); }
+    y += 46 * s; }
+  ppl.sort((a, b) => a[1] - b[1]);
+  const one = (q, [px, py, s, k]) => {
+    const cloth = pal[Math.floor(rnd(k * 7) * pal.length)], hair = hairs[Math.floor(rnd(k * 11) * hairs.length)], R = 21 * s, j = rnd(k * 13);
+    const back = o.backs ? rnd(k * 17) > 0.12 : rnd(k * 17) > 0.6, tint = o.tint;
+    const c = tint ? mixc(cloth, tint, 0.28) : cloth;
+    q.fillStyle = mul(c, 0.8 + j * 0.35); q.strokeStyle = "rgba(5,4,5,0.9)"; q.lineWidth = 2.6 * s;
+    q.beginPath(); q.ellipse(px, py + R * 2.15, R * 1.75, R * 1.5, 0, Math.PI, 0); q.lineTo(px + R * 1.6, py + R * 4.2); q.lineTo(px - R * 1.6, py + R * 4.2); q.closePath(); q.fill(); q.stroke();   // épaules, corps
+    const skin = tint ? mixc("#d9d4ca", tint, 0.25) : "#d9d4ca";
+    q.fillStyle = back ? hair : skin; q.beginPath(); q.arc(px, py, R, 0, 7); q.fill(); q.stroke();
+    if (!back) { q.fillStyle = hair; q.beginPath(); q.arc(px, py, R, Math.PI * 1.08, Math.PI * 1.92); q.closePath(); q.fill();
+      q.fillStyle = "#151112"; q.beginPath(); q.arc(px - R * 0.33, py + R * 0.12, R * 0.11, 0, 7); q.arc(px + R * 0.33, py + R * 0.12, R * 0.11, 0, 7); q.fill(); }
+    else if (rnd(k * 19) > 0.7) { q.fillStyle = mul(cloth, 0.6); q.beginPath(); q.arc(px, py, R * 0.98, Math.PI, 0); q.fill(); }   // bonnets, capuches
+  };
+  const draw = (filter) => layer(g, q => ppl.filter(filter).forEach(p => one(q, p)), { blur: o.blur ?? 0.6 });
+  if (o.split) { draw(p => p[1] < o.split[0]); o.split[1](); draw(p => p[1] >= o.split[0]); } else draw(() => true);
+  const sh = g.createLinearGradient(0, y0 - 40, 0, y0 + 160); sh.addColorStop(0, "rgba(0,0,0,0.5)"); sh.addColorStop(1, "rgba(0,0,0,0)"); g.fillStyle = sh; g.fillRect(0, y0 - 40, W, 200);   // fond de foule dans l'ombre
+}
+function mixc(a, b, t) { const A = hex2(a), B = hex2(b); return "#" + A.map((v, i) => Math.round(v + (B[i] - v) * t).toString(16).padStart(2, "0")).join(""); }
+
+// alarme : gyrophare rouge (dôme grillagé sur socle noir), deux faisceaux tournants, image qui vire au rouge puis revient (ph = phase 0..1)
+function alarmWash(g, ph) {
+  const I = 0.5 + 0.5 * Math.cos(ph * 6.2832);
+  g.save(); g.globalCompositeOperation = "multiply"; g.fillStyle = mixc("#ffffff", "#ff5a46", 0.8 * I); g.fillRect(0, 0, W, H); g.restore();
+  g.save(); g.globalCompositeOperation = "screen"; g.fillStyle = rgba("#ff2a1a", 0.16 * I); g.fillRect(0, 0, W, H); g.restore();
+  return I;
+}
+function alarmBeams(g, x, y, ph, len = 1500, top = false) {
+  const I = 0.5 + 0.5 * Math.cos(ph * 6.2832), a = ph * 6.2832 * 1.0 + 0.6;
+  layer(g, q => { [a, a + Math.PI].forEach(b => { const gr = q.createRadialGradient(x, y, 10, x, y, len); gr.addColorStop(0, `rgba(255,70,50,${0.55 * (0.4 + 0.6 * I)})`); gr.addColorStop(1, "rgba(255,40,30,0)");
+    q.fillStyle = gr; q.beginPath(); q.moveTo(x, y); q.arc(x, y, len, b - 0.22, b + 0.22); q.closePath(); q.fill(); }); }, { op: "screen", blur: 18 });
+  glow(g, x, y, 260, "#ff3b2a", 0.5 + 0.4 * I);
+}
+function beacon(g, x, y, s, ph, top = false) {
+  const I = 0.5 + 0.5 * Math.cos(ph * 6.2832), lit = mixc("#5a1410", "#ff4a32", I);
+  g.save(); g.translate(x, y); g.scale(s, s); g.lineWidth = 7; g.strokeStyle = INK;
+  if (top) {                                                                                                  // vu de dessus (plan 4)
+    g.fillStyle = "#0b0a0a"; g.beginPath(); g.arc(0, 0, 70, 0, 7); g.fill();
+    const rg = g.createRadialGradient(-15, -15, 4, 0, 0, 56); rg.addColorStop(0, mixc("#ffd0c0", lit, 0.6)); rg.addColorStop(1, lit); g.fillStyle = rg; g.beginPath(); g.arc(0, 0, 56, 0, 7); g.fill(); g.stroke();
+    for (let k = 0; k < 8; k++) { const b = k / 8 * 6.2832 + ph * 2; g.beginPath(); g.moveTo(0, 0); g.lineTo(Math.cos(b) * 56, Math.sin(b) * 56); g.stroke(); }
+    g.beginPath(); g.arc(0, 0, 30, 0, 7); g.stroke();
+  } else {
+    g.fillStyle = "#0b0a0a"; g.fillRect(-90, 0, 180, 40); g.strokeRect(-90, 0, 180, 40);                      // socle
+    const rg = g.createLinearGradient(-70, 0, 70, 0); rg.addColorStop(0, mul(lit, 0.6)); rg.addColorStop(0.45, lit); rg.addColorStop(1, mul(lit, 0.5));
+    g.fillStyle = rg; g.beginPath(); g.ellipse(0, 0, 72, 86, 0, Math.PI, 0); g.closePath(); g.fill();
+    const hx = Math.cos(ph * 6.2832) * 34;                                                                     // reflet tournant
+    g.fillStyle = `rgba(255,225,205,${0.25 + 0.6 * I})`; g.beginPath(); g.ellipse(hx, -42, 13, 38, 0, 0, 7); g.fill();
+    g.strokeStyle = "#140606"; g.lineWidth = 9; [-0.75, -0.38, 0, 0.38, 0.75].forEach(u => { g.beginPath(); g.ellipse(0, 0, 72 * Math.abs(u) + 0.1, 86, 0, u < 0 ? Math.PI : -Math.PI / 2, u < 0 ? Math.PI * 1.5 : 0); if (u === 0) { g.moveTo(0, 0); g.lineTo(0, -86); } g.stroke(); });   // grille
+    g.strokeStyle = INK; g.lineWidth = 7; g.beginPath(); g.ellipse(0, 0, 72, 86, 0, Math.PI, 0); g.stroke();
+  }
+  g.restore();
+}
+function alarmAll(g, x, y, s, ph, o = {}) { g.fillStyle = INK; g.fillRect(x - 9 * s, 0, 18 * s, y - 80 * s); g.fillRect(x - 60 * s, y - 92 * s, 120 * s, 14 * s); alarmBeams(g, x, y - 40 * s, ph, o.len || 1500); beacon(g, x, y, s, ph, o.top); }
+
+// ---------- plan 2 : l'alarme démarre quand l'oiseau commence à tomber ----------
+function bare(name, g) {                                   // rejoue une scène sans HUD, étalonnage ni sous-titre (on les ajoute après)
+  const keep = [hud, finish, caption]; hud = () => {}; finish = () => {}; caption = () => {};
+  try { S[name](g); } finally { [hud, finish, caption] = keep; }
+}
+S.a02q_chute_alarme = g => { bare("p02q_chute_rapide", g); alarmWash(g, 0.15); alarmAll(g, 540, 560, 0.9, 0.15); hud(g); finish(g, { bloom: 0.2, grade: ["#000000", "#ffd9a0", 0.0], vig: 0.6 }); caption(g, ["TU", "VIS"], 1); };
+S.a02h_buste_alarme = g => { bare("p02h_buste_vivant", g); alarmWash(g, 0.0); alarmAll(g, 540, 600, 0.9, 0.0); hud(g); finish(g, { bloom: 0.12, grade: ["#000000", "#ffd9a0", 0.0], vig: 0.6 }); caption(g, ["SOUS", "UN", "DÔME"], 1); };
+S.a02i_sol_alarme = g => { bare("p02i_sol_vivant", g); alarmWash(g, 0.5); alarmAll(g, 540, 600, 0.9, 0.5); hud(g); finish(g, { bloom: 0.12, grade: ["#000000", "#ffd9a0", 0.0], vig: 0.6 }); caption(g, ["MAGNÉTIQUE."], 0); };
+
+// ---------- plan 3 : écran public, même foule que le plan 4, debout, vue haute ----------
+function plan3(g, ph) {
+  street(g, { centre: false });
+  g.fillStyle = "#08090a"; g.fillRect(170, 520, 740, 400); g.strokeStyle = "rgba(90,40,34,0.9)"; g.lineWidth = 6; g.strokeRect(170, 520, 740, 400);
+  g.fillStyle = "#0c0d0e"; g.fillRect(300, 920, 22, 300); g.fillRect(758, 920, 22, 300);                        // pieds de l'écran
+  layer(g, q => glow(q, 540, 720, 640, "#ff3b2a", 0.45), { op: "screen" });
+  seg7(g, "72:00", 540, 700, 0.92); g.font = "800 28px Montserrat"; g.fillStyle = "#e9c9a8"; g.textAlign = "center"; g.fillText("COUPURE DU CHAMP · DISTRICTS", 540, 885); g.textAlign = "left";
+  crowd3q(g, { y0: 1040, s0: 0.8, s1: 2.1, backs: true, seed: 3, sparse: 0.2 });
+  alarmWash(g, ph); alarmAll(g, 540, 505, 0.75, ph);
+  hud(g, { valueRed: true }); finish(g, { bloom: 0.4, grade: ["#1a0606", "#ffb08a", 0.12] }); caption(g, ["D'ICI", "3", "JOURS,"], 2);
+}
+S.a03_compte_foule = g => plan3(g, 0.0);
+[0.17, 0.33, 0.5, 0.67, 0.83].forEach((ph, i) => S["a03_cycle_" + (i + 1)] = g => plan3(g, ph));
+
+// ---------- plan 4 : vue de dessus, alarme sur un mât, héros (pull prune, bonnet kaki) ----------
+S.a04_foule_dessus = g => {
+  bare("p04c_foule_discrete", g);
+  // héros vu de dessus : épaules prune, bonnet kaki à côtes rayonnantes
+  g.fillStyle = "#6e2d5e"; g.strokeStyle = INK; g.lineWidth = 5; g.beginPath(); g.ellipse(540, 968, 50, 30, 0.15, 0, 7); g.fill(); g.stroke();
+  g.fillStyle = "#6e7650"; g.beginPath(); g.arc(540, 958, 27, 0, 7); g.fill(); g.stroke();
+  g.strokeStyle = "#5f6842"; g.lineWidth = 3; for (let k = 0; k < 11; k++) { const b = k / 11 * 6.2832; g.beginPath(); g.moveTo(540 + Math.cos(b) * 6, 958 + Math.sin(b) * 6); g.lineTo(540 + Math.cos(b) * 25, 958 + Math.sin(b) * 25); g.stroke(); }
+  g.strokeStyle = INK; g.lineWidth = 5; g.beginPath(); g.arc(540, 958, 27, 0, 7); g.stroke();
+  pill(g, "TOI", 540, 1060);
+  alarmWash(g, 0.5); alarmBeams(g, 540, 560, 0.5, 1700); beacon(g, 540, 560, 0.75, 0.5, true);
+  hud(g, { alpha: 0.7 }); finish(g, { bloom: 0.4, grade: ["#1a0a0a", "#ffe2b0", 0.1] }); caption(g, ["ARRÊTENT", "DE", "BOUGER."], 0);
+};
+
+// ---------- plan 8 et 27 : hologramme de la carte (projecteur, faisceau, lignes de balayage, panneaux de données) ----------
+function holoRoom(g, img, o) {
+  sky(g, [[0, "#02060a"], [0.6, "#04101a"], [1, "#010305"]]);
+  layer(g, q => { const gr = q.createLinearGradient(0, 1720, 0, 700); gr.addColorStop(0, rgba(o.col, 0.35)); gr.addColorStop(1, rgba(o.col, 0));
+    q.fillStyle = gr; q.beginPath(); q.moveTo(470, 1720); q.lineTo(610, 1720); q.lineTo(1080, 1380); q.lineTo(1080, 760); q.lineTo(0, 760); q.lineTo(0, 1380); q.closePath(); q.fill(); }, { op: "screen", blur: 30 });   // faisceau du projecteur
+  g.save(); g.globalCompositeOperation = "screen"; g.globalAlpha = 0.9; g.drawImage(img, 0, -40, W, H);
+  g.globalAlpha = 0.18; g.drawImage(img, -6, -40, W, H); g.globalAlpha = 0.12; g.filter = "hue-rotate(40deg)"; g.drawImage(img, 7, -38, W, H); g.restore();   // aberration
+  const sl = mk(W, 24), sq = sl.getContext("2d"); sl.height = 4 * 1; sq.fillStyle = "rgba(0,0,0,0.38)"; sq.fillRect(0, 0, W, 2);
+  g.fillStyle = g.createPattern(sl, "repeat"); g.fillRect(0, 0, W, H);                                         // lignes de balayage
+  [[380, 26], [910, 14]].forEach(([y, h]) => { const strip = mk(W, h); strip.getContext("2d").drawImage(g.canvas, 0, y, W, h, 0, 0, W, h); g.save(); g.globalAlpha = 0.85; g.drawImage(strip, 14, y); g.restore();
+    g.fillStyle = rgba(o.col, 0.12); g.fillRect(0, y, W, h); });                                                // bandes de grésillement décalées
+  dust(g, 160, o.col, 300, 1700, 77, 2.2);
+  g.fillStyle = "#0a0f14"; g.beginPath(); g.ellipse(540, 1730, 170, 40, 0, 0, 7); g.fill();                    // socle du projecteur
+  g.strokeStyle = rgba(o.col, 0.9); g.lineWidth = 4; g.beginPath(); g.ellipse(540, 1722, 120, 26, 0, 0, 7); g.stroke(); glow(g, 540, 1722, 180, o.col, 0.6);
+  for (let k = 0; k < 24; k++) { const b = k / 24 * 6.2832; g.fillStyle = rgba(o.col, 0.8); g.fillRect(540 + Math.cos(b) * 150 - 2, 1730 + Math.sin(b) * 34 - 2, 4, 4); }
+}
+function dataPanel(g, x, y, w, rows, col, title) {
+  g.fillStyle = rgba(col, 0.06); g.strokeStyle = rgba(col, 0.75); g.lineWidth = 2; g.beginPath(); g.rect(x, y, w, 40 + rows.length * 34); g.fill(); g.stroke();
+  g.fillStyle = rgba(col, 0.9); g.fillRect(x, y, w, 4); g.fillRect(x, y, 14, 14);
+  g.font = "700 20px 'Roboto Mono'"; g.letterSpacing = "3px"; g.fillStyle = rgba(col, 1); g.fillText(title, x + 22, y + 30);
+  g.font = "500 17px 'Roboto Mono'"; g.letterSpacing = "2px";
+  rows.forEach(([a, b, bar], i) => { const yy = y + 62 + i * 34; g.fillStyle = rgba(col, 0.75); g.fillText(a, x + 16, yy); g.textAlign = "right"; g.fillStyle = "#e8f6ff"; g.fillText(b, x + w - 16, yy); g.textAlign = "left";
+    if (bar != null) { g.fillStyle = rgba(col, 0.2); g.fillRect(x + 16, yy + 8, w - 32, 5); g.fillStyle = rgba(col, 0.9); g.fillRect(x + 16, yy + 8, (w - 32) * bar, 5); } });
+  g.letterSpacing = "0px";
+}
+function holoTag(g, txt, x, y, to, col) {
+  g.strokeStyle = rgba(col, 0.95); g.lineWidth = 2.5; g.beginPath(); g.moveTo(x, y + 22); g.lineTo(to[0], y + 22 + (to[1] > y ? 0 : 0)); g.lineTo(to[0], to[1]); g.stroke();
+  g.fillStyle = rgba(col, 1); g.beginPath(); g.arc(to[0], to[1], 7, 0, 7); g.fill(); g.strokeStyle = rgba(col, 0.5); g.beginPath(); g.arc(to[0], to[1], 16, 0, 7); g.stroke();
+  g.font = "800 30px Montserrat"; g.letterSpacing = "4px"; const w = g.measureText(txt).width + 44;
+  g.fillStyle = "rgba(2,10,16,0.85)"; g.strokeStyle = rgba(col, 1); g.lineWidth = 2.5; g.beginPath(); g.moveTo(x - w / 2 + 12, y - 26); g.lineTo(x + w / 2, y - 26); g.lineTo(x + w / 2, y + 14); g.lineTo(x + w / 2 - 12, y + 26); g.lineTo(x - w / 2, y + 26); g.lineTo(x - w / 2, y - 14); g.closePath(); g.fill(); g.stroke();
+  g.fillStyle = "#eaf8ff"; g.textAlign = "center"; g.fillText(txt, x + 2, y + 11); g.textAlign = "left"; g.letterSpacing = "0px";
+}
+S.h08_holo_carte = g => {
+  const C = "#5cc8ff"; holoRoom(g, window.IMG3D.h08_holo, { col: C });
+  dataPanel(g, 50, 470, 330, [["SECTEURS", "6"], ["POPULATION", "10 000"], ["CHAMP", "100 %", 1.0]], C, "DÔME · CARTE");
+  dataPanel(g, 700, 470, 330, [["MUR INT.", "135 M"], ["RAYON", "520 M"], ["ÉNERGIE", "31 %", 0.31]], C, "STRUCTURE");
+  holoTag(g, "LE CENTRE", 300, 700, [500, 780], "#bff0ff");
+  holoTag(g, "LES DISTRICTS", 760, 1500, [880, 1300], C);
+  hud(g, { alpha: 0.5 }); finish(g, { bloom: 0.35, grade: ["#02101a", "#cfefff", 0.1] }); caption(g, ["LE", "CENTRE,"], 0);
+};
+S.h27_holo_retraction = g => {
+  const C = "#5cc8ff", R = "#ff5a48"; holoRoom(g, window.IMG3D.h27_holo, { col: C });
+  dataPanel(g, 50, 470, 330, [["CHAMP", "-70 %", 0.3], ["DISTRICTS", "COUPÉS"], ["DÉLAI", "72 H"]], R, "ALERTE · ÉNERGIE");
+  dataPanel(g, 700, 470, 330, [["ZONE", "CENTRE"], ["RAYON", "147 M"], ["STATUT", "PROTÉGÉ", 1.0]], C, "NOUVEAU CHAMP");
+  holoTag(g, "CENTRE SEUL", 300, 700, [500, 760], "#bff0ff");
+  holoTag(g, "DISTRICTS NON PROTÉGÉS", 600, 1500, [880, 1300], R);
+  hud(g, { alpha: 0.5, label: "CHAMP", value: "-70 %", valueRed: true }); finish(g, { bloom: 0.35, grade: ["#02101a", "#cfefff", 0.1] }); caption(g, ["SEUL", "LE", "CENTRE"], 2);
+};
+
+// ---------- plan 10 : dehors, gaz toxique épais (nappes qui roulent, volutes, particules), sans corps ----------
+S.g10_gaz_toxique = g => {
+  bg3d(g, "o10_dehors");
+  const puff = (q, x, y, r, lt, dk, a, seed) => { for (let k = 0; k < 7; k++) { const cx = x + (rnd(seed + k) - 0.5) * r * 1.8, cy = y + (rnd(seed * 3 + k) - 0.5) * r * 0.45, rr = r * (0.35 + rnd(seed * 7 + k) * 0.45);
+    const gr = q.createRadialGradient(cx - rr * 0.3, cy - rr * 0.45, rr * 0.05, cx, cy, rr); gr.addColorStop(0, rgba(lt, a)); gr.addColorStop(0.6, rgba(dk, a * 0.8)); gr.addColorStop(1, rgba(dk, 0)); q.fillStyle = gr; q.beginPath(); q.arc(cx, cy, rr, 0, 7); q.fill(); } };
+  g.save(); g.globalCompositeOperation = "multiply"; g.fillStyle = "#b8c070"; g.fillRect(0, 0, W, H); g.restore();
+  layer(g, q => { for (let i = 0; i < 16; i++) puff(q, rnd(i * 5) * W, 900 + rnd(i * 9) * 300, 220 + rnd(i) * 160, "#c9cf5a", "#5a6420", 0.45, i * 11); }, { blur: 14 });   // nappes lointaines, devant la ville
+  layer(g, q => { q.fillStyle = "#14160a"; for (let i = 0; i < 5; i++) { const x = 80 + i * 230 + rnd(i) * 80, h = 260 + rnd(i * 3) * 200, y = 1330 + rnd(i * 7) * 60;   // arbres morts
+    q.fillRect(x - 7, y - h, 14, h); for (let b = 0; b < 5; b++) { const yy = y - h * (0.35 + b * 0.13), d = (b % 2 ? 1 : -1); q.save(); q.translate(x, yy); q.rotate(d * (0.7 + rnd(i + b) * 0.4)); q.fillRect(-3, -h * 0.28, 6, h * 0.28); q.restore(); } } }, { blur: 3 });
+  layer(g, q => { for (let i = 0; i < 14; i++) puff(q, rnd(i * 13) * W, 1320 + rnd(i * 3) * 250, 260 + rnd(i * 7) * 200, "#d8dc6a", "#3e4616", 0.75, i * 29 + 4); }, { blur: 6 });   // nappes moyennes
+  layer(g, q => { q.lineCap = "round"; for (let i = 0; i < 10; i++) { q.strokeStyle = rgba("#e2e48a", 0.2); q.lineWidth = 26 + rnd(i) * 30; q.beginPath(); let x = rnd(i * 3) * W, y = 1400 + rnd(i * 7) * 200; q.moveTo(x, y);
+    for (let p = 0; p < 5; p++) { x += 40 + rnd(i + p) * 60; y -= 70 + rnd(i * 2 + p) * 60; q.quadraticCurveTo(x - 70, y + 40, x, y); } q.stroke(); } }, { blur: 12, op: "screen" });   // volutes qui montent
+  // panneau de danger planté dans le sol
+  g.fillStyle = "#18180c"; g.fillRect(842, 1380, 14, 420); g.save(); g.translate(849, 1330); g.fillStyle = "#e3c62a"; g.strokeStyle = INK; g.lineWidth = 8; g.beginPath(); g.moveTo(0, -110); g.lineTo(110, 80); g.lineTo(-110, 80); g.closePath(); g.fill(); g.stroke();
+  g.fillStyle = INK; g.beginPath(); g.arc(0, 0, 30, 0, 7); g.fill(); g.fillRect(-18, 18, 36, 22); g.fillStyle = "#e3c62a"; g.beginPath(); g.arc(-11, -2, 8, 0, 7); g.arc(11, -2, 8, 0, 7); g.fill(); g.restore();
+  layer(g, q => { for (let i = 0; i < 10; i++) puff(q, rnd(i * 17) * W, 1750 + rnd(i * 3) * 200, 330 + rnd(i * 7) * 200, "#b9c04a", "#2a300c", 0.9, i * 41 + 9); }, { blur: 16 });   // gaz au premier plan
+  dust(g, 220, "#eef09a", 500, 1900, 61, 2.6);
+  hud(g, { zone: "HORS DU DÔME", label: "AIR", value: "TOXIQUE", valueRed: true }); finish(g, { bloom: 0.25, grade: ["#141a04", "#e8ec9a", 0.16] }); caption(g, ["DEHORS,", "L'AIR", "TUE."], 1);
+};
+
+// ---------- plan 26 : foule de dos sous le haut-parleur (même foule) ; plan 29 : héros dans la même foule ----------
+S.a26_foule_haut_parleur = g => {
+  street(g, { centre: false });
+  layer(g, q => glow(q, 540, 260, 900, BORDEAUX, 0.6), { op: "screen" });
+  g.fillStyle = "#0b0d0e"; g.fillRect(526, 0, 28, 170); g.fillRect(380, 150, 320, 16);
+  [[-1, 0.35], [1, -0.35]].forEach(([k, r]) => { g.save(); g.translate(540 + k * 120, 190); g.rotate(r); g.fillStyle = "#15181a"; g.strokeStyle = "#5e6468"; g.lineWidth = 5;
+    g.beginPath(); g.moveTo(0, -30); g.lineTo(k * 170, -90); g.lineTo(k * 170, 90); g.lineTo(0, 30); g.closePath(); g.fill(); g.stroke(); g.restore(); });
+  layer(g, q => { q.strokeStyle = rgba("#ff8a8a", 0.35); q.lineWidth = 4; [-1, 1].forEach(k => [1, 2, 3].forEach(i => { q.beginPath(); q.arc(540 + k * 290, 190, 40 * i, k > 0 ? -0.6 : Math.PI - 0.6, k > 0 ? 0.6 : Math.PI + 0.6); q.stroke(); })); }, { op: "screen" });   // ondes
+  crowd3q(g, { y0: 760, s0: 0.75, s1: 2.1, backs: true, seed: 26, tint: "#7a1f30", sparse: 0.2 });
+  hud(g, { label: "RADIO", value: "LIVE" }); finish(g, { bloom: 0.4, grade: ["#1a0610", "#ffc0b0", 0.16] }); caption(g, ["À", "LA", "RADIO"], 2);
+};
+S.a29_heros_foule = g => {
+  street(g, { centre: false });
+  crowd3q(g, { y0: 760, s0: 0.75, s1: 2.1, backs: false, seed: 29, sparse: 0.2, gap: [540, 1420, 120], split: [1440, () => {
+    layer(g, q => { const r = q.createRadialGradient(540, 1400, 30, 540, 1400, 420); r.addColorStop(0, "rgba(255,236,200,0.22)"); r.addColorStop(1, "rgba(0,0,0,0)"); q.fillStyle = r; q.fillRect(0, 0, W, H); }, { op: "screen" });
+    actor(g, 540, 1800, 0.85, { ...HERO, look: 0.0, arms: [[-1, 10], [1, 10]] }, { rim: GOLD, rimAng: -1.57, key: "#ffe6b0", shadow: false }); }] });
+  hud(g); finish(g, { bloom: 0.35, grade: ["#06202a", "#ffd9a0", 0.12] }); caption(g, ["TU", "RÉVÈLES"], 0);
+};
+
+// ---------- plans 13 à 16, 18 : passants au premier plan (flous), en plus des passants du monde 3D ----------
+function passersby(g, list, col) { list.forEach(([x, F, s, c]) => layer(g, q => actor(q, x, F, s, { ...PASSANT, body: c || col, bodyDark: mul(c || col, 0.6), ring: c || col, arms: [[-1, 10], [1, 10]] }, { shadow: false }), { blur: 7 * s })); }
+const PASSANT = { ...HERO, beanie: false, pocket: false, strings: false };
+// ---------- v44 : rues vivantes (passants 2D flous en plus des passants du monde 3D) ----------
+const PD = ["#4a4640", "#3d4848", "#55524c", "#3a3f44", "#5a5048"], PR = ["#c9b48a", "#2b4a5a", "#e8e2d4", "#7a1f30", "#1a1a1c"];
+S.v13_rue_vivante = g => { bg3d(g, "s13_rue_matin");
+  passersby(g, [[860, 1430, 0.42, PD[0]], [700, 1400, 0.36, PD[2]], [230, 1450, 0.45, PD[1]], [380, 1410, 0.34, PD[3]]]);
+  actor(g, 540, 1800, 1.0, { ...HERO, look: 0.2 }, { rim: GOLD, rimAng: -1.7, key: "#ffe6b0" });
+  hud(g, { clock: "07:05" }); fin3d(g); caption(g, ["LE", "LENDEMAIN", "MATIN,"], 1); };
+S.v14_escorte_vivante = g => { bg3d(g, "s14_rue_escorte");
+  passersby(g, [[140, 1420, 0.4, PD[2]], [920, 1440, 0.42, PD[0]], [990, 1400, 0.34, PD[3]]]);
+  actor(g, 400, 1800, 1.05, { ...PERE, eyeDy: 0.08, headDy: 12, arms: [[-1, 4], [1, 10]] }, { rim: "#cfe3ee", rimAng: -2.4, key: "#dfe9ef", shDx: 40 });
+  actor(g, 700, 1800, 1.15, { ...GARDE, arms: [[-1, -28], [1, 4]], handTo: [470, 1150] }, { rim: "#cfe3ee", rimAng: -2.4, key: "#dfe9ef", shDx: 40 });
+  hud(g, { clock: "07:05" }); fin3d(g); caption(g, ["IL", "NE", "SE", "DÉBAT"], 3); };
+S.v15_pere_vivant = g => { bg3d(g, "s15_rue_proche"); layer(g, q => q.drawImage(window.IMG3D.s15_rue_proche, 0, 0, W, H), { blur: 8 });
+  passersby(g, [[150, 1500, 0.5, PD[0]], [930, 1480, 0.48, PD[2]]]);
+  actor(g, 540, 2900, 2.9, { ...PERE, look: -0.04, arms: [[-1, 40], [1, 40]] }, { rim: "#cfe3ee", rimAng: -0.9, key: "#dfe9ef", shadow: false }); hud(g, { clock: "07:04" }); fin3d(g); caption(g, ["IL", "NE", "SE", "DÉBAT", "PAS"], 3); };
+S.v16_prends_vivant = g => { bg3d(g, "s16_rue_angle"); layer(g, q => q.drawImage(window.IMG3D.s16_rue_angle, 0, 0, W, H), { blur: 6 });
+  passersby(g, [[160, 1520, 0.5, PD[1]], [300, 1490, 0.44, PD[3]], [950, 1500, 0.5, PD[4]]]);
+  actor(g, 540, 2650, 2.0, { ...PERE, look: -0.08, arms: [[-1, 0], [1, -20]], handTo: [760, 1560], paper: true }, { rim: "#cfe3ee", rimAng: -0.7, key: "#dfe9ef", shadow: false }); hud(g, { clock: "07:02" }); fin3d(g); caption(g, ["PRENDS", "ÇA."], 0); };
+S.v18_garde_vivant = g => { bg3d(g, "s18_centre_avenue"); layer(g, q => q.drawImage(window.IMG3D.s18_centre_avenue, 0, 0, W, H), { blur: 4 });
+  passersby(g, [[150, 1460, 0.44, PR[0]], [290, 1430, 0.36, PR[3]], [860, 1450, 0.42, PR[2]], [980, 1420, 0.36, PR[1]]]);
+  actor(g, 540, 1800, 1.2, { ...GARDE, baton: true }, { rim: GOLD, rimAng: -1.57, rimW: 11, key: "#ffe6b0" });
+  hud(g, { clock: "07:20", zone: "LE CENTRE" }); fin3d(g); caption(g, ["AU", "CENTRE."], 1); };
 window.SCENES = Object.fromEntries(Object.entries(S).filter(([k]) => !k.endsWith("_bg")));
 window.SCENES_ALL = S;
