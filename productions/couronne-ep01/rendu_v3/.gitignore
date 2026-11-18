@@ -2,3 +2,6 @@ video/*.mp4
 video/*.log
 video/parts_*/
 video/patch_*/
+video/parts4k_*/
+video/render4k_*.log
+video/2pass_*
