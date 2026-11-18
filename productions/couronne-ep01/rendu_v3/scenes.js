@@ -895,5 +895,43 @@ S.p02q_chute_rapide = g => {                          // scène 3 : chute rapide
   pigeon(g, 600, 1250, 1.6, 2.3, 0);
   hud(g); finish(g, { bloom: 0.35, grade: ["#06202a", "#c8f4ee", 0.16] }); caption(g, ["TU", "VIS"], 0);
 };
+// ---------- v40 : oiseau qui bat des ailes vers le champ, touche, s'inverse et tombe ; une image par plan ----------
+function birdFlap(g, x, y, s, rot, wing = 0) {        // oiseau : wing = 1 ailes levées (battement haut), 0 ailes baissées, -1 ailes repliées
+  g.save(); g.translate(x, y); g.rotate(rot); g.scale(s, s);
+  const up = wing; // -1..1
+  g.fillStyle = "#ece4d2"; g.strokeStyle = INK; g.lineWidth = 3;
+  g.beginPath(); g.ellipse(0, 0, 58, 28, 0, 0, 7); g.fill(); g.stroke();                                       // corps
+  g.fillStyle = "#4a4d52"; g.beginPath(); g.moveTo(-6, -6); g.lineTo(-30 - up * 20, -10 - up * 110); g.lineTo(-54, 4); g.closePath(); g.fill(); g.stroke();   // aile haute
+  g.beginPath(); g.moveTo(-8, 8); g.lineTo(-40 + up * 10, 40 + up * 40); g.lineTo(-44, 10); g.closePath(); g.fill(); g.stroke();                       // aile basse
+  g.fillStyle = "#ece4d2"; g.beginPath(); g.arc(56, -6, 18, 0, 7); g.fill(); g.stroke();                       // tête
+  g.fillStyle = "#e0701e"; g.beginPath(); g.moveTo(70, -8); g.lineTo(92, 0); g.lineTo(70, 4); g.closePath(); g.fill();
+  g.strokeStyle = "#17130e"; g.lineWidth = 3; g.beginPath(); g.moveTo(60, -4); g.lineTo(68, -2); g.moveTo(60, -12); g.lineTo(68, -14); g.stroke();
+  g.strokeStyle = "#e0701e"; g.lineWidth = 5; g.beginPath(); g.moveTo(-14, 24); g.lineTo(-22, 46); g.moveTo(-2, 24); g.lineTo(-8, 48); g.stroke();
+  g.restore();
+}
+S.p02o_vol_normal = g => {                            // plan 2a : vol, ailes qui battent, droit vers le champ
+  sky(g, [[0, "#05080a"], [0.6, "#0a1418"], [1, "#050607"]]);
+  fieldSurface(g, 1500, 420);
+  for (let i = 1; i < 5; i++) { g.strokeStyle = rgba("#cfe9e6", 0.08 + i * 0.02); g.lineWidth = 4; g.beginPath(); g.moveTo(120 - i * 60, 520 - i * 60); g.lineTo(220 - i * 60, 600 - i * 60); g.stroke(); }   // vitesse
+  birdFlap(g, 360, 760, 1.6, 0.42, 1);
+  hud(g); finish(g, { bloom: 0.3, grade: ["#06202a", "#c8f4ee", 0.16] }); caption(g, ["TU", "VIS"], 0);
+};
+S.p02p_impact = g => {                                // plan 2b : contact avec le champ, oiseau inversé, onde
+  sky(g, [[0, "#0a1418"], [0.6, "#10242a"], [1, "#050607"]]);
+  g.fillStyle = rgba("#dffaf6", 0.2); g.fillRect(0, 0, W, H);
+  fieldSurface(g, 1500, 420);
+  glow(g, 540, 1070, 360, "#bff5ef", 0.7);
+  [60, 130, 220, 330].forEach((r, k) => { g.save(); g.translate(540, 1080); g.scale(1, 0.45); hexRing(g, 0, 0, r, "#6fe0d6", 0.9 - k * 0.18, 6 - k); g.restore(); });
+  for (let i = 0; i < 22; i++) { g.fillStyle = rgba("#bff5ef", 0.9); g.fillRect(540 + Math.cos(i * 2.4) * (60 + (i % 5) * 40), 1080 - Math.abs(Math.sin(i * 1.7)) * (80 + (i % 4) * 30), 5, 5); }
+  birdFlap(g, 540, 1060, 1.7, Math.PI + 0.25, -1);
+  hud(g, { alpha: 0.6 }); finish(g, { bloom: 0.5, grade: ["#06202a", "#dffaf6", 0.18] }); caption(g, ["TU", "VIS"], 0);
+};
+S.p02q_chute_rapide = g => {                          // plan 2c : oiseau inversé qui tombe vite, traînées verticales
+  sky(g, [[0, "#05080a"], [0.6, "#0a1418"], [1, "#050607"]]);
+  fieldSurface(g, 1500, 420);
+  for (let i = 0; i < 16; i++) { g.strokeStyle = rgba("#cfe9e6", 0.18 + rnd(i) * 0.12); g.lineWidth = 5 + rnd(i * 3) * 4; const x = 420 + rnd(i * 7) * 320; g.beginPath(); g.moveTo(x, 300 + rnd(i) * 300); g.lineTo(x + 6, 1000 + rnd(i * 5) * 200); g.stroke(); }
+  birdFlap(g, 580, 1350, 2.2, Math.PI + 0.5, -1);
+  hud(g); finish(g, { bloom: 0.35, grade: ["#06202a", "#c8f4ee", 0.16] }); caption(g, ["TU", "VIS"], 0);
+};
 window.SCENES = Object.fromEntries(Object.entries(S).filter(([k]) => !k.endsWith("_bg")));
 window.SCENES_ALL = S;
