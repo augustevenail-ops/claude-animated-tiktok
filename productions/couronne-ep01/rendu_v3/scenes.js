@@ -299,7 +299,7 @@ S.c9_pere_cellule = g => {                          // le père enfermé, seul
 };
 S.c10_heros_question = g => {                        // le héros face caméra : question, choix A/B
   sky(g, [[0, "#0a0f12"], [0.5, "#16202a"], [1, "#07090b"]]);
-  layer(g, q => { glow(q, 200, 500, 300, TEAL, 0.5); glow(q, 880, 420, 280, AMBER, 0.55); }, { blur: 18 });
+  layer(g, q => { glow(q, 270, 670, 300, TEAL, 0.5); glow(q, 810, 650, 280, AMBER, 0.55); }, { blur: 18 });
   domeBarrier(g, 1150, 1100, 900, 0.35);
   actor(g, 540, 2650, 2.3, { ...HERO, look: 0.0, eyeDy: 0.0 }, { rim: TEAL, rimAng: -1.57, rimW: 7, key: "#ffd9a0", shadow: false });
   pill(g, "A · TE TAIS", 300, 470); pill(g, "B · PARLE", 780, 470);
@@ -1042,12 +1042,12 @@ S.v41_p27_schema = g => {                            // plan 27 : schéma de la 
 };
 S.v41_p31_choix = g => {                             // plan 31 : les deux choix en grand
   sky(g, [[0, "#0a0f12"], [0.5, "#16202a"], [1, "#07090b"]]);
-  layer(g, q => { glow(q, 200, 500, 300, TEAL, 0.5); glow(q, 880, 420, 280, AMBER, 0.55); }, { blur: 18 });
+  layer(g, q => { glow(q, 270, 670, 300, TEAL, 0.5); glow(q, 810, 650, 280, AMBER, 0.55); }, { blur: 18 });
   actor(g, 540, 2650, 2.3, { ...HERO, look: 0.0 }, { rim: TEAL, rimAng: -1.57, rimW: 7, key: "#ffd9a0", shadow: false });
   g.fillStyle = "rgba(10,12,14,0.92)"; g.strokeStyle = "#f3efe6"; g.lineWidth = 6;
-  g.beginPath(); g.roundRect(70, 330, 400, 220, 26); g.fill(); g.stroke(); g.beginPath(); g.roundRect(610, 330, 400, 220, 26); g.fill(); g.stroke();
-  g.fillStyle = CAP_ORANGE; g.font = "900 120px Montserrat"; g.textAlign = "center"; g.fillText("A", 270, 455); g.fillText("B", 810, 455);
-  g.fillStyle = "#f3efe6"; g.font = "800 46px Montserrat"; g.fillText("TE TAIS", 270, 520); g.fillText("PARLE", 810, 520); g.textAlign = "left";
+  g.beginPath(); g.roundRect(70, 560, 400, 220, 26); g.fill(); g.stroke(); g.beginPath(); g.roundRect(610, 560, 400, 220, 26); g.fill(); g.stroke();
+  g.fillStyle = CAP_ORANGE; g.font = "900 120px Montserrat"; g.textAlign = "center"; g.fillText("A", 270, 685); g.fillText("B", 810, 685);
+  g.fillStyle = "#f3efe6"; g.font = "800 46px Montserrat"; g.fillText("TE TAIS", 270, 750); g.fillText("PARLE", 810, 750); g.textAlign = "left";
   hud(g); finish(g, { grade: ["#06202a", "#ffd9a0", 0.16] }); caption(g, ["CHOISIS", "EN", "COMMENTAIRE"], 0);
 };
 // ---------- v42 : plans posés dans le monde 3D (../monde3d), personnages 2D par-dessus ----------
@@ -1295,14 +1295,12 @@ S.v16_prends_vivant = g => { bg3d(g, "s16_rue_angle"); layer(g, q => q.drawImage
   passersby(g, [[460, 1400, 0.28, PD[0]], [640, 1395, 0.26, PD[2]], [820, 1410, 0.3, PD[1]], [160, 1520, 0.5, PD[1]], [300, 1490, 0.44, PD[3]], [950, 1500, 0.5, PD[4]]]);
   actor(g, 540, 2650, 2.0, { ...PERE, look: -0.08, arms: [[-1, 0], [1, -20]], handTo: [760, 1560], paper: true }, { rim: "#cfe3ee", rimAng: -0.7, key: "#dfe9ef", shadow: false }); hud(g, { clock: "07:02" }); fin3d(g); caption(g, ["PRENDS", "ÇA."], 0); };
 S.v18_garde_vivant = g => { bg3d(g, "s18_centre_avenue"); layer(g, q => q.drawImage(window.IMG3D.s18_centre_avenue, 0, 0, W, H), { blur: 4 });
-  passersby(g, [[400, 1350, 0.25, PR[1]], [700, 1345, 0.24, PR[0]], [800, 1360, 0.27, PR[3]], [230, 1370, 0.28, PR[2]], [150, 1460, 0.44, PR[0]], [290, 1430, 0.36, PR[3]], [860, 1450, 0.42, PR[2]], [980, 1420, 0.36, PR[1]], [60, 1540, 0.56, PR[4]]]);
   actor(g, 540, 1800, 1.2, { ...GARDE, baton: true }, { rim: GOLD, rimAng: -1.57, rimW: 11, key: "#ffe6b0" });
   hud(g, { clock: "07:20", zone: "LE CENTRE" }); fin3d(g); caption(g, ["AU", "CENTRE."], 1); };
 S.v09_regle1_vivante = g => { bg3d(g, "r01_regle1_mur");
   passersby(g, [[180, 1640, 0.42, PD[0]], [300, 1660, 0.46, PD[2]], [820, 1650, 0.44, PD[1]], [940, 1700, 0.52, PD[4]], [620, 1620, 0.36, PD[3]]]);
   hud(g); fin3d(g); caption(g, ["NE", "SORS", "JAMAIS"], 1); };
 S.v22_mur_vivant = g => { bg3d(g, "w22_le_mur");
-  passersby(g, [[440, 1690, 0.3, PD[2]], [560, 1700, 0.32, PD[0]], [670, 1710, 0.33, PD[1]], [150, 1860, 0.46, PD[3]], [970, 1880, 0.48, PD[4]]]);
   hud(g); fin3d(g); caption(g, ["UN", "MUR", "LE", "SÉPARE"], 1); };
 window.SCENES = Object.fromEntries(Object.entries(S).filter(([k]) => !k.endsWith("_bg")));
 window.SCENES_ALL = S;

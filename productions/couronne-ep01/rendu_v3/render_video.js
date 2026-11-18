@@ -6,6 +6,8 @@ const fs = require("fs"), path = require("path"), { spawn } = require("child_pro
 const D = __dirname, P = path.join(D, ".."), FD = path.join(D, "fonts"), M = path.join(P, "monde3d/out");
 const args = process.argv.slice(2), opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
 const FPS = 30, plans = JSON.parse(fs.readFileSync(path.join(P, "plans_ep01.json"))).plans, TOTAL = 72.6;
+// v8 : plan 6 (Conseil) rallongé, plan 7 raccourci d'autant
+{ const p6 = plans.find(p => p.n === 6), p7 = plans.find(p => p.n === 7); p6.fin = p7.debut = 11.6; }
 const OUT = path.join(D, opt("--out", "video/couronne_ep01.mp4")), T0 = +opt("--from", 0), T1 = +opt("--to", TOTAL);
 
 // ---------- scène par plan (sous-plans du plan 2 inclus) ----------
@@ -19,12 +21,14 @@ const ALARM = new Set(["b02_choc_chute", "a03_compte_foule", "a04_foule_dessus"]
 const POP = new Set([3, 4, 11, 12, 15, 17, 18, 23, 24, 26, 28, 29, 30, 31]);
 const CAM3D = { m05_drone_district: "d05a_drone_district", m06_zone_large: "d05b_zone_large", m07_travers_champ: "d05c_travers_champ", h08_holo_carte: "h08_holo", m09_regle1: "r01_regle1_mur",
   g10_aerien: "o10_aerien", k06_conseil: "d06_conseil", v13_rue_vivante: "s13_rue_matin", v14_escorte_vivante: "s14_rue_escorte", v15_pere_vivant: "s15_rue_proche", v16_prends_vivant: "s16_rue_angle", v18_garde_vivant: "s18_centre_avenue",
-  m19_drone_centre: "d19_drone_centre", m20_drone_approche: "d20_drone_approche", m21_regle2: "r21_regle2_1m", v22_mur_vivant: "w22_le_mur", h27_holo_retraction: "h27_holo" };
+  m19_drone_centre: "d19_drone_centre", m20_drone_approche: "d20_drone_approche", m21_regle2: "r21_regle2_1m", v22_mur_vivant: "w22_le_mur", m20_regle2_un: "d20r21_facade", h27_holo_retraction: "h27_holo" };
 const shots = [];
 for (const p of plans) {
   if (p.n === 2) [["p02o2_vol_droit", 0.10, 0.52], ["b02_choc_chute", 0.52, p.fin]]                 // vol droit, puis choc + chute suivie + arrêt sur les personnages (une seule prise)
     .forEach(([s, a, b], k) => shots.push({ n: 2, scene: s, a, b, pop: false, fade: k === 1 }));
-  else shots.push({ n: p.n, scene: SC[p.n], a: p.debut, b: p.fin, pop: POP.has(p.n), fade: p.n !== 32 && p.n !== 1, push: p.n === 25 ? [2.0, 2.15] : null });
+  else if (p.n === 21) continue;                                                                   // v8 : plans 20 + 21 = une seule prise (zoom sur la façade jusqu'à la règle 2)
+  else if (p.n === 20) shots.push({ n: 20, scene: "m20_regle2_un", a: p.debut, b: plans.find(q => q.n === 21).fin, pop: false, fade: true, push: null });
+  else shots.push({ n: p.n, scene: SC[p.n], a: p.debut, b: p.fin, pop: POP.has(p.n), fade: p.n !== 32 && p.n !== 1, push: p.n === 25 ? [1.45, 1.55] : null, pushY: p.n === 25 ? 1500 : null });
 }
 // image 3D animée (caméra qui bouge à chaque image) pour les plans posés dans le monde 3D
 for (const sh of shots) { sh.cam3d = CAM3D[sh.scene] || null; if (sh.scene === "k06_conseil") sh.span = 0.42; }   // plan 6 : 3D seulement pendant l'approche
@@ -59,7 +63,7 @@ const css = [["Montserrat", "800", "Montserrat-800.woff2"], ["Montserrat", "900"
   await p.setContent(`<html><head><style>${css} body{margin:0;background:#000}</style></head><body><canvas id=c width=1080 height=1920></canvas></body></html>`);
   const imgs = Object.fromEntries(fs.readdirSync(M).filter(f => f.endsWith(".png")).map(f => [f.slice(0, -4), "data:image/png;base64," + fs.readFileSync(path.join(M, f)).toString("base64")]));
   await p.evaluate(async imgs => { window.IMG3D = {}; await Promise.all(Object.entries(imgs).map(([k, u]) => new Promise(r => { const i = new Image(); i.onload = r; i.src = u; window.IMG3D[k] = i; }))); }, imgs);
-  await p.addScriptTag({ content: ["draw_base.js", "fx.js", "helpers.js", "scenes.js", "scenes_v7.js"].map(f => fs.readFileSync(path.join(D, f), "utf8")).join("\n") });
+  await p.addScriptTag({ content: ["draw_base.js", "fx.js", "helpers.js", "scenes.js", "scenes_v7.js", "scenes_v8.js"].map(f => fs.readFileSync(path.join(D, f), "utf8")).join("\n") });
   await p.evaluate(async () => { for (const f of ["800 20px Montserrat", "900 20px Montserrat", "600 20px Oswald", "500 20px 'Roboto Mono'", "400 20px 'Permanent Marker'"]) await document.fonts.load(f); });
   await p.addScriptTag({ content: `
     const BG = document.createElement("canvas"); BG.width = W; BG.height = H; const bgx = BG.getContext("2d", { willReadFrequently: true });
@@ -74,7 +78,7 @@ const css = [["Montserrat", "800", "Montserrat-800.woff2"], ["Montserrat", "900"
       layerScene(shot.scene);                                                          // la scène est redessinée à chaque image (tout bouge)
       g.reset(); g.fillStyle = "#000"; g.fillRect(0, 0, W, H);
       let s = 1, dx = 0, dy = 0, rot = 0;
-      if (shot.push) s = shot.push[0] + (shot.push[1] - shot.push[0]) * u;
+      if (shot.push) { s = shot.push[0] + (shot.push[1] - shot.push[0]) * u; if (shot.pushY) dy = (shot.pushY - H / 2) * (1 - s); }   // pushY : point fixe du zoom (texte de la feuille au-dessus des sous-titres)
       else if ((!shot.cam3d || shot.span) && shot.n !== 1) { s = 1.04 + 0.05 * u; dx = Math.sin(t * 0.55) * 12; dy = Math.sin(t * 0.43 + 1) * 9; rot = Math.sin(t * 0.31) * 0.005; }   // caméra qui dérive sans arrêt
       if (shot.pop && ts < 1) s *= 1 + 1.0 * Math.pow(1 - ts, 3);                    // pop : part de x2, arrive au cadre en 1 s
       g.save(); g.translate(W / 2 + dx, H / 2 + dy); g.rotate(rot); g.scale(s, s); g.translate(-W / 2, -H / 2); g.drawImage(BG, 0, 0); g.restore();

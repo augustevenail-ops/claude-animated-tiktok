@@ -127,16 +127,33 @@ export function buildWorld(scene) {
   }
 
   // ---------- second mur (anneau) avec porte au sud (z+) ----------
-  const wallMat = new THREE.MeshLambertMaterial({ color: 0x6a6456 });
+  // v8 : vrai mur en béton : panneaux préfabriqués (joints, trous de banches, coulures, pied humide), contreforts, chaperon
+  const concreteTex = () => { const c = document.createElement("canvas"); c.width = 256; c.height = 768; const q = c.getContext("2d");
+    q.fillStyle = "#7d786d"; q.fillRect(0, 0, 256, 768);
+    for (let i = 0; i < 2600; i++) { const v = rnd(i * 1.7 + 3); q.fillStyle = `rgba(${v > 0.5 ? "255,255,250" : "20,18,14"},${0.03 + rnd(i * 5.3) * 0.05})`; q.fillRect(rnd(i * 2.1) * 256, rnd(i * 3.9) * 768, 2 + rnd(i) * 7, 2 + rnd(i * 9) * 7); }   // grain
+    for (let p = 0; p < 7; p++) { const y = p * 768 / 7; q.fillStyle = `rgba(0,0,0,${0.04 + rnd(p * 13) * 0.08})`; q.fillRect(0, y, 256, 768 / 7);                                // teinte de chaque panneau
+      q.fillStyle = "rgba(20,18,15,0.75)"; q.fillRect(0, y, 256, 3); q.fillStyle = "rgba(255,255,245,0.18)"; q.fillRect(0, y + 3, 256, 2);                                       // joint horizontal
+      for (let k = 0; k < 4; k++) { q.fillStyle = "rgba(25,22,18,0.8)"; q.beginPath(); q.arc(32 + k * 64, y + 55, 3.2, 0, 7); q.fill(); } }                                   // trous de banches
+    q.fillStyle = "rgba(20,18,15,0.85)"; q.fillRect(0, 0, 4, 768); q.fillRect(252, 0, 4, 768);                                                                               // joints verticaux
+    for (let i = 0; i < 22; i++) { const x = rnd(i * 7.7) * 256, L = 80 + rnd(i * 3.1) * 420, w = 3 + rnd(i * 1.3) * 12, gr = q.createLinearGradient(0, 0, 0, L);           // coulures depuis le chaperon
+      gr.addColorStop(0, `rgba(${i % 5 ? "30,26,20" : "90,52,26"},${0.25 + rnd(i) * 0.2})`); gr.addColorStop(1, "rgba(30,26,20,0)"); q.fillStyle = gr; q.fillRect(x, 0, w, L); }
+    const base = q.createLinearGradient(0, 768, 0, 600); base.addColorStop(0, "rgba(28,26,20,0.65)"); base.addColorStop(1, "rgba(28,26,20,0)"); q.fillStyle = base; q.fillRect(0, 600, 256, 168);   // pied humide
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t; };
+  const wallMat = new THREE.MeshLambertMaterial({ map: concreteTex() }), capMat = new THREE.MeshLambertMaterial({ color: 0x5c574d }), butMat = new THREE.MeshLambertMaterial({ color: 0x6c675c });
   const nSeg = 96;
   for (let k = 0; k < nSeg; k++) {
     const a = k / nSeg * Math.PI * 2;
     if (Math.abs(((a - Math.PI / 2 + Math.PI * 3) % (Math.PI * 2)) - Math.PI) < 0.07) continue;      // ouverture de la porte (angle π/2 = z+)
-    const len = 2 * Math.PI * R_WALL / nSeg + 0.6, m = new THREE.Mesh(new THREE.BoxGeometry(len, 28, 4), wallMat);
+    const len = 2 * Math.PI * R_WALL / nSeg + 0.6, m = new THREE.Mesh(new THREE.BoxGeometry(len, 28, 5), wallMat);
     m.position.set(Math.cos(a) * R_WALL, 14, Math.sin(a) * R_WALL); m.rotation.y = -a + Math.PI / 2; add(m); add(inked(m, 0.5));
+    const cap = new THREE.Mesh(new THREE.BoxGeometry(len, 1.1, 6.4), capMat); cap.position.set(Math.cos(a) * R_WALL, 28.55, Math.sin(a) * R_WALL); cap.rotation.y = m.rotation.y; add(cap);   // chaperon
+    const ab = a + Math.PI / nSeg;                                                                     // contrefort côté districts, entre deux panneaux
+    if (Math.abs(((ab - Math.PI / 2 + Math.PI * 3) % (Math.PI * 2)) - Math.PI) > 0.09) {
+      const b = new THREE.Mesh(new THREE.BoxGeometry(1.8, 26, 3), butMat); b.position.set(Math.cos(ab) * (R_WALL + 3.6), 13, Math.sin(ab) * (R_WALL + 3.6)); b.rotation.y = -ab + Math.PI / 2; add(b); add(inked(b, 0.35)); }
   }
-  const topRing = new THREE.Mesh(new THREE.TorusGeometry(R_WALL, 0.5, 6, 160), new THREE.MeshBasicMaterial({ color: 0x9a7e46 }));
-  topRing.rotation.x = Math.PI / 2; topRing.position.y = 28.3; add(topRing);
+  const ringG = new THREE.TorusGeometry(R_WALL, 0.35, 6, 160, 2 * Math.PI - 0.2); ringG.rotateZ(Math.PI / 2 + 0.1);                     // liseré doré interrompu au-dessus de la porte
+  const topRing = new THREE.Mesh(ringG, new THREE.MeshBasicMaterial({ color: 0x9a7e46 }));
+  topRing.rotation.x = Math.PI / 2; topRing.position.y = 29.2; add(topRing);
   const gate = new THREE.Mesh(new THREE.BoxGeometry(18, 26, 1.2), new THREE.MeshLambertMaterial({ color: 0x2c2a26 })); gate.position.set(0, 13, R_WALL - 0.5); add(gate); add(inked(gate));   // porte blindée
   for (const dx of [-9.4, 9.4]) { const f = new THREE.Mesh(new THREE.BoxGeometry(0.8, 27, 1.6), new THREE.MeshLambertMaterial({ color: 0x9a7e46, emissive: 0x3a2a10 })); f.position.set(dx, 13.5, R_WALL); add(f); }
   const slit = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 25), new THREE.MeshBasicMaterial({ color: GOLD })); slit.position.set(0, 12.5, R_WALL + 0.15); add(slit);   // fente de lumière dorée

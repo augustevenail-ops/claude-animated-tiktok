@@ -42,3 +42,11 @@ SHOTS.o10_aerien = { path: [[0, 2.2, 588], [0, 45, 700], [120, 520, 1500], [420,
   outside: true, near: 0.5, fogs: [0x5e5c2a, 0.0045, 0.00011], bg: 0x4a4a24 };
 SHOTS.h08_holo.pull = [0.62, 1.75];
 SHOTS.h27_holo.pull = [0.62, 1.95];
+
+// v8 : plan 5 recule jusqu'au dôme entier ; plans 20+21 en une seule prise (approche puis zoom sur la façade jusqu'à la règle 2) ;
+// plan 22 passe vite au-dessus du mur pour montrer le centre
+SHOTS.d05b_zone_large.path = [[17, 11, 235], [15, 150, 450], [0, 950, 1350], [0, 1650, 2450]];
+SHOTS.d05b_zone_large.looks = [[17, 8, 150], [8, 20, 120], [0, 0, 0], [0, 40, 0]];
+SHOTS.d20r21_facade = { path: [[8, 48, 180], [3, 43, 125], [0.6, 40.6, 92], [0.1, 39.95, 70], [0, 39.85, 62.25]], looks: [[0, 40, 61], [0, 39.9, 61], [0, 39.85, 61]],
+  ease: "out", fovs: [52, 82], roll: 0.025, shake: 0.02, sign2On: [0.26, 0.36] };
+Object.assign(SHOTS.w22_le_mur, { path: [[18.5, 3, 167], [15, 24, 157], [10, 40, 143], [5, 47, 118]], looks: [[26, 12, 136], [16, 30, 112], [-8, 34, 40], [-10, 30, 0]], ease: "out" });   // face au béton (pas à la porte), puis par-dessus
