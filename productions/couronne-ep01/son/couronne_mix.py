@@ -340,23 +340,27 @@ def ph(t0, notes, step):          # notes = [(midi, longueur en pas)]
     for m, k_ in notes: out.append((t, m, step * k_ * 0.95)); t += step * k_
     return out
 B4, Cs5, D5, E5, Fs5, G5, A5, B5 = 71, 73, 74, 76, 78, 79, 81, 83
-melody(ph(9.6, [(Fs5, 2), (E5, 1), (D5, 1), (Cs5, 2), (D5, 2), (B4, 4)], 0.55), -26, 81)            # le Conseil, l'énergie
-melody(ph(14.4, [(D5, 2), (Fs5, 2), (A5, 3), (G5, 1), (Fs5, 4)], 0.5), -27, 83)                       # la carte
-melody(ph(24.4, [(B4, 2), (D5, 1), (E5, 1), (Fs5, 3), (E5, 1), (D5, 2), (Cs5, 2), (D5, 4)], 0.5), -25, 85)   # ton père, le soir
-melody(ph(32.8, [(Fs5, 2), (A5, 2), (G5, 2), (Fs5, 1), (E5, 1), (Fs5, 4)], 0.55), -26, 87)            # « prends ça »
-# fin en majeur (ré majeur) : plus de mouvement, ça monte jusqu'au carton
 D4, E4, Fs4, G4, A4 = 62, 64, 66, 67, 69
-melody(ph(49.8, [(D5, 2), (Fs5, 2), (A5, 2), (B5, 2), (A5, 1), (Fs5, 1), (A5, 4)], 0.45), -25, 89)    # la feuille : « il reste de l'énergie »
-CH = [(61.6, [50, 57, 66]), (63.3, [45, 57, 64]), (65.0, [43, 55, 62]), (66.7, [45, 57, 61]), (68.4, [50, 57, 66, 69])]   # ré, la, sol, la, ré
+# arc des notes (retour utilisateur) : légères et aiguës au début, de plus en plus graves, et un peu plus de tension vers la fin
+melody(ph(9.6, [(Fs5, 2), (E5, 1), (D5, 1), (Cs5, 2), (D5, 2), (B4, 4)], 0.55), -26, 81)                     # le Conseil (aigu, léger)
+melody(ph(14.4, [(D5, 2), (Fs5, 2), (A5, 3), (G5, 1), (Fs5, 4)], 0.5), -27, 83)                                # la carte
+melody(ph(24.4, [(m - 5, k_) for m, k_ in [(B4, 2), (D5, 1), (E5, 1), (Fs5, 3), (E5, 1), (D5, 2), (Cs5, 2), (D5, 4)]], 0.5), -25, 85)   # ton père, le soir (une quarte plus bas)
+melody(ph(32.8, [(m - 7, k_) for m, k_ in [(Fs5, 2), (A5, 2), (G5, 2), (Fs5, 1), (E5, 1), (Fs5, 4)]], 0.55), -26, 87)                  # « prends ça » (une quinte plus bas)
+melody(ph(49.8, [(m - 12, k_) for m, k_ in [(D5, 2), (E5, 2), (Fs5, 2), (G5, 3), (Fs5, 1), (E5, 4)]], 0.5), -25, 89)                   # la feuille (une octave plus bas)
+# fin (si mineur, grave) : accords bas, petit ostinato de basse qui accélère doucement, mélodie qui descend et finit en suspens sur la dominante
+CH = [(56.3, [35, 42, 50]), (59.2, [31, 38, 47]), (62.0, [28, 40, 47, 54]), (64.0, [31, 38, 47]), (66.3, [30, 37, 46, 49]), (68.4, [35, 42, 50, 54])]   # si m, sol, mi m(9), sol, fa# (tension), si m
 for (t_, ch), nx in zip(CH, [c[0] for c in CH[1:]] + [DUR - 0.2]):
-    melody([(t_, m, nx - t_) for m in ch], -27, int(t_ * 10))                                     # nappe d'accords majeurs
-    arp = [m + 12 for m in ch[:3]] + [ch[0] + 24]
-    melody([(t_ + i * 0.21, arp[i % 4], 0.18) for i in range(int((nx - t_) / 0.21))], -31, int(t_ * 10) + 5)   # arpège doux qui avance
-melody(ph(61.7, [(Fs5, 2), (A5, 2), (D6 := 86, 3), (Cs5 + 12, 1), (B5, 2), (A5, 2), (G5, 2), (A5, 2), (B5, 2), (Cs5 + 12, 2), (D6, 6)], 0.42), -25, 91)   # le choix -> le carton
+    melody([(t_, m + 12, nx - t_) for m in ch], -26, int(t_ * 10))
+t_, e = 56.3, 0
+while t_ < 68.3:                                                                                                 # ostinato : si-fa#-si-do (demi-ton qui frotte un peu)
+    root = [c for c in CH if c[0] <= t_][-1][1][0] + 24
+    melody([(t_, root + [0, 7, 12, 1 if root % 12 == 11 else 8][e % 4], 0.3)], -29 if t_ < 62 else -27, 700 + e)
+    t_ += 0.62 - 0.22 * (t_ - 56.3) / 12; e += 1
+melody(ph(62.1, [(Fs4, 2), (E4, 1), (D4, 1), (Cs5 - 12, 2), (D4, 2), (B4 - 12, 3), (Cs5 - 12, 1), (D4, 2), (Cs5 - 12, 4), (Fs4 - 12, 6)], 0.42), -25, 91)   # le choix -> le carton
 # ---------- petite musique de fond, constante et discrète
 mus = k.music4(DUR, dips=(), transpose=0)
 a = np.abs(mus) > 1e-4; mus = mus * db(vref - 19 - rms(mus[a]))
-mus *= np.interp(np.arange(N) / SR, [0, 60.5, 62.0, DUR], [1, 1, 0, 0])            # la nappe mineure s'efface : la fin passe en majeur
+mus *= np.interp(np.arange(N) / SR, [0, 50, 56, DUR], [1, 1, 0.6, 0.6])            # la nappe mineure s'efface : la fin passe en majeur
 duck = np.ones(N)
 for w in words: duck[int(max(0, w["s"] - 0.08) * SR):int(min(DUR, w["e"] + 0.12) * SR)] = db(-2.0)
 mus *= np.convolve(duck, np.ones(2000) / 2000, "same")
@@ -366,11 +370,11 @@ if os.environ.get("NIVEAUX"):                                                   
         sl = slice(int(a_ * SR), int(b_ * SR)); print(f"{a_:6.2f} musique {rms(mus[sl]) - vref:6.1f}  bruitages {rms(hit[sl] + L[sl]) - vref:6.1f}")
     sys.exit()
 mix = np.stack([voice + mus + hit + L, voice + mus * 0.97 + hit + R], 1)
-out = os.path.join(HERE, "mix_v5.wav"); pre = os.path.join(HERE, "_pre_v5.wav")
+out = os.path.join(HERE, "mix_v6.wav"); pre = os.path.join(HERE, "_pre_v6.wav")
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "f64le", "-ar", str(SR), "-ac", "2", "-i", "-", pre], input=mix.tobytes(), check=True)
 m = subprocess.run(["ffmpeg", "-i", pre, "-af", "loudnorm=I=-15:TP=-1.2:LRA=9:print_format=json", "-f", "null", "-"], capture_output=True, text=True).stderr
 j = json.loads(m[m.rfind("{"):])
 af = f"loudnorm=I=-15:TP=-1.2:LRA=9:measured_I={j['input_i']}:measured_TP={j['input_tp']}:measured_LRA={j['input_lra']}:measured_thresh={j['input_thresh']}:offset={j['target_offset']}:linear=true,aresample=48000"
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", pre, "-af", af, "-c:a", "pcm_s24le", out], check=True); os.remove(pre)
-subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", out, "-b:a", "192k", os.path.join(HERE, "mix_ecoute_v5.mp3")], check=True)
+subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", out, "-b:a", "192k", os.path.join(HERE, "mix_ecoute_v6.mp3")], check=True)
 print("mix ok", out)
