@@ -37,7 +37,7 @@ Object.assign(SHOTS.w22_le_mur, { path: [[18.5, 3, 167], [16, 14, 162], [12, 36,
 Object.assign(SHOTS.h27_holo, { path: [[460, 820, 1240], [-380, 700, 1120]], looks: [[0, -60, 40], [0, -20, 20]], ease: "inout", shake: 0 });
 
 // v7 : plan 6 (drone vers la fenêtre du Conseil, tour centrale), plan 10 (vue aérienne du désert irradié), dézoom final des hologrammes
-SHOTS.d06_conseil = { path: [[150, 128, 44], [82, 106, 14], [40, 96, 1], [22.75, 95, 0]], looks: [[15, 95, 0], [15, 95, 0]], ease: "in", fov: 60, roll: 0.04, bank: 0.12, shake: 0.05 };
+SHOTS.d06_conseil = { path: [[150, 130, 44], [82, 108, 14], [40, 98.5, 1], [22.75, 97.5, 0]], looks: [[15, 97.5, 0], [15, 97.5, 0]], ease: "in", fov: 60, roll: 0.04, bank: 0.12, shake: 0.05 };
 SHOTS.o10_aerien = { path: [[0, 2.2, 588], [0, 45, 700], [120, 520, 1500], [420, 1750, 3300]], looks: [[0, 35, 440], [0, 70, 250], [0, 0, 0], [0, 0, 0]], ease: "inout", fov: 62, roll: 0.02, shake: 0.03,
   outside: true, near: 0.5, fogs: [0x5e5c2a, 0.0045, 0.00011], bg: 0x4a4a24 };
 SHOTS.h08_holo.pull = [0.62, 1.75];

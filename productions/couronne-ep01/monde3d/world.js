@@ -162,7 +162,19 @@ export function buildWorld(scene) {
   r2.position.set(0, 90, 48); add(r2); add(inked(r2));
   const glowR2 = new THREE.PointLight(0xff3b2a, 1.6, 7, 1.6); glowR2.position.set(0, 40, 62.5); add(glowR2);   // lueur rouge du néon sur le béton
   // tour centrale
-  building(0, 0, 30, 30, 260, richMats[2], { x: 10, y: 24 }, 0, "rich");
+  // tour centrale : grandes baies toutes identiques (4,4 x 5,4 m, croisillon en croix), 5 par face et par étage, étages de 7,8 m
+  const bigWin = (emis) => { const c = document.createElement("canvas"); c.width = 600; c.height = 624; const g = c.getContext("2d");
+    g.fillStyle = emis ? "#000" : "#b8a888"; g.fillRect(0, 0, 600, 624);
+    if (!emis) { g.fillStyle = "#c9b48a"; for (let f = 0; f < 4; f++) g.fillRect(0, f * 156 + 150, 600, 6); }                           // corniches dorées d'étage
+    for (let f = 0; f < 4; f++) for (let b = 0; b < 5; b++) { const x = b * 120 + 16, y = f * 156 + 24, lit = rnd(f * 17 + b * 5 + 3) < 0.35;
+      if (emis) { if (lit) { g.fillStyle = "#ffd98a"; g.fillRect(x + 6, y + 6, 76, 96); } continue; }
+      const gr = g.createLinearGradient(x, y, x + 88, y + 108); if (lit) { gr.addColorStop(0, "#ffe2a0"); gr.addColorStop(1, "#c07a3a"); } else { gr.addColorStop(0, "#3a5a6a"); gr.addColorStop(1, "#14242e"); }
+      g.fillStyle = gr; g.fillRect(x, y, 88, 108);
+      if (lit) { g.fillStyle = "#6a0f1c"; g.fillRect(x + 4, y + 4, 10, 100); g.fillRect(x + 74, y + 4, 10, 100); }
+      g.strokeStyle = "#1a1612"; g.lineWidth = 6; g.strokeRect(x, y, 88, 108); g.lineWidth = 4; g.beginPath(); g.moveTo(x + 44, y); g.lineTo(x + 44, y + 108); g.moveTo(x, y + 54); g.lineTo(x + 88, y + 54); g.stroke(); }
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 8; return t; };
+  const towerMat = new THREE.MeshLambertMaterial({ map: bigWin(false), emissiveMap: bigWin(true), emissive: 0xffd98a, emissiveIntensity: 0.55 });
+  building(0, 0, 30, 30, 260, towerMat, { x: 30, y: 31.2 }, 0, "rich");
 
   // ---------- mur de la règle 1 : pignon aveugle dans un district (face à une rue, z+) ----------
   const blind = new THREE.MeshLambertMaterial({ map: blindTex() });

@@ -65,27 +65,19 @@ export function addOutside(scene) {
   return { group: G, animate(T) { clouds.forEach(c => { const a = c.a + c.v * T; c.sp.position.set(Math.cos(a) * c.r, c.y + Math.sin(T * 0.6 + c.ph) * 6, Math.sin(a) * c.r); c.sp.material.opacity = c.o * (0.75 + 0.25 * Math.sin(T * 1.3 + c.ph)); }); } };
 }
 
-// étage du Conseil (plan 6) : bandeau de pierre claire sur la face est de la tour centrale, rangée de grandes fenêtres
-// toutes identiques (4,4 x 5,4 m, croisillon en croix) ; celle du milieu donne sur la table du Conseil (celle où entre le drone)
+// baie de la salle du Conseil (plan 6) : même taille et même cadre que toutes les baies de la tour centrale (4,4 x 5,4 m),
+// posée sur la baie du milieu de la face est, 13e étage ; on voit la table du Conseil à travers
 export function councilWindow(scene, x, y, z) {
-  const WW = 4.4, WH = 5.4, PITCH = 5.8, N = 5;
-  const room = (table) => cvTex(512, 640, (g, w, h) => {
+  const t = cvTex(352, 432, (g, w, h) => {
     const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, "#5a1420"); gr.addColorStop(0.5, "#a8482a"); gr.addColorStop(1, "#3a0c14"); g.fillStyle = gr; g.fillRect(0, 0, w, h);
-    const lg = g.createRadialGradient(w / 2, h * 0.25, 0, w / 2, h * 0.25, w * 0.6); lg.addColorStop(0, "rgba(255,226,150,0.95)"); lg.addColorStop(1, "rgba(255,200,120,0)"); g.fillStyle = lg; g.fillRect(0, 0, w, h);   // lustre
-    g.fillStyle = "#6a0f1c"; g.fillRect(0, 0, 50, h); g.fillRect(w - 50, 0, 50, h);                                                     // rideaux (identiques sur chaque fenêtre)
-    if (table) { g.fillStyle = "#2a0c10"; g.beginPath(); g.ellipse(w / 2, h * 0.8, w * 0.42, h * 0.08, 0, 0, 7); g.fill();
-      for (let k = 0; k < 5; k++) { const px = w * (0.18 + k * 0.16), py = h * 0.74; g.fillStyle = "#1c0a0c"; g.beginPath(); g.arc(px, py - 52, 20, 0, 7); g.fill(); g.fillRect(px - 24, py - 34, 48, 40); } }
-    else { g.fillStyle = "rgba(30,8,10,0.6)"; g.fillRect(w * 0.3, h * 0.55, w * 0.4, h * 0.35); }                                       // meuble, salle voisine
-    g.fillStyle = "#14080a"; const fw = 18; g.fillRect(w / 2 - fw / 2, 0, fw, h); g.fillRect(0, h / 2 - fw / 2, w, fw);                   // croisillon en croix
+    const lg = g.createRadialGradient(w / 2, h * 0.25, 0, w / 2, h * 0.25, w * 0.6); lg.addColorStop(0, "rgba(255,226,150,0.95)"); lg.addColorStop(1, "rgba(255,200,120,0)"); g.fillStyle = lg; g.fillRect(0, 0, w, h);
+    g.fillStyle = "#6a0f1c"; g.fillRect(16, 16, 40, h - 32); g.fillRect(w - 56, 16, 40, h - 32);
+    g.fillStyle = "#2a0c10"; g.beginPath(); g.ellipse(w / 2, h * 0.8, w * 0.42, h * 0.08, 0, 0, 7); g.fill();
+    for (let k = 0; k < 5; k++) { const px = w * (0.18 + k * 0.16), py = h * 0.74; g.fillStyle = "#1c0a0c"; g.beginPath(); g.arc(px, py - 40, 15, 0, 7); g.fill(); g.fillRect(px - 18, py - 27, 36, 32); }
+    g.strokeStyle = "#1a1612"; g.lineWidth = 24; g.strokeRect(0, 0, w, h); g.lineWidth = 16; g.beginPath(); g.moveTo(w / 2, 0); g.lineTo(w / 2, h); g.moveTo(0, h / 2); g.lineTo(w, h / 2); g.stroke();   // cadre et croix identiques aux autres baies
   });
-  const tTable = room(true), tSide = room(false);
   const grp = new THREE.Group();
-  const band = new THREE.Mesh(new THREE.BoxGeometry(30.4, WH + 2.4, 0.5), new THREE.MeshLambertMaterial({ color: 0x8a7a5a, emissive: 0x1a1208 })); band.position.z = -0.35; grp.add(band);   // bandeau de l'étage
-  for (const dy of [-(WH / 2 + 1.2), WH / 2 + 1.2]) { const c = new THREE.Mesh(new THREE.BoxGeometry(30.8, 0.35, 0.9), new THREE.MeshLambertMaterial({ color: 0xc9b48a, emissive: 0x2a1e0a })); c.position.set(0, dy, 0); grp.add(c); }   // corniches dorées
-  const frameM = new THREE.MeshLambertMaterial({ color: 0x1a1612 });
-  for (let i = 0; i < N; i++) { const cx = (i - (N - 1) / 2) * PITCH;
-    const glass = new THREE.Mesh(new THREE.PlaneGeometry(WW, WH), new THREE.MeshBasicMaterial({ map: i === (N - 1) / 2 ? tTable : tSide })); glass.position.set(cx, 0, 0); grp.add(glass);
-    const fr = new THREE.Mesh(new THREE.BoxGeometry(WW + 0.36, WH + 0.36, 0.2), frameM); fr.position.set(cx, 0, -0.12); grp.add(fr); }
-  const light = new THREE.PointLight(0xffb070, 3, 40, 1.5); light.position.set(0, 0, 4); grp.add(light);
+  grp.add(new THREE.Mesh(new THREE.PlaneGeometry(4.4, 5.4), new THREE.MeshBasicMaterial({ map: t })));
+  const light = new THREE.PointLight(0xffb070, 2, 25, 1.5); light.position.set(0, 0, 3); grp.add(light);
   grp.position.set(x, y, z); grp.rotation.y = Math.PI / 2; scene.add(grp); return grp;
 }

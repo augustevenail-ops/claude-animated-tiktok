@@ -12,7 +12,7 @@ const scene = new THREE.Scene();
 const WD = buildWorld(scene), { r1, r2 } = WD;
 const LIFE = addDetails(scene, WD);
 const OUT = addOutside(scene);                                   // désert irradié (plan 10, vue aérienne)
-councilWindow(scene, 15.25, 95, 0);                              // fenêtre de la salle du Conseil, face est de la tour centrale (plan 6)
+councilWindow(scene, 15.03, 97.5, 0);                              // fenêtre de la salle du Conseil, face est de la tour centrale (plan 6)
 const fog0 = scene.fog.clone(), bg0 = scene.background.clone();
 // panneaux néon (règle 1 sur le pignon de district, règle 2 sur la face pleine de la tour)
 const s1 = new THREE.Mesh(new THREE.PlaneGeometry(9, 4.5), new THREE.MeshBasicMaterial({ depthWrite: false, map: neonSign([["RÈGLE 1", "600 190px Oswald, Impact, sans-serif", 230], ["NE SORS JAMAIS DU DÔME.", "900 66px Montserrat, Arial Black, sans-serif", 380]]), transparent: true }));

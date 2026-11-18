@@ -140,7 +140,7 @@ S.k06_conseil = g => {
   layer(q, r => { nearChair(r, 260, 1760, 0.95, "#6a665e", false); nearChair(r, 820, 1780, 1.0, "#55524c", true); }, { blur: 6 });
   g.save(); g.translate(W / 2, H / 2); g.scale(push, push); g.translate(-W / 2, -H / 2); g.drawImage(C, 0, 0); g.restore();
   // fenêtre traversée : croisillons et façade qui sortent du cadre (raccord avec la fin du plan 3D)
-  if (v < 0.3) { const k = 1 + Math.pow(v / 0.3, 2) * 3.2, a = 1 - v / 0.3, bw = 36 * k, fx = 520 * k, fy = 640 * k;
+  if (v < 0.3) { const k = 1 + Math.pow(v / 0.3, 2) * 3.2, a = 1 - v / 0.3, bw = 36 * k, fx = 505 * k, fy = 622 * k;
     g.save(); g.globalAlpha = Math.min(1, a * 1.6); g.fillStyle = "#6e6450";                                                                   // façade autour de la fenêtre
     g.fillRect(0, 0, W, Math.max(0, 960 - fy - bw)); g.fillRect(0, 960 + fy + bw, W, H); g.fillRect(0, 0, Math.max(0, 540 - fx - bw), H); g.fillRect(540 + fx + bw, 0, W, H);
     g.fillStyle = "#14080a"; for (const dx of [-fx, 0, fx]) g.fillRect(540 + dx - bw / 2, 960 - fy - bw / 2, bw, 2 * fy + bw);                // cadre + croisillon en croix
