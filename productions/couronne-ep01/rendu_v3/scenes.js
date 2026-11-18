@@ -762,6 +762,7 @@ S.p02h_buste_vivant = g => {                              // image 2 v13
   holoDome(g, 101);
   layer(g, q => { q.fillStyle = "#1b1510"; q.fillRect(0, 1700, W, H - 1700); }, { blur: 2 });
   crowdStanding(g);
+  actor(g, 960, 2700, 2.0, { ...PERE, look: -0.12, arms: [[-1, 10], [1, 10]] }, { rim: "#cfe3ee", rimAng: -1.2, rimW: 7, key: "#dfe9ef", shadow: false });   // père, côté droit
   actor(g, 540, 2650, 2.3, { ...HERO, look: 0.0, arms: [[-1, 10], [1, 10]] }, { rim: TEAL, rimAng: -1.57, rimW: 7, key: "#ffd9a0", shadow: false });
   deadBird(g, 540, 1420, 1.8, 1.2, 2.5);
   deadBird(g, 540, 1420, 1.8, 1.2);
@@ -773,6 +774,7 @@ S.p02i_sol_vivant = g => {                                // image 3 v13
   holoDome(g, 103);
   layer(g, q => { q.fillStyle = "#1b1510"; q.fillRect(0, 1700, W, H - 1700); }, { blur: 2 });
   crowdStanding(g);
+  actor(g, 960, 2700, 2.0, { ...PERE, look: -0.12, arms: [[-1, 10], [1, 10]] }, { rim: "#cfe3ee", rimAng: -1.2, rimW: 7, key: "#dfe9ef", shadow: false });   // père, côté droit
   actor(g, 540, 2650, 2.3, { ...HERO, look: 0.0, arms: [[-1, 10], [1, 10]] }, { rim: TEAL, rimAng: -1.57, rimW: 7, key: "#ffd9a0", shadow: false });
   g.fillStyle = "rgba(0,0,0,0.45)"; g.beginPath(); g.ellipse(930, 1850, 120, 16, 0, 0, 7); g.fill();
   deadBird(g, 930, 1838, 1.3, 1.5);
