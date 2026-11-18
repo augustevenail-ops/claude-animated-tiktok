@@ -111,14 +111,14 @@ S.m20_regle2_un = g => { bg3d(g, "d20r21_facade"); hud(g, { zone: "LE CENTRE" })
 
 // plan 2 : personnages dont les yeux suivent l'oiseau qui tombe (en haut quand il arrive, puis vers le bas), byc = y de l'oiseau dans le cadre des personnages
 function chars02e(q, byc, bx) {
-  const HEAD = 1400, dy = Math.max(-0.24, Math.min(0.22, (byc - HEAD) / 1500)), hy = dy * 40;            // regard vertical + tête qui accompagne un peu
+  const HEAD = 880, dy = Math.max(-0.24, Math.min(0.22, (byc - HEAD) / 1500)), hy = dy * 40;            // regard vertical + tête qui accompagne un peu
   sky(q, [[0, "#070b0d"], [0.6, "#0f1a1e"], [1, "#040506"]]);
   lifeDetails(q, 101); holoDome(q, 101);
   layer(q, r => { r.fillStyle = "#1b1510"; r.fillRect(0, 1700, W, H - 1700); }, { blur: 2 });
   crowdStanding(q);
   const lk = x => Math.max(-0.16, Math.min(0.16, (bx - x) / 2200));
-  actor(q, 790, 2650, 1.8, { ...PERE, body: "#6e2d5e", bodyDark: "#43193a", ring: "#6e2d5e", ringW: 80, torsoW: 165, look: lk(790), eyeDy: dy, headDy: hy, eyeLock: true, arms: [[-1, 10], [1, 10]] }, { rim: "#cfe3ee", rimAng: -1.2, rimW: 7, key: "#dfe9ef", shadow: false, ink: 0 });
-  actor(q, 290, 2650, 1.8, { ...HERO, body: "#6e2d5e", bodyDark: "#43193a", ring: "#6e2d5e", ringW: 80, strings: false, torsoW: 165, look: lk(290), eyeDy: dy, headDy: hy, eyeLock: true, arms: [[-1, 10], [1, 10]] }, { rim: TEAL, rimAng: -1.57, rimW: 7, key: "#ffd9a0", shadow: false, ink: 0 });
+  actor(q, 712, 1860, 1.3, { ...PERE, body: "#6e2d5e", bodyDark: "#43193a", ring: "#6e2d5e", ringW: 80, torsoW: 165, look: lk(790), eyeDy: dy, headDy: hy, eyeLock: true, arms: [[-1, 10], [1, 10]] }, { rim: "#cfe3ee", rimAng: -1.2, rimW: 7, key: "#dfe9ef", shadow: false, ink: 0 });
+  actor(q, 368, 1860, 1.3, { ...HERO, body: "#6e2d5e", bodyDark: "#43193a", ring: "#6e2d5e", ringW: 80, strings: false, torsoW: 165, look: lk(290), eyeDy: dy, headDy: hy, eyeLock: true, arms: [[-1, 10], [1, 10]] }, { rim: TEAL, rimAng: -1.57, rimW: 7, key: "#ffd9a0", shadow: false, ink: 0 });
 }
 
 // mouvement permanent : fines poussières qui dérivent devant chaque plan (très discrètes), ajoutées avant l'étalonnage

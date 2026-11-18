@@ -52,3 +52,10 @@ SHOTS.d20r21_facade = { path: [[8, 48, 180], [3, 43, 125], [0.6, 40.6, 92], [0.1
 Object.assign(SHOTS.w22_le_mur, { path: [[18.5, 3, 167], [15, 24, 157], [10, 40, 143], [5, 47, 118]], looks: [[26, 12, 136], [16, 30, 112], [-8, 34, 40], [-10, 30, 0]], ease: "out" });   // face au béton (pas à la porte), puis par-dessus
 // v8b : fin du plan 5, le dôme entier posé dans le désert irradié du plan 10 (sol craquelé, fumées vertes de radiation)
 Object.assign(SHOTS.d05b_zone_large, { outside: true, near: 0.5, fog: [0x5e5c2a, 0.00011], bg: 0x4a4a24 });
+// v9 : plans 19+20+21 en une prise : le drone, au-dessus du centre, plonge entre les immeubles (vers 16 m) et file droit dans l'avenue
+// jusqu'à la règle 2 incrustée sur la façade sombre (sans roulis ni vibration) ; plan 22 : rue du district, puis par-dessus le grand mur,
+// de l'autre côté d'autres immeubles (pas la tour de la règle) ; plan 18 : caméra plus basse pour que le garde ait le sol sous les pieds
+SHOTS.d19r21_plonge = { path: [[25, 300, 230], [8, 150, 178], [0, 50, 142], [0, 19, 114], [0, 16, 90], [0, 16, 66.5]], looks: [[0, 0, 75], [0, 8, 68], [0, 16, 61], [0, 16, 61]],
+  ease: "out", fov: 62, roll: 0, shake: 0, sign2On: [0.5, 0.58] };
+Object.assign(SHOTS.w22_le_mur, { path: [[-85, 6, 186], [-85, 16, 150], [-85, 50, 114], [-83, 62, 100]], looks: [[-85, 9, 120], [-85, 32, 90], [-76, 26, 10], [-66, 22, -40]], ease: "inout", roll: 0, shake: 0.02 });
+Object.assign(SHOTS.s18_centre_avenue, { looks: [[0, 12, 0], [0, 18, 0]] });

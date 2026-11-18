@@ -18,7 +18,7 @@ const fog0 = scene.fog.clone(), bg0 = scene.background.clone();
 const s1 = new THREE.Mesh(new THREE.PlaneGeometry(9, 4.5), new THREE.MeshBasicMaterial({ depthWrite: false, map: neonSign([["RÈGLE 1", "600 190px Oswald, Impact, sans-serif", 230], ["NE SORS JAMAIS DU DÔME.", "900 66px Montserrat, Arial Black, sans-serif", 380]]), transparent: true }));
 s1.position.set(-17, 8.5, 295.15); scene.add(s1);
 const s2 = new THREE.Mesh(new THREE.PlaneGeometry(0.84, 0.62), new THREE.MeshBasicMaterial({ map: neonSign([["RÈGLE 2", "600 210px Oswald, Impact, sans-serif", 260], ["TU NE VAS JAMAIS", "900 70px Montserrat, Arial Black, sans-serif", 400], ["AU CENTRE.", "900 70px Montserrat, Arial Black, sans-serif", 490]], 1024, 760), transparent: true }));
-s2.position.set(0, 40, 61.02); scene.add(s2);
+s2.position.set(0, 16, 61.02); s2.scale.set(3, 3, 1); scene.add(s2);   // v9 : règle 2 à 16 m, 2,5 m de large (lisible depuis la rue)
 
 
 // ---------- hologramme de la carte (plans 8 et 27) : arêtes lumineuses, faces translucides, dôme filaire ----------

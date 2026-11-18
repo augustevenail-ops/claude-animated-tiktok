@@ -144,16 +144,16 @@ export function buildWorld(scene) {
   for (let k = 0; k < nSeg; k++) {
     const a = k / nSeg * Math.PI * 2;
     if (Math.abs(((a - Math.PI / 2 + Math.PI * 3) % (Math.PI * 2)) - Math.PI) < 0.07) continue;      // ouverture de la porte (angle π/2 = z+)
-    const len = 2 * Math.PI * R_WALL / nSeg + 0.6, m = new THREE.Mesh(new THREE.BoxGeometry(len, 28, 5), wallMat);
-    m.position.set(Math.cos(a) * R_WALL, 14, Math.sin(a) * R_WALL); m.rotation.y = -a + Math.PI / 2; add(m); add(inked(m, 0.5));
-    const cap = new THREE.Mesh(new THREE.BoxGeometry(len, 1.1, 6.4), capMat); cap.position.set(Math.cos(a) * R_WALL, 28.55, Math.sin(a) * R_WALL); cap.rotation.y = m.rotation.y; add(cap);   // chaperon
+    const len = 2 * Math.PI * R_WALL / nSeg + 0.6, m = new THREE.Mesh(new THREE.BoxGeometry(len, 40, 5), wallMat);   // v9 : mur de 40 m
+    m.position.set(Math.cos(a) * R_WALL, 20, Math.sin(a) * R_WALL); m.rotation.y = -a + Math.PI / 2; add(m); add(inked(m, 0.5));
+    const cap = new THREE.Mesh(new THREE.BoxGeometry(len, 1.1, 6.4), capMat); cap.position.set(Math.cos(a) * R_WALL, 40.55, Math.sin(a) * R_WALL); cap.rotation.y = m.rotation.y; add(cap);   // chaperon
     const ab = a + Math.PI / nSeg;                                                                     // contrefort côté districts, entre deux panneaux
     if (Math.abs(((ab - Math.PI / 2 + Math.PI * 3) % (Math.PI * 2)) - Math.PI) > 0.09) {
-      const b = new THREE.Mesh(new THREE.BoxGeometry(1.8, 26, 3), butMat); b.position.set(Math.cos(ab) * (R_WALL + 3.6), 13, Math.sin(ab) * (R_WALL + 3.6)); b.rotation.y = -ab + Math.PI / 2; add(b); add(inked(b, 0.35)); }
+      const b = new THREE.Mesh(new THREE.BoxGeometry(1.8, 38, 3), butMat); b.position.set(Math.cos(ab) * (R_WALL + 3.6), 19, Math.sin(ab) * (R_WALL + 3.6)); b.rotation.y = -ab + Math.PI / 2; add(b); add(inked(b, 0.35)); }
   }
   const ringG = new THREE.TorusGeometry(R_WALL, 0.35, 6, 160, 2 * Math.PI - 0.2); ringG.rotateZ(Math.PI / 2 + 0.1);                     // liseré doré interrompu au-dessus de la porte
   const topRing = new THREE.Mesh(ringG, new THREE.MeshBasicMaterial({ color: 0x9a7e46 }));
-  topRing.rotation.x = Math.PI / 2; topRing.position.y = 29.2; add(topRing);
+  topRing.rotation.x = Math.PI / 2; topRing.position.y = 41.2; add(topRing);
   const gate = new THREE.Mesh(new THREE.BoxGeometry(18, 26, 1.2), new THREE.MeshLambertMaterial({ color: 0x2c2a26 })); gate.position.set(0, 13, R_WALL - 0.5); add(gate); add(inked(gate));   // porte blindée
   for (const dx of [-9.4, 9.4]) { const f = new THREE.Mesh(new THREE.BoxGeometry(0.8, 27, 1.6), new THREE.MeshLambertMaterial({ color: 0x9a7e46, emissive: 0x3a2a10 })); f.position.set(dx, 13.5, R_WALL); add(f); }
   const slit = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 25), new THREE.MeshBasicMaterial({ color: GOLD })); slit.position.set(0, 12.5, R_WALL + 0.15); add(slit);   // fente de lumière dorée
@@ -177,7 +177,7 @@ export function buildWorld(scene) {
   const stone = new THREE.MeshLambertMaterial({ map: panelTex() });
   const r2 = new THREE.Mesh(new THREE.BoxGeometry(26, 180, 26), [richMats[0], richMats[0], roofMat, roofMat, stone, richMats[0]]);
   r2.position.set(0, 90, 48); add(r2); add(inked(r2));
-  const glowR2 = new THREE.PointLight(0xff3b2a, 1.6, 7, 1.6); glowR2.position.set(0, 40, 62.5); add(glowR2);   // lueur rouge du néon sur le béton
+  const glowR2 = new THREE.PointLight(0xff3b2a, 1.6, 7, 1.6); glowR2.position.set(0, 16, 63); glowR2.distance = 14; add(glowR2);   // lueur rouge du néon sur le béton
   // tour centrale
   // tour centrale : grandes baies toutes identiques (4,4 x 5,4 m, croisillon en croix), 5 par face et par étage, étages de 7,8 m
   const bigWin = (emis) => { const c = document.createElement("canvas"); c.width = 600; c.height = 624; const g = c.getContext("2d");
