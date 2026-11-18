@@ -358,7 +358,7 @@ S.p08_vue_aerienne = g => {                          // plan 8 : seulement CENTR
   layer(g, q => { glow(q, cx, cy, 240, GOLD, 0.5); for (let i = 0; i < 12; i++) { const p = P(140 * rnd(i * 5), rnd(i * 9) * 6.28), h = 60 + rnd(i) * 120; q.fillStyle = rgba(GOLD, 0.9); q.fillRect(p[0] - 9, p[1] - h, 18, h); } }, { op: "screen" });
   layer(g, q => { q.strokeStyle = rgba(TEAL, 0.8); q.lineWidth = 14; q.beginPath(); for (let t = 0; t <= Math.PI; t += 0.05) { const p = P(620 * Math.cos(t), 0, 620 * Math.sin(t) * 0.95); t ? q.lineTo(p[0], p[1]) : q.moveTo(p[0], p[1]); } q.stroke(); }, { blur: 22, op: "screen", alpha: 0.6 });
   pill(g, "LE CENTRE", cx - 220, cy - 150, [cx - 110, cy - 50]);
-  const d = P(420, Math.PI / 2); pill(g, "LES DISTRICTS", d[0], d[1]);
+  const d = P(440, -Math.PI / 2); pill(g, "LES DISTRICTS", d[0], d[1]);
   hud(g, { alpha: 0.5 }); finish(g, { bloom: 0.4, grade: ["#0a2a2c", "#f3d28a", 0.15] }); caption(g, ["LE", "CENTRE,"], 0);
 };
 S.p09_regle_1_mur = g => {                           // plan 9 : la règle peinte sur le mur qui borde le dôme
@@ -409,6 +409,117 @@ S.p21_regle_2_porte = g => {                         // plan 21 : la règle grav
   stencil(g, [["RÈGLE 2", "600 150px Oswald", 0]], 540, 720, "#f2c46a", "#ffd78a");
   stencil(g, [["TU NE VAS JAMAIS", "900 70px Montserrat", 0], ["AU CENTRE.", "900 70px Montserrat", 90]], 540, 880, "#f3e2b0", "#ffd78a");
   hud(g); finish(g, { bloom: 0.35, grade: ["#1a1206", "#ffd78a", 0.18] }); caption(g, ["UN", "MUR", "LE", "SÉPARE"], 1);
+};
+// ---------- v6 : ville construite (immeubles à fenêtres, rues, îlots), plan drone, plans 4, 5, 9 retravaillés ----------
+const CITY_WARM = "#ffd78a", CITY_COOL = "#9fe6df";
+function towerFacade(g, x, y, w, h, col, seed) {       // façade vitrée : fenêtres en grille, reflet vertical, corniche sombre
+  const gr = g.createLinearGradient(x, 0, x + w, 0); gr.addColorStop(0, mul(col, 1.18)); gr.addColorStop(1, mul(col, 0.72));
+  g.fillStyle = gr; g.fillRect(x, y, w, h);
+  const cw = Math.max(7, w / 8), ch = Math.max(9, cw * 1.25);
+  for (let r = 0; y + (r + 1) * ch < y + h; r++) for (let c = 0; (c + 1) * cw < w; c++) {
+    const k = rnd(seed * 97 + r * 13 + c * 7);
+    g.fillStyle = k > 0.8 ? rgba(CITY_WARM, 0.9) : k > 0.62 ? rgba(CITY_COOL, 0.38) : "rgba(8,14,18,0.5)";
+    g.fillRect(x + c * cw + cw * 0.2, y + r * ch + ch * 0.28, cw * 0.6, ch * 0.45);
+  }
+  g.fillStyle = "rgba(255,255,255,0.08)"; g.fillRect(x + w * 0.1, y, w * 0.07, h);
+  g.fillStyle = "rgba(0,0,0,0.4)"; g.fillRect(x, y, w, 5);
+}
+function richSkyline(g, baseY, x0, x1, seed, o = {}) {   // rangée de tours : hauteurs variées, gradins, antennes
+  let x = x0, i = 0; const cols = o.cols || ["#2a3a44", "#34444e", "#24323a", "#3d4c52", "#4a4032"];
+  while (x < x1) {
+    const w = (o.wmin || 60) + rnd(seed + i) * (o.wvar || 110), h = (o.hmin || 160) + rnd(seed * 3 + i) * (o.hvar || 520);
+    towerFacade(g, x, baseY - h, w, h, cols[Math.floor(rnd(seed * 5 + i) * cols.length)], seed + i);
+    if (rnd(i + seed * 2) > 0.55) towerFacade(g, x + w * 0.2, baseY - h - 90, w * 0.6, 90, "#31434c", seed + 40 + i);
+    if (rnd(i + seed * 7) > 0.7) { g.strokeStyle = "rgba(200,220,225,0.5)"; g.lineWidth = 3; g.beginPath(); g.moveTo(x + w / 2, baseY - h); g.lineTo(x + w / 2, baseY - h - 120); g.stroke(); }
+    x += w + 4 + rnd(i * 9) * 14; i++;
+  }
+}
+function isoBlock(g, cx, cy, k, gx, gy, w, d, h, col) {  // volume isométrique : dessus, face gauche, face droite, fenêtres
+  const P = (x, y, z) => [cx + (x - y) * k, cy + (x + y) * k * 0.5 - z];
+  const poly = (pts, f) => { g.beginPath(); pts.forEach((p, i) => i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1])); g.closePath(); g.fillStyle = f; g.fill(); };
+  poly([P(gx, gy + d, 0), P(gx + w, gy + d, 0), P(gx + w, gy + d, h), P(gx, gy + d, h)], mul(col, 0.62));
+  poly([P(gx + w, gy, 0), P(gx + w, gy + d, 0), P(gx + w, gy + d, h), P(gx + w, gy, h)], mul(col, 0.82));
+  poly([P(gx, gy, h), P(gx + w, gy, h), P(gx + w, gy + d, h), P(gx, gy + d, h)], mul(col, 1.12));
+  const n = Math.floor(h / 20);
+  for (let r = 0; r < n; r++) for (let c = 0; c < 3; c++) { const kk = rnd(gx * 31 + gy * 7 + r * 5 + c);
+    if (kk < 0.45) continue; const a = P(gx + w, gy + d * (0.15 + c * 0.28), 12 + r * 20), b = P(gx + w, gy + d * (0.15 + c * 0.28 + 0.16), 12 + r * 20 + 9);
+    g.fillStyle = kk > 0.85 ? rgba(CITY_WARM, 0.9) : rgba(CITY_COOL, 0.35); g.beginPath(); g.moveTo(a[0], a[1]); g.lineTo(b[0], b[1]); g.lineTo(b[0], b[1] - 9); g.lineTo(a[0], a[1] - 9); g.closePath(); g.fill(); }
+}
+function isoCity(g, o) {                                // îlots en grille, rues entre les îlots, tri arrière -> avant
+  const items = [];
+  for (let i = 0; i < o.n; i++) for (let j = 0; j < o.n; j++) {
+    if (i % o.street === o.street - 1 || j % o.street === o.street - 1) continue;
+    items.push({ i, j, h: o.hmin + rnd(i * 13 + j * 29 + o.seed) * (o.hmax - o.hmin), col: o.cols[Math.floor(rnd(i * 5 + j * 3 + o.seed) * o.cols.length)] });
+  }
+  items.sort((a, b) => (a.i + a.j) - (b.i + b.j));
+  items.forEach(it => { const x = it.i * o.pitch, y = it.j * o.pitch, s = o.pitch * 0.8;
+    if (o.park && rnd(it.i * 3 + it.j * 11) > 0.8) { g.fillStyle = "#1d3a2a"; g.beginPath(); const p = [o.cx + (x - y) * o.k, o.cy + (x + y) * o.k * 0.5]; g.ellipse(p[0], p[1], s * o.k * 0.9, s * o.k * 0.45, 0, 0, 7); g.fill(); return; }
+    isoBlock(g, o.cx, o.cy, o.k, x, y, s, s, it.h, it.col); });
+}
+const DIST_CITY = { n: 11, street: 3, pitch: 60, k: 0.9, cx: 540, cy: 300, hmin: 30, hmax: 120, cols: ["#4a4a44", "#5a5040", "#3c4046", "#66604f", "#505a5c"], seed: 3 };
+const RICH_CITY = { n: 10, street: 3, pitch: 72, k: 0.8, cx: 540, cy: 360, hmin: 150, hmax: 640, cols: ["#2b4a5a", "#35606e", "#213a46", "#7a8f94", "#c9b48a", "#3c5566"], seed: 11, park: true };
+S.p05_fpv_plongee_district = g => {                   // plan 5 : même plongée, fond = vrai district construit
+  sky(g, [[0, "#06090b"], [1, "#06090b"]]);
+  roll(g, 0.32, q => {
+    isoCity(q, { ...DIST_CITY, cy: 1080, cx: 540, k: 0.9 });
+    haze(q, 900, 1400, "#4a6a72", 0.25);
+    shaft(q, { sides: 6, rot: 0, n: 13, f: 0.78, r0: 1500, wall: "#1b2429", line: TEAL, lamp: AMBER, core: GOLD, coreR: 300, people: 0.5, labels: { 2: "DISTRICT NORD", 6: "SECOND MUR", 10: "LE CENTRE" } });
+  });
+  zoomBlur(g, 540, 960, 0.025);
+  hud(g); finish(g, { bloom: 0.45, grade: ["#06202a", "#ffd78a", 0.16] }); caption(g, ["ICI,", "LES", "RICHES"], 2);
+};
+S.p04_fpv_foule_mouv = g => {                          // plan 4 : la foule se fige, quelques corps bougent encore en bord de cadre
+  sky(g, [[0, "#0b0f12"], [1, "#0b0f12"]]);
+  roll(g, 0.18, q => {
+    for (let y = -200; y < H + 200; y += 74) for (let x = -200; x < W + 200; x += 74) { const j = rnd(x * 1.3 + y), px = x + (j - 0.5) * 30 + (y / 74 % 2) * 37, py = y + (rnd(x + y * 3) - 0.5) * 24;
+      const dc = Math.hypot(px - 540, py - 960);
+      if (dc < 90) continue;
+      if (dc > 520 && rnd(x + y) > 0.7) { q.strokeStyle = rgba("#cfd8dc", 0.35); q.lineWidth = 5; q.beginPath(); q.moveTo(px, py); q.lineTo(px + (px - 540) * 0.12, py + (py - 960) * 0.12); q.stroke(); }  // traînées : ceux qui bougent encore
+      q.fillStyle = mul("#1d2226", 0.8 + j * 0.5); q.beginPath(); q.ellipse(px, py + 6, 34, 22, j * 3, 0, 7); q.fill();
+      const hg = q.createRadialGradient(px - 6, py - 6, 2, px, py, 22); hg.addColorStop(0, j > 0.7 ? "#3a2c22" : "#d8d2c6"); hg.addColorStop(1, j > 0.7 ? "#1d1611" : "#7f7a71"); q.fillStyle = hg; q.beginPath(); q.arc(px, py, 20, 0, 7); q.fill(); }
+    glow(q, 540, 960, 260, TEAL, 0.45);
+    q.fillStyle = "#2c4256"; q.beginPath(); q.ellipse(540, 966, 44, 28, 0.2, 0, 7); q.fill(); q.strokeStyle = INK; q.lineWidth = 4; q.stroke();
+    const hg = q.createRadialGradient(532, 950, 2, 540, 958, 26); hg.addColorStop(0, "#f6f3ec"); hg.addColorStop(1, "#9d9a94"); q.fillStyle = "#2b211b"; q.beginPath(); q.arc(540, 958, 26, 0, 7); q.fill(); q.stroke();
+    pill(q, "TOI", 540, 1060); });
+  zoomBlur(g, 540, 960, 0.02); hud(g); finish(g, { bloom: 0.35, grade: ["#06202a", "#ffd9a0", 0.16] }); caption(g, ["ARRÊTENT", "DE", "BOUGER."], 0);
+};
+// plan 6 + 7 : un seul plan drone, trois images clés. 1) au-dessus du district  2) à 1 m au-dessus du mur  3) de l'autre côté, la ville riche
+S.p06a_drone_district = g => {
+  sky(g, [[0, "#1a1c1e"], [0.6, "#2a2c2a"], [1, "#0c0e0e"]]);
+  isoCity(g, { ...DIST_CITY, cx: 480, cy: 430, k: 1.0, hmin: 30, hmax: 110 });
+  haze(g, 1400, 1920, "#3a4a4e", 0.3);
+  hud(g, { zone: "DISTRICT NORD", clock: "21:40" }); finish(g, { bloom: 0.2, grade: ["#0a1418", "#f0d9a6", 0.14] }); caption(g, ["LES", "DISTRICTS"], 1);
+};
+S.p06b_drone_mur = g => {                             // le mur passe à un mètre sous la caméra
+  sky(g, [[0, "#0a1a1e"], [0.55, "#1a3a40"], [1, "#081012"]]);
+  richSkyline(g, 1180, -20, W + 20, 17, { hmin: 260, hvar: 540, wmin: 80, wvar: 140, cols: ["#2a4450", "#355866", "#3c4a50"] });
+  g.fillStyle = "#15191b"; g.fillRect(0, 1180, W, 60);
+  g.strokeStyle = rgba(TEAL, 0.9); g.lineWidth = 6; g.beginPath(); g.ellipse(540, 1180, 1100, 260, 0, Math.PI, 0); g.stroke();
+  glow(g, 540, 1180, 600, TEAL, 0.25);
+  g.fillStyle = "#101416"; g.fillRect(0, 1240, W, H - 1240);
+  hud(g, { alpha: 0.6 }); finish(g, { bloom: 0.35, grade: ["#04161a", "#c8f4ee", 0.16] }); caption(g, ["UN", "MUR"], 0);
+};
+S.p06c_drone_ville_riche = g => {                     // de l'autre côté : tours vitrées, avenues, jardins
+  sky(g, [[0, "#1c2a36"], [0.5, "#2c4252"], [1, "#0c1216"]]);
+  isoCity(g, { ...RICH_CITY, cx: 470, cy: 520, k: 0.85 });
+  glow(g, 540, 1000, 500, GOLD, 0.2);
+  hud(g, { zone: "LE CENTRE", clock: "07:40" }); finish(g, { bloom: 0.4, grade: ["#08161c", "#ffd78a", 0.16] }); caption(g, ["LE", "CENTRE"], 1);
+};
+S.p09_regle_1_neon = g => {                          // plan 9 : enseigne RÈGLE 1 en néon rouge, fixée sur un pylône de la limite
+  sky(g, [[0, "#06080a"], [1, "#050607"]]);
+  glow(g, 540, 700, 800, TEAL, 0.15);
+  g.fillStyle = "#0b0d0e"; g.fillRect(500, 760, 80, 1100);                  // pylône
+  g.fillStyle = "#15181a"; g.fillRect(380, 1100, 320, 26);
+  // enseigne : cadre noir + tubes néon rouges
+  g.fillStyle = "rgba(10,6,6,0.92)"; g.beginPath(); g.roundRect(120, 480, 840, 400, 14); g.fill();
+  g.save(); g.shadowColor = "rgba(255,40,30,0.95)"; g.shadowBlur = 36; g.strokeStyle = "#ff3b2a"; g.lineWidth = 10; g.beginPath(); g.roundRect(136, 496, 808, 368, 12); g.stroke(); g.restore();
+  neon(g, "RÈGLE 1", 540, 660, "600 150px Oswald", "#ff5a48", "rgba(255,40,30,1)");
+  neon(g, "NE SORS JAMAIS", 540, 770, "900 62px Montserrat", "#ff7a66", "rgba(255,40,30,0.95)");
+  neon(g, "DU DÔME.", 540, 848, "900 62px Montserrat", "#ff7a66", "rgba(255,40,30,0.95)");
+  layer(g, q => { q.fillStyle = "rgba(255,60,40,0.45)"; q.fillRect(120, 900, 840, 260); }, { blur: 40, op: "screen" });   // reflet sur le sol mouillé
+  g.fillStyle = "#0a0b0c"; g.fillRect(0, 1360, W, H - 1360);
+  dust(g, 80, "#ffb0a0", 400, 1300, 81, 2.2);
+  hud(g); finish(g, { bloom: 0.6, grade: ["#1a0404", "#ffb0a0", 0.2] }); caption(g, ["NE", "SORS", "JAMAIS"], 1);
 };
 window.SCENES = Object.fromEntries(Object.entries(S).filter(([k]) => !k.endsWith("_bg")));
 window.SCENES_ALL = S;
