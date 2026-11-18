@@ -19,9 +19,9 @@
   {
    "n": 2,
    "debut": 0.1,
-   "plan": "FPV : plongée à travers le dôme vers le centre",
-   "scene": "f1_fpv_plongee_dome",
-   "camera": "plongée continue + roulis",
+   "plan": "Le héros au centre, son père à côté ; au-dessus, un segment du dôme grésille et vire au rouge (détail qui accroche)",
+   "scene": "a_creer:c11_heros_pere_duo",
+   "camera": "dézoom puis fixe ; le grésillement attire l'œil en haut du cadre",
    "fin": 2.453,
    "duree": 2.35,
    "texte": "tu vis sous un dôme magnétique",
@@ -55,9 +55,9 @@
   {
    "n": 5,
    "debut": 6.753,
-   "plan": "Limite du dôme : barrière teal, désert irradié dehors",
-   "scene": "a_creer:w8_barriere",
-   "camera": "travelling latéral",
+   "plan": "FPV : plongée à travers le dôme",
+   "scene": "f1_fpv_plongee_dome",
+   "camera": "plongée continue + roulis",
    "fin": 9.473,
    "duree": 2.72,
    "texte": "Le champ magnétique vous protège des radiations extérieures,",
@@ -79,9 +79,9 @@
   {
    "n": 7,
    "debut": 10.873,
-   "plan": "Infographie : l'énergie des districts s'éteint",
-   "scene": "a_creer:w1b_infographie_districts",
-   "camera": "rotation lente",
+   "plan": "Rue de district : les lampadaires s'éteignent un à un",
+   "scene": "a_creer:w10_lampes_eteintes",
+   "camera": "travelling latéral lent",
    "fin": 14.313,
    "duree": 3.44,
    "texte": "qu'il n'y a plus assez d'énergie pour le maintenir sur les districts.",
@@ -91,29 +91,43 @@
   {
    "n": 8,
    "debut": 14.313,
-   "plan": "Le centre : tours dorées derrière le second mur",
-   "scene": "w7_centre_mur",
-   "camera": "push-in lent",
-   "fin": 16.373,
-   "duree": 2.06,
-   "texte": "Ici, les riches habitent au centre.",
+   "plan": "Vue aérienne du dôme : la caméra va au centre puis recule sur l'anneau des districts ; étiquettes qui apparaissent avec la voix",
+   "scene": "a_creer:w1d_vue_aerienne_tags",
+   "camera": "voir « cles » : poussée vers le centre, puis recul + rotation sur les districts",
+   "fin": 18.453,
+   "duree": 4.14,
+   "texte": "Ici, les riches habitent au centre. Tout autour, il y a les districts.",
    "entree": "dézoom 1,2 s (échelle 1,25 -> 1,0, ralenti en fin)",
-   "sortie": "3 images : normale / noir tiers haut + tiers bas / noir (≈ 0,1 s)"
+   "sortie": "3 images : normale / noir tiers haut + tiers bas / noir (≈ 0,1 s)",
+   "cles": [
+    {
+     "t": 14.31,
+     "action": "vue d'ensemble du dôme vu de haut (3/4), lent glissement"
+    },
+    {
+     "t": 14.31,
+     "action": "la caméra pousse vers le centre"
+    },
+    {
+     "t": 15.05,
+     "action": "étiquette « LES RICHES » sur les tours"
+    },
+    {
+     "t": 15.67,
+     "action": "étiquette « LE CENTRE » sur l'hexagone doré"
+    },
+    {
+     "t": 16.45,
+     "action": "recul + rotation : l'anneau des districts entre dans le cadre"
+    },
+    {
+     "t": 17.41,
+     "action": "étiquettes des 6 districts en cascade (0,08 s d'écart) : NORD, NORD-EST, SUD-EST, SUD, SUD-OUEST, OUEST"
+    }
+   ]
   },
   {
    "n": 9,
-   "debut": 16.373,
-   "plan": "Rue de district, foule",
-   "scene": "w6_district_rue",
-   "camera": "travelling latéral",
-   "fin": 18.453,
-   "duree": 2.08,
-   "texte": "Tout autour, il y a les districts.",
-   "entree": "dézoom 1,2 s (échelle 1,25 -> 1,0, ralenti en fin)",
-   "sortie": "3 images : normale / noir tiers haut + tiers bas / noir (≈ 0,1 s)"
-  },
-  {
-   "n": 10,
    "debut": 18.453,
    "plan": "Panneau RÈGLE 1 (néon)",
    "scene": "w3_regle_1",
@@ -125,7 +139,7 @@
    "sortie": "3 images : normale / noir tiers haut + tiers bas / noir (≈ 0,1 s)"
   },
   {
-   "n": 11,
+   "n": 10,
    "debut": 21.753,
    "plan": "FPV : traversée de la barrière vers le désert irradié",
    "scene": "a_creer:f5_fpv_barriere",
@@ -137,7 +151,7 @@
    "sortie": "3 images : normale / noir tiers haut + tiers bas / noir (≈ 0,1 s)"
   },
   {
-   "n": 12,
+   "n": 11,
    "debut": 24.333,
    "plan": "Le père, buste (présentation)",
    "scene": "c4_pere_buste (sans feuille)",
@@ -149,7 +163,7 @@
    "sortie": "3 images : normale / noir tiers haut + tiers bas / noir (≈ 0,1 s)"
   },
   {
-   "n": 13,
+   "n": 12,
    "debut": 25.973,
    "plan": "Insert : ses mains ouvrent le dossier « DÔME »",
    "scene": "a_creer:d1_dossier",
@@ -161,7 +175,7 @@
    "sortie": "3 images : normale / noir tiers haut + tiers bas / noir (≈ 0,1 s)"
   },
   {
-   "n": 14,
+   "n": 13,
    "debut": 28.553,
    "plan": "FPV : rue au petit matin vers le centre, « TOI »",
    "scene": "f2_fpv_rue",
@@ -173,7 +187,7 @@
    "sortie": "3 images : normale / noir tiers haut + tiers bas / noir (≈ 0,1 s)"
   },
   {
-   "n": 15,
+   "n": 14,
    "debut": 30.353,
    "plan": "Le père emmené par le garde (plan à deux)",
    "scene": "c5_pere_escorte",
@@ -185,7 +199,7 @@
    "sortie": "3 images : normale / noir tiers haut + tiers bas / noir (≈ 0,1 s)"
   },
   {
-   "n": 16,
+   "n": 15,
    "debut": 31.533,
    "plan": "Gros plan du père, calme",
    "scene": "a_creer:c4b_pere_gros_plan",
@@ -197,7 +211,7 @@
    "sortie": "3 images : normale / noir tiers haut + tiers bas / noir (≈ 0,1 s)"
   },
   {
-   "n": 17,
+   "n": 16,
    "debut": 32.753,
    "plan": "Le père tend la feuille pliée (« Prends ça »)",
    "scene": "c4_pere_buste",
@@ -209,7 +223,7 @@
    "sortie": "3 images : normale / noir tiers haut + tiers bas / noir (≈ 0,1 s)"
   },
   {
-   "n": 18,
+   "n": 17,
    "debut": 35.773,
    "plan": "Le héros, buste, inquiet",
    "scene": "c2_heros_buste",
@@ -221,7 +235,7 @@
    "sortie": "3 images : normale / noir tiers haut + tiers bas / noir (≈ 0,1 s)"
   },
   {
-   "n": 19,
+   "n": 18,
    "debut": 37.353,
    "plan": "Le garde, contre-jour doré : « Au centre »",
    "scene": "c6_garde_centre",
@@ -233,7 +247,7 @@
    "sortie": "3 images : normale / noir tiers haut + tiers bas / noir (≈ 0,1 s)"
   },
   {
-   "n": 20,
+   "n": 19,
    "debut": 39.373,
    "plan": "FPV : vers la porte du centre, tours dorées",
    "scene": "a_creer:f6_fpv_centre",
@@ -245,7 +259,7 @@
    "sortie": "3 images : normale / noir tiers haut + tiers bas / noir (≈ 0,1 s)"
   },
   {
-   "n": 21,
+   "n": 20,
    "debut": 41.633,
    "plan": "La porte du centre se referme",
    "scene": "a_creer:w9_porte",
@@ -257,7 +271,7 @@
    "sortie": "3 images : normale / noir tiers haut + tiers bas / noir (≈ 0,1 s)"
   },
   {
-   "n": 22,
+   "n": 21,
    "debut": 43.113,
    "plan": "Panneau RÈGLE 2 (néon)",
    "scene": "a_creer:w3b_regle_2",
@@ -269,7 +283,7 @@
    "sortie": "3 images : normale / noir tiers haut + tiers bas / noir (≈ 0,1 s)"
   },
   {
-   "n": 23,
+   "n": 22,
    "debut": 46.313,
    "plan": "FPV : montée le long du second mur",
    "scene": "f4_fpv_mur_montee",
@@ -281,7 +295,7 @@
    "sortie": "3 images : normale / noir tiers haut + tiers bas / noir (≈ 0,1 s)"
   },
   {
-   "n": 24,
+   "n": 23,
    "debut": 48.413,
    "plan": "Le héros, feuille à la main, regard baissé",
    "scene": "c8_heros_feuille",
@@ -293,7 +307,7 @@
    "sortie": "3 images : normale / noir tiers haut + tiers bas / noir (≈ 0,1 s)"
   },
   {
-   "n": 25,
+   "n": 24,
    "debut": 49.813,
    "plan": "Plan subjectif : la feuille dépliée",
    "scene": "w4_feuille_lecture",
@@ -305,7 +319,7 @@
    "sortie": "3 images : normale / noir tiers haut + tiers bas / noir (≈ 0,1 s)"
   },
   {
-   "n": 26,
+   "n": 25,
    "debut": 51.553,
    "plan": "Plan subjectif : gros plan sur le texte",
    "scene": "w4_feuille_lecture (cadré serré)",
@@ -317,7 +331,7 @@
    "sortie": "3 images : normale / noir tiers haut + tiers bas / noir (≈ 0,1 s)"
   },
   {
-   "n": 27,
+   "n": 26,
    "debut": 54.113,
    "plan": "Foule de dos sous le haut-parleur",
    "scene": "a_creer:w5b_foule_haut_parleur",
@@ -329,7 +343,7 @@
    "sortie": "3 images : normale / noir tiers haut + tiers bas / noir (≈ 0,1 s)"
   },
   {
-   "n": 28,
+   "n": 27,
    "debut": 56.233,
    "plan": "Infographie : le champ se rétracte sur le centre",
    "scene": "a_creer:w1c_infographie_retraction",
@@ -341,7 +355,7 @@
    "sortie": "3 images : normale / noir tiers haut + tiers bas / noir (≈ 0,1 s)"
   },
   {
-   "n": 29,
+   "n": 28,
    "debut": 59.813,
    "plan": "Le garde, gros plan, lumière rouge",
    "scene": "a_creer:c6b_garde_gros_plan",
@@ -353,7 +367,7 @@
    "sortie": "3 images : normale / noir tiers haut + tiers bas / noir (≈ 0,1 s)"
   },
   {
-   "n": 30,
+   "n": 29,
    "debut": 62.013,
    "plan": "Le héros dans la foule (vue haute)",
    "scene": "c7_heros_foule",
@@ -365,7 +379,7 @@
    "sortie": "3 images : normale / noir tiers haut + tiers bas / noir (≈ 0,1 s)"
   },
   {
-   "n": 31,
+   "n": 30,
    "debut": 64.033,
    "plan": "Le père enfermé, seul",
    "scene": "a_creer:c9_pere_cellule",
@@ -377,7 +391,7 @@
    "sortie": "3 images : normale / noir tiers haut + tiers bas / noir (≈ 0,1 s)"
   },
   {
-   "n": 32,
+   "n": 31,
    "debut": 66.293,
    "plan": "Le héros face caméra + question + choix A/B",
    "scene": "a_creer:c10_heros_question",
@@ -389,7 +403,7 @@
    "sortie": "3 images : normale / noir tiers haut + tiers bas / noir (≈ 0,1 s)"
   },
   {
-   "n": 33,
+   "n": 32,
    "debut": 68.993,
    "plan": "Carte de fin : LA COURONNE · ÉPISODE 1 · ABONNE-TOI",
    "scene": "a_creer:fin_carte",
