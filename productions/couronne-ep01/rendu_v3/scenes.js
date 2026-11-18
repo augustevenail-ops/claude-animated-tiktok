@@ -649,5 +649,46 @@ S.p02d_fond_magenta_spot = g => {                    // plan 2 : fond magenta-ro
   dust(g, 60, "#ffd0a0", 0, 1500, 91, 3);
   hud(g); finish(g, { bloom: 0.45, grade: ["#2a0418", "#ffb080", 0.16] }); caption(g, ["SOUS", "UN", "DÔME"], 1);
 };
+// ---------- v10 : plan 2 « oiseau qui tombe » en 3 images (suivi caméra -> caméra calée sur le héros -> sol) ----------
+function deadBird(g, x, y, s, rot, blur = 0) {       // oiseau mort : corps sombre à reflet teal, ailes repliées, tête pendante, pattes raides
+  g.save(); g.translate(x, y); g.rotate(rot); g.scale(s, s); if (blur) g.filter = `blur(${blur}px)`;
+  g.fillStyle = "#2a2d30"; g.beginPath(); g.ellipse(0, 0, 58, 26, 0, 0, 7); g.fill();                              // corps
+  g.fillStyle = "#3d4a4f"; g.beginPath(); g.ellipse(-8, -6, 40, 13, 0.1, 0, 7); g.fill();                         // reflet
+  g.fillStyle = "#1c1f22"; g.beginPath(); g.moveTo(-10, -4); g.lineTo(-74, -58); g.lineTo(-58, 2); g.closePath(); g.fill();   // aile haute
+  g.beginPath(); g.moveTo(-10, 6); g.lineTo(-70, 48); g.lineTo(-40, 14); g.closePath(); g.fill();                  // aile basse
+  g.fillStyle = "#24272a"; g.beginPath(); g.arc(56, -6, 17, 0, 7); g.fill();                                       // tête
+  g.fillStyle = "#c9a040"; g.beginPath(); g.moveTo(70, -6); g.lineTo(88, 0); g.lineTo(70, 4); g.closePath(); g.fill(); // bec
+  g.strokeStyle = "#0c0d0e"; g.lineWidth = 3; g.beginPath(); g.moveTo(60, -4); g.lineTo(68, -2); g.moveTo(60, -10); g.lineTo(68, -12); g.stroke();   // œil fermé
+  g.strokeStyle = "#1c1f22"; g.lineWidth = 5; g.beginPath(); g.moveTo(-14, 22); g.lineTo(-20, 44); g.moveTo(-2, 22); g.lineTo(-6, 46); g.stroke();   // pattes
+  g.restore();
+}
+function domeNight(g) {
+  sky(g, [[0, "#070c10"], [0.5, "#0c1a20"], [1, "#050708"]]);
+  domeBarrier(g, 700, 1100, 800, 0.8);
+  glow(g, 540, 300, 500, TEAL, 0.2);
+}
+S.p02e1_oiseau_chute = g => {                        // image 1 : la caméra suit l'oiseau, le fond file en traînées
+  domeNight(g);
+  for (let i = 0; i < 40; i++) { g.strokeStyle = rgba("#cfe9e6", 0.05 + rnd(i) * 0.12); g.lineWidth = 2 + rnd(i * 3) * 3; const x = rnd(i * 7) * W; g.beginPath(); g.moveTo(x, 0); g.lineTo(x + (x - 540) * 0.02, H); g.stroke(); }
+  layer(g, q => deadBird(q, 540, 880, 1.7, 0.5, 0), { blur: 0 });
+  deadBird(g, 540, 880, 1.7, 0.5);
+  hud(g); finish(g, { bloom: 0.35, grade: ["#06202a", "#ffd9a0", 0.16] }); caption(g, ["SOUS", "UN", "DÔME"], 1);
+};
+S.p02e2_oiseau_devant_heros = g => {                 // image 2 : caméra calée sur le buste, l'oiseau passe devant
+  domeNight(g);
+  actor(g, 540, 2650, 2.3, { ...HERO, look: 0.0, arms: [[-1, 10], [1, 10]] }, { rim: TEAL, rimAng: -1.57, rimW: 7, key: "#ffd9a0", shadow: false });
+  deadBird(g, 540, 1420, 1.8, 1.2, 2.5);
+  deadBird(g, 540, 1420, 1.8, 1.2);
+  hud(g); finish(g, { bloom: 0.35, grade: ["#06202a", "#ffd9a0", 0.16] }); caption(g, ["SOUS", "UN", "DÔME"], 1);
+};
+S.p02e3_oiseau_sol = g => {                          // image 3 : l'oiseau atteint le sol devant les pieds du héros
+  sky(g, [[0, "#070c10"], [0.6, "#101a1e"], [1, "#050607"]]);
+  domeBarrier(g, 700, 1100, 800, 0.8);
+  layer(g, q => { q.fillStyle = "#1b1510"; q.fillRect(0, 1480, W, H - 1480); }, { blur: 2 });
+  actor(g, 540, 1720, 1.0, { ...HERO, look: 0.0, arms: [[-1, 10], [1, 10]] }, { rim: TEAL, rimAng: -1.57, key: "#ffd9a0", shadow: true });
+  deadBird(g, 400, 1760, 1.5, 1.5);
+  g.fillStyle = "rgba(0,0,0,0.4)"; g.beginPath(); g.ellipse(400, 1772, 100, 14, 0, 0, 7); g.fill();
+  hud(g); finish(g, { bloom: 0.35, grade: ["#06202a", "#ffd9a0", 0.16] }); caption(g, ["SOUS", "UN", "DÔME"], 1);
+};
 window.SCENES = Object.fromEntries(Object.entries(S).filter(([k]) => !k.endsWith("_bg")));
 window.SCENES_ALL = S;
