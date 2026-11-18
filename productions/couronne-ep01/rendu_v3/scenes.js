@@ -1121,11 +1121,12 @@ function alarmWash(g, ph) {
   g.save(); g.globalCompositeOperation = "screen"; g.fillStyle = rgba("#ff2a1a", 0.16 * I); g.fillRect(0, 0, W, H); g.restore();
   return I;
 }
-function alarmBeams(g, x, y, ph, len = 1500, top = false) {
-  const I = 0.5 + 0.5 * Math.cos(ph * 6.2832), a = ph * 6.2832 * 1.0 + 0.6;
-  layer(g, q => { [a, a + Math.PI].forEach(b => { const gr = q.createRadialGradient(x, y, 10, x, y, len); gr.addColorStop(0, `rgba(255,70,50,${0.55 * (0.4 + 0.6 * I)})`); gr.addColorStop(1, "rgba(255,40,30,0)");
-    q.fillStyle = gr; q.beginPath(); q.moveTo(x, y); q.arc(x, y, len, b - 0.22, b + 0.22); q.closePath(); q.fill(); }); }, { op: "screen", blur: 18 });
-  glow(g, x, y, 260, "#ff3b2a", 0.5 + 0.4 * I);
+function alarmBeams(g, x, y, ph, len = 1500, top = false) {   // faisceaux horizontaux qui s'étendent vers les côtés puis reviennent au gyrophare (pas de rotation)
+  const I = 0.5 + 0.5 * Math.cos(ph * 6.2832), E = I;                                  // extension max quand l'image est la plus rouge
+  const L = 160 + (len - 160) * E, spread = 0.06 + 0.3 * E;
+  layer(g, q => { [0, Math.PI].forEach(b => { const gr = q.createRadialGradient(x, y, 10, x, y, L); gr.addColorStop(0, `rgba(255,80,60,${0.85 * (0.35 + 0.65 * I)})`); gr.addColorStop(0.7, `rgba(255,50,35,${0.4 * I})`); gr.addColorStop(1, "rgba(255,40,30,0)");
+    q.fillStyle = gr; q.beginPath(); q.moveTo(x, y); q.arc(x, y, L, b - spread, b + spread); q.closePath(); q.fill(); }); }, { op: "screen", blur: 18 });
+  glow(g, x, y, 160 + 140 * E, "#ff3b2a", 0.45 + 0.45 * I);
 }
 function beacon(g, x, y, s, ph, top = false) {
   const I = 0.5 + 0.5 * Math.cos(ph * 6.2832), lit = mixc("#5a1410", "#ff4a32", I);
@@ -1133,7 +1134,7 @@ function beacon(g, x, y, s, ph, top = false) {
   if (top) {                                                                                                  // vu de dessus (plan 4)
     g.fillStyle = "#0b0a0a"; g.beginPath(); g.arc(0, 0, 70, 0, 7); g.fill();
     const rg = g.createRadialGradient(-15, -15, 4, 0, 0, 56); rg.addColorStop(0, mixc("#ffd0c0", lit, 0.6)); rg.addColorStop(1, lit); g.fillStyle = rg; g.beginPath(); g.arc(0, 0, 56, 0, 7); g.fill(); g.stroke();
-    for (let k = 0; k < 8; k++) { const b = k / 8 * 6.2832 + ph * 2; g.beginPath(); g.moveTo(0, 0); g.lineTo(Math.cos(b) * 56, Math.sin(b) * 56); g.stroke(); }
+    for (let k = 0; k < 8; k++) { const b = k / 8 * 6.2832; g.beginPath(); g.moveTo(0, 0); g.lineTo(Math.cos(b) * 56, Math.sin(b) * 56); g.stroke(); }
     g.beginPath(); g.arc(0, 0, 30, 0, 7); g.stroke();
   } else {
     g.fillStyle = "#0b0a0a"; g.fillRect(-90, 0, 180, 40); g.strokeRect(-90, 0, 180, 40);                      // socle
