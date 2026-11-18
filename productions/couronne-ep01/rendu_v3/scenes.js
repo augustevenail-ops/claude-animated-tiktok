@@ -358,7 +358,7 @@ S.p08_vue_aerienne = g => {                          // plan 8 : seulement CENTR
   layer(g, q => { glow(q, cx, cy, 240, GOLD, 0.5); for (let i = 0; i < 12; i++) { const p = P(140 * rnd(i * 5), rnd(i * 9) * 6.28), h = 60 + rnd(i) * 120; q.fillStyle = rgba(GOLD, 0.9); q.fillRect(p[0] - 9, p[1] - h, 18, h); } }, { op: "screen" });
   layer(g, q => { q.strokeStyle = rgba(TEAL, 0.8); q.lineWidth = 14; q.beginPath(); for (let t = 0; t <= Math.PI; t += 0.05) { const p = P(620 * Math.cos(t), 0, 620 * Math.sin(t) * 0.95); t ? q.lineTo(p[0], p[1]) : q.moveTo(p[0], p[1]); } q.stroke(); }, { blur: 22, op: "screen", alpha: 0.6 });
   pill(g, "LE CENTRE", cx - 220, cy - 150, [cx - 110, cy - 50]);
-  pill(g, "LES DISTRICTS", 830, 1000, [700, 1020]);
+  pill(g, "LES DISTRICTS", 840, 1110, [900, 1050]);
   hud(g, { alpha: 0.5 }); finish(g, { bloom: 0.4, grade: ["#0a2a2c", "#f3d28a", 0.15] }); caption(g, ["LE", "CENTRE,"], 0);
 };
 S.p09_regle_1_mur = g => {                           // plan 9 : la règle peinte sur le mur qui borde le dôme
@@ -520,6 +520,35 @@ S.p09_regle_1_neon = g => {                          // plan 9 : enseigne RÈGLE
   g.fillStyle = "#0a0b0c"; g.fillRect(0, 1360, W, H - 1360);
   dust(g, 80, "#ffb0a0", 400, 1300, 81, 2.2);
   hud(g); finish(g, { bloom: 0.6, grade: ["#1a0404", "#ffb0a0", 0.2] }); caption(g, ["NE", "SORS", "JAMAIS"], 1);
+};
+// ---------- v7 : plan 2 en deux images clés (objet très proche -> dézoom sur les personnages) ----------
+function compassBig(g, cx, cy, R, na) {
+  g.beginPath(); g.arc(cx, cy, R, 0, 7); const bz = g.createRadialGradient(cx - R * 0.3, cy - R * 0.3, R * 0.1, cx, cy, R); bz.addColorStop(0, "#d6d9dd"); bz.addColorStop(0.9, "#5d646b"); bz.addColorStop(1, "#2a2e33"); g.fillStyle = bz; g.fill(); outline(g, R / 200); g.stroke();
+  g.beginPath(); g.arc(cx, cy, R * 0.9, 0, 7); g.fillStyle = "#e7f2ef"; g.fill();
+  for (let i = 0; i < 36; i++) { const a = i / 36 * 6.2832; g.strokeStyle = "#2b2f33"; g.lineWidth = i % 3 ? R * 0.01 : R * 0.02; g.beginPath(); g.moveTo(cx + Math.cos(a) * R * 0.78, cy + Math.sin(a) * R * 0.78); g.lineTo(cx + Math.cos(a) * R * 0.88, cy + Math.sin(a) * R * 0.88); g.stroke(); }
+  g.font = `900 ${Math.round(R * 0.16)}px Montserrat`; g.fillStyle = "#2b2f33"; g.textAlign = "center"; ["N", "E", "S", "O"].forEach((t, k) => { const a = -Math.PI / 2 + k * Math.PI / 2; g.fillText(t, cx + Math.cos(a) * R * 0.55, cy + Math.sin(a) * R * 0.55 + R * 0.06); }); g.textAlign = "left";
+  g.save(); g.translate(cx, cy); g.rotate(na); g.fillStyle = "#c83a2c"; g.beginPath(); g.moveTo(0, -R * 0.72); g.lineTo(R * 0.11, 0); g.lineTo(0, R * 0.06); g.closePath(); g.fill();
+  g.fillStyle = "#e8e4dc"; g.beginPath(); g.moveTo(0, R * 0.72); g.lineTo(R * 0.11, 0); g.lineTo(0, R * 0.06); g.closePath(); g.fill(); g.restore();
+  g.beginPath(); g.arc(cx, cy, R * 0.07, 0, 7); g.fillStyle = "#1a1d20"; g.fill();
+}
+S.p02a_boussole_proche = g => {                      // image 1 : boussole remplit le cadre, aiguille affolée, reflet teal dans le verre
+  sky(g, [[0, "#0c1012"], [1, "#07090a"]]);
+  glow(g, 300, 500, 500, TEAL, 0.25);
+  compassBig(g, 540, 820, 480, 1.05 + Math.sin(2.7) * 0.22);
+  layer(g, q => { q.fillStyle = "rgba(111,224,214,0.25)"; q.beginPath(); q.ellipse(380, 720, 240, 60, -0.4, 0, 7); q.fill(); }, { blur: 16, op: "screen" });
+  hud(g); finish(g, { bloom: 0.4, grade: ["#06202a", "#ffd9a0", 0.16] }); caption(g, ["TU", "VIS"], 0);
+};
+S.p02b_dezoom_personnages = g => {                   // image 2 : dézoom, la boussole sur la table, le dôme au-dessus, le héros et son père
+  sky(g, [[0, "#070b0d"], [0.6, "#101a1e"], [1, "#050607"]]);
+  domeBarrier(g, 520, 1100, 760, 0.9);
+  layer(g, q => { q.fillStyle = "#1b1510"; q.fillRect(0, 1380, W, H - 1380); }, { blur: 2 });
+  g.fillStyle = "#3a2a1c"; g.fillRect(60, 1470, 960, 40); g.fillStyle = "#24190f"; g.fillRect(60, 1510, 960, 30);   // table
+  compassBig(g, 540, 1470, 70, 1.0 + Math.sin(2.7) * 0.22);
+  actor(g, 360, 1720, 1.0, { ...HERO, look: 0.2, arms: [[-1, 30], [1, -20]] }, { rim: TEAL, rimAng: -2.2, key: "#ffd9a0", shadow: false });
+  actor(g, 720, 1720, 1.0, { ...PERE, look: -0.1, arms: [[-1, -20], [1, 30]] }, { rim: "#cfe3ee", rimAng: -0.8, key: "#dfe9ef", shadow: false });
+  glow(g, 540, 1100, 500, TEAL, 0.15);
+  dust(g, 50, "#cfe9e6", 0, 1500, 83, 3);
+  hud(g); finish(g, { bloom: 0.35, grade: ["#06202a", "#ffd9a0", 0.16] }); caption(g, ["SOUS", "UN", "DÔME"], 1);
 };
 window.SCENES = Object.fromEntries(Object.entries(S).filter(([k]) => !k.endsWith("_bg")));
 window.SCENES_ALL = S;
