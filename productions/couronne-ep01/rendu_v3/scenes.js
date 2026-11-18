@@ -598,5 +598,56 @@ S.p02c_fond_district = g => {                         // plan 2 : même plan, fo
   dust(g, 50, "#cfe9e6", 0, 1500, 83, 3);
   hud(g); finish(g, { bloom: 0.35, grade: ["#06202a", "#ffd9a0", 0.16] }); caption(g, ["SOUS", "UN", "DÔME"], 1);
 };
+// ---------- v9 : figurants sobres, héros en lumière de scène (plan 4) ; fond chaud magenta et spot diffus (plan 2) ----------
+function topPersonMuted(q, px, py, j, seed) {        // figurant sobre : gris, bruns froids, peu de couleur
+  const pal = ["#3a3f44", "#4a4640", "#2e3134", "#55524c", "#3d3a36", "#5a5f63", "#2a2c2e"];
+  const hairs = ["#121010", "#2a2420", "#4a4036", "#6a6258"];
+  const cloth = pal[Math.floor(rnd(seed) * pal.length)], hair = hairs[Math.floor(rnd(seed * 3) * hairs.length)];
+  const ang = rnd(seed * 5) * 6.2832, dx = Math.cos(ang), dy = Math.sin(ang);
+  q.fillStyle = "rgba(0,0,0,0.42)"; q.beginPath(); q.ellipse(px + 9, py + 11, 33, 21, ang, 0, 7); q.fill();
+  q.fillStyle = mul(cloth, 0.7 + j * 0.4); q.beginPath(); q.ellipse(px, py, 31, 17, ang, 0, 7); q.fill();
+  q.strokeStyle = "rgba(0,0,0,0.4)"; q.lineWidth = 2; q.stroke();
+  const skin = rnd(seed * 11) > 0.5 ? "#8a7564" : "#5e4c3e";
+  const hg = q.createRadialGradient(px - 4, py - 4, 2, px, py, 13); hg.addColorStop(0, skin); hg.addColorStop(1, mul(skin, 0.5));
+  q.fillStyle = hg; q.beginPath(); q.arc(px + dx * 3, py + dy * 3, 12, 0, 7); q.fill();
+  q.fillStyle = hair; q.beginPath(); q.arc(px + dx * 3, py + dy * 3, 12.5, ang + Math.PI * 0.8, ang + Math.PI * 2.0); q.fill();
+}
+S.p04c_foule_discrete = g => {                       // plan 4 : foule grise, héros éclairé comme sur scène
+  sky(g, [[0, "#07090b"], [1, "#07090b"]]);
+  roll(g, 0.18, q => {
+    for (let y = -200; y < H + 200; y += 58) for (let x = -200; x < W + 200; x += 58) {
+      const j = rnd(x * 1.3 + y), px = x + (j - 0.5) * 26 + (y / 58 % 2) * 29, py = y + (rnd(x + y * 3) - 0.5) * 20;
+      const dc = Math.hypot(px - 540, py - 960);
+      if (dc < 110) continue;
+      if (dc > 540 && rnd(x * 2 + y) > 0.6) { q.strokeStyle = rgba("#aab4b8", 0.22); q.lineWidth = 6; q.beginPath(); q.moveTo(px, py); q.lineTo(px + (px - 540) * 0.14, py + (py - 960) * 0.14); q.stroke(); }
+      topPersonMuted(q, px, py, j, x * 0.37 + y * 1.91 + 5);
+    }
+  });
+  // cône de lumière de scène, pool diffus au centre, bord sombre
+  layer(g, q => { const r = q.createRadialGradient(540, 960, 40, 540, 960, 620); r.addColorStop(0, "rgba(255,236,200,0.55)"); r.addColorStop(0.45, "rgba(255,220,170,0.18)"); r.addColorStop(1, "rgba(0,0,0,0)"); q.fillStyle = r; q.fillRect(0, 0, W, H); }, { op: "screen", blur: 6 });
+  roll(g, 0, q => { });
+  const v = g.createRadialGradient(540, 960, 260, 540, 960, 1000); v.addColorStop(0, "rgba(0,0,0,0)"); v.addColorStop(1, "rgba(0,0,0,0.85)"); g.fillStyle = v; g.fillRect(0, 0, W, H);
+  // héros
+  g.fillStyle = "#2c4256"; g.beginPath(); g.ellipse(540, 966, 44, 28, 0.2, 0, 7); g.fill(); g.strokeStyle = INK; g.lineWidth = 4; g.stroke();
+  const hg = g.createRadialGradient(532, 950, 2, 540, 958, 26); hg.addColorStop(0, "#f6f3ec"); hg.addColorStop(1, "#9d9a94"); g.fillStyle = "#2b211b"; g.beginPath(); g.arc(540, 958, 26, 0, 7); g.fill(); g.stroke();
+  pill(g, "TOI", 540, 1060);
+  zoomBlur(g, 540, 960, 0.012); hud(g, { alpha: 0.7 }); finish(g, { bloom: 0.5, grade: ["#1a0a0a", "#ffe2b0", 0.14] }); caption(g, ["ARRÊTENT", "DE", "BOUGER."], 0);
+};
+S.p02d_fond_magenta_spot = g => {                    // plan 2 : fond magenta-rouge flashy, spot chaud diffus sur le héros
+  sky(g, [[0, "#2a0418"], [0.5, "#5a0c2c"], [1, "#12020a"]]);
+  richSkyline(g, 1330, -20, W + 20, 41, { hmin: 120, hvar: 260, wmin: 70, wvar: 90, cols: ["#3a0c24", "#430f2b", "#2e0a1e", "#4a1230", "#33081c"] });
+  layer(g, q => { q.fillStyle = "rgba(60,8,30,0.5)"; q.fillRect(0, 1000, W, 400); }, { blur: 2 });
+  g.fillStyle = "#14030a"; g.fillRect(0, 1380, W, H - 1380);
+  // faisceau de spot depuis le haut, diffus
+  layer(g, q => { const cone = q.createLinearGradient(0, 0, 0, 1700); cone.addColorStop(0, "rgba(255,170,90,0.55)"); cone.addColorStop(1, "rgba(255,150,80,0.05)");
+    q.fillStyle = cone; q.beginPath(); q.moveTo(470, 0); q.lineTo(610, 0); q.lineTo(860, 1700); q.lineTo(220, 1700); q.closePath(); q.fill(); }, { op: "screen", blur: 26 });
+  layer(g, q => { const p = q.createRadialGradient(540, 1560, 10, 540, 1560, 420); p.addColorStop(0, "rgba(255,190,110,0.6)"); p.addColorStop(1, "rgba(255,120,60,0)"); q.fillStyle = p; q.fillRect(0, 1100, W, 900); }, { op: "screen" });
+  g.fillStyle = "#3a0a1e"; g.fillRect(60, 1470, 960, 40); g.fillStyle = "#1e0610"; g.fillRect(60, 1510, 960, 30);   // table
+  compassBig(g, 540, 1470, 70, 1.0 + Math.sin(2.7) * 0.22);
+  actor(g, 360, 1720, 1.0, { ...HERO, look: 0.2, arms: [[-1, 30], [1, -20]] }, { rim: "#ffd0a0", rimAng: -2.0, key: "#ffe2b0", shadow: false });
+  actor(g, 720, 1720, 1.0, { ...PERE, look: -0.1, arms: [[-1, -20], [1, 30]] }, { rim: "#ffd0a0", rimAng: -0.8, key: "#ffe2b0", shadow: false });
+  dust(g, 60, "#ffd0a0", 0, 1500, 91, 3);
+  hud(g); finish(g, { bloom: 0.45, grade: ["#2a0418", "#ffb080", 0.16] }); caption(g, ["SOUS", "UN", "DÔME"], 1);
+};
 window.SCENES = Object.fromEntries(Object.entries(S).filter(([k]) => !k.endsWith("_bg")));
 window.SCENES_ALL = S;
