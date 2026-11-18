@@ -19,14 +19,28 @@
   {
    "n": 2,
    "debut": 0.1,
-   "plan": "Le héros au centre, son père à côté ; au-dessus, un segment du dôme grésille et vire au rouge (détail qui accroche)",
-   "scene": "a_creer:c11_heros_pere_duo",
-   "camera": "dézoom puis fixe ; le grésillement attire l'œil en haut du cadre",
+   "plan": "Accroche : très gros plan sur une boussole posée sur la table, aiguille qui tremble sous le champ du dôme (reflet teal dans le verre, tasse fumante à côté) ; recul continu qui révèle le héros au centre et son père à côté, le bord du dôme qui grésille au-dessus",
+   "scene": "a_creer:c11_boussole_table",
+   "camera": "voir « cles » : départ très serré sur la boussole, recul continu jusqu'au plan à deux",
    "fin": 2.453,
    "duree": 2.35,
    "texte": "tu vis sous un dôme magnétique",
    "entree": "dézoom 1,2 s (échelle 1,25 -> 1,0, ralenti en fin)",
-   "sortie": "3 images : normale / noir tiers haut + tiers bas / noir (≈ 0,1 s)"
+   "sortie": "3 images : normale / noir tiers haut + tiers bas / noir (≈ 0,1 s)",
+   "cles": [
+    {
+     "t": 0.1,
+     "action": "très gros plan : boussole, l'aiguille tremble et oscille (le champ magnétique perturbe le nord) ; tasse fumante floue au premier plan"
+    },
+    {
+     "t": 1.07,
+     "action": "« tu vis » : recul continu, les mains du père et du héros entrent dans le cadre, la table apparaît"
+    },
+    {
+     "t": 1.99,
+     "action": "« dôme magnétique » : plan à deux révélé, héros au centre, père à côté ; en haut, un segment du dôme grésille en rouge"
+    }
+   ]
   },
   {
    "n": 3,

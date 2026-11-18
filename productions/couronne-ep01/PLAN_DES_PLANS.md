@@ -12,6 +12,12 @@ Voix : `voix_v9/voix_complete_v11.mp3` (70,55 s). Minutage mot à mot : `voix_v9
 - **Entrée de chaque plan** : dézoom de 1,2 s (échelle 1,25 vers 1,0, ralenti en fin). Sur les plans FPV et la vue aérienne, le mouvement propre continue après le dézoom.
 - Plan 1 : noir avec « IMAGINE, » (0,1 s), comme le plan 1 de la référence. Dernier plan : carte de fin sur « Abonne-toi », puis fondu au noir.
 
+## Plan 2 : accroche (même logique que la soupe de la référence : objet du quotidien, puis le personnage apparaît)
+- 0.10 s : très gros plan : boussole, l'aiguille tremble et oscille (le champ magnétique perturbe le nord) ; tasse fumante floue au premier plan
+- 1.07 s : « tu vis » : recul continu, les mains du père et du héros entrent dans le cadre, la table apparaît
+- 1.99 s : « dôme magnétique » : plan à deux révélé, héros au centre, père à côté ; en haut, un segment du dôme grésille en rouge
+- Pourquoi une boussole : objet ordinaire de la table, mais son aiguille affolée montre tout de suite que le monde est sous un champ magnétique ; elle annonce le sujet sans le dire.
+
 ## Plan 8 : vue aérienne avec étiquettes (une seule prise, caméra calée sur la voix)
 - 14.31 s : vue d'ensemble du dôme vu de haut (3/4), lent glissement
 - 14.31 s : la caméra pousse vers le centre
@@ -36,7 +42,7 @@ Voix : `voix_v9/voix_complete_v11.mp3` (70,55 s). Minutage mot à mot : `voix_v9
 | # | Début | Fin | Durée | Voix | Plan | Scène | Caméra |
 |---|---|---|---|---|---|---|---|
 | 1 | 0.00 | 0.10 | 0.10 | (noir) « IMAGINE, » | Noir + « IMAGINE, » (accroche, réf. plan 1) | `noir` | fixe |
-| 2 | 0.10 | 2.45 | 2.35 | tu vis sous un dôme magnétique | Le héros au centre, son père à côté ; au-dessus, un segment du dôme grésille et vire au rouge (détail qui accroche) | `a_creer:c11_heros_pere_duo` | dézoom puis fixe ; le grésillement attire l'œil en haut du cadre |
+| 2 | 0.10 | 2.45 | 2.35 | tu vis sous un dôme magnétique | Accroche : très gros plan sur une boussole posée sur la table, aiguille qui tremble sous le champ du dôme (reflet teal dans le verre, tasse fumante à côté) ; recul continu qui révèle le héros au centre et son père à côté, le bord du dôme qui grésille au-dessus | `a_creer:c11_boussole_table` | voir « cles » : départ très serré sur la boussole, recul continu jusqu'au plan à deux |
 | 3 | 2.45 | 4.81 | 2.36 | et d'ici 3 jours, il sera coupé. | Compte à rebours 72:00 sur l'écran public | `w2_compte_a_rebours` | push-in lent |
 | 4 | 4.81 | 6.75 | 1.94 | 10 000 personnes arrêtent de bouger. | FPV vue de dessus : la foule s'immobilise, le héros au centre | `f3_fpv_foule_dessus` | descente verticale + rotation lente |
 | 5 | 6.75 | 9.47 | 2.72 | Le champ magnétique vous protège des radiations extérieures, | FPV : plongée à travers le dôme | `f1_fpv_plongee_dome` | plongée continue + roulis |
@@ -69,7 +75,7 @@ Voix : `voix_v9/voix_complete_v11.mp3` (70,55 s). Minutage mot à mot : `voix_v9
 | 32 | 68.99 | 72.60 | 3.61 | Abonne-toi pour la partie 2. | Carte de fin : LA COURONNE · ÉPISODE 1 · ABONNE-TOI | `a_creer:fin_carte` | dôme filaire qui tourne |
 
 ## Scènes à créer avant le montage
-- plan 2 : `c11_heros_pere_duo`, Le héros au centre, son père à côté ; au-dessus, un segment du dôme grésille et vire au rouge (détail qui accroche)
+- plan 2 : `c11_boussole_table`, Le héros au centre, son père à côté ; au-dessus, un segment du dôme grésille et vire au rouge (détail qui accroche)
 - plan 7 : `w10_lampes_eteintes`, Rue de district : les lampadaires s'éteignent un à un
 - plan 8 : `w1d_vue_aerienne_tags`, Vue aérienne du dôme : la caméra va au centre puis recule sur l'anneau des districts ; étiquettes qui apparaissent avec la voix
 - plan 10 : `f5_fpv_barriere`, FPV : traversée de la barrière vers le désert irradié
