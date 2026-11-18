@@ -50,3 +50,5 @@ SHOTS.d05b_zone_large.looks = [[17, 8, 150], [8, 20, 120], [0, 0, 0], [0, 40, 0]
 SHOTS.d20r21_facade = { path: [[8, 48, 180], [3, 43, 125], [0.6, 40.6, 92], [0.1, 39.95, 70], [0, 39.85, 62.25]], looks: [[0, 40, 61], [0, 39.9, 61], [0, 39.85, 61]],
   ease: "out", fovs: [52, 82], roll: 0.025, shake: 0.02, sign2On: [0.26, 0.36] };
 Object.assign(SHOTS.w22_le_mur, { path: [[18.5, 3, 167], [15, 24, 157], [10, 40, 143], [5, 47, 118]], looks: [[26, 12, 136], [16, 30, 112], [-8, 34, 40], [-10, 30, 0]], ease: "out" });   // face au béton (pas à la porte), puis par-dessus
+// v8b : fin du plan 5, le dôme entier posé dans le désert irradié du plan 10 (sol craquelé, fumées vertes de radiation)
+Object.assign(SHOTS.d05b_zone_large, { outside: true, near: 0.5, fog: [0x5e5c2a, 0.00011], bg: 0x4a4a24 });
