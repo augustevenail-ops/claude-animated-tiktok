@@ -98,7 +98,7 @@ function tube(g, a, b, w, col, s) {
 function ball(g, c, r, col, s) { g.fillStyle = col; g.beginPath(); g.arc(c[0], c[1], r, 0, 7); g.fill(); outline(g, s); g.lineWidth = 5 * s; g.stroke(); }
 function headShape(g, c, R, s, o) {                     // tête ronde claire, reflet radial haut-gauche, bord gris (#9d9a94)
   const gr = g.createRadialGradient(c[0] - R * 0.25, c[1] - R * 0.35, R * 0.05, c[0], c[1], R);
-  gr.addColorStop(0, "#f6f3ec"); gr.addColorStop(0.5, o.skin || "#ddd7cb"); gr.addColorStop(0.85, "#b5b0a6"); gr.addColorStop(1, "#9d9a94");
+  gr.addColorStop(0, "#f6f3ec"); gr.addColorStop(0.5, o.skin || "#ddd7cb"); gr.addColorStop(0.9, "#2a2622"); gr.addColorStop(1, "#0d0b0a");
   g.fillStyle = gr; g.beginPath(); g.arc(c[0], c[1], R, 0, 7); g.fill();
 }
 function eyes(g, c, R, o) {                              // yeux : ovales noirs verticaux, écart 0.62 R, légèrement au-dessus du centre
