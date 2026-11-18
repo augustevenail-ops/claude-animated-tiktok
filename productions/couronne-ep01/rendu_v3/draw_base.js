@@ -61,21 +61,23 @@ function crowd(g, y0, rows, opt = {}) {          // foule (réf. planches 7, 9, 
   const sh = g.createLinearGradient(0, y0, 0, H); sh.addColorStop(0, "rgba(0,0,0,0)"); sh.addColorStop(1, "rgba(0,0,0,0.6)"); g.fillStyle = sh; g.fillRect(0, y0, W, H - y0);
 }
 // ---------- HUD et sous-titres (relevés planche 9 : rouge #D6514B, blanc #F6F2EA, orange #F3A633) ----------
+const SAFE_X = 160;                                       // marge latérale : TikTok rogne ~97 px de chaque côté sur un écran 19,5:9 (iPhone 17 Pro)
 function hud(g, o = {}) {
+  const L = SAFE_X, R = W - SAFE_X;
   g.save(); g.globalAlpha = o.alpha ?? 1;
-  g.fillStyle = HUD_RED; g.beginPath(); g.arc(70, 283, 5, 0, 7); g.fill();
-  g.font = "800 22px Montserrat"; g.letterSpacing = "2px"; g.fillText("ÉPISODE 1", 80, 291);
-  g.fillStyle = HUD_WHITE; g.font = "800 56px Montserrat"; g.letterSpacing = "0px"; g.fillText(o.clock || "06:12", 66, 356);
-  g.fillStyle = "rgba(246,242,234,0.35)"; g.fillRect(68, 380, 210, 2);
-  g.fillStyle = "rgba(246,242,234,0.55)"; g.font = "500 15px 'Roboto Mono'"; g.letterSpacing = "5px"; g.fillText(o.zone || "DISTRICT NORD", 70, 418);
-  g.textAlign = "right"; g.fillStyle = HUD_RED; g.font = "800 22px Montserrat"; g.letterSpacing = "2px"; g.fillText(o.label || "COUPURE", W - 66, 291);
-  g.font = "600 74px Oswald"; g.letterSpacing = "1px"; g.fillStyle = o.valueRed ? HUD_RED : HUD_WHITE; g.fillText(o.value || "72 H", W - 66, 358);
+  g.fillStyle = HUD_RED; g.beginPath(); g.arc(L + 4, 283, 5, 0, 7); g.fill();
+  g.font = "800 22px Montserrat"; g.letterSpacing = "2px"; g.fillText("ÉPISODE 1", L + 14, 291);
+  g.fillStyle = HUD_WHITE; g.font = "800 56px Montserrat"; g.letterSpacing = "0px"; g.fillText(o.clock || "06:12", L, 356);
+  g.fillStyle = "rgba(246,242,234,0.35)"; g.fillRect(L + 2, 380, 210, 2);
+  g.fillStyle = "rgba(246,242,234,0.55)"; g.font = "500 15px 'Roboto Mono'"; g.letterSpacing = "5px"; g.fillText(o.zone || "DISTRICT NORD", L + 4, 418);
+  g.textAlign = "right"; g.fillStyle = HUD_RED; g.font = "800 22px Montserrat"; g.letterSpacing = "2px"; g.fillText(o.label || "COUPURE", R, 291);
+  g.font = "600 74px Oswald"; g.letterSpacing = "1px"; g.fillStyle = o.valueRed ? HUD_RED : HUD_WHITE; g.fillText(o.value || "72 H", R, 358);
   g.restore(); g.letterSpacing = "0px"; g.textAlign = "left";
 }
 function caption(g, words, active, y = 1242) {         // Montserrat 900, blanc + ombre portée sombre, mot actif orange (sans pilule)
   g.save(); let fs = 88; g.font = `900 ${fs}px Montserrat`; let sp = 24;
   let ws = words.map(w => g.measureText(w).width), tot = ws.reduce((a, b) => a + b, 0) + sp * (words.length - 1);
-  if (tot > W - 140) { const k = (W - 140) / tot; fs = Math.floor(fs * k); sp *= k; g.font = `900 ${fs}px Montserrat`; ws = words.map(w => g.measureText(w).width); tot = ws.reduce((a, b) => a + b, 0) + sp * (words.length - 1); }   // tient dans le cadre
+  if (tot > W - 2 * SAFE_X) { const k = (W - 2 * SAFE_X) / tot; fs = Math.floor(fs * k); sp *= k; g.font = `900 ${fs}px Montserrat`; ws = words.map(w => g.measureText(w).width); tot = ws.reduce((a, b) => a + b, 0) + sp * (words.length - 1); }   // tient dans le cadre
   let x = (W - tot) / 2;
   words.forEach((w, i) => {
     g.shadowColor = "rgba(0,0,0,0.75)"; g.shadowBlur = 18; g.shadowOffsetY = 6;

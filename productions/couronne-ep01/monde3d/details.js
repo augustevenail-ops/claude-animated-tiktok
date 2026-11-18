@@ -60,7 +60,7 @@ export function addDetails(scene, W) {
   const lam = c => new THREE.MeshLambertMaterial({ color: c });
   const { R_DIST_IN, R_DIST_OUT, R_CENTRE, R_WALL } = MAP;
   const pDist = people("dist"), pRich = people("rich"), pGuard = new THREE.SpriteMaterial({ map: personTex("#6c7076", null, 99, true), color: 0xb8bcc0, alphaTest: 0.5, fog: true });
-  const person = (x, z, mats, s) => { const sp = new THREE.Sprite(mats[Math.floor(rnd(s) * mats.length)]); sp.center.set(0.5, 0); const h = 1.65 + rnd(s * 3) * 0.25; sp.scale.set(h * 0.4, h, 1); sp.position.set(x, 0.05, z); add(sp); return sp; };
+  const person = (x, z, mats, s) => { if (Math.hypot(x + 17, z - 305) < 26) return null; /* rue de la règle 1 vide */ const sp = new THREE.Sprite(mats[Math.floor(rnd(s) * mats.length)]); sp.center.set(0.5, 0); const h = 1.65 + rnd(s * 3) * 0.25; sp.scale.set(h * 0.4, h, 1); sp.position.set(x, 0.05, z); add(sp); return sp; };
   const inDist = (x, z) => { const r = Math.hypot(x, z); return r > R_DIST_IN + 6 && r < R_DIST_OUT - 6; };
   const inCentre = (x, z) => Math.hypot(x, z) < R_CENTRE - 4;
 

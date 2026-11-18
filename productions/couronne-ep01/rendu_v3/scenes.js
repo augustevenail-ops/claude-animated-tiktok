@@ -1115,20 +1115,20 @@ function crowd3q(g, o = {}) {
 function mixc(a, b, t) { const A = hex2(a), B = hex2(b); return "#" + A.map((v, i) => Math.round(v + (B[i] - v) * t).toString(16).padStart(2, "0")).join(""); }
 
 // alarme : gyrophare rouge (dôme grillagé sur socle noir), deux faisceaux tournants, image qui vire au rouge puis revient (ph = phase 0..1)
-function alarmWash(g, ph) {
+function alarmWash(g, ph) { if (window.ALARM_PH != null) ph = window.ALARM_PH;
   const I = 0.5 + 0.5 * Math.cos(ph * 6.2832);
   g.save(); g.globalCompositeOperation = "multiply"; g.fillStyle = mixc("#ffffff", "#ff5a46", 0.8 * I); g.fillRect(0, 0, W, H); g.restore();
   g.save(); g.globalCompositeOperation = "screen"; g.fillStyle = rgba("#ff2a1a", 0.16 * I); g.fillRect(0, 0, W, H); g.restore();
   return I;
 }
-function alarmBeams(g, x, y, ph, len = 1500, top = false) {   // faisceaux horizontaux qui s'étendent vers les côtés puis reviennent au gyrophare (pas de rotation)
+function alarmBeams(g, x, y, ph, len = 1500, top = false) { if (window.ALARM_PH != null) ph = window.ALARM_PH;   // faisceaux horizontaux qui s'étendent vers les côtés puis reviennent au gyrophare (pas de rotation)
   const I = 0.5 + 0.5 * Math.cos(ph * 6.2832), E = I;                                  // extension max quand l'image est la plus rouge
   const L = 160 + (len - 160) * E, spread = 0.06 + 0.3 * E;
   layer(g, q => { [0, Math.PI].forEach(b => { const gr = q.createRadialGradient(x, y, 10, x, y, L); gr.addColorStop(0, `rgba(255,80,60,${0.85 * (0.35 + 0.65 * I)})`); gr.addColorStop(0.7, `rgba(255,50,35,${0.4 * I})`); gr.addColorStop(1, "rgba(255,40,30,0)");
     q.fillStyle = gr; q.beginPath(); q.moveTo(x, y); q.arc(x, y, L, b - spread, b + spread); q.closePath(); q.fill(); }); }, { op: "screen", blur: 18 });
   glow(g, x, y, 160 + 140 * E, "#ff3b2a", 0.45 + 0.45 * I);
 }
-function beacon(g, x, y, s, ph, top = false) {
+function beacon(g, x, y, s, ph, top = false) { if (window.ALARM_PH != null) ph = window.ALARM_PH;
   const I = 0.5 + 0.5 * Math.cos(ph * 6.2832), lit = mixc("#5a1410", "#ff4a32", I);
   g.save(); g.translate(x, y); g.scale(s, s); g.lineWidth = 7; g.strokeStyle = INK;
   if (top) {                                                                                                  // vu de dessus (plan 4)
@@ -1166,7 +1166,7 @@ function plan3(g, ph) {
   layer(g, q => glow(q, 540, 720, 640, "#ff3b2a", 0.45), { op: "screen" });
   seg7(g, "72:00", 540, 700, 0.92); g.font = "800 28px Montserrat"; g.fillStyle = "#e9c9a8"; g.textAlign = "center"; g.fillText("COUPURE DU CHAMP · DISTRICTS", 540, 885); g.textAlign = "left";
   crowd3q(g, { y0: 1040, s0: 0.8, s1: 2.1, backs: true, seed: 3, sparse: 0.2 });
-  alarmWash(g, ph); alarmAll(g, 540, 505, 0.75, ph);
+  alarmWash(g, ph); alarmAll(g, 540, 400, 0.7, ph);
   hud(g, { valueRed: true }); finish(g, { bloom: 0.4, grade: ["#1a0606", "#ffb08a", 0.12] }); caption(g, ["D'ICI", "3", "JOURS,"], 2);
 }
 S.a03_compte_foule = g => plan3(g, 0.0);
