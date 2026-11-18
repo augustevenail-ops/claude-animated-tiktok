@@ -775,14 +775,14 @@ S.p02h_buste_vivant = g => {                              // image 2 v13
   // bonnet rouge replié : calotte à côtes qui convergent vers le haut, revers replié en bas (côtes plus foncées)
   const dome = () => { g.beginPath(); g.ellipse(290, 1362, 172, 160, 0, Math.PI, 2 * Math.PI); g.lineTo(462, 1372); g.lineTo(118, 1372); g.closePath(); };
   g.save(); dome(); g.fillStyle = "#c4342d"; g.fill(); g.clip();
-  g.strokeStyle = "rgba(160,46,40,0.85)"; g.lineWidth = 2; g.lineCap = "round";
+  g.strokeStyle = "rgba(170,52,44,0.9)"; g.lineWidth = 7; g.lineCap = "round";
   for (let k = 0; k <= 6; k++) { const x0 = 118 + k * 56; g.beginPath(); g.moveTo(x0, 1380); g.quadraticCurveTo(x0 + (290 - x0) * 0.4, 1260, 290 + (x0 - 290) * 0.08, 1180); g.stroke(); }   // côtes qui rejoignent le sommet
   g.fillStyle = "#9c2420"; g.fillRect(100, 1318, 380, 60);                                               // revers replié
-  g.strokeStyle = "rgba(150,44,38,0.85)"; g.lineWidth = 1.8;
+  g.strokeStyle = "rgba(120,30,26,0.95)"; g.lineWidth = 6;
   for (let k = 0; k <= 8; k++) { const x0 = 118 + k * 44; g.beginPath(); g.moveTo(x0, 1318); g.lineTo(x0, 1378); g.stroke(); }   // côtes du revers
   g.restore();
   g.strokeStyle = "#050405"; g.lineWidth = 7; dome(); g.stroke();
-  g.strokeStyle = "rgba(70,14,12,0.9)"; g.lineWidth = 4; g.beginPath(); g.moveTo(118, 1318); g.lineTo(462, 1318); g.stroke();   // pli du revers
+  g.strokeStyle = "#050405"; g.lineWidth = 8; g.beginPath(); g.moveTo(118, 1318); g.lineTo(462, 1318); g.stroke();   // pli du revers
   pigeon(g, 540, 1400, 2.8, 1.2, 3);
   pigeon(g, 540, 1400, 2.8, 1.2, 0);
   hud(g); finish(g, { bloom: 0.08, grade: ["#000000", "#ffd9a0", 0.03] }); caption(g, ["SOUS", "UN", "DÔME"], 1);
@@ -799,14 +799,14 @@ S.p02i_sol_vivant = g => {                                // image 3 v13
   // bonnet rouge replié : calotte à côtes qui convergent vers le haut, revers replié en bas (côtes plus foncées)
   const dome = () => { g.beginPath(); g.ellipse(290, 1362, 172, 160, 0, Math.PI, 2 * Math.PI); g.lineTo(462, 1372); g.lineTo(118, 1372); g.closePath(); };
   g.save(); dome(); g.fillStyle = "#c4342d"; g.fill(); g.clip();
-  g.strokeStyle = "rgba(160,46,40,0.85)"; g.lineWidth = 2; g.lineCap = "round";
+  g.strokeStyle = "rgba(170,52,44,0.9)"; g.lineWidth = 7; g.lineCap = "round";
   for (let k = 0; k <= 6; k++) { const x0 = 118 + k * 56; g.beginPath(); g.moveTo(x0, 1380); g.quadraticCurveTo(x0 + (290 - x0) * 0.4, 1260, 290 + (x0 - 290) * 0.08, 1180); g.stroke(); }   // côtes qui rejoignent le sommet
   g.fillStyle = "#9c2420"; g.fillRect(100, 1318, 380, 60);                                               // revers replié
-  g.strokeStyle = "rgba(150,44,38,0.85)"; g.lineWidth = 1.8;
+  g.strokeStyle = "rgba(120,30,26,0.95)"; g.lineWidth = 6;
   for (let k = 0; k <= 8; k++) { const x0 = 118 + k * 44; g.beginPath(); g.moveTo(x0, 1318); g.lineTo(x0, 1378); g.stroke(); }   // côtes du revers
   g.restore();
   g.strokeStyle = "#050405"; g.lineWidth = 7; dome(); g.stroke();
-  g.strokeStyle = "rgba(70,14,12,0.9)"; g.lineWidth = 4; g.beginPath(); g.moveTo(118, 1318); g.lineTo(462, 1318); g.stroke();   // pli du revers
+  g.strokeStyle = "#050405"; g.lineWidth = 8; g.beginPath(); g.moveTo(118, 1318); g.lineTo(462, 1318); g.stroke();   // pli du revers
   pigeon(g, 560, 1860, 2.0, 1.45, 0);
   hud(g); finish(g, { bloom: 0.08, grade: ["#000000", "#ffd9a0", 0.03] }); caption(g, ["MAGNÉTIQUE."], 0);
 };

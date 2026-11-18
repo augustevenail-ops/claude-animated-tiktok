@@ -1,7 +1,7 @@
 // Moteur de dessin calqué sur les références (planches contact VIDEO_01) — mesures dans STYLE_BIBLE.md + relevés pixels.
 // Unités : canvas 1080x1920. Facteur planche -> rendu : 1080/464 = 2.328.
 const W = 1080, H = 1920;
-const INK = "#17130e";                                  // contour (relevé : bord de tête ~#151109)
+const INK = "#050405";                                  // contour (relevé : bord de tête ~#151109)
 const HUD_RED = "#D6514B", HUD_WHITE = "#F6F2EA", CAP_ORANGE = "#F3A633";
 const mk = (w, h) => { const c = document.createElement("canvas"); c.width = w; c.height = h; return c; };
 const hex2 = (c) => { const n = parseInt(c.slice(1), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; };
@@ -98,7 +98,7 @@ function tube(g, a, b, w, col, s) {
 function ball(g, c, r, col, s) { g.fillStyle = col; g.beginPath(); g.arc(c[0], c[1], r, 0, 7); g.fill(); outline(g, s); g.lineWidth = 5 * s; g.stroke(); }
 function headShape(g, c, R, s, o) {                     // tête ronde claire, reflet radial haut-gauche, bord gris (#9d9a94)
   const gr = g.createRadialGradient(c[0] - R * 0.25, c[1] - R * 0.35, R * 0.05, c[0], c[1], R);
-  gr.addColorStop(0, "#f6f3ec"); gr.addColorStop(0.5, o.skin || "#ddd7cb"); gr.addColorStop(0.92, "#dedad2"); gr.addColorStop(1, "#c4bfb6");
+  gr.addColorStop(0, "#ffffff"); gr.addColorStop(0.7, "#fbfaf7"); gr.addColorStop(1, "#f1eee8");
   g.fillStyle = gr; g.beginPath(); g.arc(c[0], c[1], R, 0, 7); g.fill();
 }
 function eyes(g, c, R, o) {                              // yeux : ovales noirs verticaux, écart 0.62 R, légèrement au-dessus du centre
