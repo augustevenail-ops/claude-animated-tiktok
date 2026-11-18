@@ -869,5 +869,31 @@ S.p02n_chute_holo = g => {                            // image 2 : l'oiseau rebo
   pigeon(g, 600, 1300, 1.6, 1.9, 0);
   hud(g); finish(g, { bloom: 0.4, grade: ["#06202a", "#c8f4ee", 0.16] }); caption(g, ["TU", "VIS"], 1);
 };
+// ---------- v39 : ouverture en 3 scènes courtes — vol normal, impact sur le champ (bam), chute rapide ----------
+S.p02o_vol_normal = g => {                            // scène 1 : l'oiseau vole droit, calme, traverse le cadre
+  sky(g, [[0, "#05080a"], [0.6, "#0a1418"], [1, "#050607"]]);
+  fieldSurface(g, 1500, 420);
+  for (let i = 0; i < 30; i++) { g.fillStyle = rgba("#cfe9e6", 0.2 + rnd(i) * 0.3); g.fillRect(rnd(i * 7) * W, rnd(i * 3) * 700, 3, 3); }
+  pigeon(g, 540, 820, 1.7, -0.05, 0);
+  hud(g); finish(g, { bloom: 0.3, grade: ["#06202a", "#c8f4ee", 0.16] }); caption(g, ["TU", "VIS"], 0);
+};
+S.p02p_impact = g => {                                // scène 2 : BAM, l'oiseau touche le champ, flash et onde
+  sky(g, [[0, "#0a1418"], [0.6, "#10242a"], [1, "#050607"]]);
+  g.fillStyle = rgba("#dffaf6", 0.55); g.fillRect(0, 0, W, H);                                 // flash
+  fieldSurface(g, 1500, 420);
+  glow(g, 540, 1080, 380, "#bff5ef", 0.8);
+  [60, 130, 220, 330].forEach((r, k) => { g.save(); g.translate(540, 1080); g.scale(1, 0.45); hexRing(g, 0, 0, r, "#6fe0d6", 0.9 - k * 0.18, 6 - k); g.restore(); });
+  for (let i = 0; i < 26; i++) { g.fillStyle = rgba("#bff5ef", 0.9); g.fillRect(540 + Math.cos(i * 2.4) * (60 + (i % 5) * 40), 1080 - Math.abs(Math.sin(i * 1.7)) * (80 + (i % 4) * 30), 5, 5); }
+  pigeon(g, 540, 1010, 1.9, 0.85, 0);
+  hud(g, { alpha: 0.6 }); finish(g, { bloom: 0.7, grade: ["#06202a", "#dffaf6", 0.18] }); caption(g, ["TU", "VIS"], 0);
+};
+S.p02q_chute_rapide = g => {                          // scène 3 : chute rapide, traînées verticales, l'onde s'éteint
+  sky(g, [[0, "#05080a"], [0.6, "#0a1418"], [1, "#050607"]]);
+  fieldSurface(g, 1500, 420);
+  for (let i = 0; i < 16; i++) { g.strokeStyle = rgba("#cfe9e6", 0.18 + rnd(i) * 0.12); g.lineWidth = 5 + rnd(i * 3) * 4; const x = 420 + rnd(i * 7) * 320; g.beginPath(); g.moveTo(x, 300 + rnd(i) * 300); g.lineTo(x + 6, 1000 + rnd(i * 5) * 200); g.stroke(); }
+  pigeon(g, 600, 1250, 1.6, 2.3, 4);
+  pigeon(g, 600, 1250, 1.6, 2.3, 0);
+  hud(g); finish(g, { bloom: 0.35, grade: ["#06202a", "#c8f4ee", 0.16] }); caption(g, ["TU", "VIS"], 0);
+};
 window.SCENES = Object.fromEntries(Object.entries(S).filter(([k]) => !k.endsWith("_bg")));
 window.SCENES_ALL = S;
