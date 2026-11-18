@@ -138,7 +138,7 @@ function figure(g, x, F, s, o) {
   if (o.insignia) { g.fillStyle = "#c9a24e"; g.beginPath(); g.moveTo(x - tws * 0.3, top + 70 * s); g.lineTo(x - tws * 0.3 + 18 * s, top + 92 * s); g.lineTo(x - tws * 0.3, top + 114 * s); g.lineTo(x - tws * 0.3 - 18 * s, top + 92 * s); g.closePath(); g.fill(); }
   if (o.badge) { g.fillStyle = "#c9c4b8"; g.fillRect(x - tws * 0.42, top + 70 * s, 84 * s, 30 * s); g.fillStyle = "#2a2620"; g.font = `500 ${20 * s}px 'Roboto Mono'`; g.fillText(o.badge, x - tws * 0.42 + 6 * s, top + 92 * s); }
   // col / capuche / écharpe : anneau plat (ellipse) — planche 9 : écharpe sauge #576150
-  if (o.ring) { g.fillStyle = o.ring; g.beginPath(); g.ellipse(ring[0] + (side ? 8 * s : 0), ring[1], (side ? 92 : 118) * s, 34 * s, 0, 0, 7); g.fill(); outline(g, s); g.stroke(); }
+  if (o.ring) { g.fillStyle = o.ring; g.beginPath(); g.ellipse(ring[0] + (side ? 8 * s : 0), ring[1], (side ? 92 : (o.ringW || 118)) * s, 34 * s, 0, 0, 7); g.fill(); outline(g, s); g.stroke(); }
   if (o.strings) { g.strokeStyle = "#d8dce0"; g.lineWidth = 4 * s; [-1, 1].forEach(k => { g.beginPath(); g.moveTo(x + k * 22 * s, ring[1] + 20 * s); g.lineTo(x + k * 26 * s, ring[1] + 90 * s); g.stroke(); }); }
   // tête
   headShape(g, headC, R, s, o);
