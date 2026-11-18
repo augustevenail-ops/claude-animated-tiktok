@@ -287,7 +287,21 @@ holo(14.3, 18.45, -35, seed=13); bip(14.36, -27, 1318.5, 0.09); bip(14.48, -27, 
 swell(W(63) - 0.45, 1.5, -21, seed=61); swell(W(138) - 0.45, 1.5, -21, seed=62)
 # 12 : il ouvre le dossier ; 14 : les bottes des gardes ; 16 : il te donne la feuille
 paper(27.6, 0.8, -27, seed=22)
-steps(30.45, 32.6, 0.45, -30, seed=26, rate=0.85)
+steps(28.9, 30.3, 0.5, -35, pan=-0.4, seed=25, rate=0.8)                        # 13 : des bottes qui approchent, au loin
+steps(30.45, 35.6, 0.45, -30, pan=-0.15, seed=26, rate=0.85)                     # 14-16 : les gardes l'emmènent (deux paires de bottes + ses pas à lui)
+steps(30.67, 35.6, 0.46, -32, pan=0.3, seed=28, rate=0.8)
+steps(31.6, 35.6, 0.52, -34, pan=0.05, seed=29, rate=1.05)
+def keys(t0, g_db, seed=0):
+    """trousseau / boucle de ceinture du garde qui tinte"""
+    n = int(0.35 * SR); x = np.zeros(n); r = np.random.default_rng(seed)
+    for _ in range(6):
+        i = r.integers(0, n // 2); m = n - i; tt = np.arange(m) / SR; f = 2500 + 3500 * r.random()
+        x[i:] += np.sin(2 * np.pi * f * tt) * np.exp(-tt / 0.03) * r.random()
+    put(x, t0, g_db, 0.0, pan=0.2)
+for t_ in (30.6, 31.9, 33.4, 34.9): keys(t_, -34, seed=int(t_ * 10))
+cue("cloth_rustle", 34.3, -32, pan=-0.2)
+steps(37.45, 38.0, 0.45, -31, seed=30, rate=0.85); cue("suit_rustle", 37.6, -31)  # 18 : le garde se tourne vers toi
+cue("crowd_shuffle", 54.4, -33); cue("crowd_breath", 62.2, -33)                  # 26 / 29 : la foule, très bas
 paper(32.85, 0.6, -28, seed=27)
 # 22 : la caméra passe par-dessus le mur
 wind(46.3, 48.4, -29, 150, 1600, 0.6, seed=33, fade=0.7)
@@ -330,11 +344,19 @@ melody(ph(9.6, [(Fs5, 2), (E5, 1), (D5, 1), (Cs5, 2), (D5, 2), (B4, 4)], 0.55), 
 melody(ph(14.4, [(D5, 2), (Fs5, 2), (A5, 3), (G5, 1), (Fs5, 4)], 0.5), -27, 83)                       # la carte
 melody(ph(24.4, [(B4, 2), (D5, 1), (E5, 1), (Fs5, 3), (E5, 1), (D5, 2), (Cs5, 2), (D5, 4)], 0.5), -25, 85)   # ton père, le soir
 melody(ph(32.8, [(Fs5, 2), (A5, 2), (G5, 2), (Fs5, 1), (E5, 1), (Fs5, 4)], 0.55), -26, 87)            # « prends ça »
-melody(ph(49.8, [(D5, 2), (E5, 2), (Fs5, 2), (B5, 3), (A5, 1), (Fs5, 4)], 0.5), -25, 89)              # la feuille
-melody(ph(62.1, [(B4, 2), (Cs5, 2), (D5, 2), (Fs5, 2), (E5, 2), (D5, 2), (Cs5, 2), (B4, 6)], 0.55), -25, 91)   # le choix, jusqu'au carton
+# fin en majeur (ré majeur) : plus de mouvement, ça monte jusqu'au carton
+D4, E4, Fs4, G4, A4 = 62, 64, 66, 67, 69
+melody(ph(49.8, [(D5, 2), (Fs5, 2), (A5, 2), (B5, 2), (A5, 1), (Fs5, 1), (A5, 4)], 0.45), -25, 89)    # la feuille : « il reste de l'énergie »
+CH = [(61.6, [50, 57, 66]), (63.3, [45, 57, 64]), (65.0, [43, 55, 62]), (66.7, [45, 57, 61]), (68.4, [50, 57, 66, 69])]   # ré, la, sol, la, ré
+for (t_, ch), nx in zip(CH, [c[0] for c in CH[1:]] + [DUR - 0.2]):
+    melody([(t_, m, nx - t_) for m in ch], -27, int(t_ * 10))                                     # nappe d'accords majeurs
+    arp = [m + 12 for m in ch[:3]] + [ch[0] + 24]
+    melody([(t_ + i * 0.21, arp[i % 4], 0.18) for i in range(int((nx - t_) / 0.21))], -31, int(t_ * 10) + 5)   # arpège doux qui avance
+melody(ph(61.7, [(Fs5, 2), (A5, 2), (D6 := 86, 3), (Cs5 + 12, 1), (B5, 2), (A5, 2), (G5, 2), (A5, 2), (B5, 2), (Cs5 + 12, 2), (D6, 6)], 0.42), -25, 91)   # le choix -> le carton
 # ---------- petite musique de fond, constante et discrète
 mus = k.music4(DUR, dips=(), transpose=0)
 a = np.abs(mus) > 1e-4; mus = mus * db(vref - 19 - rms(mus[a]))
+mus *= np.interp(np.arange(N) / SR, [0, 60.5, 62.0, DUR], [1, 1, 0, 0])            # la nappe mineure s'efface : la fin passe en majeur
 duck = np.ones(N)
 for w in words: duck[int(max(0, w["s"] - 0.08) * SR):int(min(DUR, w["e"] + 0.12) * SR)] = db(-2.0)
 mus *= np.convolve(duck, np.ones(2000) / 2000, "same")
@@ -344,11 +366,11 @@ if os.environ.get("NIVEAUX"):                                                   
         sl = slice(int(a_ * SR), int(b_ * SR)); print(f"{a_:6.2f} musique {rms(mus[sl]) - vref:6.1f}  bruitages {rms(hit[sl] + L[sl]) - vref:6.1f}")
     sys.exit()
 mix = np.stack([voice + mus + hit + L, voice + mus * 0.97 + hit + R], 1)
-out = os.path.join(HERE, "mix_v4.wav"); pre = os.path.join(HERE, "_pre_v4.wav")
+out = os.path.join(HERE, "mix_v5.wav"); pre = os.path.join(HERE, "_pre_v5.wav")
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "f64le", "-ar", str(SR), "-ac", "2", "-i", "-", pre], input=mix.tobytes(), check=True)
 m = subprocess.run(["ffmpeg", "-i", pre, "-af", "loudnorm=I=-15:TP=-1.2:LRA=9:print_format=json", "-f", "null", "-"], capture_output=True, text=True).stderr
 j = json.loads(m[m.rfind("{"):])
 af = f"loudnorm=I=-15:TP=-1.2:LRA=9:measured_I={j['input_i']}:measured_TP={j['input_tp']}:measured_LRA={j['input_lra']}:measured_thresh={j['input_thresh']}:offset={j['target_offset']}:linear=true,aresample=48000"
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", pre, "-af", af, "-c:a", "pcm_s24le", out], check=True); os.remove(pre)
-subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", out, "-b:a", "192k", os.path.join(HERE, "mix_ecoute_v4.mp3")], check=True)
+subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", out, "-b:a", "192k", os.path.join(HERE, "mix_ecoute_v5.mp3")], check=True)
 print("mix ok", out)
