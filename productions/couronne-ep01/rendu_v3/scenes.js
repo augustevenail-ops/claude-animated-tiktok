@@ -358,7 +358,7 @@ S.p08_vue_aerienne = g => {                          // plan 8 : seulement CENTR
   layer(g, q => { glow(q, cx, cy, 240, GOLD, 0.5); for (let i = 0; i < 12; i++) { const p = P(140 * rnd(i * 5), rnd(i * 9) * 6.28), h = 60 + rnd(i) * 120; q.fillStyle = rgba(GOLD, 0.9); q.fillRect(p[0] - 9, p[1] - h, 18, h); } }, { op: "screen" });
   layer(g, q => { q.strokeStyle = rgba(TEAL, 0.8); q.lineWidth = 14; q.beginPath(); for (let t = 0; t <= Math.PI; t += 0.05) { const p = P(620 * Math.cos(t), 0, 620 * Math.sin(t) * 0.95); t ? q.lineTo(p[0], p[1]) : q.moveTo(p[0], p[1]); } q.stroke(); }, { blur: 22, op: "screen", alpha: 0.6 });
   pill(g, "LE CENTRE", cx - 220, cy - 150, [cx - 110, cy - 50]);
-  const d = P(440, -Math.PI / 2); pill(g, "LES DISTRICTS", d[0], d[1]);
+  pill(g, "LES DISTRICTS", 830, 1000, [700, 1020]);
   hud(g, { alpha: 0.5 }); finish(g, { bloom: 0.4, grade: ["#0a2a2c", "#f3d28a", 0.15] }); caption(g, ["LE", "CENTRE,"], 0);
 };
 S.p09_regle_1_mur = g => {                           // plan 9 : la règle peinte sur le mur qui borde le dôme
