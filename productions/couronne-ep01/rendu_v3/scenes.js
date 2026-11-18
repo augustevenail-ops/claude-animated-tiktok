@@ -770,8 +770,8 @@ S.p02h_buste_vivant = g => {                              // image 2 v13
   holoDome(g, 101);
   layer(g, q => { q.fillStyle = "#1b1510"; q.fillRect(0, 1700, W, H - 1700); }, { blur: 2 });
   crowdStanding(g);
-  actor(g, 780, 2680, 1.7, { ...PERE, look: -0.12, arms: [[-1, 10], [1, 10]] }, { rim: "#cfe3ee", rimAng: -1.2, rimW: 7, key: "#dfe9ef", shadow: false });   // père, côté droit
-  actor(g, 310, 2650, 2.0, { ...HERO, look: 0.0, arms: [[-1, 10], [1, 10]] }, { rim: TEAL, rimAng: -1.57, rimW: 7, key: "#ffd9a0", shadow: false });
+  actor(g, 790, 2650, 1.8, { ...PERE, look: -0.12, arms: [[-1, 10], [1, 10]] }, { rim: "#cfe3ee", rimAng: -1.2, rimW: 7, key: "#dfe9ef", shadow: false });   // père, côté droit
+  actor(g, 290, 2650, 1.8, { ...HERO, look: 0.0, arms: [[-1, 10], [1, 10]] }, { rim: TEAL, rimAng: -1.57, rimW: 7, key: "#ffd9a0", shadow: false });
   paperSheet(g, 540, 1400, 1.0, 0.35, 4);
   paperSheet(g, 540, 1400, 1.0, 0.35, 0);
   hud(g); finish(g, { bloom: 0.35, grade: ["#06202a", "#ffd9a0", 0.16] }); caption(g, ["SOUS", "UN", "DÔME"], 1);
@@ -782,8 +782,8 @@ S.p02i_sol_vivant = g => {                                // image 3 v13
   holoDome(g, 103);
   layer(g, q => { q.fillStyle = "#1b1510"; q.fillRect(0, 1700, W, H - 1700); }, { blur: 2 });
   crowdStanding(g);
-  actor(g, 780, 2680, 1.7, { ...PERE, look: -0.12, arms: [[-1, 10], [1, 10]] }, { rim: "#cfe3ee", rimAng: -1.2, rimW: 7, key: "#dfe9ef", shadow: false });   // père, côté droit
-  actor(g, 310, 2650, 2.0, { ...HERO, look: 0.0, arms: [[-1, 10], [1, 10]] }, { rim: TEAL, rimAng: -1.57, rimW: 7, key: "#ffd9a0", shadow: false });
+  actor(g, 790, 2650, 1.8, { ...PERE, look: -0.12, arms: [[-1, 10], [1, 10]] }, { rim: "#cfe3ee", rimAng: -1.2, rimW: 7, key: "#dfe9ef", shadow: false });   // père, côté droit
+  actor(g, 290, 2650, 1.8, { ...HERO, look: 0.0, arms: [[-1, 10], [1, 10]] }, { rim: TEAL, rimAng: -1.57, rimW: 7, key: "#ffd9a0", shadow: false });
   g.fillStyle = "rgba(0,0,0,0.4)"; g.beginPath(); g.ellipse(880, 1852, 90, 12, 0, 0, 7); g.fill();
   paperSheet(g, 880, 1842, 0.9, 1.45, 0);
   hud(g); finish(g, { bloom: 0.35, grade: ["#06202a", "#ffd9a0", 0.16] }); caption(g, ["SOUS", "UN", "DÔME"], 1);
