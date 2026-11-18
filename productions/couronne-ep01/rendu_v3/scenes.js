@@ -691,5 +691,38 @@ S.p02e3_oiseau_sol = g => {                          // image 3 : l'oiseau attei
   g.fillStyle = "rgba(0,0,0,0.4)"; g.beginPath(); g.ellipse(400, 1772, 100, 14, 0, 0, 7); g.fill();
   hud(g); finish(g, { bloom: 0.35, grade: ["#06202a", "#ffd9a0", 0.16] }); caption(g, ["SOUS", "UN", "DÔME"], 1);
 };
+// ---------- v12 : plan 2 oiseau — cadrage du buste conservé, détails d'ambiance, l'oiseau tombe jusqu'au sol visible ----------
+function detailBG(g, seed) {
+  g.strokeStyle = "rgba(120,170,180,0.07)"; g.lineWidth = 2;                                     // joints de panneaux du mur
+  for (let x = 0; x <= W; x += 180) { g.beginPath(); g.moveTo(x, 0); g.lineTo(x, 1500); g.stroke(); }
+  for (let k = 0; k < 3; k++) {                                                                   // grésillement rouge sur le bord du dôme
+    g.save(); g.shadowColor = "rgba(255,70,50,0.9)"; g.shadowBlur = 18; g.strokeStyle = "rgba(255,90,70,0.85)"; g.lineWidth = 3; g.beginPath();
+    for (let i = 0; i <= 24; i++) { const a = -2.3 + (k * 0.12) + i / 24 * 1.45, r = 1 + (rnd(seed + k * 40 + i) - 0.5) * 0.04; const x = 1100 + 0 + Math.cos(a) * 760 * r - 560, y = 1250 + Math.sin(a) * 640 * r;
+      i ? g.lineTo(x, y) : g.moveTo(x, y); }
+    g.stroke(); g.restore();
+  }
+  dust(g, 110, "#cfe9e6", 0, 1700, seed, 2.2);                                                    // poussière en suspension
+  g.save(); g.filter = "blur(10px)"; g.fillStyle = "rgba(0,0,0,0.7)"; g.beginPath(); g.ellipse(120, 1840, 90, 70, 0, 0, 7); g.fill(); g.restore();   // verre au premier plan, flou
+  g.fillStyle = "rgba(255,200,120,0.35)"; g.beginPath(); g.arc(930, 300, 6, 0, 7); g.fill();     // petit voyant
+}
+S.p02f_oiseau_buste = g => {                          // image 2 : même cadrage que p02e2, avec détails
+  domeNight(g);
+  detailBG(g, 91);
+  layer(g, q => crowd(q, 1480, 4, { backs: true, tint: "#2e3a40", body: "#07090a", big: 1.5 }), { blur: 5 });
+  actor(g, 540, 2650, 2.3, { ...HERO, look: 0.0, arms: [[-1, 10], [1, 10]] }, { rim: TEAL, rimAng: -1.57, rimW: 7, key: "#ffd9a0", shadow: false });
+  deadBird(g, 540, 1420, 1.8, 1.2, 2.5);
+  deadBird(g, 540, 1420, 1.8, 1.2);
+  hud(g); finish(g, { bloom: 0.35, grade: ["#06202a", "#ffd9a0", 0.16] }); caption(g, ["SOUS", "UN", "DÔME"], 1);
+};
+S.p02g_oiseau_au_sol = g => {                         // image 3 : même cadrage, l'oiseau atteint le sol à côté du héros
+  domeNight(g);
+  detailBG(g, 93);
+  layer(g, q => { q.fillStyle = "#1b1510"; q.fillRect(0, 1700, W, H - 1700); }, { blur: 2 });
+  layer(g, q => crowd(q, 1480, 4, { backs: true, tint: "#2e3a40", body: "#07090a", big: 1.5 }), { blur: 5 });
+  actor(g, 540, 2650, 2.3, { ...HERO, look: 0.0, arms: [[-1, 10], [1, 10]] }, { rim: TEAL, rimAng: -1.57, rimW: 7, key: "#ffd9a0", shadow: false });
+  g.fillStyle = "rgba(0,0,0,0.45)"; g.beginPath(); g.ellipse(930, 1850, 120, 16, 0, 0, 7); g.fill();
+  deadBird(g, 930, 1838, 1.3, 1.5);
+  hud(g); finish(g, { bloom: 0.35, grade: ["#06202a", "#ffd9a0", 0.16] }); caption(g, ["SOUS", "UN", "DÔME"], 1);
+};
 window.SCENES = Object.fromEntries(Object.entries(S).filter(([k]) => !k.endsWith("_bg")));
 window.SCENES_ALL = S;
