@@ -76,3 +76,42 @@ function towers(g, y, cx, spread, n, o = {}) {        // tours du centre : volum
 }
 function wallHex(g, y, h, col = "#1d1c1b", lit = "#8a7a5c") { g.fillStyle = col; g.fillRect(0, y - h, W, h); g.fillStyle = rgba(lit, 0.25); g.fillRect(0, y - h, W, 6);
   for (let x = 0; x < W; x += 140) { g.fillStyle = rgba("#000000", 0.35); g.fillRect(x, y - h, 6, h); } }
+// ---------- plans FPV (réf. planches 4, 6, 9, 11, 15, 16, 20, 24, 25) : cadres emboîtés en perspective, roulis, flou de vitesse ----------
+function shaft(g, o) {                                 // puits / couloir : polygones emboîtés vers un point de fuite
+  const vx = o.vx ?? W / 2, vy = o.vy ?? H / 2, n = o.n || 14, f = o.f || 0.8, sides = o.sides || 4, r0 = o.r0 || 1400, rot0 = o.rot ?? Math.PI / 4;
+  const ringPts = (k) => { const r = r0 * Math.pow(f, k); return Array.from({ length: sides }, (_, i) => { const a = rot0 + i * 2 * Math.PI / sides; return [vx + r * Math.cos(a) * (o.sx || 1), vy + r * Math.sin(a) * (o.sy || 1)]; }); };
+  for (let k = 0; k < n; k++) {
+    const A = ringPts(k), B = ringPts(k + 1), t = k / n;
+    for (let i = 0; i < sides; i++) {                // faces entre deux niveaux (plus sombres au loin, lumière au fond)
+      const a = A[i], b = A[(i + 1) % sides], c = B[(i + 1) % sides], d = B[i];
+      g.fillStyle = mul(o.wall || "#1d2226", 0.35 + 0.75 * (i % 2 ? 0.6 : 1) * (1 - t * 0.7)); g.beginPath(); g.moveTo(...a); g.lineTo(...b); g.lineTo(...c); g.lineTo(...d); g.closePath(); g.fill();
+    }
+    g.strokeStyle = rgba(o.line || "#c9b48a", 0.75 * (1 - t * 0.6)); g.lineWidth = Math.max(1.4, 7 * Math.pow(f, k)); g.beginPath(); A.forEach((p, i) => i ? g.lineTo(...p) : g.moveTo(...p)); g.closePath(); g.stroke();
+    const Lp = A.map(p => [p[0] + (vx - p[0]) * 0.06, p[1] + (vy - p[1]) * 0.06]);      // garde-corps : main courante + montants
+    g.strokeStyle = rgba(o.line || "#c9b48a", 0.45 * (1 - t * 0.6)); g.lineWidth = Math.max(1, 3 * Math.pow(f, k)); g.beginPath(); Lp.forEach((p, i) => i ? g.lineTo(...p) : g.moveTo(...p)); g.closePath(); g.stroke();
+    for (let i = 0; i < sides; i++) for (let j = 0; j <= 18; j++) { const u = j / 18, a = A[i], b = A[(i + 1) % sides], la = Lp[i], lb = Lp[(i + 1) % sides];
+      g.beginPath(); g.moveTo(a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u); g.lineTo(la[0] + (lb[0] - la[0]) * u, la[1] + (lb[1] - la[1]) * u); g.stroke(); }
+    const m = 14 + k * 2;                             // garde-corps + habitants (têtes claires) + lumières le long de chaque niveau
+    for (let i = 0; i < sides; i++) for (let j = 0; j < m; j++) { const a = A[i], b = A[(i + 1) % sides], u = (j + 0.5) / m, p = [a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u], sz = Math.max(1.5, 13 * Math.pow(f, k));
+      const q = [p[0] + (vx - p[0]) * 0.035, p[1] + (vy - p[1]) * 0.035];
+      if (rnd(k * 97 + i * 13 + j) < (o.people ?? 0.55)) { const q2 = [p[0] + (vx - p[0]) * 0.09, p[1] + (vy - p[1]) * 0.09];   // habitant derrière la rambarde : épaules sombres + tête claire
+        g.fillStyle = rgba("#0e1113", 0.9); g.beginPath(); g.arc(q2[0], q2[1] + sz * 0.9, sz * 1.4, 0, 7); g.fill();
+        const hg = g.createRadialGradient(q2[0] - sz * 0.3, q2[1] - sz * 0.4, 0.5, q2[0], q2[1], sz); hg.addColorStop(0, "#efeae0"); hg.addColorStop(1, "#8f8a80"); g.fillStyle = hg; g.beginPath(); g.arc(q2[0], q2[1], sz, 0, 7); g.fill(); }
+      else if (rnd(k * 31 + j) < 0.25) glow(g, q[0], q[1], sz * 4, o.lamp || AMBER, 0.6 * (1 - t * 0.5)); }
+    if (o.labels && o.labels[k]) { const p = A[o.labelSide || 0]; g.font = `700 ${Math.max(14, 34 * Math.pow(f, k))}px Montserrat`; g.fillStyle = rgba("#e9e1cf", 0.7); g.fillText(o.labels[k], p[0] + (vx - p[0]) * 0.12, p[1] + (vy - p[1]) * 0.12); }
+  }
+  if (o.core) glow(g, vx, vy, o.coreR || 240, o.core, 0.9);
+}
+function roll(g, ang, draw) {                         // roulis caméra : la scène est dessinée puis tournée autour du centre
+  const c = mk(W, H), q = c.getContext("2d"); draw(q);
+  g.save(); g.translate(W / 2, H / 2); g.rotate(ang); g.scale(1.22, 1.22); g.translate(-W / 2, -H / 2); g.drawImage(c, 0, 0); g.restore();
+}
+function zoomBlur(g, vx, vy, amt = 0.06, steps = 6) { // flou de vitesse radial vers le point de fuite
+  const c = mk(W, H); c.getContext("2d").drawImage(g.canvas, 0, 0);
+  for (let i = 1; i <= steps; i++) { const k = 1 + amt * i / steps; g.save(); g.globalAlpha = 0.09; g.translate(vx, vy); g.scale(k, k); g.translate(-vx, -vy); g.drawImage(c, 0, 0); g.restore(); }
+}
+function perspectiveImage(g, src, quad) {            // image plane -> trapèze (haut, bas), tranche par tranche (feuille tenue et inclinée)
+  const [tl, tr, br, bl] = quad, h = src.height, n = 260;
+  for (let i = 0; i < n; i++) { const u = i / n, u2 = (i + 1) / n, L = [tl[0] + (bl[0] - tl[0]) * u, tl[1] + (bl[1] - tl[1]) * u], Rr = [tr[0] + (br[0] - tr[0]) * u, tr[1] + (br[1] - tr[1]) * u];
+    const y2 = tl[1] + (bl[1] - tl[1]) * u2; g.drawImage(src, 0, u * h, src.width, h / n + 1, L[0], L[1], Rr[0] - L[0], y2 - L[1] + 1); }
+}

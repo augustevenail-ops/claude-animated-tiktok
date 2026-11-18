@@ -131,7 +131,11 @@ function figure(g, x, F, s, o) {
   if (o.seam) { g.strokeStyle = rgba("#000000", 0.25); g.lineWidth = 3 * s; g.beginPath(); g.moveTo(x + (side ? 10 * s : 0), top + 40 * s); g.lineTo(x + (side ? 10 * s : 0), hipY - 6 * s); g.stroke(); }
   if (o.pocket) { g.strokeStyle = rgba("#000000", 0.28); g.lineWidth = 4 * s; g.beginPath(); g.roundRect(x - tws * 0.32, top + th * 0.55, tws * 0.64, th * 0.26, 10 * s); g.stroke(); }
   if (o.lapels) { g.fillStyle = mul(o.body, 0.78); [-1, 1].forEach(k => { g.beginPath(); g.moveTo(x, top + 70 * s); g.lineTo(x + k * 52 * s, top + 8 * s); g.lineTo(x + k * 16 * s, top + 8 * s); g.closePath(); g.fill(); }); }
-  if (o.belt) { g.fillStyle = o.belt; g.fillRect(x - tws / 2 + 3 * s, hipY - 40 * s, tws - 6 * s, 22 * s); }
+  if (o.belt) { g.fillStyle = o.belt; g.fillRect(x - tws / 2 + 3 * s, hipY - 40 * s, tws - 6 * s, 22 * s); g.fillStyle = "#c9a24e"; g.fillRect(x - 12 * s, hipY - 38 * s, 24 * s, 18 * s); }
+  if (o.holster) { g.fillStyle = "#1e2124"; outline(g, s); g.lineWidth = 4 * s; g.beginPath(); g.roundRect(x + tws * 0.22, hipY - 26 * s, 40 * s, 64 * s, 8 * s); g.fill(); g.stroke(); }
+  if (o.epaulettes) { g.fillStyle = o.epaulettes; outline(g, s); g.lineWidth = 4 * s; [-1, 1].forEach(k => { g.beginPath(); g.roundRect(x + k * tws * 0.32 - 34 * s, top + 4 * s, 68 * s, 22 * s, 6 * s); g.fill(); g.stroke(); }); }
+  if (o.armband) { g.fillStyle = o.armband; g.fillRect(x - tws / 2 - 2 * s, top + 120 * s, 0, 0); }
+  if (o.insignia) { g.fillStyle = "#c9a24e"; g.beginPath(); g.moveTo(x - tws * 0.3, top + 70 * s); g.lineTo(x - tws * 0.3 + 18 * s, top + 92 * s); g.lineTo(x - tws * 0.3, top + 114 * s); g.lineTo(x - tws * 0.3 - 18 * s, top + 92 * s); g.closePath(); g.fill(); }
   if (o.badge) { g.fillStyle = "#c9c4b8"; g.fillRect(x - tws * 0.42, top + 70 * s, 84 * s, 30 * s); g.fillStyle = "#2a2620"; g.font = `500 ${20 * s}px 'Roboto Mono'`; g.fillText(o.badge, x - tws * 0.42 + 6 * s, top + 92 * s); }
   // col / capuche / écharpe : anneau plat (ellipse) — planche 9 : écharpe sauge #576150
   if (o.ring) { g.fillStyle = o.ring; g.beginPath(); g.ellipse(ring[0] + (side ? 8 * s : 0), ring[1], (side ? 92 : 118) * s, 34 * s, 0, 0, 7); g.fill(); outline(g, s); g.stroke(); }
@@ -150,6 +154,11 @@ function figure(g, x, F, s, o) {
     g.fillStyle = hg; g.fillRect(headC[0] - R * 1.1, headC[1] - R * 1.1, R * 2.2, R * 2.2);
     g.fillStyle = "#070707"; g.beginPath(); g.roundRect(headC[0] - R * 0.82, headC[1] - R * 0.22, R * 1.64, R * 0.5, R * 0.18); g.fill();
     g.strokeStyle = "rgba(160,175,190,0.55)"; g.lineWidth = 4 * s; g.beginPath(); g.moveTo(headC[0] - R * 0.6, headC[1] - R * 0.1); g.lineTo(headC[0] + R * 0.2, headC[1] - R * 0.1); g.stroke(); g.restore(); }
+  if (o.cap) { g.save(); g.fillStyle = o.cap; outline(g, s);
+    g.beginPath(); g.moveTo(headC[0] - R * 0.98, headC[1] - R * 0.28); g.quadraticCurveTo(headC[0] - R * 0.9, headC[1] - R * 1.18, headC[0], headC[1] - R * 1.2);
+    g.quadraticCurveTo(headC[0] + R * 0.9, headC[1] - R * 1.18, headC[0] + R * 0.98, headC[1] - R * 0.28); g.closePath(); g.fill(); g.stroke();
+    g.fillStyle = "#14171a"; g.beginPath(); g.ellipse(headC[0] + R * 0.05, headC[1] - R * 0.26, R * 1.12, R * 0.17, 0, 0, Math.PI); g.fill(); g.stroke();       // visière
+    g.fillStyle = "#c9a24e"; g.beginPath(); g.arc(headC[0], headC[1] - R * 0.66, R * 0.12, 0, 7); g.fill(); g.restore(); }       // insigne
   if (!o.helmet) eyes(g, headC, R, o);
   if (o.brows) { g.strokeStyle = "#2a241d"; g.lineWidth = R * 0.07; g.lineCap = "round"; [-1, 1].forEach(k => { g.beginPath(); g.moveTo(headC[0] + k * R * 0.45 + (o.look || 0) * R, headC[1] - R * 0.25); g.lineTo(headC[0] + k * R * 0.17 + (o.look || 0) * R, headC[1] - R * 0.18); g.stroke(); }); }
   if (o.glasses) { g.strokeStyle = INK; g.lineWidth = R * 0.04; [-1, 1].forEach(k => { g.beginPath(); g.arc(headC[0] + k * R * 0.31 + (o.look || 0) * R, headC[1] - R * 0.02, R * 0.2, 0, 7); g.stroke(); });
@@ -158,6 +167,7 @@ function figure(g, x, F, s, o) {
   outline(g, s); g.beginPath(); g.arc(headC[0], headC[1], o.helmet ? R * 1.04 : R, 0, 7); g.stroke();
   // bras avant + mains (boules sombres)
   armPts.forEach(([a, b], i) => { if (side && i === 0) return; tube(g, a, b, 36 * s, i === 0 ? o.body : mul(o.body, 0.85), s); ball(g, b, 22 * s, o.hand || "#2c2a24", s); });
+  if (o.armbandCol) { const [a, b] = armPts[0]; const m = [a[0] + (b[0] - a[0]) * 0.3, a[1] + (b[1] - a[1]) * 0.3]; tube(g, [m[0], m[1] - 14 * s], [m[0], m[1] + 14 * s], 38 * s, o.armbandCol, s); }
   if (o.paper) { const b = armPts[1][1]; g.save(); g.translate(b[0], b[1] - 20 * s); g.rotate(-0.25); g.fillStyle = "#e9e3d3"; g.fillRect(-30 * s, -44 * s, 60 * s, 44 * s); outline(g, s); g.lineWidth = 4 * s; g.strokeRect(-30 * s, -44 * s, 60 * s, 44 * s);
     g.strokeStyle = "rgba(0,0,0,0.3)"; g.beginPath(); g.moveTo(-30 * s, -22 * s); g.lineTo(30 * s, -22 * s); g.stroke(); g.restore(); }
   if (o.baton) { const b = armPts[1][1]; tube(g, [b[0], b[1] - 10 * s], [b[0] + 10 * s, b[1] + 150 * s], 16 * s, "#1c1c1c", s); }
@@ -165,4 +175,4 @@ function figure(g, x, F, s, o) {
 // personnages de l'épisode (palette du PDF ; construction des références)
 const HERO = { body: "#4A6A8A", bodyDark: "#2c4256", ring: "#3c5873", strings: true, pocket: true, legs_col: "#2e3440", hair: "#2b211b", skin: "#ddd7cb" };
 const PERE = { body: "#4A6A8A", bodyDark: "#2c4256", ring: "#c9ccd0", lapels: true, legs_col: "#3a3f4a", hair: "#9a9589", hairStyle: "swoosh", brows: true, glasses: true, moustache: "#8f8b84", skin: "#d9d2c5" };
-const GARDE = { body: "#B8BEC4", bodyDark: "#7d848c", ring: "#9aa1a8", torsoW: 236, legs_col: "#8f969d", helmet: "#1E1E1E", belt: "#2a2a2a", seam: true };
+const GARDE = { body: "#B8BEC4", bodyDark: "#7d848c", ring: "#8f969d", torsoW: 228, legs_col: "#5d646b", cap: "#2b3036", epaulettes: "#2b3036", armbandCol: "#7a1f30", belt: "#1e2124", holster: true, insignia: true, seam: true, brows: true, skin: "#d6cfc2", shoes: "#0f1011" };

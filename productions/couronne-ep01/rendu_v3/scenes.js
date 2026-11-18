@@ -5,7 +5,7 @@ const S = {};
 function street(g, o = {}) {                          // rue de district : dôme au-dessus, immeubles, mur du centre au fond, lampes sodium, sol mouillé
   sky(g, DISTRICT_SKY);
   domeBarrier(g, o.domeY || 1150, 1150, o.domeRy || 980, 0.55);
-  if (o.centre !== false) { layer(g, q => { glow(q, W / 2, 1010, 360, GOLD, 0.35); towers(q, 1030, W / 2, 300, 7, { k: 0.42 }); }, { blur: 4, alpha: 0.7 }); haze(g, 900, 1100, "#3a4a52", 0.35); layer(g, q => wallHex(q, 1060, 120, "#15181a", GOLD), { blur: 2 }); }
+  if (o.centre) { layer(g, q => { glow(q, W / 2, 1010, 360, GOLD, 0.35); towers(q, 1030, W / 2, 300, 7, { k: 0.42 }); }, { blur: 4, alpha: 0.7 }); haze(g, 900, 1100, "#3a4a52", 0.35); layer(g, q => wallHex(q, 1060, 120, "#15181a", GOLD), { blur: 2 }); }
   layer(g, q => { blocks(q, 1120, 9, { h: 520, col: "#20262a", seed: 3, lit: 0.12 }); }, { blur: 1.6 });
   haze(g, 820, 1250, "#5a7a82", 0.22);
   const gr = g.createLinearGradient(0, 1100, 0, H); gr.addColorStop(0, "#1a2024"); gr.addColorStop(1, "#07090a"); g.fillStyle = gr; g.fillRect(0, 1100, W, H - 1100);
@@ -54,19 +54,28 @@ S.w3_regle_1 = g => {                                  // limite du dôme : barr
   layer(g, q => { q.fillStyle = "#050607"; for (let x = -20; x < W + 40; x += 120) q.fillRect(x, 1250, 18, 700); q.fillRect(0, 1300, W, 22); q.fillRect(0, 1480, W, 22); }, { blur: 9 });   // grille au premier plan, floue
   hud(g); finish(g, { bloom: 0.45, grade: ["#071a1a", "#f0e6a0", 0.16] }); caption(g, ["NE", "SORS", "JAMAIS"], 1);
 };
-S.w4_feuille_main = g => {                             // le héros déplie la feuille (gros plan, mains du personnage)
-  sky(g, [[0, "#0a0f12"], [0.5, "#16202a"], [1, "#07090b"]]);
-  layer(g, q => { blocks(q, 760, 6, { h: 420, col: "#1c2226", seed: 11, lit: 0.25 }); domeBarrier(q, 900, 900, 700, 0.6); }, { blur: 12, alpha: 0.85 });
-  glow(g, 820, 360, 520, AMBER, 0.35);
-  layer(g, q => figure(q, 540, 2950, 2.6, { ...HERO }), { blur: 7, alpha: 0.95 });   // héros flou derrière la feuille
-  g.save(); g.translate(540, 1080); g.rotate(-0.03);
-  g.shadowColor = "rgba(0,0,0,0.6)"; g.shadowBlur = 40; g.shadowOffsetY = 18; g.fillStyle = "#ece6d6"; g.fillRect(-360, -330, 720, 640); g.shadowColor = "transparent";
-  const lg = g.createLinearGradient(-360, -330, 360, 310); lg.addColorStop(0, "rgba(255,240,210,0.25)"); lg.addColorStop(1, "rgba(0,0,0,0.22)"); g.fillStyle = lg; g.fillRect(-360, -330, 720, 640);
-  [[-360, -10, 360, -10], [0, -330, 0, 310]].forEach(([a, b, c, d]) => { const cg = g.createLinearGradient(a, b, c === a ? a + 30 : c, d === b ? b + 30 : d); g.strokeStyle = "rgba(0,0,0,0.16)"; g.lineWidth = 3; g.beginPath(); g.moveTo(a, b); g.lineTo(c, d); g.stroke(); g.strokeStyle = "rgba(255,255,255,0.35)"; g.lineWidth = 2; g.beginPath(); g.moveTo(a + 3, b + 3); g.lineTo(c + 3, d + 3); g.stroke(); });   // plis
-  g.fillStyle = "#1c1a17"; g.font = "400 66px 'Permanent Marker'"; g.textAlign = "center"; g.fillText("IL RESTE", 0, -190); g.fillText("DE L'ÉNERGIE.", 0, -100); g.fillText("ILS NOUS", 0, 110); g.fillText("MENTENT.", 0, 200); g.restore();
-  [[160, 1290], [920, 1260], [190, 850]].slice(0, 2).forEach(([x, y]) => { tube(g, [x + (x < 540 ? -60 : 60), y + 420], [x, y], 80, "#4A6A8A", 2.3); ball(g, [x, y], 52, "#2c2a24", 2.3); });   // mains (boules) qui tiennent la feuille
+S.w4_feuille_lecture = g => {                         // plan subjectif : il vient de lire la feuille, tenue à deux mains, penchée vers lui
+  sky(g, [[0, "#0a0f12"], [0.5, "#141c22"], [1, "#07090b"]]);
+  layer(g, q => { q.fillStyle = "rgba(111,224,214,0.35)"; q.fillRect(620, 160, 360, 560); q.fillStyle = "#0a0e10"; q.fillRect(790, 160, 16, 560); q.fillRect(620, 430, 360, 16);
+    glow(q, 200, 420, 260, AMBER, 0.7); glow(q, 330, 260, 120, AMBER, 0.5); }, { blur: 22 });
+  const P = mk(720, 900), p = P.getContext("2d");                     // la feuille (texte au feutre, plis en croix)
+  p.fillStyle = "#ece6d6"; p.fillRect(0, 0, 720, 900);
+  const lg = p.createLinearGradient(0, 0, 720, 900); lg.addColorStop(0, "rgba(255,236,200,0.35)"); lg.addColorStop(1, "rgba(0,0,0,0.25)"); p.fillStyle = lg; p.fillRect(0, 0, 720, 900);
+  [[0, 450, 720, 450], [360, 0, 360, 900]].forEach(([a, b, c, d]) => { p.strokeStyle = "rgba(0,0,0,0.18)"; p.lineWidth = 4; p.beginPath(); p.moveTo(a, b); p.lineTo(c, d); p.stroke(); p.strokeStyle = "rgba(255,255,255,0.4)"; p.lineWidth = 2; p.beginPath(); p.moveTo(a + 3, b + 3); p.lineTo(c + 3, d + 3); p.stroke(); });
+  p.fillStyle = "#1c1a17"; p.font = "400 72px 'Permanent Marker'"; p.textAlign = "center"; p.fillText("IL RESTE", 360, 250); p.fillText("DE L'ÉNERGIE.", 360, 345); p.fillText("ILS NOUS", 360, 600); p.fillText("MENTENT.", 360, 695);
+  g.save(); g.shadowColor = "rgba(0,0,0,0.65)"; g.shadowBlur = 50; g.shadowOffsetY = 30; g.fillStyle = "#000"; g.beginPath(); g.moveTo(300, 560); g.lineTo(820, 590); g.lineTo(980, 1430); g.lineTo(110, 1400); g.closePath(); g.fill(); g.restore();
+  perspectiveImage(g, P, [[300, 560], [820, 590], [980, 1430], [110, 1400]]);
+  g.save(); g.globalCompositeOperation = "multiply"; const sh = g.createLinearGradient(0, 560, 0, 1430); sh.addColorStop(0, "rgba(120,140,150,1)"); sh.addColorStop(1, "rgba(255,240,215,1)"); g.fillStyle = sh;   // lumière : haut de la feuille dans l'ombre
+  g.beginPath(); g.moveTo(300, 560); g.lineTo(820, 590); g.lineTo(980, 1430); g.lineTo(110, 1400); g.closePath(); g.fill(); g.restore();
+  [[[-140, 2100], [150, 1400]], [[1220, 2100], [940, 1420]]].forEach(([a, b]) => { tube(g, a, b, 170, "#4A6A8A", 3.2); g.save(); g.globalAlpha = 0.5; tube(g, [a[0], a[1] + 40], [b[0], b[1] + 60], 70, "#2c4256", 0.1); g.restore(); ball(g, b, 66, "#2c2a24", 3.2); });   // manches + mains (boules) qui tiennent les coins
   dust(g, 60, "#f2e3c0", 200, 1700, 13, 2.5);
-  hud(g); finish(g, { bloom: 0.3, grade: ["#08202a", "#ffd9a0", 0.16] }); caption(g, ["TU", "DÉPLIES", "LA FEUILLE."], 1, 1620);
+  hud(g); finish(g, { bloom: 0.3, grade: ["#08202a", "#ffd9a0", 0.16] }); caption(g, ["ILS", "NOUS", "MENTENT."], 2, 1640);
+};
+S.c8_heros_feuille = g => {                            // il vient de lire : feuille dans la main, regard baissé
+  sky(g, [[0, "#0a0f12"], [0.5, "#16202a"], [1, "#07090b"]]);
+  layer(g, q => { q.fillStyle = "rgba(111,224,214,0.4)"; q.fillRect(80, 300, 340, 600); q.fillStyle = "#0a0e10"; q.fillRect(240, 300, 16, 600); glow(q, 860, 420, 300, AMBER, 0.6); }, { blur: 18 });
+  actor(g, 540, 2650, 2.3, { ...HERO, eyeDy: 0.16, look: 0.05, arms: [[-1, 0], [1, -32]], handTo: [740, 1700], paper: true }, { rim: TEAL, rimAng: -2.5, rimW: 7, key: "#ffd9a0", shadow: false });
+  dust(g, 50, "#cfe9e6", 0, 1500, 23, 3); hud(g); finish(g, { grade: ["#06202a", "#ffd9a0", 0.16] }); caption(g, ["IL", "RESTE", "DE L'ÉNERGIE."], 2);
 };
 S.w5_haut_parleur = g => {                             // annonce du conseil : haut-parleur de rue, lumière bordeaux, foule de dos
   street(g, { centre: false });
@@ -90,6 +99,39 @@ S.w7_centre_mur = g => {                               // le second mur, le cent
   const gr = g.createLinearGradient(0, 1330, 0, H); gr.addColorStop(0, "#1a1f22"); gr.addColorStop(1, "#060708"); g.fillStyle = gr; g.fillRect(0, 1330, W, H - 1330);
   dust(g, 160, "#ffe9b8", 500, 1400, 17, 2.2);
   hud(g); finish(g, { bloom: 0.45, grade: ["#08161c", "#ffd78a", 0.18] }); caption(g, ["LE", "CENTRE,"], 1);
+};
+
+// ---------- FPV ----------
+S.f1_fpv_plongee_dome = g => {                         // plongée à travers le dôme vers le centre (anneaux hexagonaux emboîtés)
+  sky(g, [[0, "#06090b"], [1, "#06090b"]]);
+  roll(g, 0.32, q => { shaft(q, { sides: 6, rot: 0, n: 13, f: 0.78, r0: 1500, wall: "#1b2429", line: TEAL, lamp: AMBER, core: GOLD, coreR: 300, people: 0.5, labels: { 2: "DISTRICT NORD", 6: "SECOND MUR", 10: "LE CENTRE" } }); });
+  zoomBlur(g, 540, 960, 0.025);
+  hud(g); finish(g, { bloom: 0.45, grade: ["#06202a", "#ffd78a", 0.16] }); caption(g, ["ICI,", "LES", "RICHES"], 2);
+};
+S.f2_fpv_rue = g => {                                   // vol bas le long de la rue vers le mur du centre
+  sky(g, [[0, "#06090b"], [1, "#06090b"]]);
+  roll(g, -0.2, q => { shaft(q, { sides: 4, rot: Math.PI / 4, n: 15, f: 0.8, r0: 1400, sy: 1.25, vy: 900, wall: "#20262a", line: "#9fb0b8", lamp: AMBER, core: GOLD, coreR: 220, people: 0.35, labels: { 3: "NORD", 9: "CENTRE" } });
+    figure(q, 560, 1430, 0.17, HERO); pill(q, "TOI", 560, 1230); });
+  zoomBlur(g, 540, 900, 0.03); hud(g, { clock: "07:05" }); finish(g, { bloom: 0.4, grade: ["#06202a", "#ffd78a", 0.16] }); caption(g, ["LE", "LENDEMAIN", "MATIN,"], 1);
+};
+S.f3_fpv_foule_dessus = g => {                          // vue de dessus, la foule immobile, le héros éclairé au centre
+  sky(g, [[0, "#0b0f12"], [1, "#0b0f12"]]);
+  roll(g, 0.18, q => {
+    for (let y = -200; y < H + 200; y += 74) for (let x = -200; x < W + 200; x += 74) { const j = rnd(x * 1.3 + y), px = x + (j - 0.5) * 30 + (y / 74 % 2) * 37, py = y + (rnd(x + y * 3) - 0.5) * 24;
+      if (Math.hypot(px - 540, py - 960) < 90) continue;
+      q.fillStyle = mul("#1d2226", 0.8 + j * 0.5); q.beginPath(); q.ellipse(px, py + 6, 34, 22, j * 3, 0, 7); q.fill();
+      const hg = q.createRadialGradient(px - 6, py - 6, 2, px, py, 22); hg.addColorStop(0, j > 0.7 ? "#3a2c22" : "#d8d2c6"); hg.addColorStop(1, j > 0.7 ? "#1d1611" : "#7f7a71"); q.fillStyle = hg; q.beginPath(); q.arc(px, py, 20, 0, 7); q.fill(); }
+    glow(q, 540, 960, 260, TEAL, 0.45);
+    q.fillStyle = "#2c4256"; q.beginPath(); q.ellipse(540, 966, 44, 28, 0.2, 0, 7); q.fill(); q.strokeStyle = INK; q.lineWidth = 4; q.stroke();
+    const hg = q.createRadialGradient(532, 950, 2, 540, 958, 26); hg.addColorStop(0, "#f6f3ec"); hg.addColorStop(1, "#9d9a94"); q.fillStyle = "#2b211b"; q.beginPath(); q.arc(540, 958, 26, 0, 7); q.fill(); q.stroke();
+    pill(q, "TOI", 540, 1060); });
+  zoomBlur(g, 540, 960, 0.015); hud(g); finish(g, { bloom: 0.35, grade: ["#06202a", "#ffd9a0", 0.16] }); caption(g, ["ARRÊTENT", "DE", "BOUGER."], 0);
+};
+S.f4_fpv_mur_montee = g => {                            // contre-plongée le long du second mur, vers le sommet du dôme
+  sky(g, [[0, "#06090b"], [1, "#06090b"]]);
+  roll(g, -0.35, q => { shaft(q, { sides: 6, rot: Math.PI / 6, n: 12, f: 0.76, r0: 1500, wall: "#15191c", line: "#b9c4c8", lamp: TEAL, core: TEAL, coreR: 260, people: 0.2, labels: { 4: "SECOND MUR" } }); });
+  rays(g, 540, 960, -Math.PI / 2, 6, 1300, TEAL, 0.1, 12); zoomBlur(g, 540, 960, 0.02);
+  hud(g); finish(g, { bloom: 0.45, grade: ["#04161a", "#c8f4ee", 0.16] }); caption(g, ["UN", "MUR", "LE SÉPARE"], 1);
 };
 // ---------- PERSONNAGES ----------
 S.c1_heros_pied = g => { street(g); crowd(g, 1280, 4, { blur: 4, alpha: 0.85, backs: false, tint: "#3e4c54", body: "#0e1214", big: 1.3 });
