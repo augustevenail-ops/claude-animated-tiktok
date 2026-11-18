@@ -307,7 +307,7 @@ S.c10_heros_question = g => {                        // le héros face caméra :
 };
 S.fin_carte = g => {                                // carte de fin : dôme filaire qui tourne, « Abonne-toi »
   sky(g, [[0, "#06090b"], [1, "#020304"]]);
-  const rot = 0.6;
+  const rot = 0.6 + TT() * 0.5;
   g.save(); g.translate(540, 960); g.strokeStyle = rgba(TEAL, 0.5); g.lineWidth = 2;
   for (let m = 0; m < 12; m++) { g.beginPath(); for (let t = 0; t <= Math.PI; t += 0.06) { const a = m / 12 * 6.2832 + rot, x = 420 * Math.cos(t) * Math.cos(a), y = 420 * Math.sin(t) * 0.4 * 2 - 420 * Math.cos(t) * 0.4 + 0 * Math.sin(a); t ? g.lineTo(x, y) : g.moveTo(x, y); } g.stroke(); }
   for (let k = 1; k < 6; k++) { const r = 420 * k / 6; g.beginPath(); for (let i = 0; i <= 64; i++) { const a = i / 64 * 6.2832; i ? g.lineTo(r * Math.cos(a), r * Math.sin(a) * 0.4) : g.moveTo(r * Math.cos(a), r * Math.sin(a) * 0.4); } g.stroke(); }
@@ -620,7 +620,7 @@ S.p04c_foule_discrete = g => {                       // plan 4 : foule grise, h�
       const dc = Math.hypot(px - 540, py - 960);
       if (dc < 110) continue;
       if (dc > 540 && rnd(x * 2 + y) > 0.6) { q.strokeStyle = rgba("#aab4b8", 0.22); q.lineWidth = 6; q.beginPath(); q.moveTo(px, py); q.lineTo(px + (px - 540) * 0.14, py + (py - 960) * 0.14); q.stroke(); }
-      topPersonMuted(q, px, py, j, x * 0.37 + y * 1.91 + 5);
+      topPersonMuted(q, px + Math.sin(TT() * 1.3 + x * 0.1 + y) * 3, py + Math.cos(TT() * 1.1 + y * 0.1 + x) * 3, j, x * 0.37 + y * 1.91 + 5);
     }
   });
   // cône de lumière de scène, pool diffus au centre, bord sombre
@@ -772,8 +772,7 @@ S.p02h_buste_vivant = g => {                              // image 2 v13
   crowdStanding(g);
   actor(g, 790, 2650, 1.8, { ...PERE, body: "#6e2d5e", bodyDark: "#43193a", ring: "#6e2d5e", ringW: 80, torsoW: 165, look: -0.12, arms: [[-1, 10], [1, 10]] }, { rim: "#cfe3ee", rimAng: -1.2, rimW: 7, key: "#dfe9ef", shadow: false, ink: 0 });   // père, côté droit
   actor(g, 290, 2650, 1.8, { ...HERO, body: "#6e2d5e", bodyDark: "#43193a", ring: "#6e2d5e", ringW: 80, strings: false, torsoW: 165, look: 0.0, arms: [[-1, 10], [1, 10]] }, { rim: TEAL, rimAng: -1.57, rimW: 7, key: "#ffd9a0", shadow: false, ink: 0 });
-  pigeon(g, 540, 1400, 2.8, 1.2, 3);
-  pigeon(g, 540, 1400, 2.8, 1.2, 0);
+  { const y = 420 + TU() * TU() * 1800; pigeon(g, 540, y - 60, 2.8, 1.2 + TU(), 6); pigeon(g, 540, y, 2.8, 1.2 + TU(), 0); }
   hud(g); finish(g, { bloom: 0.08, grade: ["#000000", "#ffd9a0", 0.03] }); caption(g, ["SOUS", "UN", "DÔME"], 1);
 };
 S.p02i_sol_vivant = g => {                                // image 3 v13
@@ -889,7 +888,7 @@ S.p02o_vol_normal = g => {                            // plan 2a : vol, ailes qu
   sky(g, [[0, "#05080a"], [0.6, "#0a1418"], [1, "#050607"]]);
   fieldSurface(g, 1500, 420);
   for (let i = 1; i < 5; i++) { g.strokeStyle = rgba("#cfe9e6", 0.08 + i * 0.02); g.lineWidth = 4; g.beginPath(); g.moveTo(120 - i * 60, 520 - i * 60); g.lineTo(220 - i * 60, 600 - i * 60); g.stroke(); }   // vitesse
-  birdFlap(g, 360, 760, 1.6, 0.42, 1);
+  { const u = TU(); birdFlap(g, 120 + u * 400, 640 + u * 400, 1.6, 0.42, Math.sin(TT() * 6.2832 * 5)); }
   hud(g); finish(g, { bloom: 0.3, grade: ["#06202a", "#c8f4ee", 0.16] }); caption(g, ["TU", "VIS"], 0);
 };
 S.p02p_impact = g => {                                // plan 2b : contact avec le champ, oiseau inversé, onde
@@ -899,14 +898,14 @@ S.p02p_impact = g => {                                // plan 2b : contact avec 
   glow(g, 540, 1070, 360, "#bff5ef", 0.7);
   [60, 130, 220, 330].forEach((r, k) => { g.save(); g.translate(540, 1080); g.scale(1, 0.45); hexRing(g, 0, 0, r, "#6fe0d6", 0.9 - k * 0.18, 6 - k); g.restore(); });
   for (let i = 0; i < 22; i++) { g.fillStyle = rgba("#bff5ef", 0.9); g.fillRect(540 + Math.cos(i * 2.4) * (60 + (i % 5) * 40), 1080 - Math.abs(Math.sin(i * 1.7)) * (80 + (i % 4) * 30), 5, 5); }
-  birdFlap(g, 540, 1060, 1.7, Math.PI + 0.25, -1);
+  birdFlap(g, 540, 1060 - Math.sin(TU() * Math.PI) * 30, 1.7, Math.PI * TU() + 0.25, -1);
   hud(g, { alpha: 0.6 }); finish(g, { bloom: 0.5, grade: ["#06202a", "#dffaf6", 0.18] }); caption(g, ["TU", "VIS"], 0);
 };
 S.p02q_chute_rapide = g => {                          // plan 2c : oiseau inversé qui tombe vite, traînées verticales
   sky(g, [[0, "#05080a"], [0.6, "#0a1418"], [1, "#050607"]]);
   fieldSurface(g, 1500, 420);
   for (let i = 0; i < 16; i++) { g.strokeStyle = rgba("#cfe9e6", 0.18 + rnd(i) * 0.12); g.lineWidth = 5 + rnd(i * 3) * 4; const x = 420 + rnd(i * 7) * 320; g.beginPath(); g.moveTo(x, 300 + rnd(i) * 300); g.lineTo(x + 6, 1000 + rnd(i * 5) * 200); g.stroke(); }
-  birdFlap(g, 580, 1350, 2.2, Math.PI + 0.5, -1);
+  birdFlap(g, 560 + TU() * 40, 1080 + TU() * TU() * 900, 2.2, Math.PI + 0.5 + TU() * 0.6, -1);
   hud(g); finish(g, { bloom: 0.35, grade: ["#06202a", "#c8f4ee", 0.16] }); caption(g, ["TU", "VIS"], 0);
 };
 // ---------- v41 : retouches plans 5-32 (drone, fond de district et de centre, gaz, mur, schéma, choix) ----------
@@ -1093,7 +1092,7 @@ function crowd3q(g, o = {}) {
       if (rnd(k) < (o.sparse ?? 0.12)) continue;                                                                       // trous : foule dispersée
       const px = x + (rnd(k * 3) - 0.5) * step * 0.7, py = y + (rnd(k * 5) - 0.5) * 18 * s;
       if (o.gap && Math.hypot((px - o.gap[0]) / 1.6, py - o.gap[1]) < o.gap[2]) continue;
-      ppl.push([px, py, s, k]); }
+      ppl.push([px + Math.sin(TT() * (1.1 + rnd(k * 43)) + k) * 4 * s, py + Math.sin(TT() * (2.2 + rnd(k * 47)) + k * 2) * 2.5 * s, s, k]); }
     y += 46 * s; }
   ppl.sort((a, b) => a[1] - b[1]);
   const one = (q, [px, py, s, k]) => {
@@ -1196,6 +1195,7 @@ function holoRoom(g, img, o) {
   g.fillStyle = g.createPattern(sl, "repeat"); g.fillRect(0, 0, W, H);                                         // lignes de balayage
   [[380, 26], [910, 14]].forEach(([y, h]) => { const strip = mk(W, h); strip.getContext("2d").drawImage(g.canvas, 0, y, W, h, 0, 0, W, h); g.save(); g.globalAlpha = 0.85; g.drawImage(strip, 14, y); g.restore();
     g.fillStyle = rgba(o.col, 0.12); g.fillRect(0, y, W, h); });                                                // bandes de grésillement décalées
+  { const yb = 300 + (TT() * 520) % 1400; const gb = g.createLinearGradient(0, yb - 60, 0, yb + 60); gb.addColorStop(0, rgba(o.col, 0)); gb.addColorStop(0.5, rgba(o.col, 0.22)); gb.addColorStop(1, rgba(o.col, 0)); g.save(); g.globalCompositeOperation = "screen"; g.fillStyle = gb; g.fillRect(0, yb - 60, W, 120); g.restore(); }
   dust(g, 160, o.col, 300, 1700, 77, 2.2);
   g.fillStyle = "#0a0f14"; g.beginPath(); g.ellipse(540, 1730, 170, 40, 0, 0, 7); g.fill();                    // socle du projecteur
   g.strokeStyle = rgba(o.col, 0.9); g.lineWidth = 4; g.beginPath(); g.ellipse(540, 1722, 120, 26, 0, 0, 7); g.stroke(); glow(g, 540, 1722, 180, o.col, 0.6);
@@ -1237,14 +1237,14 @@ S.h27_holo_retraction = g => {
 // ---------- plan 10 : dehors, gaz toxique épais (nappes qui roulent, volutes, particules), sans corps ----------
 S.g10_gaz_toxique = g => {
   bg3d(g, "o10_dehors");
-  const puff = (q, x, y, r, lt, dk, a, seed) => { for (let k = 0; k < 7; k++) { const cx = x + (rnd(seed + k) - 0.5) * r * 1.8, cy = y + (rnd(seed * 3 + k) - 0.5) * r * 0.45, rr = r * (0.35 + rnd(seed * 7 + k) * 0.45);
+  const puff = (q, x, y, r, lt, dk, a, seed) => { x = ((x + TT() * (25 + (seed % 7) * 9)) % (W + 600) + W + 600) % (W + 600) - 300; for (let k = 0; k < 7; k++) { const cx = x + (rnd(seed + k) - 0.5) * r * 1.8, cy = y + (rnd(seed * 3 + k) - 0.5) * r * 0.45, rr = r * (0.35 + rnd(seed * 7 + k) * 0.45);
     const gr = q.createRadialGradient(cx - rr * 0.3, cy - rr * 0.45, rr * 0.05, cx, cy, rr); gr.addColorStop(0, rgba(lt, a)); gr.addColorStop(0.6, rgba(dk, a * 0.8)); gr.addColorStop(1, rgba(dk, 0)); q.fillStyle = gr; q.beginPath(); q.arc(cx, cy, rr, 0, 7); q.fill(); } };
   g.save(); g.globalCompositeOperation = "multiply"; g.fillStyle = "#b8c070"; g.fillRect(0, 0, W, H); g.restore();
   layer(g, q => { for (let i = 0; i < 16; i++) puff(q, rnd(i * 5) * W, 900 + rnd(i * 9) * 300, 220 + rnd(i) * 160, "#c9cf5a", "#5a6420", 0.45, i * 11); }, { blur: 14 });   // nappes lointaines, devant la ville
   layer(g, q => { q.fillStyle = "#14160a"; for (let i = 0; i < 5; i++) { const x = 80 + i * 230 + rnd(i) * 80, h = 260 + rnd(i * 3) * 200, y = 1330 + rnd(i * 7) * 60;   // arbres morts
     q.fillRect(x - 7, y - h, 14, h); for (let b = 0; b < 5; b++) { const yy = y - h * (0.35 + b * 0.13), d = (b % 2 ? 1 : -1); q.save(); q.translate(x, yy); q.rotate(d * (0.7 + rnd(i + b) * 0.4)); q.fillRect(-3, -h * 0.28, 6, h * 0.28); q.restore(); } } }, { blur: 3 });
   layer(g, q => { for (let i = 0; i < 14; i++) puff(q, rnd(i * 13) * W, 1320 + rnd(i * 3) * 250, 260 + rnd(i * 7) * 200, "#d8dc6a", "#3e4616", 0.75, i * 29 + 4); }, { blur: 6 });   // nappes moyennes
-  layer(g, q => { q.lineCap = "round"; for (let i = 0; i < 10; i++) { q.strokeStyle = rgba("#e2e48a", 0.2); q.lineWidth = 26 + rnd(i) * 30; q.beginPath(); let x = rnd(i * 3) * W, y = 1400 + rnd(i * 7) * 200; q.moveTo(x, y);
+  layer(g, q => { q.lineCap = "round"; for (let i = 0; i < 10; i++) { q.strokeStyle = rgba("#e2e48a", 0.2); q.lineWidth = 26 + rnd(i) * 30; q.beginPath(); let x = rnd(i * 3) * W + TT() * 30, y = 1400 + rnd(i * 7) * 200 - (TT() * 60 % 300); q.moveTo(x, y);
     for (let p = 0; p < 5; p++) { x += 40 + rnd(i + p) * 60; y -= 70 + rnd(i * 2 + p) * 60; q.quadraticCurveTo(x - 70, y + 40, x, y); } q.stroke(); } }, { blur: 12, op: "screen" });   // volutes qui montent
   // panneau de danger planté dans le sol
   g.fillStyle = "#18180c"; g.fillRect(842, 1380, 14, 420); g.save(); g.translate(849, 1330); g.fillStyle = "#e3c62a"; g.strokeStyle = INK; g.lineWidth = 8; g.beginPath(); g.moveTo(0, -110); g.lineTo(110, 80); g.lineTo(-110, 80); g.closePath(); g.fill(); g.stroke();
@@ -1274,13 +1274,14 @@ S.a29_heros_foule = g => {
 };
 
 // ---------- plans 13 à 16, 18 : passants au premier plan (flous), en plus des passants du monde 3D ----------
-function passersby(g, list, col) { list.forEach(([x, F, s, c]) => layer(g, q => actor(q, x, F, s, { ...PASSANT, body: c || col, bodyDark: mul(c || col, 0.6), ring: c || col, arms: [[-1, 10], [1, 10]] }, { shadow: false }), { blur: 7 * s })); }
+function passersby(g, list, col) { list.forEach(([x, F, s, c], i) => { const wk = i % 3 !== 2, dir = i % 2 ? 1 : -1, xx = wk ? x + dir * TS() * 130 * s : x;
+  layer(g, q => actor(q, xx, F, s, { ...PASSANT, body: c || col, bodyDark: mul(c || col, 0.6), ring: c || col, arms: [[-1, 10], [1, 10]], walk: wk, ph: i * 1.3 }, { shadow: false }), { blur: 7 * s }); }); }
 const PASSANT = { ...HERO, beanie: false, pocket: false, strings: false };
 // ---------- v44 : rues vivantes (passants 2D flous en plus des passants du monde 3D) ----------
 const PD = ["#4a4640", "#3d4848", "#55524c", "#3a3f44", "#5a5048"], PR = ["#c9b48a", "#2b4a5a", "#e8e2d4", "#7a1f30", "#1a1a1c"];
 S.v13_rue_vivante = g => { bg3d(g, "s13_rue_matin");
   passersby(g, [[470, 1340, 0.24, PD[3]], [610, 1335, 0.22, PD[4]], [330, 1350, 0.26, PD[0]], [760, 1355, 0.27, PD[1]], [860, 1430, 0.42, PD[0]], [700, 1400, 0.36, PD[2]], [230, 1450, 0.45, PD[1]], [380, 1410, 0.34, PD[3]], [90, 1520, 0.55, PD[2]], [985, 1530, 0.56, PD[4]]]);
-  actor(g, 540, 1800, 1.0, { ...HERO, look: 0.2 }, { rim: GOLD, rimAng: -1.7, key: "#ffe6b0" });
+  actor(g, 540, 1800, 1.0, { ...HERO, look: 0.2, walk: true }, { rim: GOLD, rimAng: -1.7, key: "#ffe6b0" });
   hud(g, { clock: "07:05" }); fin3d(g); caption(g, ["LE", "LENDEMAIN", "MATIN,"], 1); };
 S.v14_escorte_vivante = g => { bg3d(g, "s14_rue_escorte");
   passersby(g, [[560, 1340, 0.24, PD[1]], [250, 1350, 0.26, PD[4]], [860, 1345, 0.25, PD[2]], [140, 1420, 0.4, PD[2]], [920, 1440, 0.42, PD[0]], [990, 1400, 0.34, PD[3]], [60, 1500, 0.52, PD[1]]]);

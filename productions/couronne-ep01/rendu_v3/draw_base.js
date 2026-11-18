@@ -3,6 +3,7 @@
 const W = 1080, H = 1920;
 const INK = "#050405";                                  // contour (relevé : bord de tête ~#151109)
 const HUD_RED = "#D6514B", HUD_WHITE = "#F6F2EA", CAP_ORANGE = "#F3A633";
+const TT = () => window.TT ?? 0, TU = () => window.TU ?? 0.5, TS = () => window.TS ?? 0;   // temps absolu, avancement du plan (0..1), temps depuis le début du plan
 const mk = (w, h) => { const c = document.createElement("canvas"); c.width = w; c.height = h; return c; };
 const hex2 = (c) => { const n = parseInt(c.slice(1), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; };
 const rgba = (c, a) => { const [r, g, b] = hex2(c); return `rgba(${r},${g},${b},${a})`; };

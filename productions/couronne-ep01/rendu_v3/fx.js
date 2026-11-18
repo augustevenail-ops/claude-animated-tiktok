@@ -13,7 +13,7 @@ function rays(g, x, y, ang, spread, len, col, a = 0.18, n = 7) {    // rayons vo
     q.fillStyle = gr; q.beginPath(); q.moveTo(x, y); q.lineTo(x + Math.cos(t - 0.02) * len - Math.sin(t) * w, y + Math.sin(t - 0.02) * len + Math.cos(t) * w); q.lineTo(x + Math.cos(t + 0.02) * len + Math.sin(t) * w, y + Math.sin(t + 0.02) * len - Math.cos(t) * w); q.closePath(); q.fill(); } }, { blur: 18, op: "screen" });
 }
 function dust(g, n, col, y0 = 0, y1 = H, seed = 1, size = 3) {   // poussière / particules en suspension, quelques bokeh
-  for (let i = 0; i < n; i++) { const x = rnd(i * 13 + seed) * W, y = y0 + rnd(i * 7 + seed) * (y1 - y0), r = rnd(i * 3 + seed) < 0.08 ? 10 + rnd(i) * 22 : size * (0.4 + rnd(i * 5));
+  const T = TT(); for (let i = 0; i < n; i++) { const sp = 6 + rnd(i * 11 + seed) * 22, x = ((rnd(i * 13 + seed) * W + Math.sin(T * 0.7 + i) * 18 + T * sp * 0.5) % W + W) % W, y = y0 + ((rnd(i * 7 + seed) * (y1 - y0) - T * sp) % (y1 - y0) + (y1 - y0)) % (y1 - y0), r = rnd(i * 3 + seed) < 0.08 ? 10 + rnd(i) * 22 : size * (0.4 + rnd(i * 5));
     g.fillStyle = rgba(col, r > 8 ? 0.06 + rnd(i) * 0.08 : 0.2 + rnd(i * 2) * 0.4); g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); }
 }
 function bloom(g, amt = 0.35, blur = 26) { const c = mk(W, H), q = c.getContext("2d"); q.filter = `blur(${blur}px) brightness(1.25) saturate(1.2)`; q.drawImage(g.canvas, 0, 0);
@@ -24,6 +24,17 @@ function grade(g, shadows, highlights, k = 0.18) {    // étalonnage : ombres te
 function finish(g, o = {}) { if (o.bloom !== 0) bloom(g, o.bloom ?? 0.32); if (o.grade) grade(g, ...o.grade); vignette(g, o.vig ?? 0.82); grain(g, 7); }
 // acteur : personnage rendu hors-champ puis éclairé (dégradé clé, liseré de contre-jour coloré, ombre portée au sol)
 function actor(g, x, F, s, outfit, o = {}) {
+  if (window.TT != null && !outfit.still) {                                     // vie : respiration, balancement, clignement, marche
+    const T = window.TT, ph = x * 0.013 + F * 0.0071 + (outfit.ph || 0), o2 = { ...outfit };
+    F += Math.sin(T * 2.3 + ph) * 3.2 * s;
+    o2.headDx = (o2.headDx || 0) + Math.sin(T * 1.1 + ph) * 4; o2.headDy = (o2.headDy || 0) + Math.sin(T * 2.3 + ph + 0.6) * 2.5;
+    o2.look = (o2.look || 0) + Math.sin(T * 0.8 + ph * 2) * 0.035;
+    if (((T + ph * 1.7) % 3.1 + 3.1) % 3.1 < 0.12) o2.closed = true;
+    if (o2.arms && !o2.handTo) o2.arms = o2.arms.map(([k, a], i) => [k, a + Math.sin(T * 1.6 + ph + i) * 3]);
+    if (o2.walk) { const w = T * 7.5 + ph; F -= Math.abs(Math.sin(w)) * 9 * s; o2.legs = [[-0.22, Math.sin(w) * 16], [0.22, -Math.sin(w) * 16]];
+      o2.arms = [[-1, -Math.sin(w) * 14 + 6], [1, Math.sin(w) * 14 - 6]]; }
+    outfit = o2;
+  }
   const c = mk(W, H), q = c.getContext("2d"); figure(q, x, F, s, outfit);
   const R = 95 * s, top = F - 295 * s - 14 * s - 290 * s, hc = [x + (outfit.headDx || 0) * s, top - R + 6 * s + (outfit.headDy || 0) * s];
   if (outfit.headRestroke) { q.strokeStyle = "#050405"; q.lineWidth = 3.9 * s; q.beginPath(); q.arc(hc[0], hc[1], R, 0, 7); q.stroke(); }   // contour de tête par-dessus les cheveux
