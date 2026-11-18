@@ -1,0 +1,106 @@
+{
+ "dil2_00.mp3": {
+  "model": "s2.1-pro",
+  "text": "[serious][soft tone] Tu révèles ce que tu sais à tout le dôme et ton père risque d'être exécuté, ou tu te tais [strongly rising question intonation] ?"
+ },
+ "dil2_01.mp3": {
+  "model": "s2.1-pro",
+  "text": "[serious][soft tone] Tu révèles ce que tu sais à tout le dôme et ton père risque d'être exécuté, [questioning tone] ou tu te tais [rising pitch at the end] ?"
+ },
+ "dil2_02.mp3": {
+  "model": "s2.1-pro",
+  "text": "[serious][soft tone] Tu révèles ce que tu sais à tout le dôme et ton père risque d'être exécuté, ou [curious, uncertain] tu te tais [rising] ?"
+ },
+ "dil2_03.mp3": {
+  "model": "s2.1-pro",
+  "text": "[serious][soft tone] Tu révèles ce que tu sais à tout le dôme et ton père risque d'être exécuté, [asking, voice rising at the end] ou tu te tais ?"
+ },
+ "dil2_04.mp3": {
+  "model": "drama-3",
+  "text": "[serious][soft tone] Tu révèles ce que tu sais à tout le dôme et ton père risque d'être exécuté, [asking a worried question, voice rising at the end] ou tu te tais ?"
+ },
+ "dil2_05.mp3": {
+  "model": "s2.1-pro",
+  "text": "[serious][soft tone] Tu révèles ce que tu sais à tout le dôme et ton père risque d'être exécuté, ou tu te tais [strongly rising question intonation] ?"
+ },
+ "dil2_06.mp3": {
+  "model": "s2.1-pro",
+  "text": "[serious][soft tone] Tu révèles ce que tu sais à tout le dôme et ton père risque d'être exécuté, [questioning tone] ou tu te tais [rising pitch at the end] ?"
+ },
+ "dil2_07.mp3": {
+  "model": "s2.1-pro",
+  "text": "[serious][soft tone] Tu révèles ce que tu sais à tout le dôme et ton père risque d'être exécuté, ou [curious, uncertain] tu te tais [rising] ?"
+ },
+ "dil2_08.mp3": {
+  "model": "s2.1-pro",
+  "text": "[serious][soft tone] Tu révèles ce que tu sais à tout le dôme et ton père risque d'être exécuté, [asking, voice rising at the end] ou tu te tais ?"
+ },
+ "dil2_09.mp3": {
+  "model": "drama-3",
+  "text": "[serious][soft tone] Tu révèles ce que tu sais à tout le dôme et ton père risque d'être exécuté, [asking a worried question, voice rising at the end] ou tu te tais ?"
+ },
+ "dil2_10.mp3": {
+  "model": "s2.1-pro",
+  "text": "[serious][soft tone] Tu révèles ce que tu sais à tout le dôme et ton père risque d'être exécuté, ou tu te tais [strongly rising question intonation] ?"
+ },
+ "dil2_11.mp3": {
+  "model": "s2.1-pro",
+  "text": "[serious][soft tone] Tu révèles ce que tu sais à tout le dôme et ton père risque d'être exécuté, [questioning tone] ou tu te tais [rising pitch at the end] ?"
+ },
+ "dil2_12.mp3": {
+  "model": "s2.1-pro",
+  "text": "[serious][soft tone] Tu révèles ce que tu sais à tout le dôme et ton père risque d'être exécuté, ou [curious, uncertain] tu te tais [rising] ?"
+ },
+ "dil2_13.mp3": {
+  "model": "s2.1-pro",
+  "text": "[serious][soft tone] Tu révèles ce que tu sais à tout le dôme et ton père risque d'être exécuté, [asking, voice rising at the end] ou tu te tais ?"
+ },
+ "dil2_14.mp3": {
+  "model": "drama-3",
+  "text": "[serious][soft tone] Tu révèles ce que tu sais à tout le dôme et ton père risque d'être exécuté, [asking a worried question, voice rising at the end] ou tu te tais ?"
+ },
+ "dil2_15.mp3": {
+  "model": "s2.1-pro",
+  "text": "[serious][soft tone] Tu révèles ce que tu sais à tout le dôme et ton père risque d'être exécuté, ou tu te tais [strongly rising question intonation] ?"
+ },
+ "dil2_16.mp3": {
+  "model": "s2.1-pro",
+  "text": "[serious][soft tone] Tu révèles ce que tu sais à tout le dôme et ton père risque d'être exécuté, [questioning tone] ou tu te tais [rising pitch at the end] ?"
+ },
+ "dil2_17.mp3": {
+  "model": "s2.1-pro",
+  "text": "[serious][soft tone] Tu révèles ce que tu sais à tout le dôme et ton père risque d'être exécuté, ou [curious, uncertain] tu te tais [rising] ?"
+ },
+ "dil2_18.mp3": {
+  "model": "s2.1-pro",
+  "text": "[serious][soft tone] Tu révèles ce que tu sais à tout le dôme et ton père risque d'être exécuté, [asking, voice rising at the end] ou tu te tais ?"
+ },
+ "dil2_19.mp3": {
+  "model": "drama-3",
+  "text": "[serious][soft tone] Tu révèles ce que tu sais à tout le dôme et ton père risque d'être exécuté, [asking a worried question, voice rising at the end] ou tu te tais ?"
+ },
+ "mur_00.mp3": {
+  "model": "s2.1-pro",
+  "text": "[serious][soft tone] Un mur le sépare des districts."
+ },
+ "mur_01.mp3": {
+  "model": "s2.1-pro",
+  "text": "[serious][soft tone] Un mur le sépare des districts."
+ },
+ "mur_02.mp3": {
+  "model": "s2.1-pro",
+  "text": "[serious][soft tone] Un mur le sépare des districts."
+ },
+ "mur_03.mp3": {
+  "model": "s2.1-pro",
+  "text": "[serious][soft tone] Un mur le sépare des districts."
+ },
+ "mur_04.mp3": {
+  "model": "s2.1-pro",
+  "text": "[serious][soft tone] Un mur le sépare des districts."
+ },
+ "mur_05.mp3": {
+  "model": "s2.1-pro",
+  "text": "[serious][soft tone] Un mur le sépare des districts."
+ }
+}
