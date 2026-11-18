@@ -245,17 +245,25 @@ def tick(t0, g_db):
     x = np.sin(2 * np.pi * 2600 * t) * np.exp(-t / 0.004) + 0.6 * np.sin(2 * np.pi * 900 * t) * np.exp(-t / 0.012) + fft_filt(rng.standard_normal(n), 2000, 9000) * np.exp(-t / 0.002)
     put(reverb(x, 0.4, 0.25, 51)[:n + SR // 4], t0, g_db, 0.0)
 # 2 : l'oiseau touche le dôme (petit claquement électrique), tombe, touche le sol
-def birdsong(t0, t1, g_db, seed=0):
-    """l'oiseau chante juste avant le choc : petites trilles aiguës qui glissent"""
-    n = int((t1 - t0) * SR); x = np.zeros(n); r = np.random.default_rng(seed); tt = 0.0
-    while tt < t1 - t0 - 0.05:
-        m = int((0.04 + 0.05 * r.random()) * SR); i = int(tt * SR); u = np.arange(m) / m; f = 2800 + 1600 * r.random(); sl = r.choice([-1, 1]) * (0.2 + 0.3 * r.random())
-        if i + m < n: x[i:i + m] += np.sin(2 * np.pi * np.cumsum(f * (1 + sl * u) * (1 + 0.04 * np.sin(2 * np.pi * 38 * u * m / SR))) / SR) * np.sin(np.pi * u) ** 1.5
-        tt += m / SR + 0.015 + 0.04 * r.random()
-    put(reverb(x, 0.6, 0.25, 71)[:n + SR // 3], t0, g_db, 0.02, pan=-0.2)
-birdsong(0.0, 0.5, -24, seed=70)
+def birdsong(t0, g_db):
+    """l'oiseau siffle doucement juste avant le choc : deux notes sifflées rondes (« fi-fiou »), sinus pur, pas d'aigus"""
+    x = np.zeros(int(0.75 * SR))
+    for a, d, f0, f1 in [(0.0, 0.14, 1650, 1900), (0.19, 0.28, 2050, 1600)]:
+        m = int(d * SR); u = np.arange(m) / m; f = f0 + (f1 - f0) * u * u * (3 - 2 * u)
+        x[int(a * SR):int(a * SR) + m] += np.sin(2 * np.pi * np.cumsum(f * (1 + 0.006 * np.sin(2 * np.pi * 6 * u * d))) / SR) * np.sin(np.pi * u) ** 2
+    put(reverb(fft_filt(x, 300, 3500), 0.7, 0.3, 71), t0, g_db, 0.0, pan=-0.2)
+birdsong(0.02, -27)
 zap(HIT, -17); thump(LAND, -21)
 air_fall(FALL0, LAND, -32)                                                     # léger souffle pendant la chute (sous l'alarme)
+# vent léger permanent (très bas) ; au début, un vent un peu plus présent qui s'éteint en 7 s
+def wind_env(t0, t1, g_db, env_pts, seed):
+    n = int((t1 - t0) * SR); out = np.zeros((2, n)); t = np.arange(n) / SR
+    for ch in range(2):
+        r = np.random.default_rng(seed * 11 + ch); gs = smooth_rand(n, 0.5, seed * 11 + ch + 3)
+        out[ch] = (fft_filt(r.standard_normal(n), 120, 1100) * (0.6 + 0.4 * gs) + 0.3 * fft_filt(r.standard_normal(n), 1000, 2400, 0.1) * gs ** 2)
+    out *= np.interp(t, *zip(*env_pts)); put(out, t0, g_db, 1.0)
+wind_env(0.0, DUR, -38, [(0, 1), (DUR, 1)], 90)
+wind_env(0.0, 7.5, -31, [(0, 1), (2.5, 0.7), (7.5, 0.0)], 91)
 # 2-4 : alarme lente, lointaine, sous la voix ; elle s'éloigne pendant le recul du plan 5
 alarm(FALL0 + 0.05, 8.6, -29)
 # 3 : le compteur passe de 72:00 à 71:59
@@ -303,6 +311,27 @@ B5, Fs5, D6, A5 = 987.8, 740.0, 1174.7, 880.0
 for t_, f_ in [(W(14), Fs5), (W(74), B5), (W(137), Fs5), (W(170), D6), (W(192), B5), (W(209), A5), (W(213), Fs5)]: note(t_ - 0.1, -27, f_)
 # « coupé », « tue », « n'en revient », « mentent », « exécutés », ton père « exécuté », « tu te tais ? »
 
+# ---------- petite mélodie douce par moments (notes tenues, timbre rond, en si mineur) pour réchauffer l'ensemble
+def melody(phr, g_db, seed=0):
+    nt = lambda m: 440 * 2 ** ((m - 69) / 12); t1 = max(a + d for a, m, d in phr) + 3; t0 = phr[0][0]; x = np.zeros(int((t1 - t0) * SR))
+    for a, m, d in phr:
+        n = int((d + 2.2) * SR); t = np.arange(n) / SR; f = nt(m)
+        env = np.minimum(t / 0.06, 1) * np.where(t < d, np.exp(-t / (d * 1.6)), np.exp(-d / (d * 1.6)) * np.exp(-(t - d) / 0.7))
+        y = (np.sin(2 * np.pi * f * t) + 0.18 * np.sin(2 * np.pi * 2 * f * t) + 0.05 * np.sin(2 * np.pi * 3 * f * t)) * env * (1 + 0.03 * np.sin(2 * np.pi * 5 * t))
+        i = int((a - t0) * SR); j = min(len(x), i + n); x[i:j] += y[: j - i]
+    st = reverb(x, 2.4, 0.45, seed); st2 = reverb(np.roll(x, int(0.015 * SR)), 2.4, 0.45, seed + 1)
+    put(np.stack([st, st2]), t0, g_db, 0.0)
+def ph(t0, notes, step):          # notes = [(midi, longueur en pas)]
+    out, t = [], t0
+    for m, k_ in notes: out.append((t, m, step * k_ * 0.95)); t += step * k_
+    return out
+B4, Cs5, D5, E5, Fs5, G5, A5, B5 = 71, 73, 74, 76, 78, 79, 81, 83
+melody(ph(9.6, [(Fs5, 2), (E5, 1), (D5, 1), (Cs5, 2), (D5, 2), (B4, 4)], 0.55), -26, 81)            # le Conseil, l'énergie
+melody(ph(14.4, [(D5, 2), (Fs5, 2), (A5, 3), (G5, 1), (Fs5, 4)], 0.5), -27, 83)                       # la carte
+melody(ph(24.4, [(B4, 2), (D5, 1), (E5, 1), (Fs5, 3), (E5, 1), (D5, 2), (Cs5, 2), (D5, 4)], 0.5), -25, 85)   # ton père, le soir
+melody(ph(32.8, [(Fs5, 2), (A5, 2), (G5, 2), (Fs5, 1), (E5, 1), (Fs5, 4)], 0.55), -26, 87)            # « prends ça »
+melody(ph(49.8, [(D5, 2), (E5, 2), (Fs5, 2), (B5, 3), (A5, 1), (Fs5, 4)], 0.5), -25, 89)              # la feuille
+melody(ph(62.1, [(B4, 2), (Cs5, 2), (D5, 2), (Fs5, 2), (E5, 2), (D5, 2), (Cs5, 2), (B4, 6)], 0.55), -25, 91)   # le choix, jusqu'au carton
 # ---------- petite musique de fond, constante et discrète
 mus = k.music4(DUR, dips=(), transpose=0)
 a = np.abs(mus) > 1e-4; mus = mus * db(vref - 19 - rms(mus[a]))
@@ -315,11 +344,11 @@ if os.environ.get("NIVEAUX"):                                                   
         sl = slice(int(a_ * SR), int(b_ * SR)); print(f"{a_:6.2f} musique {rms(mus[sl]) - vref:6.1f}  bruitages {rms(hit[sl] + L[sl]) - vref:6.1f}")
     sys.exit()
 mix = np.stack([voice + mus + hit + L, voice + mus * 0.97 + hit + R], 1)
-out = os.path.join(HERE, "mix_v3.wav"); pre = os.path.join(HERE, "_pre_v3.wav")
+out = os.path.join(HERE, "mix_v4.wav"); pre = os.path.join(HERE, "_pre_v4.wav")
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "f64le", "-ar", str(SR), "-ac", "2", "-i", "-", pre], input=mix.tobytes(), check=True)
 m = subprocess.run(["ffmpeg", "-i", pre, "-af", "loudnorm=I=-15:TP=-1.2:LRA=9:print_format=json", "-f", "null", "-"], capture_output=True, text=True).stderr
 j = json.loads(m[m.rfind("{"):])
 af = f"loudnorm=I=-15:TP=-1.2:LRA=9:measured_I={j['input_i']}:measured_TP={j['input_tp']}:measured_LRA={j['input_lra']}:measured_thresh={j['input_thresh']}:offset={j['target_offset']}:linear=true,aresample=48000"
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", pre, "-af", af, "-c:a", "pcm_s24le", out], check=True); os.remove(pre)
-subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", out, "-b:a", "192k", os.path.join(HERE, "mix_ecoute_v3.mp3")], check=True)
+subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", out, "-b:a", "192k", os.path.join(HERE, "mix_ecoute_v4.mp3")], check=True)
 print("mix ok", out)
