@@ -75,7 +75,7 @@ Voix : `voix_v9/voix_complete_v11.mp3` (70,55 s). Minutage mot à mot : `voix_v9
 | 32 | 68.99 | 72.60 | 3.61 | Abonne-toi pour la partie 2. | Carte de fin : LA COURONNE · ÉPISODE 1 · ABONNE-TOI | `a_creer:fin_carte` | dôme filaire qui tourne |
 
 ## Scènes à créer avant le montage
-- plan 2 : `c11_boussole_table`, Le héros au centre, son père à côté ; au-dessus, un segment du dôme grésille et vire au rouge (détail qui accroche)
+- plan 2 : `c11_boussole_table`, boussole à l'aiguille affolée en très gros plan, puis recul sur le héros et son père à table
 - plan 7 : `w10_lampes_eteintes`, Rue de district : les lampadaires s'éteignent un à un
 - plan 8 : `w1d_vue_aerienne_tags`, Vue aérienne du dôme : la caméra va au centre puis recule sur l'anneau des districts ; étiquettes qui apparaissent avec la voix
 - plan 10 : `f5_fpv_barriere`, FPV : traversée de la barrière vers le désert irradié
