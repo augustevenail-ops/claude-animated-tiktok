@@ -226,118 +226,76 @@ def pa_voice(t0, t1, g_db, seed=0):
     syl = smooth_rand(n, 6, seed) ** 4 * (smooth_rand(n, 0.8, seed + 5) > 0.3)
     put(reverb(x * syl, 2.2, 0.75, seed + 40)[:n], t0, g_db, 0.4, pan=-0.5)
 
-# ================= bande son, plan par plan =================
-# 1-2 : noir, puis l'oiseau vole vers le dôme, choc électrique, chute, arrêt sur les personnages ; l'alarme se lance
-k.impact(0.0, 0.8, 42.0, 2.0); cue("sting_soft", 0.0, -14)
-wind(0.0, 2.6, -25, 200, 1800, 0.5, seed=1)                                   # haut dans le ciel vert
-for e in range(5): put(fft_filt(rng.standard_normal(int(0.07 * SR)), 300, 3000) * np.hanning(int(0.07 * SR)), 0.1 + e * 0.085, -20, 0.0, -0.3)   # battements d'ailes
-zap(HIT, -6); shimmer(HIT + 0.03, -15); k.impact(HIT, 0.9, 50.0, 1.4)
-air_fall(FALL0, LAND, -14); k.whoosh(LAND, 0.35, 0.5)
-k.thud(LAND, 0.7, 60); k.impact(LAND + 0.01, 0.6, 38.0, 1.6); cue("cloth_rustle", LAND + 0.05, -26)   # l'oiseau tombe à côté, la caméra s'arrête
-ALARM = alarm(FALL0 + 0.05, 9.2, -17)                                          # alarme d'abri lente (s'éloigne pendant le dézoom du plan 5)
-field_hum(0.1, 11.9, -27, 55.0, seed=2)                                       # bourdonnement du champ magnétique
-babble(LAND + 0.2, 4.813, -27, 10, seed=3); cue("gasp_teen", LAND + 0.35, -24, pan=0.3); cue("crowd_breath", 1.5, -25)
-# 3 : compte à rebours, la foule
-for e in range(3): k.tick(2.55 + e, 0.5)
-cue("beep_ok", W(14) - 0.05, -22); k.impact(W(14), 0.5, 40.0, 1.6)            # « coupé »
-cue("crowd_shuffle", 2.6, -24); babble(2.453, 4.813, -25, 16, seed=4)
-# 4 : la foule bouge puis se fige d'un coup (seuls l'alarme et le champ restent)
-crowd_steps(4.813, 5.8, -20, FREEZE, seed=5); babble(4.813, 5.8, -24, 18, seed=6, stop=FREEZE)
-k.reverse(FREEZE, 0.6, 0.5); k.sub_drop(FREEZE, 0.6)
-# 5 : la caméra recule jusqu'au dôme entier dans le désert irradié (vent toxique, radiations)
-k.whoosh(6.9, 1.4, 0.7); wind(6.6, 9.6, -21, 150, 1500, 0.7, seed=7)
-bed(7.8, 10.2, 40, 220, -25, 0.5, 0.6, seed=8)                                # grondement sourd du désert
-geiger(W(27) - 0.3, 9.6, -24, 6.0, seed=9)                                      # « radiations extérieures »
-# 6 : drone vers la fenêtre du Conseil ; 7 : « plus assez d'énergie » : le champ faiblit, les lumières s'éteignent
-wind(9.4, 11.7, -23, 200, 2000, 0.6, seed=10); k.whoosh(11.6, 0.6, 0.6)
-cue("elec_hum", 10.4, -29, 1.3, fade=0.3)
-field_hum(11.6, 14.6, -25, 55.0, glide=(11.9, 30.0, 2.2), seed=11); powerdown(W(43) - 0.1, 2.2, -19)
-for e, tt in enumerate([12.55, 12.95, 13.3, 13.85]): cue("light_off", tt, -21 - 2 * e, pan=(-0.4, 0.4, -0.1, 0.2)[e])
-wind(11.6, 14.4, -27, 150, 1200, 0.5, seed=12)
-# 8 : hologramme de la carte (riches au centre, districts autour)
-holo(14.3, 18.5, -26, seed=13); cue("light_on", 14.35, -22); k.whoosh(14.31, 0.4, 0.4)
-cue("beep_ok", W(55) - 0.05, -25); cue("beep_ok", W(62) - 0.05, -26)
-# 9 : règle 1 sur un mur de district ; ambiance de district (vent, néon, haut-parleur lointain, chocs métalliques)
-cue("sting_hit", W(63) - 0.06, -11); k.impact(W(63) - 0.03, 0.8, 44.0, 1.8)
-loop("wind_city", 18.4, 21.9, -26, seed=14); cue("neon_flicker", 19.2, -27, pan=-0.3); clank(20.5, -27, 0.5, seed=15)
-pa_voice(18.6, 21.6, -31, seed=16)
-# 10 : dehors : vent toxique, gaz, radiations ; « tue »
-wind(21.7, 24.5, -17, 120, 1300, 0.8, seed=17); bed(21.7, 24.5, 1800, 7000, -29, 0.6, 1.5, seed=18)   # sifflement du gaz
-geiger(21.8, 24.4, -20, 9.0, seed=19); k.impact(W(74) - 0.03, 0.7, 40.0, 2.0); tiin(W(74) - 0.05, -21)
-# 11-12 : chez toi, le soir : ton père, les dossiers (pièce calme, horloge, lampe, papier)
-bed(24.3, 28.7, 60, 500, -33, 0.2, 0.3, seed=20); clock(24.4, 28.6, -29); cue("elec_hum", 24.4, -31, 4.0, fade=0.5)
-cue("cloth_rustle", 25.2, -25, pan=0.2); paper(26.3, 1.1, -22, seed=21); paper(27.6, 0.8, -21, seed=22)   # il ouvre le dossier, tourne les pages
-cue("drip", 25.9, -32, pan=-0.6)
-# 13-16 : le matin dans la rue, les gardes l'emmènent
-loop("wind_city", 28.5, 35.9, -28, seed=23); chirps(28.6, 31.0, -31, seed=24); pa_voice(28.9, 30.6, -32, seed=25)
-cue("boots_approach", 29.3, -18, pan=-0.2)                                     # « des gardes »
-steps(30.4, 35.7, 0.42, -21, pan=0.15, seed=26, rate=0.85)                       # pas lourds des gardes
-cue("suit_rustle", 30.5, -23); cue("cloth_rustle", 31.7, -22); cue("breath_nervous", 31.6, -25)
-cue("struggle", 31.9, -30, dur=0.7, fade=0.1)                                  # il ne se débat pas : à peine un frottement
-paper(32.85, 0.7, -21, seed=27)                                                # « prends ça » : la feuille passe de main en main
-clank(34.6, -31, -0.6, seed=28)
-# 17-18 : toi ; le garde (cœur, radio du garde)
-heartbeat(35.85, 37.3, 74, 0); cue("breath_nervous", 35.9, -24)
-cue("pa_click", 37.4, -24, pan=0.3); cue("pa_static", 37.45, -30, 1.2, pan=0.3, fade=0.1); cue("suit_rustle", 37.9, -24)
-loop("wind_city", 35.7, 39.5, -30, seed=29)
-# 19-22 : le centre (drone entre les tours, la façade, règle 2, le mur de béton)
-wind(39.3, 41.8, -22, 250, 2400, 0.6, seed=30); k.whoosh(39.37, 0.5, 0.6); holo(39.4, 41.7, -31, seed=31)
-wind(41.6, 46.4, -24, 200, 1800, 0.5, seed=32); cue("neon_flicker", 43.5, -26); cue("elec_hum", 42.6, -28, 3.7, fade=0.5)
-cue("sting_hit", W(138) - 0.06, -10); k.impact(W(138) - 0.03, 0.9, 42.0, 2.0)
-wind(46.2, 48.6, -19, 150, 1600, 0.8, seed=33); cue("tower_groan", 46.4, -18); k.whoosh(46.4, 0.9, 0.7)   # par-dessus le mur
-# 23-25 : la feuille (on la déplie, on lit ; « ils nous mentent »)
-bed(48.3, 54.2, 60, 500, -33, 0.2, 0.3, seed=34); clock(48.5, 54.1, -31)
-paper(48.5, 1.2, -16, dens=200, seed=35); paper(50.4, 0.5, -24, seed=36)
-heartbeat(51.6, 54.1, 62, 0, 70)
-tiin(W(170) - 0.05, -16); k.sub_drop(W(170), 0.6)
-# 26 : la radio du Conseil dans le district (carillon, friture), la foule écoute
-cue("pa_chime", 54.12, -15); cue("pa_feedback", 55.6, -29, fade=0.2)
-loop("pa_static", 54.6, 62.0, -31, seed=37, lo=600, hi=5000)
-babble(54.1, 56.4, -27, 14, seed=38); cue("crowd_shuffle", 54.4, -25)
-# 27 : le champ se rétracte sur le centre (hologramme qui descend, l'énergie qui baisse)
-holo(56.2, 59.9, -25, seed=39, down=True); powerdown(57.3, 2.4, -21, 300, 30); bed(56.2, 59.9, 35, 160, -26, 0.4, 0.5, seed=40)
-# 28 : le garde ; « exécutés »
-steps(59.85, 60.7, 0.4, -22, seed=41, rate=0.85); cue("suit_rustle", 59.9, -24)
-k.impact(W(192) - 0.03, 1.1, 40.0, 2.2); cue("sting_hit", W(192) - 0.05, -12); tiin(W(192), -18, 2.0, 1480)
-# 29 : toi dans la foule ; 30 : ton père en cellule
-babble(62.0, 64.1, -26, 18, seed=42); cue("crowd_breath", 62.1, -25); heartbeat(62.1, 64.0, 78, 0, 86)
-bed(64.0, 66.4, 50, 400, -30, 0.3, 0.4, seed=43); cue("drip", 64.4, -24, pan=-0.4); cue("drip", 65.5, -26, pan=-0.4)
-cue("steel_door", 64.05, -22, pan=0.5); cue("metal_creak_far", 65.0, -25); cue("elec_hum", 64.1, -30, 2.2, fade=0.3)
-# 31 : le choix ; 32 : carton final
-heartbeat(66.35, 68.9, 88, 0, 112); k.riser(68.99, 2.4, 0.8); cue("breath_nervous", 66.5, -25)
-k.stinger(68.99, 0.55); k.impact(68.99, 0.8, 40.0, 2.4); cue("lock_click", 69.0, -18)
-bed(68.9, 72.6, 40, 300, -31, 0.3, 0.3, seed=44, fade=1.4)
-pulse(62.0, 68.9, 1.4, 2.8, -12)                                               # pulsation grave qui accélère jusqu'au choix
+# ================= bande son v2 (retour utilisateur : tout beaucoup plus bas, peu de sons mais chacun motivé par l'image,
+# plus de « tiin » ni de pulsations stressantes ; une petite musique de fond ; un souffle de vent sur chaque règle)
+def swell(t0, d=1.5, g_db=-20, seed=0):
+    """souffle de vent qui part doucement, monte fort et redescend vite (annonce d'une règle)"""
+    n = int(d * SR); t = np.arange(n) / SR; u = t / d; r = np.random.default_rng(seed)
+    env = np.where(u < 0.6, (u / 0.6) ** 2, np.cos(np.pi / 2 * np.clip((u - 0.6) / 0.4, 0, 1)) ** 1.5)
+    st = np.stack([fft_filt(r.standard_normal(n), 180, 1600) + 0.35 * fft_filt(r.standard_normal(n), 1600, 4200) for _ in range(2)]) * env
+    put(st, t0, g_db, 0.0)
+def thump(t0, g_db, f0=62, d=0.5):
+    """coup sourd doux"""
+    n = int(d * SR); t = np.arange(n) / SR
+    x = np.sin(2 * np.pi * np.cumsum(f0 * (1.4 - 0.4 * np.minimum(t / 0.08, 1))) / SR) * np.exp(-t / 0.09) + fft_filt(rng.standard_normal(n), 100, 1200) * np.exp(-t / 0.012) * 0.5
+    put(x, t0, g_db, 0.0)
+def tick(t0, g_db):
+    """tic de compteur (déclic mécanique net)"""
+    n = int(0.09 * SR); t = np.arange(n) / SR
+    x = np.sin(2 * np.pi * 2600 * t) * np.exp(-t / 0.004) + 0.6 * np.sin(2 * np.pi * 900 * t) * np.exp(-t / 0.012) + fft_filt(rng.standard_normal(n), 2000, 9000) * np.exp(-t / 0.002)
+    put(reverb(x, 0.4, 0.25, 51)[:n + SR // 4], t0, g_db, 0.0)
+# 2 : l'oiseau touche le dôme (petit claquement électrique), tombe, touche le sol
+zap(HIT, -24); thump(LAND, -24)
+# 2-4 : alarme lente, lointaine, sous la voix ; elle s'éloigne pendant le recul du plan 5
+alarm(FALL0 + 0.05, 8.6, -33)
+# 3 : le compteur passe de 72:00 à 71:59
+tick(2.453 + 0.55, -19)
+# 4 : la foule marche puis se fige d'un coup (les pas s'arrêtent net)
+crowd_steps(4.813, 5.8, -30, FREEZE, seed=5)
+# 5 et 10 : dehors, le vent de l'air irradié
+wind(7.6, 9.6, -33, 150, 1300, 0.6, seed=7, fade=1.2)
+wind(21.6, 24.5, -29, 120, 1300, 0.7, seed=17); geiger(22.3, 24.3, -33, 5.0, seed=19)
+# 7 : « plus assez d'énergie » : les lumières s'éteignent
+powerdown(W(43) - 0.1, 2.0, -28)
+for e, tt in enumerate([12.6, 13.1, 13.6]): cue("light_off", tt, -30 - 2 * e)
+# 8 : hologramme de la carte (léger bourdonnement)
+holo(14.3, 18.45, -35, seed=13)
+# 9 / 20-21 : annonce des règles : souffle de vent 1,5 s
+swell(W(63) - 0.45, 1.5, -21, seed=61); swell(W(138) - 0.45, 1.5, -21, seed=62)
+# 12 : il ouvre le dossier ; 14 : les bottes des gardes ; 16 : il te donne la feuille
+paper(27.6, 0.8, -27, seed=22)
+steps(30.45, 32.6, 0.45, -30, seed=26, rate=0.85)
+paper(32.85, 0.6, -28, seed=27)
+# 22 : la caméra passe par-dessus le mur
+wind(46.3, 48.4, -29, 150, 1600, 0.6, seed=33, fade=0.7)
+# 23 : tu déplies la feuille
+paper(48.6, 1.0, -24, dens=180, seed=35)
+# 26 : la radio du Conseil (carillon + légère friture)
+cue("pa_chime", 54.12, -27); loop("pa_static", 54.5, 56.2, -38, seed=37, lo=600, hi=5000)
+# 27 : le champ se rétracte sur le centre
+powerdown(57.3, 2.4, -30, 300, 30)
+# 30 : la cellule (porte d'acier lointaine, une goutte)
+cue("steel_door", 64.1, -30, pan=0.4); cue("drip", 65.2, -33, pan=-0.4)
+# 32 : carton final (coup sourd doux)
+thump(68.99, -24, 50, 0.9)
 
-# souffles discrets sur les coupes (sans doubler celles qui ont déjà le leur)
-for c in CUTS:
-    if c in (0.1, 0.52, 11.6, 14.313, 39.373, 46.313, 51.553, 68.993): continue
-    k.whoosh(c, 0.35, 0.3)
-
-# ---------- musique douce, qui suit l'histoire (nappe tenue + couche de tension ; s'efface avant les révélations)
-REV = [W(63), W(74), W(138), W(170), W(192), W(210)]
-mus = k.music4(DUR, dips=[t - 0.25 for t in REV], transpose=0)
-ten, _ = Kit(N, SR, seed=5).tension_layer(DUR, REV, 54.0, 68.99)
-sec = np.interp(np.arange(N) / SR, [0, 2.4, 6.7, 9.5, 14.3, 18.4, 24.3, 35.8, 41.6, 48.4, 54.1, 59.8, 66.3, 69.0, 71.0, 72.6],
-                [-19, -18, -17, -14, -13, -12, -15, -14, -12, -13, -12, -11, -10, -9, -9, -30])   # dB par rapport à la voix
-a = np.abs(mus) > 1e-4; mus = mus * db(vref - rms(mus[a])) * db(sec)
-a = np.abs(ten) > 1e-4
-if a.any(): mus = mus + ten * db(vref - 13 - rms(ten[a]))
+# ---------- petite musique de fond, constante et discrète
+mus = k.music4(DUR, dips=(), transpose=0)
+a = np.abs(mus) > 1e-4; mus = mus * db(vref - 19 - rms(mus[a]))
 duck = np.ones(N)
-for w in words: duck[int(max(0, w["s"] - 0.08) * SR):int(min(DUR, w["e"] + 0.12) * SR)] = db(-3.0)
+for w in words: duck[int(max(0, w["s"] - 0.08) * SR):int(min(DUR, w["e"] + 0.12) * SR)] = db(-2.0)
 mus *= np.convolve(duck, np.ones(2000) / 2000, "same")
-
-hit = (k.hit + 0.8 * k.air); a = np.abs(hit) > 1e-5; hit *= db(vref - 12 - rms(hit[a]))
+hit = np.zeros(N)
 if os.environ.get("NIVEAUX"):                                                     # contrôle : niveau de chaque bus par plan (dB / voix)
     for a_, b_ in zip([0] + CUTS, CUTS + [DUR]):
         sl = slice(int(a_ * SR), int(b_ * SR)); print(f"{a_:6.2f} musique {rms(mus[sl]) - vref:6.1f}  bruitages {rms(hit[sl] + L[sl]) - vref:6.1f}")
     sys.exit()
 mix = np.stack([voice + mus + hit + L, voice + mus * 0.97 + hit + R], 1)
-out = os.path.join(HERE, "mix.wav"); pre = os.path.join(HERE, "_pre.wav")
+out = os.path.join(HERE, "mix_v2.wav"); pre = os.path.join(HERE, "_pre_v2.wav")
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "f64le", "-ar", str(SR), "-ac", "2", "-i", "-", pre], input=mix.tobytes(), check=True)
 m = subprocess.run(["ffmpeg", "-i", pre, "-af", "loudnorm=I=-15:TP=-1.2:LRA=9:print_format=json", "-f", "null", "-"], capture_output=True, text=True).stderr
 j = json.loads(m[m.rfind("{"):])
 af = f"loudnorm=I=-15:TP=-1.2:LRA=9:measured_I={j['input_i']}:measured_TP={j['input_tp']}:measured_LRA={j['input_lra']}:measured_thresh={j['input_thresh']}:offset={j['target_offset']}:linear=true,aresample=48000"
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", pre, "-af", af, "-c:a", "pcm_s24le", out], check=True); os.remove(pre)
-subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", out, "-b:a", "192k", os.path.join(HERE, "mix_ecoute.mp3")], check=True)
+subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", out, "-b:a", "192k", os.path.join(HERE, "mix_ecoute_v2.mp3")], check=True)
 print("mix ok", out)
