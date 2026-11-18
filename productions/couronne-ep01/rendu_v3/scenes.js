@@ -786,7 +786,7 @@ S.p02i_sol_vivant = g => {                                // image 3 v13
   actor(g, 290, 2650, 1.8, { ...HERO, look: 0.0, arms: [[-1, 10], [1, 10]] }, { rim: TEAL, rimAng: -1.57, rimW: 7, key: "#ffd9a0", shadow: false });
   g.fillStyle = "rgba(0,0,0,0.4)"; g.beginPath(); g.ellipse(880, 1852, 90, 12, 0, 0, 7); g.fill();
   pigeon(g, 560, 1860, 2.0, 1.45, 0);
-  hud(g); finish(g, { bloom: 0.35, grade: ["#06202a", "#ffd9a0", 0.16] }); caption(g, ["SOUS", "UN", "DÔME"], 1);
+  hud(g); finish(g, { bloom: 0.35, grade: ["#06202a", "#ffd9a0", 0.16] }); caption(g, ["MAGNÉTIQUE."], 0);
 };
 // ---------- v17 : plan 2 — ouverture sur l'objet (feuille pliée qui tombe, gros plan, traînée de mouvement) ----------
 S.p02j_objet_debut = g => {
@@ -815,7 +815,7 @@ S.p02k_oiseau_debut = g => {                         // ouverture : oiseau énor
   for (let i = 0; i < 50; i++) { g.strokeStyle = rgba("#cfe9e6", 0.05 + rnd(i) * 0.1); g.lineWidth = 2 + rnd(i * 3) * 3; const x = rnd(i * 7) * W; g.beginPath(); g.moveTo(x, 0); g.lineTo(x + 4, H); g.stroke(); }
   pigeon(g, 540, 640, 2.6, 0.5, 10);
   pigeon(g, 540, 780, 2.6, 0.5, 0);
-  hud(g); finish(g, { bloom: 0.35, grade: ["#06202a", "#ffd9a0", 0.16] }); caption(g, ["SOUS", "UN", "DÔME"], 1);
+  hud(g); finish(g, { bloom: 0.35, grade: ["#06202a", "#ffd9a0", 0.16] }); caption(g, ["TU", "VIS"], 0);
 };
 window.SCENES = Object.fromEntries(Object.entries(S).filter(([k]) => !k.endsWith("_bg")));
 window.SCENES_ALL = S;
