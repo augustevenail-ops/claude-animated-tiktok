@@ -87,7 +87,7 @@ const css = [["Montserrat", "800", "Montserrat-800.woff2"], ["Montserrat", "900"
         const k = Math.min(1, (t - chunk.a) / 0.16), cs = 1 + 0.07 * Math.pow(1 - k, 3);                 // mini-dézoom rapide à l'apparition de chaque sous-titre
         g.save(); if (shot.capDy) g.translate(0, shot.capDy); g.translate(W / 2, 1212); g.scale(cs, cs); g.translate(-W / 2, -1212); caption(g, ws, act); g.restore(); }
       if (fadeK > 0) { g.fillStyle = "rgba(0,0,0," + fadeK + ")"; g.fillRect(0, 0, W, H); }
-      return document.getElementById("c").toDataURL("image/jpeg", 0.93);
+      return document.getElementById("c").toDataURL("image/jpeg", 0.98);
     };` });
   const b3 = await chromium.launch({ args: ["--use-angle=swiftshader", "--enable-unsafe-swiftshader"] }), p3 = await b3.newPage(), MD = path.join(P, "monde3d"), types = { ".js": "text/javascript", ".html": "text/html" };
   p3.on("pageerror", e => console.log("ERREUR 3D", e.message));
@@ -95,7 +95,7 @@ const css = [["Montserrat", "800", "Montserrat-800.woff2"], ["Montserrat", "900"
   await p3.goto("http://monde/index.html"); await p3.waitForFunction(() => window.READY, null, { timeout: 180000 });
   const subs = JSON.parse(fs.readFileSync(path.join(D, "video/sous_titres.json")));
   const tmp = OUT.replace(/\.mp4$/, "_muet.mp4");
-  const ff = spawn("ffmpeg", ["-loglevel", "error", "-y", "-f", "image2pipe", "-framerate", String(FPS), "-c:v", "mjpeg", "-i", "-", "-c:v", "libx264", "-preset", "medium", "-crf", "17", "-pix_fmt", "yuv420p", tmp], { stdio: ["pipe", "inherit", "inherit"] });
+  const ff = spawn("ffmpeg", ["-loglevel", "error", "-y", "-f", "image2pipe", "-framerate", String(FPS), "-c:v", "mjpeg", "-i", "-", "-c:v", "libx264", "-preset", "slow", "-tune", "animation", "-crf", "12", "-pix_fmt", "yuv420p", "-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709", tmp], { stdio: ["pipe", "inherit", "inherit"] });
   const n0 = Math.round(T0 * FPS), n1 = Math.round(T1 * FPS), t_start = Date.now(), AT = opt("--at", null), ATDIR = opt("--atdir", path.join(D, "out/controle"));
   const list = AT ? AT.split(",").map(x => Math.floor(+x * FPS)) : Array.from({ length: n1 - n0 }, (_, i) => n0 + i);   // --at t1,t2 : images de contrôle seulement
   if (AT) fs.mkdirSync(ATDIR, { recursive: true });

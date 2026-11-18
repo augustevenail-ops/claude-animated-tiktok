@@ -53,7 +53,8 @@ function actor(g, x, F, s, outfit, o = {}) {
   }
   if (o.shadow !== false) { g.save(); g.filter = "blur(14px)"; g.fillStyle = "rgba(0,0,0,0.55)"; g.beginPath(); g.ellipse(x + (o.shDx || 0), F + 4, 150 * s, 26 * s, 0, 0, 7); g.fill(); g.restore(); }
   // contour d'encre épais et régulier autour de la silhouette (dilatation du masque, réglable par o.ink en unités de scale)
-  if (o.ink) { const ol = mk(W, H), oq = ol.getContext("2d"), w = o.ink * s;
+  const inkW = (o.ink || 0) + 2.2;                                               // v9 : contour des personnages épaissi partout (+2,2 unités)
+  if (inkW) { const ol = mk(W, H), oq = ol.getContext("2d"), w = inkW * s;
     for (let k = 0; k < 24; k++) { const an = k / 24 * 6.2832; oq.drawImage(c, Math.cos(an) * w, Math.sin(an) * w); }
     oq.globalCompositeOperation = "source-in"; oq.fillStyle = "#050405"; oq.fillRect(0, 0, W, H);
     g.save(); if (o.blur) g.filter = `blur(${o.blur}px)`; g.drawImage(ol, 0, 0); g.restore(); }

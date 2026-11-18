@@ -81,15 +81,15 @@ function caption(g, words, active, y = 1242) {         // Montserrat 900, blanc 
   if (tot > W - 2 * SAFE_X) { const k = (W - 2 * SAFE_X) / tot; fs = Math.floor(fs * k); sp *= k; g.font = `900 ${fs}px Montserrat`; ws = words.map(w => g.measureText(w).width); tot = ws.reduce((a, b) => a + b, 0) + sp * (words.length - 1); }   // tient dans le cadre
   let x = (W - tot) / 2;
   words.forEach((w, i) => {
-    g.shadowColor = "rgba(0,0,0,0.5)"; g.shadowBlur = 16; g.shadowOffsetX = 0; g.shadowOffsetY = 4;                 // halo sombre doux (lisibilité)
+    g.shadowColor = "rgba(0,0,0,0.78)"; g.shadowBlur = 26; g.shadowOffsetX = 0; g.shadowOffsetY = 6;                 // halo sombre doux (lisibilité ; v9 plus marqué)
     g.fillStyle = i === active ? CAP_ORANGE : "#FFFFFF"; g.fillText(w, x, y);
-    g.shadowColor = "rgba(0,0,0,0.45)"; g.shadowBlur = 2; g.shadowOffsetX = 3; g.shadowOffsetY = 5; g.fillText(w, x, y);   // ombre portée nette, très légère
+    g.shadowColor = "rgba(0,0,0,0.75)"; g.shadowBlur = 4; g.shadowOffsetX = 4; g.shadowOffsetY = 8; g.fillText(w, x, y);   // ombre portée nette (v9 plus visible)
     x += ws[i] + sp; });
   g.restore();
 }
 // ---------- personnages (construction relevée planches 9, 13, 16, 17, 19) ----------
 // s = 1 : personnage en pied comme planche 9 (tête R = 95, tronc 200 x 290, jambes 295, hauteur ~ 860 px)
-function outline(g, s) { g.strokeStyle = INK; g.lineWidth = 6 * s; g.lineJoin = "round"; g.lineCap = "round"; }
+function outline(g, s) { g.strokeStyle = INK; g.lineWidth = 8.1 * s; g.lineJoin = "round"; g.lineCap = "round"; }
 function shadedBox(g, x, y, w, h, r, lit, dark, s, side = 1) {   // aplat + bande d'ombre côté opposé à la lumière
   g.save(); g.beginPath(); g.roundRect(x, y, w, h, r); g.fillStyle = lit; g.fill(); g.clip();
   const gr = g.createLinearGradient(side > 0 ? x + w * 0.55 : x + w * 0.45, 0, side > 0 ? x + w : x, 0);
@@ -97,10 +97,10 @@ function shadedBox(g, x, y, w, h, r, lit, dark, s, side = 1) {   // aplat + band
   g.restore(); outline(g, s); g.beginPath(); g.roundRect(x, y, w, h, r); g.stroke();
 }
 function tube(g, a, b, w, col, s) {
-  g.lineCap = "round"; g.strokeStyle = INK; g.lineWidth = w + 12 * s; g.beginPath(); g.moveTo(a[0], a[1]); g.lineTo(b[0], b[1]); g.stroke();
+  g.lineCap = "round"; g.strokeStyle = INK; g.lineWidth = w + 16 * s; g.beginPath(); g.moveTo(a[0], a[1]); g.lineTo(b[0], b[1]); g.stroke();
   g.strokeStyle = col; g.lineWidth = w; g.beginPath(); g.moveTo(a[0], a[1]); g.lineTo(b[0], b[1]); g.stroke();
 }
-function ball(g, c, r, col, s) { g.fillStyle = col; g.beginPath(); g.arc(c[0], c[1], r, 0, 7); g.fill(); outline(g, s); g.lineWidth = 5 * s; g.stroke(); }
+function ball(g, c, r, col, s) { g.fillStyle = col; g.beginPath(); g.arc(c[0], c[1], r, 0, 7); g.fill(); outline(g, s); g.lineWidth = 6.75 * s; g.stroke(); }
 function headShape(g, c, R, s, o) {                     // tête ronde claire, reflet radial haut-gauche, bord gris (#9d9a94)
   const gr = g.createRadialGradient(c[0] - R * 0.25, c[1] - R * 0.35, R * 0.05, c[0], c[1], R);
   gr.addColorStop(0, "#ffffff"); gr.addColorStop(0.7, "#fbfaf7"); gr.addColorStop(1, "#f1eee8");
@@ -133,18 +133,18 @@ function figure(g, x, F, s, o) {
   // tronc
   const tws = side ? tw * 0.72 : tw;
   shadedBox(g, x - tws / 2, top, tws, th, 30 * s, o.body, o.bodyDark || mul(o.body, 0.62), s, 1);
-  if (o.seam) { g.strokeStyle = rgba("#000000", 0.25); g.lineWidth = 3 * s; g.beginPath(); g.moveTo(x + (side ? 10 * s : 0), top + 40 * s); g.lineTo(x + (side ? 10 * s : 0), hipY - 6 * s); g.stroke(); }
-  if (o.pocket) { g.strokeStyle = rgba("#000000", 0.28); g.lineWidth = 4 * s; g.beginPath(); g.roundRect(x - tws * 0.32, top + th * 0.55, tws * 0.64, th * 0.26, 10 * s); g.stroke(); }
+  if (o.seam) { g.strokeStyle = rgba("#000000", 0.25); g.lineWidth = 4.05 * s; g.beginPath(); g.moveTo(x + (side ? 10 * s : 0), top + 40 * s); g.lineTo(x + (side ? 10 * s : 0), hipY - 6 * s); g.stroke(); }
+  if (o.pocket) { g.strokeStyle = rgba("#000000", 0.28); g.lineWidth = 5.4 * s; g.beginPath(); g.roundRect(x - tws * 0.32, top + th * 0.55, tws * 0.64, th * 0.26, 10 * s); g.stroke(); }
   if (o.lapels) { g.fillStyle = mul(o.body, 0.78); [-1, 1].forEach(k => { g.beginPath(); g.moveTo(x, top + 70 * s); g.lineTo(x + k * 52 * s, top + 8 * s); g.lineTo(x + k * 16 * s, top + 8 * s); g.closePath(); g.fill(); }); }
   if (o.belt) { g.fillStyle = o.belt; g.fillRect(x - tws / 2 + 3 * s, hipY - 40 * s, tws - 6 * s, 22 * s); g.fillStyle = "#c9a24e"; g.fillRect(x - 12 * s, hipY - 38 * s, 24 * s, 18 * s); }
-  if (o.holster) { g.fillStyle = "#1e2124"; outline(g, s); g.lineWidth = 4 * s; g.beginPath(); g.roundRect(x + tws * 0.22, hipY - 26 * s, 40 * s, 64 * s, 8 * s); g.fill(); g.stroke(); }
-  if (o.epaulettes) { g.fillStyle = o.epaulettes; outline(g, s); g.lineWidth = 4 * s; [-1, 1].forEach(k => { g.beginPath(); g.roundRect(x + k * tws * 0.32 - 34 * s, top + 4 * s, 68 * s, 22 * s, 6 * s); g.fill(); g.stroke(); }); }
+  if (o.holster) { g.fillStyle = "#1e2124"; outline(g, s); g.lineWidth = 5.4 * s; g.beginPath(); g.roundRect(x + tws * 0.22, hipY - 26 * s, 40 * s, 64 * s, 8 * s); g.fill(); g.stroke(); }
+  if (o.epaulettes) { g.fillStyle = o.epaulettes; outline(g, s); g.lineWidth = 5.4 * s; [-1, 1].forEach(k => { g.beginPath(); g.roundRect(x + k * tws * 0.32 - 34 * s, top + 4 * s, 68 * s, 22 * s, 6 * s); g.fill(); g.stroke(); }); }
   if (o.armband) { g.fillStyle = o.armband; g.fillRect(x - tws / 2 - 2 * s, top + 120 * s, 0, 0); }
   if (o.insignia) { g.fillStyle = "#c9a24e"; g.beginPath(); g.moveTo(x - tws * 0.3, top + 70 * s); g.lineTo(x - tws * 0.3 + 18 * s, top + 92 * s); g.lineTo(x - tws * 0.3, top + 114 * s); g.lineTo(x - tws * 0.3 - 18 * s, top + 92 * s); g.closePath(); g.fill(); }
   if (o.badge) { g.fillStyle = "#c9c4b8"; g.fillRect(x - tws * 0.42, top + 70 * s, 84 * s, 30 * s); g.fillStyle = "#2a2620"; g.font = `500 ${20 * s}px 'Roboto Mono'`; g.fillText(o.badge, x - tws * 0.42 + 6 * s, top + 92 * s); }
   // col / capuche / écharpe : anneau plat (ellipse) — planche 9 : écharpe sauge #576150
   if (o.ring) { g.fillStyle = o.ring; g.beginPath(); g.ellipse(ring[0] + (side ? 8 * s : 0), ring[1], (side ? 92 : (o.ringW || 118)) * s, 34 * s, 0, 0, 7); g.fill(); outline(g, s); g.stroke(); }
-  if (o.strings) { g.strokeStyle = "#d8dce0"; g.lineWidth = 4 * s; [-1, 1].forEach(k => { g.beginPath(); g.moveTo(x + k * 22 * s, ring[1] + 20 * s); g.lineTo(x + k * 26 * s, ring[1] + 90 * s); g.stroke(); }); }
+  if (o.strings) { g.strokeStyle = "#d8dce0"; g.lineWidth = 5.4 * s; [-1, 1].forEach(k => { g.beginPath(); g.moveTo(x + k * 22 * s, ring[1] + 20 * s); g.lineTo(x + k * 26 * s, ring[1] + 90 * s); g.stroke(); }); }
   // tête
   headShape(g, headC, R, s, o);
   if (o.beard) { g.save(); g.beginPath(); g.arc(headC[0], headC[1], R, 0, 7); g.clip(); g.fillStyle = o.beard; g.beginPath(); g.ellipse(headC[0], headC[1] + R * 0.75, R * 1.05, R * 0.62, 0, 0, 7); g.fill(); g.restore(); }
@@ -158,7 +158,7 @@ function figure(g, x, F, s, o) {
     const hg = g.createRadialGradient(headC[0] - R * 0.35, headC[1] - R * 0.45, R * 0.05, headC[0], headC[1], R * 1.05); hg.addColorStop(0, "#4a4a4a"); hg.addColorStop(0.5, o.helmet); hg.addColorStop(1, "#0c0c0c");
     g.fillStyle = hg; g.fillRect(headC[0] - R * 1.1, headC[1] - R * 1.1, R * 2.2, R * 2.2);
     g.fillStyle = "#070707"; g.beginPath(); g.roundRect(headC[0] - R * 0.82, headC[1] - R * 0.22, R * 1.64, R * 0.5, R * 0.18); g.fill();
-    g.strokeStyle = "rgba(160,175,190,0.55)"; g.lineWidth = 4 * s; g.beginPath(); g.moveTo(headC[0] - R * 0.6, headC[1] - R * 0.1); g.lineTo(headC[0] + R * 0.2, headC[1] - R * 0.1); g.stroke(); g.restore(); }
+    g.strokeStyle = "rgba(160,175,190,0.55)"; g.lineWidth = 5.4 * s; g.beginPath(); g.moveTo(headC[0] - R * 0.6, headC[1] - R * 0.1); g.lineTo(headC[0] + R * 0.2, headC[1] - R * 0.1); g.stroke(); g.restore(); }
   if (o.cap) { g.save(); g.fillStyle = o.cap; outline(g, s);
     g.beginPath(); g.moveTo(headC[0] - R * 0.98, headC[1] - R * 0.28); g.quadraticCurveTo(headC[0] - R * 0.9, headC[1] - R * 1.18, headC[0], headC[1] - R * 1.2);
     g.quadraticCurveTo(headC[0] + R * 0.9, headC[1] - R * 1.18, headC[0] + R * 0.98, headC[1] - R * 0.28); g.closePath(); g.fill(); g.stroke();
@@ -173,7 +173,7 @@ function figure(g, x, F, s, o) {
   // bras avant + mains (boules sombres)
   armPts.forEach(([a, b], i) => { if (side && i === 0) return; tube(g, a, b, 36 * s, i === 0 ? o.body : mul(o.body, 0.85), s); ball(g, b, 22 * s, o.hand || "#2c2a24", s); });
   if (o.armbandCol) { const [a, b] = armPts[0]; const m = [a[0] + (b[0] - a[0]) * 0.3, a[1] + (b[1] - a[1]) * 0.3]; tube(g, [m[0], m[1] - 14 * s], [m[0], m[1] + 14 * s], 38 * s, o.armbandCol, s); }
-  if (o.paper) { const b = armPts[1][1]; g.save(); g.translate(b[0], b[1] - 20 * s); g.rotate(-0.25); g.fillStyle = "#e9e3d3"; g.fillRect(-30 * s, -44 * s, 60 * s, 44 * s); outline(g, s); g.lineWidth = 4 * s; g.strokeRect(-30 * s, -44 * s, 60 * s, 44 * s);
+  if (o.paper) { const b = armPts[1][1]; g.save(); g.translate(b[0], b[1] - 20 * s); g.rotate(-0.25); g.fillStyle = "#e9e3d3"; g.fillRect(-30 * s, -44 * s, 60 * s, 44 * s); outline(g, s); g.lineWidth = 5.4 * s; g.strokeRect(-30 * s, -44 * s, 60 * s, 44 * s);
     g.strokeStyle = "rgba(0,0,0,0.3)"; g.beginPath(); g.moveTo(-30 * s, -22 * s); g.lineTo(30 * s, -22 * s); g.stroke(); g.restore(); }
   if (o.baton) { const b = armPts[1][1]; tube(g, [b[0], b[1] - 10 * s], [b[0] + 10 * s, b[1] + 150 * s], 16 * s, "#1c1c1c", s); }
 }
