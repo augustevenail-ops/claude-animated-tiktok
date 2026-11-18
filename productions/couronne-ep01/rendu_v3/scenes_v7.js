@@ -128,7 +128,7 @@ function nearChair(q, x, y, s, hair, bald) {                    // conseiller de
   q.fillStyle = "#c9a45a"; for (let i = 0; i < 7; i++) { q.beginPath(); q.arc(-160 + i * 53, 10, 7, 0, 7); q.fill(); } q.restore(); }
 S.k06_conseil = g => {
   const u = TU(), SW = 0.42;
-  if (u < SW) { bg3d(g, "d06_conseil"); hud(g); fin3d(g); return; }                  // drone qui s'approche de la tour (rendu 3D)
+  if (u < SW) { bg3d(g, "d06_conseil"); hud(g, { zone: "CENTRE · TOUR DU CONSEIL" }); fin3d(g); return; }                  // drone qui s'approche de la tour (rendu 3D)
   const v = (u - SW) / (1 - SW), push = 1.16 - 0.1 * (1 - Math.pow(1 - v, 3));        // on entre : la salle se découvre en reculant légèrement
   const C = mk(W, H), q = C.getContext("2d");
   councilRoom(q);
@@ -140,11 +140,11 @@ S.k06_conseil = g => {
   layer(q, r => { nearChair(r, 260, 1760, 0.95, "#6a665e", false); nearChair(r, 820, 1780, 1.0, "#55524c", true); }, { blur: 6 });
   g.save(); g.translate(W / 2, H / 2); g.scale(push, push); g.translate(-W / 2, -H / 2); g.drawImage(C, 0, 0); g.restore();
   // fenêtre traversée : croisillons et façade qui sortent du cadre (raccord avec la fin du plan 3D)
-  if (v < 0.3) { const k = 1 + Math.pow(v / 0.3, 2) * 3.2, a = 1 - v / 0.3, bw = 64 * k;
-    g.save(); g.globalAlpha = Math.min(1, a * 1.6); g.fillStyle = "#14080a";
-    for (const dx of [-1107, -369, 369, 1107]) g.fillRect(540 + dx * k - bw / 2, 0, bw, H);
-    for (const dy of [-739, 0, 739]) g.fillRect(0, 960 + dy * k - bw / 2, W, bw);
-    g.fillStyle = "#3a3e44"; g.fillRect(0, 0, W, Math.max(0, 960 - 739 * k - bw / 2)); g.fillRect(0, 960 + 739 * k + bw / 2, W, H);
+  if (v < 0.3) { const k = 1 + Math.pow(v / 0.3, 2) * 3.2, a = 1 - v / 0.3, bw = 36 * k, fx = 520 * k, fy = 640 * k;
+    g.save(); g.globalAlpha = Math.min(1, a * 1.6); g.fillStyle = "#6e6450";                                                                   // façade autour de la fenêtre
+    g.fillRect(0, 0, W, Math.max(0, 960 - fy - bw)); g.fillRect(0, 960 + fy + bw, W, H); g.fillRect(0, 0, Math.max(0, 540 - fx - bw), H); g.fillRect(540 + fx + bw, 0, W, H);
+    g.fillStyle = "#14080a"; for (const dx of [-fx, 0, fx]) g.fillRect(540 + dx - bw / 2, 960 - fy - bw / 2, bw, 2 * fy + bw);                // cadre + croisillon en croix
+    for (const dy of [-fy, 0, fy]) g.fillRect(540 - fx - bw / 2, 960 + dy - bw / 2, 2 * fx + bw, bw);
     g.globalAlpha = a * 0.5; g.fillStyle = "#ffe0b0"; g.fillRect(0, 0, W, H); g.restore(); }                          // reflet du verre qui s'efface
   if (v > 0.25) { const a = Math.min(1, (v - 0.25) / 0.15), sc = 1 + 0.25 * Math.pow(1 - a, 3); g.save(); g.globalAlpha = a; g.translate(540, 830); g.scale(sc, sc); g.translate(-540, -830);
     holoTag(g, "CONSEIL", 540, 700, [540, 900], "#ffd98a"); g.restore(); }                                           // étiquette au-dessus du président

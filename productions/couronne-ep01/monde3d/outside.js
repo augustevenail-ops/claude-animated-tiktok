@@ -65,21 +65,27 @@ export function addOutside(scene) {
   return { group: G, animate(T) { clouds.forEach(c => { const a = c.a + c.v * T; c.sp.position.set(Math.cos(a) * c.r, c.y + Math.sin(T * 0.6 + c.ph) * 6, Math.sin(a) * c.r); c.sp.material.opacity = c.o * (0.75 + 0.25 * Math.sin(T * 1.3 + c.ph)); }); } };
 }
 
-// fenêtre éclairée de la salle du Conseil (plan 6) : verre chaud bordeaux et or, rideaux, lustre, silhouettes autour de la table
+// étage du Conseil (plan 6) : bandeau de pierre claire sur la face est de la tour centrale, rangée de grandes fenêtres
+// toutes identiques (4,4 x 5,4 m, croisillon en croix) ; celle du milieu donne sur la table du Conseil (celle où entre le drone)
 export function councilWindow(scene, x, y, z) {
-  const t = cvTex(768, 512, (g, w, h) => {
-    const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, "#5a1420"); gr.addColorStop(0.5, "#b0502a"); gr.addColorStop(1, "#3a0c14"); g.fillStyle = gr; g.fillRect(0, 0, w, h);
-    const lg = g.createRadialGradient(w / 2, h * 0.3, 0, w / 2, h * 0.3, w * 0.45); lg.addColorStop(0, "rgba(255,226,150,1)"); lg.addColorStop(1, "rgba(255,200,120,0)"); g.fillStyle = lg; g.fillRect(0, 0, w, h);   // lustre
-    g.fillStyle = "#6a0f1c"; g.fillRect(0, 0, 90, h); g.fillRect(w - 90, 0, 90, h);                                    // rideaux
-    g.fillStyle = "#2a0c10"; g.beginPath(); g.ellipse(w / 2, h * 0.82, w * 0.36, h * 0.1, 0, 0, 7); g.fill();          // table
-    for (let k = 0; k < 9; k++) { const a = Math.PI * (0.1 + k * 0.1), px = w / 2 - Math.cos(a) * w * 0.36, py = h * 0.78 - Math.sin(a) * h * 0.1;
-      g.fillStyle = "#1c0a0c"; g.beginPath(); g.arc(px, py - 46, 18, 0, 7); g.fill(); g.fillRect(px - 22, py - 30, 44, 40); }               // silhouettes
-    g.fillStyle = "#14080a"; const fw = 22; for (const fx of [0, w / 3, 2 * w / 3, w]) g.fillRect(fx - fw / 2, 0, fw, h); for (const fy of [0, h / 2, h]) g.fillRect(0, fy - fw / 2, w, fw);   // croisillons (3 x 2)
+  const WW = 4.4, WH = 5.4, PITCH = 5.8, N = 5;
+  const room = (table) => cvTex(512, 640, (g, w, h) => {
+    const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, "#5a1420"); gr.addColorStop(0.5, "#a8482a"); gr.addColorStop(1, "#3a0c14"); g.fillStyle = gr; g.fillRect(0, 0, w, h);
+    const lg = g.createRadialGradient(w / 2, h * 0.25, 0, w / 2, h * 0.25, w * 0.6); lg.addColorStop(0, "rgba(255,226,150,0.95)"); lg.addColorStop(1, "rgba(255,200,120,0)"); g.fillStyle = lg; g.fillRect(0, 0, w, h);   // lustre
+    g.fillStyle = "#6a0f1c"; g.fillRect(0, 0, 50, h); g.fillRect(w - 50, 0, 50, h);                                                     // rideaux (identiques sur chaque fenêtre)
+    if (table) { g.fillStyle = "#2a0c10"; g.beginPath(); g.ellipse(w / 2, h * 0.8, w * 0.42, h * 0.08, 0, 0, 7); g.fill();
+      for (let k = 0; k < 5; k++) { const px = w * (0.18 + k * 0.16), py = h * 0.74; g.fillStyle = "#1c0a0c"; g.beginPath(); g.arc(px, py - 52, 20, 0, 7); g.fill(); g.fillRect(px - 24, py - 34, 48, 40); } }
+    else { g.fillStyle = "rgba(30,8,10,0.6)"; g.fillRect(w * 0.3, h * 0.55, w * 0.4, h * 0.35); }                                       // meuble, salle voisine
+    g.fillStyle = "#14080a"; const fw = 18; g.fillRect(w / 2 - fw / 2, 0, fw, h); g.fillRect(0, h / 2 - fw / 2, w, fw);                   // croisillon en croix
   });
+  const tTable = room(true), tSide = room(false);
   const grp = new THREE.Group();
-  const glass = new THREE.Mesh(new THREE.PlaneGeometry(9, 6), new THREE.MeshBasicMaterial({ map: t })); grp.add(glass);
-  const frame = new THREE.Mesh(new THREE.BoxGeometry(9.8, 6.8, 0.3), new THREE.MeshLambertMaterial({ color: 0x1a1612 })); frame.position.z = -0.2; grp.add(frame);
-  const sill = new THREE.Mesh(new THREE.BoxGeometry(10.4, 0.4, 0.9), new THREE.MeshLambertMaterial({ color: 0xc9b48a, emissive: 0x2a1e0a })); sill.position.set(0, -3.5, 0.2); grp.add(sill);
+  const band = new THREE.Mesh(new THREE.BoxGeometry(30.4, WH + 2.4, 0.5), new THREE.MeshLambertMaterial({ color: 0x8a7a5a, emissive: 0x1a1208 })); band.position.z = -0.35; grp.add(band);   // bandeau de l'étage
+  for (const dy of [-(WH / 2 + 1.2), WH / 2 + 1.2]) { const c = new THREE.Mesh(new THREE.BoxGeometry(30.8, 0.35, 0.9), new THREE.MeshLambertMaterial({ color: 0xc9b48a, emissive: 0x2a1e0a })); c.position.set(0, dy, 0); grp.add(c); }   // corniches dorées
+  const frameM = new THREE.MeshLambertMaterial({ color: 0x1a1612 });
+  for (let i = 0; i < N; i++) { const cx = (i - (N - 1) / 2) * PITCH;
+    const glass = new THREE.Mesh(new THREE.PlaneGeometry(WW, WH), new THREE.MeshBasicMaterial({ map: i === (N - 1) / 2 ? tTable : tSide })); glass.position.set(cx, 0, 0); grp.add(glass);
+    const fr = new THREE.Mesh(new THREE.BoxGeometry(WW + 0.36, WH + 0.36, 0.2), frameM); fr.position.set(cx, 0, -0.12); grp.add(fr); }
   const light = new THREE.PointLight(0xffb070, 3, 40, 1.5); light.position.set(0, 0, 4); grp.add(light);
   grp.position.set(x, y, z); grp.rotation.y = Math.PI / 2; scene.add(grp); return grp;
 }
