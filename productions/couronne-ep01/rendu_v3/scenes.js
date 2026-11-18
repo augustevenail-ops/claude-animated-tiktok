@@ -724,5 +724,59 @@ S.p02g_oiseau_au_sol = g => {                         // image 3 : même cadrage
   deadBird(g, 930, 1838, 1.3, 1.5);
   hud(g); finish(g, { bloom: 0.35, grade: ["#06202a", "#ffd9a0", 0.16] }); caption(g, ["SOUS", "UN", "DÔME"], 1);
 };
+// ---------- v13 : plan 2 oiseau — dôme en hologramme teal à hauteur de la tête, foule debout et dispersée, détails vivants ----------
+function standSil(g, x, feet, h, col, blur = 0) {       // silhouette debout vue de dos : tête, épaules, bras, jambes
+  g.save(); if (blur) g.filter = `blur(${blur}px)`; g.fillStyle = col;
+  g.fillRect(x - h * 0.05, feet - h * 0.45, h * 0.04, h * 0.45); g.fillRect(x + h * 0.01, feet - h * 0.45, h * 0.04, h * 0.45);
+  g.beginPath(); g.roundRect(x - h * 0.09, feet - h * 0.78, h * 0.18, h * 0.36, h * 0.05); g.fill();
+  g.fillRect(x - h * 0.12, feet - h * 0.74, h * 0.03, h * 0.3); g.fillRect(x + h * 0.09, feet - h * 0.74, h * 0.03, h * 0.3);
+  g.beginPath(); g.arc(x, feet - h * 0.86, h * 0.07, 0, 7); g.fill();
+  g.restore();
+}
+function crowdStanding(g) {
+  const far = [[120, 1520, 300], [260, 1500, 280], [420, 1530, 300], [660, 1510, 290], [820, 1525, 310], [960, 1505, 280]];
+  far.forEach(([x, f, h], i) => standSil(g, x, f, h, `rgba(${20 + i * 3},${32 + i * 3},${38 + i * 3},1)`, 3));
+  const near = [[70, 1880, 640, "#1d2629"], [230, 1900, 700, "#222c30"], [880, 1860, 620, "#1b2427"], [1010, 1890, 690, "#202a2e"]];
+  near.forEach(([x, f, h, c]) => standSil(g, x, f, h, c, 0));
+}
+function holoRain(g, seed) {                             // pluie fine derrière la vitre
+  g.strokeStyle = "rgba(150,200,210,0.14)"; g.lineWidth = 1.5;
+  for (let i = 0; i < 90; i++) { const x = rnd(seed + i) * W, y = rnd(seed * 3 + i) * H, l = 30 + rnd(i * 5) * 50; g.beginPath(); g.moveTo(x, y); g.lineTo(x - 6, y + l); g.stroke(); }
+}
+function holoDome(g, seed) {                             // dôme : hologramme teal, bord bas près de la tête, scanlines qui défilent, grésillement rouge localisé
+  domeBarrier(g, 1300, 640, 500, 0.85);
+  layer(g, q => { q.fillStyle = "rgba(111,224,214,0.05)"; for (let y = 0; y < 900; y += 6) q.fillRect(0, y, W, 2); }, { op: "screen" });
+  g.save(); g.shadowColor = "rgba(255,70,50,0.9)"; g.shadowBlur = 14; g.strokeStyle = "rgba(255,90,70,0.9)"; g.lineWidth = 3; g.beginPath();
+  for (let i = 0; i <= 10; i++) { const a = -2.0 + i * 0.03, x = 540 + Math.cos(a) * 640 + (rnd(seed + i) - 0.5) * 16, y = 1300 + Math.sin(a) * 500 + (rnd(seed * 2 + i) - 0.5) * 16; i ? g.lineTo(x, y) : g.moveTo(x, y); }
+  g.stroke(); g.restore();
+}
+function lifeDetails(g, seed) {
+  holoRain(g, seed);
+  for (let i = 0; i < 6; i++) { g.fillStyle = rgba("#ff3b2a", 0.5 + 0.5 * Math.sin(i * 1.7)); g.beginPath(); g.arc(120 + i * 180, 1330 + rnd(i) * 40, 3, 0, 7); g.fill(); }   // voyants lointains
+  g.fillStyle = "rgba(255,200,120,0.25)"; g.beginPath(); g.ellipse(170, 1790, 22, 40, 0, 0, 7); g.fill();           // reflet tasse fumante
+  dust(g, 80, "#cfe9e6", 0, 1700, seed + 7, 2.2);
+}
+S.p02h_buste_vivant = g => {                              // image 2 v13
+  sky(g, [[0, "#070b0d"], [0.6, "#0f1a1e"], [1, "#040506"]]);
+  lifeDetails(g, 101);
+  holoDome(g, 101);
+  layer(g, q => { q.fillStyle = "#1b1510"; q.fillRect(0, 1700, W, H - 1700); }, { blur: 2 });
+  crowdStanding(g);
+  actor(g, 540, 2650, 2.3, { ...HERO, look: 0.0, arms: [[-1, 10], [1, 10]] }, { rim: TEAL, rimAng: -1.57, rimW: 7, key: "#ffd9a0", shadow: false });
+  deadBird(g, 540, 1420, 1.8, 1.2, 2.5);
+  deadBird(g, 540, 1420, 1.8, 1.2);
+  hud(g); finish(g, { bloom: 0.35, grade: ["#06202a", "#ffd9a0", 0.16] }); caption(g, ["SOUS", "UN", "DÔME"], 1);
+};
+S.p02i_sol_vivant = g => {                                // image 3 v13
+  sky(g, [[0, "#070b0d"], [0.6, "#0f1a1e"], [1, "#040506"]]);
+  lifeDetails(g, 103);
+  holoDome(g, 103);
+  layer(g, q => { q.fillStyle = "#1b1510"; q.fillRect(0, 1700, W, H - 1700); }, { blur: 2 });
+  crowdStanding(g);
+  actor(g, 540, 2650, 2.3, { ...HERO, look: 0.0, arms: [[-1, 10], [1, 10]] }, { rim: TEAL, rimAng: -1.57, rimW: 7, key: "#ffd9a0", shadow: false });
+  g.fillStyle = "rgba(0,0,0,0.45)"; g.beginPath(); g.ellipse(930, 1850, 120, 16, 0, 0, 7); g.fill();
+  deadBird(g, 930, 1838, 1.3, 1.5);
+  hud(g); finish(g, { bloom: 0.35, grade: ["#06202a", "#ffd9a0", 0.16] }); caption(g, ["SOUS", "UN", "DÔME"], 1);
+};
 window.SCENES = Object.fromEntries(Object.entries(S).filter(([k]) => !k.endsWith("_bg")));
 window.SCENES_ALL = S;
