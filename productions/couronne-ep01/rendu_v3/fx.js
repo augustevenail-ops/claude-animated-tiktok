@@ -25,6 +25,9 @@ function finish(g, o = {}) { if (o.bloom !== 0) bloom(g, o.bloom ?? 0.32); if (o
 // acteur : personnage rendu hors-champ puis éclairé (dégradé clé, liseré de contre-jour coloré, ombre portée au sol)
 function actor(g, x, F, s, outfit, o = {}) {
   const c = mk(W, H), q = c.getContext("2d"); figure(q, x, F, s, outfit);
+  const R = 95 * s, top = F - 295 * s - 14 * s - 290 * s, hc = [x + (outfit.headDx || 0) * s, top - R + 6 * s + (outfit.headDy || 0) * s];
+  if (outfit.headRestroke) { q.strokeStyle = "#050405"; q.lineWidth = 3.9 * s; q.beginPath(); q.arc(hc[0], hc[1], R, 0, 7); q.stroke(); }   // contour de tête par-dessus les cheveux
+  if (outfit.beanie) beanie(q, hc, R);
   if (!o.flat) { q.save(); q.globalCompositeOperation = "source-atop";                         // modelé : haut éclairé, bas plus sombre
   const kg = q.createLinearGradient(0, F - 900 * s, 0, F); kg.addColorStop(0, rgba(o.key || "#fff2d8", 0.10)); kg.addColorStop(1, "rgba(0,0,0,0.30)"); q.fillStyle = kg; q.fillRect(0, 0, W, H);
   if (o.ambient) { q.globalCompositeOperation = "source-atop"; q.globalAlpha = 0.16; q.fillStyle = o.ambient; q.fillRect(0, 0, W, H); q.globalAlpha = 1; }
@@ -37,7 +40,7 @@ function actor(g, x, F, s, outfit, o = {}) {
   }
   if (o.shadow !== false) { g.save(); g.filter = "blur(14px)"; g.fillStyle = "rgba(0,0,0,0.55)"; g.beginPath(); g.ellipse(x + (o.shDx || 0), F + 4, 150 * s, 26 * s, 0, 0, 7); g.fill(); g.restore(); }
   // contour d'encre épais et régulier autour de la silhouette (dilatation du masque, réglable par o.ink en unités de scale)
-  if (o.ink !== 0) { const ol = mk(W, H), oq = ol.getContext("2d"), w = (o.ink ?? 4.6) * s;
+  if (o.ink) { const ol = mk(W, H), oq = ol.getContext("2d"), w = o.ink * s;
     for (let k = 0; k < 24; k++) { const an = k / 24 * 6.2832; oq.drawImage(c, Math.cos(an) * w, Math.sin(an) * w); }
     oq.globalCompositeOperation = "source-in"; oq.fillStyle = "#050405"; oq.fillRect(0, 0, W, H);
     g.save(); if (o.blur) g.filter = `blur(${o.blur}px)`; g.drawImage(ol, 0, 0); g.restore(); }
@@ -119,4 +122,21 @@ function perspectiveImage(g, src, quad) {            // image plane -> trapèze 
   const [tl, tr, br, bl] = quad, h = src.height, n = 260;
   for (let i = 0; i < n; i++) { const u = i / n, u2 = (i + 1) / n, L = [tl[0] + (bl[0] - tl[0]) * u, tl[1] + (bl[1] - tl[1]) * u], Rr = [tr[0] + (br[0] - tr[0]) * u, tr[1] + (br[1] - tr[1]) * u];
     const y2 = tl[1] + (bl[1] - tl[1]) * u2; g.drawImage(src, 0, u * h, src.width, h / n + 1, L[0], L[1], Rr[0] - L[0], y2 - L[1] + 1); }
+}
+
+// bonnet du fils : calotte vert kaki à côtes qui convergent, revers replié côtelé, contour et pli noirs.
+// Gabarit dessiné pour une tête de centre (290, 1412) et de rayon 171, mis à l'échelle de la tête réelle.
+function beanie(g, hc, R) {
+  g.save(); g.translate(hc[0], hc[1]); g.scale(R / 171, R / 171); g.translate(-290, -1412);
+  const dome = () => { g.beginPath(); g.ellipse(290, 1362, 172, 160, 0, Math.PI, 2 * Math.PI); g.lineTo(462, 1372); g.lineTo(118, 1372); g.closePath(); };
+  g.save(); dome(); g.fillStyle = "#6e7650"; g.fill(); g.clip();
+  g.strokeStyle = "#5f6842"; g.lineWidth = 9; g.lineCap = "round";
+  for (let k = 0; k <= 10; k++) { const x0 = 118 + k * 34.4; g.beginPath(); g.moveTo(x0, 1380); g.quadraticCurveTo(x0 + (290 - x0) * 0.4, 1260, 290 + (x0 - 290) * 0.08, 1180); g.stroke(); }
+  g.fillStyle = "#6e7650"; g.fillRect(100, 1318, 380, 60);
+  g.strokeStyle = "#5f6842"; g.lineWidth = 9;
+  for (let k = 0; k <= 16; k++) { const x0 = 118 + k * 22; g.beginPath(); g.moveTo(x0, 1318); g.lineTo(x0, 1378); g.stroke(); }
+  g.restore();
+  g.strokeStyle = "#050405"; g.lineWidth = 7; dome(); g.stroke();
+  g.lineWidth = 8; g.beginPath(); g.moveTo(118, 1318); g.lineTo(462, 1318); g.stroke();
+  g.restore();
 }

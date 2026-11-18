@@ -771,19 +771,7 @@ S.p02h_buste_vivant = g => {                              // image 2 v13
   layer(g, q => { q.fillStyle = "#1b1510"; q.fillRect(0, 1700, W, H - 1700); }, { blur: 2 });
   crowdStanding(g);
   actor(g, 790, 2650, 1.8, { ...PERE, body: "#6e2d5e", bodyDark: "#43193a", ring: "#6e2d5e", ringW: 80, torsoW: 165, look: -0.12, arms: [[-1, 10], [1, 10]] }, { rim: "#cfe3ee", rimAng: -1.2, rimW: 7, key: "#dfe9ef", shadow: false, ink: 0 });   // père, côté droit
-  g.strokeStyle = "#050405"; g.lineWidth = 7; g.beginPath(); g.arc(790, 1412, 171, 0, 7); g.stroke();   // contour de tête par-dessus les cheveux
   actor(g, 290, 2650, 1.8, { ...HERO, body: "#6e2d5e", bodyDark: "#43193a", ring: "#6e2d5e", ringW: 80, strings: false, torsoW: 165, look: 0.0, arms: [[-1, 10], [1, 10]] }, { rim: TEAL, rimAng: -1.57, rimW: 7, key: "#ffd9a0", shadow: false, ink: 0 });
-  // bonnet rouge replié : calotte à côtes qui convergent vers le haut, revers replié en bas (côtes plus foncées)
-  const dome = () => { g.beginPath(); g.ellipse(290, 1362, 172, 160, 0, Math.PI, 2 * Math.PI); g.lineTo(462, 1372); g.lineTo(118, 1372); g.closePath(); };
-  g.save(); dome(); g.fillStyle = "#6e7650"; g.fill(); g.clip();
-  g.strokeStyle = "#5f6842"; g.lineWidth = 9; g.lineCap = "round";
-  for (let k = 0; k <= 10; k++) { const x0 = 118 + k * 34.4; g.beginPath(); g.moveTo(x0, 1380); g.quadraticCurveTo(x0 + (290 - x0) * 0.4, 1260, 290 + (x0 - 290) * 0.08, 1180); g.stroke(); }   // côtes qui rejoignent le sommet
-  g.fillStyle = "#6e7650"; g.fillRect(100, 1318, 380, 60);                                               // revers replié
-  g.strokeStyle = "#5f6842"; g.lineWidth = 9;
-  for (let k = 0; k <= 16; k++) { const x0 = 118 + k * 22; g.beginPath(); g.moveTo(x0, 1318); g.lineTo(x0, 1378); g.stroke(); }   // côtes du revers
-  g.restore();
-  g.strokeStyle = "#050405"; g.lineWidth = 7; dome(); g.stroke();
-  g.strokeStyle = "#050405"; g.lineWidth = 8; g.beginPath(); g.moveTo(118, 1318); g.lineTo(462, 1318); g.stroke();   // pli du revers
   pigeon(g, 540, 1400, 2.8, 1.2, 3);
   pigeon(g, 540, 1400, 2.8, 1.2, 0);
   hud(g); finish(g, { bloom: 0.08, grade: ["#000000", "#ffd9a0", 0.03] }); caption(g, ["SOUS", "UN", "DÔME"], 1);
@@ -795,20 +783,8 @@ S.p02i_sol_vivant = g => {                                // image 3 v13
   layer(g, q => { q.fillStyle = "#1b1510"; q.fillRect(0, 1700, W, H - 1700); }, { blur: 2 });
   crowdStanding(g);
   actor(g, 790, 2650, 1.8, { ...PERE, body: "#6e2d5e", bodyDark: "#43193a", ring: "#6e2d5e", ringW: 80, torsoW: 165, look: -0.12, arms: [[-1, 10], [1, 10]] }, { rim: "#cfe3ee", rimAng: -1.2, rimW: 7, key: "#dfe9ef", shadow: false, ink: 0 });   // père, côté droit
-  g.strokeStyle = "#050405"; g.lineWidth = 7; g.beginPath(); g.arc(790, 1412, 171, 0, 7); g.stroke();   // contour de tête par-dessus les cheveux
   actor(g, 290, 2650, 1.8, { ...HERO, body: "#6e2d5e", bodyDark: "#43193a", ring: "#6e2d5e", ringW: 80, strings: false, torsoW: 165, look: 0.0, arms: [[-1, 10], [1, 10]] }, { rim: TEAL, rimAng: -1.57, rimW: 7, key: "#ffd9a0", shadow: false, ink: 0 });
   g.fillStyle = "rgba(0,0,0,0.4)"; g.beginPath(); g.ellipse(880, 1852, 90, 12, 0, 0, 7); g.fill();
-  // bonnet rouge replié : calotte à côtes qui convergent vers le haut, revers replié en bas (côtes plus foncées)
-  const dome = () => { g.beginPath(); g.ellipse(290, 1362, 172, 160, 0, Math.PI, 2 * Math.PI); g.lineTo(462, 1372); g.lineTo(118, 1372); g.closePath(); };
-  g.save(); dome(); g.fillStyle = "#6e7650"; g.fill(); g.clip();
-  g.strokeStyle = "#5f6842"; g.lineWidth = 9; g.lineCap = "round";
-  for (let k = 0; k <= 10; k++) { const x0 = 118 + k * 34.4; g.beginPath(); g.moveTo(x0, 1380); g.quadraticCurveTo(x0 + (290 - x0) * 0.4, 1260, 290 + (x0 - 290) * 0.08, 1180); g.stroke(); }   // côtes qui rejoignent le sommet
-  g.fillStyle = "#6e7650"; g.fillRect(100, 1318, 380, 60);                                               // revers replié
-  g.strokeStyle = "#5f6842"; g.lineWidth = 9;
-  for (let k = 0; k <= 16; k++) { const x0 = 118 + k * 22; g.beginPath(); g.moveTo(x0, 1318); g.lineTo(x0, 1378); g.stroke(); }   // côtes du revers
-  g.restore();
-  g.strokeStyle = "#050405"; g.lineWidth = 7; dome(); g.stroke();
-  g.strokeStyle = "#050405"; g.lineWidth = 8; g.beginPath(); g.moveTo(118, 1318); g.lineTo(462, 1318); g.stroke();   // pli du revers
   pigeon(g, 560, 1860, 2.0, 1.45, 0);
   hud(g); finish(g, { bloom: 0.08, grade: ["#000000", "#ffd9a0", 0.03] }); caption(g, ["MAGNÉTIQUE."], 0);
 };

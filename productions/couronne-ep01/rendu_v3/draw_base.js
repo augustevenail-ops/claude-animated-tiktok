@@ -173,6 +173,6 @@ function figure(g, x, F, s, o) {
   if (o.baton) { const b = armPts[1][1]; tube(g, [b[0], b[1] - 10 * s], [b[0] + 10 * s, b[1] + 150 * s], 16 * s, "#1c1c1c", s); }
 }
 // personnages de l'épisode (palette du PDF ; construction des références)
-const HERO = { body: "#4A6A8A", bodyDark: "#2c4256", ring: "#3c5873", strings: true, pocket: true, legs_col: "#2e3440", hair: "#2b211b", skin: "#ddd7cb" };
-const PERE = { body: "#4A6A8A", bodyDark: "#2c4256", ring: "#c9ccd0", lapels: true, legs_col: "#3a3f4a", hair: "#9a9589", hairStyle: "swoosh", brows: true, glasses: true, moustache: "#8f8b84", skin: "#d9d2c5" };
+const HERO = { body: "#6e2d5e", bodyDark: "#43193a", ring: "#6e2d5e", ringW: 80, torsoW: 165, beanie: true, strings: false, pocket: true, legs_col: "#2e3440", hair: "#2b211b", skin: "#ddd7cb" };
+const PERE = { body: "#6e2d5e", bodyDark: "#43193a", ring: "#6e2d5e", ringW: 80, torsoW: 165, headRestroke: true, lapels: true, legs_col: "#3a3f4a", hair: "#9a9589", hairStyle: "swoosh", brows: true, glasses: true, moustache: "#8f8b84", skin: "#d9d2c5" };
 const GARDE = { body: "#B8BEC4", bodyDark: "#7d848c", ring: "#8f969d", torsoW: 228, legs_col: "#5d646b", cap: "#2b3036", epaulettes: "#2b3036", armbandCol: "#7a1f30", belt: "#1e2124", holster: true, insignia: true, seam: true, brows: true, skin: "#d6cfc2", shoes: "#0f1011" };
