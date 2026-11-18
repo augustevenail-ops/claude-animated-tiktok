@@ -624,9 +624,9 @@ S.p04c_foule_discrete = g => {                       // plan 4 : foule grise, h�
     }
   });
   // cône de lumière de scène, pool diffus au centre, bord sombre
-  layer(g, q => { const r = q.createRadialGradient(540, 960, 40, 540, 960, 620); r.addColorStop(0, "rgba(255,236,200,0.55)"); r.addColorStop(0.45, "rgba(255,220,170,0.18)"); r.addColorStop(1, "rgba(0,0,0,0)"); q.fillStyle = r; q.fillRect(0, 0, W, H); }, { op: "screen", blur: 6 });
+  layer(g, q => { const r = q.createRadialGradient(540, 960, 40, 540, 960, 620); r.addColorStop(0, "rgba(255,236,200,0.22)"); r.addColorStop(0.45, "rgba(255,220,170,0.07)"); r.addColorStop(1, "rgba(0,0,0,0)"); q.fillStyle = r; q.fillRect(0, 0, W, H); }, { op: "screen", blur: 6 });
   roll(g, 0, q => { });
-  const v = g.createRadialGradient(540, 960, 260, 540, 960, 1000); v.addColorStop(0, "rgba(0,0,0,0)"); v.addColorStop(1, "rgba(0,0,0,0.85)"); g.fillStyle = v; g.fillRect(0, 0, W, H);
+  const v = g.createRadialGradient(540, 960, 260, 540, 960, 1000); v.addColorStop(0, "rgba(0,0,0,0)"); v.addColorStop(1, "rgba(0,0,0,0.6)"); g.fillStyle = v; g.fillRect(0, 0, W, H);
   // héros
   g.fillStyle = "#2c4256"; g.beginPath(); g.ellipse(540, 966, 44, 28, 0.2, 0, 7); g.fill(); g.strokeStyle = INK; g.lineWidth = 4; g.stroke();
   const hg = g.createRadialGradient(532, 950, 2, 540, 958, 26); hg.addColorStop(0, "#f6f3ec"); hg.addColorStop(1, "#9d9a94"); g.fillStyle = "#2b211b"; g.beginPath(); g.arc(540, 958, 26, 0, 7); g.fill(); g.stroke();
@@ -665,7 +665,6 @@ function deadBird(g, x, y, s, rot, blur = 0) {       // oiseau mort : corps somb
 function domeNight(g) {
   sky(g, [[0, "#070c10"], [0.5, "#0c1a20"], [1, "#050708"]]);
   domeBarrier(g, 700, 1100, 800, 0.8);
-  glow(g, 540, 300, 500, TEAL, 0.2);
 }
 S.p02e1_oiseau_chute = g => {                        // image 1 : la caméra suit l'oiseau, le fond file en traînées
   domeNight(g);
@@ -676,6 +675,7 @@ S.p02e1_oiseau_chute = g => {                        // image 1 : la caméra sui
 };
 S.p02e2_oiseau_devant_heros = g => {                 // image 2 : caméra calée sur le buste, l'oiseau passe devant
   domeNight(g);
+  layer(g, q => crowd(q, 1480, 4, { backs: true, tint: "#2e3a40", body: "#07090a", big: 1.5 }), { blur: 5 });
   actor(g, 540, 2650, 2.3, { ...HERO, look: 0.0, arms: [[-1, 10], [1, 10]] }, { rim: TEAL, rimAng: -1.57, rimW: 7, key: "#ffd9a0", shadow: false });
   deadBird(g, 540, 1420, 1.8, 1.2, 2.5);
   deadBird(g, 540, 1420, 1.8, 1.2);
@@ -685,6 +685,7 @@ S.p02e3_oiseau_sol = g => {                          // image 3 : l'oiseau attei
   sky(g, [[0, "#070c10"], [0.6, "#101a1e"], [1, "#050607"]]);
   domeBarrier(g, 700, 1100, 800, 0.8);
   layer(g, q => { q.fillStyle = "#1b1510"; q.fillRect(0, 1480, W, H - 1480); }, { blur: 2 });
+  layer(g, q => crowd(q, 1560, 3, { backs: true, tint: "#2e3a40", body: "#07090a", big: 1.6 }), { blur: 6 });
   actor(g, 540, 1720, 1.0, { ...HERO, look: 0.0, arms: [[-1, 10], [1, 10]] }, { rim: TEAL, rimAng: -1.57, key: "#ffd9a0", shadow: true });
   deadBird(g, 400, 1760, 1.5, 1.5);
   g.fillStyle = "rgba(0,0,0,0.4)"; g.beginPath(); g.ellipse(400, 1772, 100, 14, 0, 0, 7); g.fill();
