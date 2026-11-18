@@ -245,11 +245,26 @@ def tick(t0, g_db):
     x = np.sin(2 * np.pi * 2600 * t) * np.exp(-t / 0.004) + 0.6 * np.sin(2 * np.pi * 900 * t) * np.exp(-t / 0.012) + fft_filt(rng.standard_normal(n), 2000, 9000) * np.exp(-t / 0.002)
     put(reverb(x, 0.4, 0.25, 51)[:n + SR // 4], t0, g_db, 0.0)
 # 2 : l'oiseau touche le dôme (petit claquement électrique), tombe, touche le sol
-zap(HIT, -24); thump(LAND, -24)
+def birdsong(t0, t1, g_db, seed=0):
+    """l'oiseau chante juste avant le choc : petites trilles aiguës qui glissent"""
+    n = int((t1 - t0) * SR); x = np.zeros(n); r = np.random.default_rng(seed); tt = 0.0
+    while tt < t1 - t0 - 0.05:
+        m = int((0.04 + 0.05 * r.random()) * SR); i = int(tt * SR); u = np.arange(m) / m; f = 2800 + 1600 * r.random(); sl = r.choice([-1, 1]) * (0.2 + 0.3 * r.random())
+        if i + m < n: x[i:i + m] += np.sin(2 * np.pi * np.cumsum(f * (1 + sl * u) * (1 + 0.04 * np.sin(2 * np.pi * 38 * u * m / SR))) / SR) * np.sin(np.pi * u) ** 1.5
+        tt += m / SR + 0.015 + 0.04 * r.random()
+    put(reverb(x, 0.6, 0.25, 71)[:n + SR // 3], t0, g_db, 0.02, pan=-0.2)
+birdsong(0.0, 0.5, -24, seed=70)
+zap(HIT, -17); thump(LAND, -21)
+air_fall(FALL0, LAND, -32)                                                     # léger souffle pendant la chute (sous l'alarme)
 # 2-4 : alarme lente, lointaine, sous la voix ; elle s'éloigne pendant le recul du plan 5
-alarm(FALL0 + 0.05, 8.6, -33)
+alarm(FALL0 + 0.05, 8.6, -29)
 # 3 : le compteur passe de 72:00 à 71:59
-tick(2.453 + 0.55, -19)
+def bip(t0, g_db, f=1046.5, d=0.16):
+    """bip électronique doux (compteur, écrans)"""
+    n = int(d * SR); t = np.arange(n) / SR; env = np.minimum(t / 0.005, 1) * np.minimum(1, (d - t) / 0.02)
+    x = (np.sin(2 * np.pi * f * t) + 0.3 * np.sin(2 * np.pi * 2 * f * t)) * env
+    put(reverb(x, 0.5, 0.25, 72)[:n + SR // 4], t0, g_db, 0.0)
+bip(2.453 + 0.55, -20)
 # 4 : la foule marche puis se fige d'un coup (les pas s'arrêtent net)
 crowd_steps(4.813, 5.8, -30, FREEZE, seed=5)
 # 5 et 10 : dehors, le vent de l'air irradié
@@ -259,7 +274,7 @@ wind(21.6, 24.5, -29, 120, 1300, 0.7, seed=17); geiger(22.3, 24.3, -33, 5.0, see
 powerdown(W(43) - 0.1, 2.0, -28)
 for e, tt in enumerate([12.6, 13.1, 13.6]): cue("light_off", tt, -30 - 2 * e)
 # 8 : hologramme de la carte (léger bourdonnement)
-holo(14.3, 18.45, -35, seed=13)
+holo(14.3, 18.45, -35, seed=13); bip(14.36, -27, 1318.5, 0.09); bip(14.48, -27, 1568, 0.09)   # la carte s'allume
 # 9 / 20-21 : annonce des règles : souffle de vent 1,5 s
 swell(W(63) - 0.45, 1.5, -21, seed=61); swell(W(138) - 0.45, 1.5, -21, seed=62)
 # 12 : il ouvre le dossier ; 14 : les bottes des gardes ; 16 : il te donne la feuille
@@ -273,11 +288,20 @@ paper(48.6, 1.0, -24, dens=180, seed=35)
 # 26 : la radio du Conseil (carillon + légère friture)
 cue("pa_chime", 54.12, -27); loop("pa_static", 54.5, 56.2, -38, seed=37, lo=600, hi=5000)
 # 27 : le champ se rétracte sur le centre
-powerdown(57.3, 2.4, -30, 300, 30)
+powerdown(57.3, 2.4, -30, 300, 30); bip(56.28, -27, 1568, 0.09); bip(56.4, -27, 1318.5, 0.09)
 # 30 : la cellule (porte d'acier lointaine, une goutte)
 cue("steel_door", 64.1, -30, pan=0.4); cue("drip", 65.2, -33, pan=-0.4)
 # 32 : carton final (coup sourd doux)
 thump(68.99, -24, 50, 0.9)
+thump(W(192) - 0.02, -25, 48, 0.8)                                             # « exécutés »
+# notes longues et douces (« tiiin » sans grincement : sinus pur + octave, attaque lente) sur les phrases qui pèsent
+def note(t0, g_db, f, d=3.6):
+    n = int(d * SR); t = np.arange(n) / SR; env = np.minimum(t / 0.35, 1) * np.exp(-t / (d * 0.5)) * np.minimum(1, (d - t) / 0.8)
+    x = (np.sin(2 * np.pi * f * t) + 0.25 * np.sin(2 * np.pi * f * 2 * t + 0.5) + 0.15 * np.sin(2 * np.pi * f * 1.5 * t + 1)) * env * (1 + 0.04 * np.sin(2 * np.pi * 4.5 * t))
+    put(reverb(x, 2.0, 0.4, 73)[:n + SR], t0, g_db, 0.0)
+B5, Fs5, D6, A5 = 987.8, 740.0, 1174.7, 880.0
+for t_, f_ in [(W(14), Fs5), (W(74), B5), (W(137), Fs5), (W(170), D6), (W(192), B5), (W(209), A5), (W(213), Fs5)]: note(t_ - 0.1, -27, f_)
+# « coupé », « tue », « n'en revient », « mentent », « exécutés », ton père « exécuté », « tu te tais ? »
 
 # ---------- petite musique de fond, constante et discrète
 mus = k.music4(DUR, dips=(), transpose=0)
@@ -291,11 +315,11 @@ if os.environ.get("NIVEAUX"):                                                   
         sl = slice(int(a_ * SR), int(b_ * SR)); print(f"{a_:6.2f} musique {rms(mus[sl]) - vref:6.1f}  bruitages {rms(hit[sl] + L[sl]) - vref:6.1f}")
     sys.exit()
 mix = np.stack([voice + mus + hit + L, voice + mus * 0.97 + hit + R], 1)
-out = os.path.join(HERE, "mix_v2.wav"); pre = os.path.join(HERE, "_pre_v2.wav")
+out = os.path.join(HERE, "mix_v3.wav"); pre = os.path.join(HERE, "_pre_v3.wav")
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "f64le", "-ar", str(SR), "-ac", "2", "-i", "-", pre], input=mix.tobytes(), check=True)
 m = subprocess.run(["ffmpeg", "-i", pre, "-af", "loudnorm=I=-15:TP=-1.2:LRA=9:print_format=json", "-f", "null", "-"], capture_output=True, text=True).stderr
 j = json.loads(m[m.rfind("{"):])
 af = f"loudnorm=I=-15:TP=-1.2:LRA=9:measured_I={j['input_i']}:measured_TP={j['input_tp']}:measured_LRA={j['input_lra']}:measured_thresh={j['input_thresh']}:offset={j['target_offset']}:linear=true,aresample=48000"
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", pre, "-af", af, "-c:a", "pcm_s24le", out], check=True); os.remove(pre)
-subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", out, "-b:a", "192k", os.path.join(HERE, "mix_ecoute_v2.mp3")], check=True)
+subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", out, "-b:a", "192k", os.path.join(HERE, "mix_ecoute_v3.mp3")], check=True)
 print("mix ok", out)
