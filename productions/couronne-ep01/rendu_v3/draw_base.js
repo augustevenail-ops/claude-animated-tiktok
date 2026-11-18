@@ -81,9 +81,9 @@ function caption(g, words, active, y = 1242) {         // Montserrat 900, blanc 
   if (tot > W - 2 * SAFE_X) { const k = (W - 2 * SAFE_X) / tot; fs = Math.floor(fs * k); sp *= k; g.font = `900 ${fs}px Montserrat`; ws = words.map(w => g.measureText(w).width); tot = ws.reduce((a, b) => a + b, 0) + sp * (words.length - 1); }   // tient dans le cadre
   let x = (W - tot) / 2;
   words.forEach((w, i) => {
-    g.shadowColor = "rgba(0,0,0,0.9)"; g.shadowBlur = 34; g.shadowOffsetX = 0; g.shadowOffsetY = 8;                  // halo sombre doux (lisibilité ; v10 encore plus marqué)
-    g.fillStyle = i === active ? CAP_ORANGE : "#FFFFFF"; g.fillText(w, x, y);
-    g.shadowColor = "rgba(0,0,0,0.85)"; g.shadowBlur = 6; g.shadowOffsetX = 5; g.shadowOffsetY = 10; g.fillText(w, x, y);   // ombre portée nette (v10 plus visible)
+    g.fillStyle = i === active ? CAP_ORANGE : "#FFFFFF"; g.shadowColor = "rgba(0,0,0,1)"; g.shadowOffsetX = 0;   // halo sombre (v11 : 2x plus grand et plus dense)
+    g.shadowBlur = 60; g.shadowOffsetY = 14; g.fillText(w, x, y); g.fillText(w, x, y); g.shadowBlur = 30; g.shadowOffsetY = 8; g.fillText(w, x, y); g.fillText(w, x, y);
+    g.shadowColor = "rgba(0,0,0,1)"; g.shadowBlur = 12; g.shadowOffsetX = 10; g.shadowOffsetY = 20; g.fillText(w, x, y);   // ombre portée nette (v11 : 2x)
     x += ws[i] + sp; });
   g.restore();
 }
