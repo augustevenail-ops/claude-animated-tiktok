@@ -550,5 +550,53 @@ S.p02b_dezoom_personnages = g => {                   // image 2 : dézoom, la bo
   dust(g, 50, "#cfe9e6", 0, 1500, 83, 3);
   hud(g); finish(g, { bloom: 0.35, grade: ["#06202a", "#ffd9a0", 0.16] }); caption(g, ["SOUS", "UN", "DÔME"], 1);
 };
+// ---------- v8 : foule détaillée vue de haut (plan 4), plan 2 avec fond de district ----------
+function topPerson(q, px, py, j, seed) {              // personne vue de dessus : ombre, épaules, tête, cheveux, sac parfois
+  const pal = ["#2f4b5a", "#7a3b32", "#d0c7b0", "#3b3f2e", "#5b4a7a", "#a8752f", "#1f2a33", "#c9a36a", "#4d6b4a", "#8c8c8c"];
+  const hairs = ["#15110d", "#3a2a1c", "#8a6a3c", "#c9c2b0", "#24201c", "#5a2a1a"];
+  const cloth = pal[Math.floor(rnd(seed) * pal.length)], hair = hairs[Math.floor(rnd(seed * 3) * hairs.length)];
+  const ang = rnd(seed * 5) * 6.2832, dx = Math.cos(ang), dy = Math.sin(ang);
+  q.fillStyle = "rgba(0,0,0,0.38)"; q.beginPath(); q.ellipse(px + 9, py + 11, 33, 21, ang, 0, 7); q.fill();                 // ombre portée
+  q.fillStyle = mul(cloth, 0.75 + j * 0.45); q.beginPath(); q.ellipse(px, py, 31, 17, ang, 0, 7); q.fill();                  // épaules
+  q.strokeStyle = "rgba(0,0,0,0.35)"; q.lineWidth = 2; q.beginPath(); q.ellipse(px, py, 31, 17, ang, 0, 7); q.stroke();
+  q.fillStyle = mul(cloth, 1.2); q.beginPath(); q.ellipse(px - dx * 6, py - dy * 6, 14, 8, ang, 0, 7); q.fill();              // col / haut du dos
+  if (rnd(seed * 7) > 0.6) { q.fillStyle = "#2a2620"; q.beginPath(); q.ellipse(px - dx * 20, py - dy * 20, 8, 6, ang, 0, 7); q.fill(); }   // sac à dos
+  const skin = rnd(seed * 11) > 0.5 ? "#e6c9a8" : (rnd(seed * 13) > 0.5 ? "#b98a62" : "#6b4a33");
+  const hg = q.createRadialGradient(px - 4, py - 4, 2, px, py, 13); hg.addColorStop(0, skin); hg.addColorStop(1, mul(skin, 0.55));
+  q.fillStyle = hg; q.beginPath(); q.arc(px + dx * 3, py + dy * 3, 12, 0, 7); q.fill();
+  q.fillStyle = hair; q.beginPath(); q.arc(px + dx * 3, py + dy * 3, 12.5, ang + Math.PI * 0.8, ang + Math.PI * 2.0); q.fill();      // cheveux côté opposé
+}
+S.p04b_foule_detaillee = g => {                       // plan 4 : foule vue de haut, personnes détaillées, quelques-unes encore en mouvement
+  sky(g, [[0, "#0b0f12"], [1, "#0b0f12"]]);
+  roll(g, 0.18, q => {
+    for (let y = -200; y < H + 200; y += 58) for (let x = -200; x < W + 200; x += 58) {
+      const j = rnd(x * 1.3 + y), px = x + (j - 0.5) * 26 + (y / 58 % 2) * 29, py = y + (rnd(x + y * 3) - 0.5) * 20;
+      const dc = Math.hypot(px - 540, py - 960);
+      if (dc < 110) continue;
+      if (dc > 540 && rnd(x * 2 + y) > 0.6) { q.strokeStyle = rgba("#cfd8dc", 0.3); q.lineWidth = 6; q.beginPath(); q.moveTo(px, py); q.lineTo(px + (px - 540) * 0.14, py + (py - 960) * 0.14); q.stroke(); }
+      topPerson(q, px, py, j, x * 0.37 + y * 1.91 + 5);
+    }
+    glow(q, 540, 960, 260, TEAL, 0.4);
+    q.fillStyle = "#2c4256"; q.beginPath(); q.ellipse(540, 966, 44, 28, 0.2, 0, 7); q.fill(); q.strokeStyle = INK; q.lineWidth = 4; q.stroke();
+    const hg = q.createRadialGradient(532, 950, 2, 540, 958, 26); hg.addColorStop(0, "#f6f3ec"); hg.addColorStop(1, "#9d9a94"); q.fillStyle = "#2b211b"; q.beginPath(); q.arc(540, 958, 26, 0, 7); q.fill(); q.stroke();
+    pill(q, "TOI", 540, 1060); });
+  zoomBlur(g, 540, 960, 0.02); hud(g); finish(g, { bloom: 0.35, grade: ["#06202a", "#ffd9a0", 0.16] }); caption(g, ["ARRÊTENT", "DE", "BOUGER."], 0);
+};
+S.p02c_fond_district = g => {                         // plan 2 : même plan, fond = district construit, dôme au-dessus
+  sky(g, [[0, "#0a1216"], [0.55, "#16242a"], [1, "#07090a"]]);
+  richSkyline(g, 1330, -20, W + 20, 41, { hmin: 120, hvar: 260, wmin: 70, wvar: 90, cols: ["#2a2a26", "#3a3428", "#2c3134", "#443c30", "#33302a"] });
+  layer(g, q => { q.fillStyle = "rgba(20,30,34,0.5)"; q.fillRect(0, 1000, W, 400); }, { blur: 2 });
+  domeBarrier(g, 620, 1100, 800, 0.95);
+  layer(g, q => { q.fillStyle = "#1b1510"; q.fillRect(0, 1380, W, H - 1380); }, { blur: 2 });
+  g.fillStyle = "#3a2a1c"; g.fillRect(60, 1470, 960, 40); g.fillStyle = "#24190f"; g.fillRect(60, 1510, 960, 30);
+  compassBig(g, 540, 1470, 70, 1.0 + Math.sin(2.7) * 0.22);
+  actor(g, 360, 1720, 1.0, { ...HERO, look: 0.2, arms: [[-1, 30], [1, -20]] }, { rim: TEAL, rimAng: -2.2, key: "#ffd9a0", shadow: false });
+  actor(g, 720, 1720, 1.0, { ...PERE, look: -0.1, arms: [[-1, -20], [1, 30]] }, { rim: "#cfe3ee", rimAng: -0.8, key: "#dfe9ef", shadow: false });
+  glow(g, 540, 1100, 500, TEAL, 0.15);
+  // lumières des fenêtres du district, éparses
+  for (let i = 0; i < 60; i++) { g.fillStyle = rgba(rnd(i) > 0.5 ? AMBER : CITY_COOL, 0.5 + rnd(i * 3) * 0.4); g.fillRect(rnd(i * 7) * W, 900 + rnd(i * 11) * 380, 6, 8); }
+  dust(g, 50, "#cfe9e6", 0, 1500, 83, 3);
+  hud(g); finish(g, { bloom: 0.35, grade: ["#06202a", "#ffd9a0", 0.16] }); caption(g, ["SOUS", "UN", "DÔME"], 1);
+};
 window.SCENES = Object.fromEntries(Object.entries(S).filter(([k]) => !k.endsWith("_bg")));
 window.SCENES_ALL = S;
