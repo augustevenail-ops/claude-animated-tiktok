@@ -8,13 +8,13 @@ const cv = (w, h, f) => { const c = document.createElement("canvas"); c.width = 
 const INK = "#050405";
 
 // ---------- passants : tête blanche cerclée de noir, deux points, corps de couleur, contour noir (comme les héros) ----------
-function personTex(body, hat, seed, guard) {
+function personTex(body, hat, seed, guard, pose = 0) {   // pose 0 : debout ; 1 et 2 : pas gauche / pas droit (jambe levée pliée, bras opposé en avant)
   return cv(128, 320, (g) => {
     g.lineJoin = "round"; g.strokeStyle = INK; g.lineWidth = 6;
-    const lean = (rnd(seed) - 0.5) * 6;
-    g.fillStyle = "#1c1d20"; g.beginPath(); g.roundRect(44 + lean, 205, 16, 108, 6); g.fill(); g.stroke(); g.beginPath(); g.roundRect(68 + lean, 205, 16, 108, 6); g.fill(); g.stroke();   // jambes
+    const lean = (rnd(seed) - 0.5) * 6, lu = pose === 1 ? 16 : 0, ru = pose === 2 ? 16 : 0, la = pose === 2 ? -8 : pose === 1 ? 6 : 0, ra = -la;
+    g.fillStyle = "#1c1d20"; g.beginPath(); g.roundRect(44 + lean - (pose === 1 ? 3 : 0), 205, 16, 108 - lu, 6); g.fill(); g.stroke(); g.beginPath(); g.roundRect(68 + lean + (pose === 2 ? 3 : 0), 205, 16, 108 - ru, 6); g.fill(); g.stroke();   // jambes (la jambe levée est plus courte : pied décollé)
     g.fillStyle = body; g.beginPath(); g.roundRect(30, 110, 68, 110, 20); g.fill(); g.stroke();                     // corps
-    g.beginPath(); g.roundRect(18, 118, 16, 84, 8); g.fill(); g.stroke(); g.beginPath(); g.roundRect(94, 118, 16, 84, 8); g.fill(); g.stroke();   // bras
+    g.beginPath(); g.roundRect(18, 118 + la, 16, 84, 8); g.fill(); g.stroke(); g.beginPath(); g.roundRect(94, 118 + ra, 16, 84, 8); g.fill(); g.stroke();   // bras
     g.fillStyle = "#f6f3ec"; g.beginPath(); g.arc(64, 66, 40, 0, 7); g.fill(); g.stroke();                      // tête
     g.fillStyle = INK; g.beginPath(); g.arc(50, 70, 4.5, 0, 7); g.arc(78, 70, 4.5, 0, 7); g.fill();
     if (guard) { g.fillStyle = "#15171a"; g.beginPath(); g.arc(64, 60, 41, Math.PI, 0); g.fill(); g.stroke(); g.fillRect(20, 54, 88, 8); }
@@ -28,7 +28,8 @@ const RICH_BODY = ["#e8e2d4", "#c9b48a", "#2b4a5a", "#7a1f30", "#1a1a1c", "#d7c9
 const RICH_HAT = ["hair", "hair", null, "#c9b48a", "hair"];
 function people(kind) {
   const body = kind === "rich" ? RICH_BODY : DIST_BODY, hat = kind === "rich" ? RICH_HAT : DIST_HAT, tint = kind === "rich" ? 0xe6dfd2 : 0xb8bcc0;
-  return Array.from({ length: 10 }, (_, i) => new THREE.SpriteMaterial({ map: personTex(body[i % body.length], hat[i % hat.length], i + (kind === "rich" ? 50 : 0)), color: tint, alphaTest: 0.5, fog: true }));
+  return Array.from({ length: 10 }, (_, i) => { const mk = pose => new THREE.SpriteMaterial({ map: personTex(body[i % body.length], hat[i % hat.length], i + (kind === "rich" ? 50 : 0), false, pose), color: tint, alphaTest: 0.5, fog: true });
+    const m = mk(0); m.userData.walk = [mk(1), mk(2)]; return m; });
 }
 
 // ---------- textures de décor ----------
@@ -60,9 +61,10 @@ export function addDetails(scene, W) {
   const lam = c => new THREE.MeshLambertMaterial({ color: c });
   const { R_DIST_IN, R_DIST_OUT, R_CENTRE, R_WALL } = MAP;
   const pDist = people("dist"), pRich = people("rich"), pGuard = new THREE.SpriteMaterial({ map: personTex("#6c7076", null, 99, true), color: 0xb8bcc0, alphaTest: 0.5, fog: true });
-  const walkers = [];
-  const person = (x, z, mats, s, dir) => { if (Math.hypot(x + 17, z - 305) < 26) return null; /* rue de la règle 1 vide */ const sp = new THREE.Sprite(mats[Math.floor(rnd(s) * mats.length)]); sp.center.set(0.5, 0); const h = 1.65 + rnd(s * 3) * 0.25; sp.scale.set(h * 0.4, h, 1); sp.position.set(x, 0.05, z); add(sp);
-    if (dir && rnd(s * 29) < 0.75) { const sg = rnd(s * 31) < 0.5 ? -1 : 1; walkers.push({ sp, x, z, dx: dir[0] * sg, dz: dir[1] * sg, v: 0.8 + rnd(s * 37) * 0.7, ph: rnd(s * 41) * 6.28, h }); }   // passant qui marche
+  const walkers = [], shadowG = new THREE.CircleGeometry(0.42, 16), shadowM = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.45, depthWrite: false });
+  const person = (x, z, mats, s, dir) => { if (Math.hypot(x + 17, z - 305) < 26) return null; /* rue de la règle 1 vide */ const sp = new THREE.Sprite(mats[Math.floor(rnd(s) * mats.length)]); sp.center.set(0.5, 0); const h = 1.65 + rnd(s * 3) * 0.25; sp.scale.set(h * 0.4, h, 1); sp.position.set(x, 0.02, z); add(sp);
+    const sh = new THREE.Mesh(shadowG, shadowM); sh.rotation.x = -Math.PI / 2; sh.position.set(x, 0.06, z); add(sh);                          // ombre de contact : les pieds touchent le sol
+    if (dir && sp.material.userData.walk && rnd(s * 29) < 0.75) { const sg = rnd(s * 31) < 0.5 ? -1 : 1; walkers.push({ sp, sh, x, z, dx: dir[0] * sg, dz: dir[1] * sg, v: 0.9 + rnd(s * 37) * 0.5, ph: rnd(s * 41) * 2, h, stand: sp.material, walk: sp.material.userData.walk }); }   // passant qui marche
     return sp; };
   const inDist = (x, z) => { const r = Math.hypot(x, z); return r > R_DIST_IN + 6 && r < R_DIST_OUT - 6; };
   const inCentre = (x, z) => Math.hypot(x, z) < R_CENTRE - 4;
@@ -175,5 +177,7 @@ export function addDetails(scene, W) {
     beam.position.copy(head).add(tgt).multiplyScalar(0.5); beam.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), head.clone().sub(tgt).normalize()); add(beam);
     const hd = new THREE.Mesh(new THREE.SphereGeometry(0.8, 8, 6), new THREE.MeshBasicMaterial({ color: 0xfff2c8 })); hd.position.copy(head); add(hd); }
   // animation : les passants avancent le long de leur rue, petit rebond de pas
-  return { animate(T) { walkers.forEach(w => { const d = w.v * T; w.sp.position.set(w.x + w.dx * d, 0.05 + Math.abs(Math.sin(T * w.v * 4 + w.ph)) * 0.06, w.z + w.dz * d); w.sp.scale.y = w.h * (1 - Math.abs(Math.sin(T * w.v * 4 + w.ph)) * 0.02); }); } };
+  // ts = temps local du plan : chacun ne parcourt que quelques mètres autour de sa place (jamais dans un mur), pas alternés à la cadence de la vitesse
+  return { animate(T, ts = 0) { walkers.forEach(w => { const d = w.v * (ts - 1.5), p = Math.max(0, ts * w.v / 0.72 + w.ph), x = w.x + w.dx * d, z = w.z + w.dz * d;
+    w.sp.material = w.walk[Math.floor(p) % 2]; w.sp.position.set(x, 0.02 + Math.abs(Math.sin(Math.PI * p)) * 0.035, z); w.sh.position.set(x, 0.06, z); }); } };
 }

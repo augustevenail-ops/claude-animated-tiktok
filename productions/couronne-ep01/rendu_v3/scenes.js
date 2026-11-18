@@ -1163,7 +1163,7 @@ function plan3(g, ph) {
   g.fillStyle = "#08090a"; g.fillRect(170, 520, 740, 400); g.strokeStyle = "rgba(90,40,34,0.9)"; g.lineWidth = 6; g.strokeRect(170, 520, 740, 400);
   g.fillStyle = "#0c0d0e"; g.fillRect(300, 920, 22, 300); g.fillRect(758, 920, 22, 300);                        // pieds de l'écran
   layer(g, q => glow(q, 540, 720, 640, "#ff3b2a", 0.45), { op: "screen" });
-  seg7(g, "72:00", 540, 700, 0.92); g.font = "800 28px Montserrat"; g.fillStyle = "#e9c9a8"; g.textAlign = "center"; g.fillText("COUPURE DU CHAMP · DISTRICTS", 540, 885); g.textAlign = "left";
+  seg7(g, TS() < 0.55 ? "72:00" : "71:59", 540, 700, 0.92); g.font = "800 28px Montserrat"; g.fillStyle = "#e9c9a8"; g.textAlign = "center"; g.fillText("COUPURE DU CHAMP · DISTRICTS", 540, 885);   // le décompte démarre : 72:00 puis 71:59 g.textAlign = "left";
   crowd3q(g, { y0: 1040, s0: 0.8, s1: 2.1, backs: true, seed: 3, sparse: 0.2 });
   alarmWash(g, ph); alarmAll(g, 540, 400, 0.7, ph);
   hud(g, { valueRed: true }); finish(g, { bloom: 0.4, grade: ["#1a0606", "#ffb08a", 0.12] }); caption(g, ["D'ICI", "3", "JOURS,"], 2);
@@ -1274,8 +1274,8 @@ S.a29_heros_foule = g => {
 };
 
 // ---------- plans 13 à 16, 18 : passants au premier plan (flous), en plus des passants du monde 3D ----------
-function passersby(g, list, col) { list.forEach(([x, F, s, c], i) => { const wk = i % 3 !== 2, dir = i % 2 ? 1 : -1, xx = wk ? x + dir * TS() * 130 * s : x;
-  layer(g, q => actor(q, xx, F, s, { ...PASSANT, body: c || col, bodyDark: mul(c || col, 0.6), ring: c || col, arms: [[-1, 10], [1, 10]], walk: wk, ph: i * 1.3 }, { shadow: false }), { blur: 7 * s }); }); }
+function passersby(g, list, col) { list.forEach(([x, F, s, c], i) => { const wk = i % 3 !== 2, dir = i % 2 ? 1 : -1, xx = wk ? x + dir * (TS() - 1) * 300 * s : x;   // vitesse accordée à la cadence des pas (pas de glissement)
+  layer(g, q => actor(q, xx, F, s, { ...PASSANT, body: c || col, bodyDark: mul(c || col, 0.6), ring: c || col, arms: [[-1, 10], [1, 10]], walk: wk, ph: i * 1.3 }, { shadow: true }), { blur: 7 * s }); }); }   // ombre au sol : pieds posés
 const PASSANT = { ...HERO, beanie: false, pocket: false, strings: false };
 // ---------- v44 : rues vivantes (passants 2D flous en plus des passants du monde 3D) ----------
 const PD = ["#4a4640", "#3d4848", "#55524c", "#3a3f44", "#5a5048"], PR = ["#c9b48a", "#2b4a5a", "#e8e2d4", "#7a1f30", "#1a1a1c"];

@@ -31,7 +31,7 @@ function actor(g, x, F, s, outfit, o = {}) {
     o2.look = (o2.look || 0) + Math.sin(T * 0.8 + ph * 2) * 0.035;
     if (((T + ph * 1.7) % 3.1 + 3.1) % 3.1 < 0.12) o2.closed = true;
     if (o2.arms && !o2.handTo) o2.arms = o2.arms.map(([k, a], i) => [k, a + Math.sin(T * 1.6 + ph + i) * 3]);
-    if (o2.walk) { const w = T * 7.5 + ph; F -= Math.abs(Math.sin(w)) * 9 * s; o2.legs = [[-0.22, Math.sin(w) * 16], [0.22, -Math.sin(w) * 16]];
+    if (o2.walk) { const w = T * 5.4 + ph; F -= Math.abs(Math.sin(w)) * 4 * s; o2.legs = [[-0.22, Math.sin(w) * 16], [0.22, -Math.sin(w) * 16]];
       o2.arms = [[-1, -Math.sin(w) * 14 + 6], [1, Math.sin(w) * 14 - 6]]; }
     outfit = o2;
   }

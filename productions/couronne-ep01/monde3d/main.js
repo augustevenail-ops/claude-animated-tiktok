@@ -6,10 +6,13 @@ import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 import { buildWorld, neonSign, MAP } from "./world.js";
 import { addDetails } from "./details.js";
 import { SHOTS } from "./shots.js";
+import { addOutside, councilWindow } from "./outside.js";
 
 const scene = new THREE.Scene();
 const WD = buildWorld(scene), { r1, r2 } = WD;
 const LIFE = addDetails(scene, WD);
+const OUT = addOutside(scene);                                   // désert irradié (plan 10, vue aérienne)
+councilWindow(scene, 15.25, 95, 0);                              // fenêtre de la salle du Conseil, face est de la tour centrale (plan 6)
 const fog0 = scene.fog.clone(), bg0 = scene.background.clone();
 // panneaux néon (règle 1 sur le pignon de district, règle 2 sur la face pleine de la tour)
 const s1 = new THREE.Mesh(new THREE.PlaneGeometry(9, 4.5), new THREE.MeshBasicMaterial({ depthWrite: false, map: neonSign([["RÈGLE 1", "600 190px Oswald, Impact, sans-serif", 230], ["NE SORS JAMAIS DU DÔME.", "900 66px Montserrat, Arial Black, sans-serif", 380]]), transparent: true }));
@@ -64,21 +67,24 @@ window.render = (name, w, h) => {
 const EASE = { lin: u => u, inout: u => u * u * (3 - 2 * u), out: u => 1 - Math.pow(1 - u, 3), in: u => u * u };
 const curves = {};
 const curveOf = (k, pts) => curves[k] ||= (pts.length > 1 ? new THREE.CatmullRomCurve3(pts.map(p => new THREE.Vector3(...p)), false, "centripetal") : null);
-let compKey = null, comp, rpass, cam = new THREE.PerspectiveCamera(60, 9 / 16, 0.05, 6000);
-window.renderAt = (name, u, T, w, h) => {
+let compKey = null, comp, rpass, cam = new THREE.PerspectiveCamera(60, 9 / 16, 0.05, 20000);
+window.renderAt = (name, u, T, w, h, ts = 0) => {
   const s = SHOTS[name], e = (EASE[s.ease || "inout"])(Math.min(1, Math.max(0, u)));
   const P = s.path ? curveOf(name + "p", s.path).getPoint(e) : new THREE.Vector3(...s.pos);
   let L;
   if (s.ahead) { const c = curveOf(name + "p", s.path), q = c.getPoint(Math.min(1, e + 0.04)), d = q.clone().sub(c.getPoint(Math.max(0, e - 0.0001))); if (e > 0.96) d.copy(c.getTangent(1)); L = P.clone().add(d.normalize().multiplyScalar(30)); L.y -= s.pitch || 0; }
   else L = s.looks ? curveOf(name + "l", s.looks).getPoint(e) : new THREE.Vector3(...s.look);
-  cam.fov = s.fovs ? s.fovs[0] + (s.fovs[1] - s.fovs[0]) * e : s.fov; cam.aspect = w / h; cam.updateProjectionMatrix();
+  if (s.pull) { const k = Math.min(1, Math.max(0, (u - s.pull[0]) / (1 - s.pull[0]))); P.sub(L).multiplyScalar(1 + (s.pull[1] - 1) * k * k * (3 - 2 * k)).add(L); }   // dézoom final (hologrammes : dôme entier)
+  cam.fov = s.fovs ? s.fovs[0] + (s.fovs[1] - s.fovs[0]) * e : s.fov; cam.aspect = w / h; cam.near = s.near || 0.05; cam.updateProjectionMatrix();
   const sh = s.shake ?? 0.04;                                                         // caméra portée : légère vibration
   cam.position.copy(P).add(new THREE.Vector3(Math.sin(T * 7.1) * sh, Math.sin(T * 5.3 + 1) * sh, Math.sin(T * 6.2 + 2) * sh)); cam.up.set(0, 1, 0); cam.lookAt(L);
   if (s.roll) cam.rotateZ(Math.sin(T * 1.7) * s.roll + (s.bank ? s.bank * Math.sin(e * Math.PI) : 0));
-  LIFE.animate(T);
+  LIFE.animate(T, ts);
   const fl = (a, b) => { if (u < a) return 0; if (u > b) return 1; const k = (u - a) / (b - a); return (Math.sin(k * 90) > -0.2 ? 1 : 0.15) * (0.4 + 0.6 * k); };   // néon qui s'allume en grésillant
   s1.material.opacity = s.signOn ? fl(...s.signOn) : 1; s2.material.opacity = s.sign2On ? fl(...s.sign2On) : 1;
   scene.fog = s.fog ? new THREE.FogExp2(s.fog[0], s.fog[1]) : fog0; scene.background = s.bg ? new THREE.Color(s.bg) : bg0;
+  if (s.fogs) scene.fog = new THREE.FogExp2(s.fogs[0], s.fogs[1] * Math.pow(s.fogs[2] / s.fogs[1], e));    // brume qui se dissipe en prenant de la hauteur
+  OUT.group.visible = !!s.outside; if (s.outside) OUT.animate(T);
   const sc = s.holo ? (HOLO[s.holo] ||= holoScene(s.holo)) : scene;
   if (sc.userData.shrink) sc.userData.shrink.scale.setScalar(1 + ((MAP.R_WALL + 12) / MAP.R_DOME - 1) * EASE.inout(Math.min(1, u / 0.7)));
   const key = w + "x" + h + (s.holo ? "h" : "");

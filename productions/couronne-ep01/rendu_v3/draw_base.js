@@ -81,8 +81,10 @@ function caption(g, words, active, y = 1242) {         // Montserrat 900, blanc 
   if (tot > W - 2 * SAFE_X) { const k = (W - 2 * SAFE_X) / tot; fs = Math.floor(fs * k); sp *= k; g.font = `900 ${fs}px Montserrat`; ws = words.map(w => g.measureText(w).width); tot = ws.reduce((a, b) => a + b, 0) + sp * (words.length - 1); }   // tient dans le cadre
   let x = (W - tot) / 2;
   words.forEach((w, i) => {
-    g.shadowColor = "rgba(0,0,0,0.75)"; g.shadowBlur = 18; g.shadowOffsetY = 6;
-    g.fillStyle = i === active ? CAP_ORANGE : "#FFFFFF"; g.fillText(w, x, y); x += ws[i] + sp; });
+    g.shadowColor = "rgba(0,0,0,0.5)"; g.shadowBlur = 16; g.shadowOffsetX = 0; g.shadowOffsetY = 4;                 // halo sombre doux (lisibilité)
+    g.fillStyle = i === active ? CAP_ORANGE : "#FFFFFF"; g.fillText(w, x, y);
+    g.shadowColor = "rgba(0,0,0,0.45)"; g.shadowBlur = 2; g.shadowOffsetX = 3; g.shadowOffsetY = 5; g.fillText(w, x, y);   // ombre portée nette, très légère
+    x += ws[i] + sp; });
   g.restore();
 }
 // ---------- personnages (construction relevée planches 9, 13, 16, 17, 19) ----------
