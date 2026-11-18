@@ -67,11 +67,12 @@ export function addDetails(scene, W) {
   // ---------- passants ----------
   for (let k = -14; k <= 14; k++) for (let t = -470; t <= 470; t += 6) for (const side of [-5.5, 5.5]) for (const axis of [0, 1]) {
     const c = k * 34 + 17 + side + (rnd(k * 3 + t) - 0.5) * 2, x = axis ? c : t, z = axis ? t : c, s = k * 1000 + t * 7 + side * 3 + axis * 11;
-    if (inDist(x, z) && rnd(s) < 0.28) person(x, z, pDist, s);
+    if (inDist(x, z) && rnd(s) < 0.45) { person(x, z, pDist, s); if (rnd(s * 7) < 0.25) person(x + 0.7, z + 0.5, pDist, s + 1); }   // seuls ou par deux
+    if (inDist(x, z) && side > 0 && rnd(s * 13) < 0.06) person(axis ? c - 5.5 + (rnd(s * 17) - 0.5) * 6 : x, axis ? z : c - 5.5 + (rnd(s * 17) - 0.5) * 6, pDist, s + 2);   // traverse la rue
   }
   for (let k = -4; k <= 4; k++) for (let t = -116; t <= 116; t += 4) for (const side of [-6, 6]) for (const axis of [0, 1]) {
     const base = k === 0 ? 0 : k * 30 - Math.sign(k) * 15, c = base + side + (rnd(k + t) - 0.5) * 2, x = axis ? c : t, z = axis ? t : c, s = 9000 + k * 500 + t * 7 + side + axis * 13;
-    if (inCentre(x, z) && rnd(s) < 0.35) person(x, z, rnd(s * 5) < 0.06 ? [pGuard] : pRich, s);
+    if (inCentre(x, z) && rnd(s) < 0.6) person(x, z, rnd(s * 5) < 0.06 ? [pGuard] : pRich, s);
   }
 
   // ---------- districts : saleté sur les façades, affiches, tags, climatiseurs, tuyaux, poubelles, épaves, flaques, câbles ----------
