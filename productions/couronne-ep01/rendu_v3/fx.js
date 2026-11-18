@@ -29,6 +29,8 @@ function actor(g, x, F, s, outfit, o = {}) {
     F += Math.sin(T * 2.3 + ph) * 3.2 * s;
     o2.headDx = (o2.headDx || 0) + Math.sin(T * 1.1 + ph) * 4; o2.headDy = (o2.headDy || 0) + Math.sin(T * 2.3 + ph + 0.6) * 2.5;
     o2.look = (o2.look || 0) + Math.sin(T * 0.8 + ph * 2) * 0.035;
+    if (!o2.eyeLock) { const sg = Math.floor((T + ph * 3) / (1.4 + (ph % 1) * 0.9));                              // v8 : petits mouvements d'yeux (saccades), tenus 1,4 à 2,3 s
+      o2.look += (rnd(sg * 13.1 + ph) - 0.5) * 0.08; o2.eyeDy = (o2.eyeDy || 0) + (rnd(sg * 7.7 + ph * 2) - 0.5) * 0.05; }
     if (((T + ph * 1.7) % 3.1 + 3.1) % 3.1 < 0.12) o2.closed = true;
     if (o2.arms && !o2.handTo) o2.arms = o2.arms.map(([k, a], i) => [k, a + Math.sin(T * 1.6 + ph + i) * 3]);
     if (o2.walk) { const w = T * 5.4 + ph; F -= Math.abs(Math.sin(w)) * 4 * s; o2.legs = [[-0.22, Math.sin(w) * 16], [0.22, -Math.sin(w) * 16]];

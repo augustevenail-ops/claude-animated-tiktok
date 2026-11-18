@@ -114,6 +114,7 @@ const css = [["Montserrat", "800", "Montserrat-800.woff2"], ["Montserrat", "900"
   }
   ff.stdin.end(); await new Promise(r => ff.on("close", r)); await b.close(); await b3.close();
   if (AT) { fs.existsSync(tmp) && fs.unlinkSync(tmp); console.log("contrôle ok", ATDIR); return; }
+  if (args.includes("--novoice")) { fs.renameSync(tmp, OUT); console.log("morceau ok", OUT); return; }   // morceau muet (rendu découpé, assemblé par render_parts.sh)
   // voix + export 1080 et 2K (1440x2560)
   const voix = path.join(P, "voix_v9/voix_complete_v11.mp3"), dur = String((n1 - n0) / FPS);
   const mux = (o, extra) => new Promise(r => spawn("ffmpeg", ["-loglevel", "error", "-y", "-i", tmp, "-ss", String(T0), "-i", voix, ...extra, "-map", "0:v:0", "-map", "1:a:0", "-af", "apad", "-t", dur, "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", o], { stdio: "inherit" }).on("close", r));

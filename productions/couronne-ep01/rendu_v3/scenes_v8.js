@@ -66,7 +66,7 @@ S.b02_choc_chute = g => {
     q.fillStyle = "#0b1114"; q.fillRect(x - w / 2, y, w, 900); for (let r = 0; r < 10; r++) for (let c = 0; c < 3; c++) if (rnd(i * 50 + r * 3 + c) < 0.35) { q.fillStyle = rgba("#ffcf7a", 0.55); q.fillRect(x - w / 2 + 20 + c * (w - 40) / 3, y + 40 + r * 80, 18, 26); } }
   q.restore();
   const top = DROP - O;
-  if (top < H) { const P = mk(W, H), pq = P.getContext("2d"); chars02(pq); pq.globalCompositeOperation = "destination-in"; const m = pq.createLinearGradient(0, 0, 0, 700); m.addColorStop(0, "rgba(0,0,0,0)"); m.addColorStop(1, "rgba(0,0,0,1)"); pq.fillStyle = m; pq.fillRect(0, 0, W, H); q.drawImage(P, 0, top); }
+  if (top < H) { const P = mk(W, H), pq = P.getContext("2d"); chars02e(pq, yb - O - top, B02.x1 + tf * 40); pq.globalCompositeOperation = "destination-in"; const m = pq.createLinearGradient(0, 0, 0, 700); m.addColorStop(0, "rgba(0,0,0,0)"); m.addColorStop(1, "rgba(0,0,0,1)"); pq.fillStyle = m; pq.fillRect(0, 0, W, H); q.drawImage(P, 0, top); }
   const v = tf > 0 && !stopped ? (300 + 12000 * tf) / 30 : 0;
   if (v > 4) { const n = 5; g.globalAlpha = 1; g.drawImage(C, 0, 0); for (let i = 1; i < n; i++) { g.globalAlpha = 1 / (i + 1); g.drawImage(C, 0, -v * i / n * 0.6); } g.globalAlpha = 1; } else g.drawImage(C, 0, 0);
   const by = yb - O, bx = B02.x1 + tf * 40;
@@ -108,3 +108,25 @@ S.p04c_foule_discrete = g => {
 
 // plans 20-21 : une seule prise, le drone fonce vers la tour puis zoome sur la façade jusqu'à la règle 2
 S.m20_regle2_un = g => { bg3d(g, "d20r21_facade"); hud(g, { zone: "LE CENTRE" }); fin3d(g); };
+
+// plan 2 : personnages dont les yeux suivent l'oiseau qui tombe (en haut quand il arrive, puis vers le bas), byc = y de l'oiseau dans le cadre des personnages
+function chars02e(q, byc, bx) {
+  const HEAD = 1400, dy = Math.max(-0.24, Math.min(0.22, (byc - HEAD) / 1500)), hy = dy * 40;            // regard vertical + tête qui accompagne un peu
+  sky(q, [[0, "#070b0d"], [0.6, "#0f1a1e"], [1, "#040506"]]);
+  lifeDetails(q, 101); holoDome(q, 101);
+  layer(q, r => { r.fillStyle = "#1b1510"; r.fillRect(0, 1700, W, H - 1700); }, { blur: 2 });
+  crowdStanding(q);
+  const lk = x => Math.max(-0.16, Math.min(0.16, (bx - x) / 2200));
+  actor(q, 790, 2650, 1.8, { ...PERE, body: "#6e2d5e", bodyDark: "#43193a", ring: "#6e2d5e", ringW: 80, torsoW: 165, look: lk(790), eyeDy: dy, headDy: hy, eyeLock: true, arms: [[-1, 10], [1, 10]] }, { rim: "#cfe3ee", rimAng: -1.2, rimW: 7, key: "#dfe9ef", shadow: false, ink: 0 });
+  actor(q, 290, 2650, 1.8, { ...HERO, body: "#6e2d5e", bodyDark: "#43193a", ring: "#6e2d5e", ringW: 80, strings: false, torsoW: 165, look: lk(290), eyeDy: dy, headDy: hy, eyeLock: true, arms: [[-1, 10], [1, 10]] }, { rim: TEAL, rimAng: -1.57, rimW: 7, key: "#ffd9a0", shadow: false, ink: 0 });
+}
+
+// mouvement permanent : fines poussières qui dérivent devant chaque plan (très discrètes), ajoutées avant l'étalonnage
+{ const _finish = finish;
+  finish = (g, o) => { if (window.TT != null) { const T = window.TT;
+      g.save(); g.globalCompositeOperation = "screen";
+      for (let i = 0; i < 26; i++) { const sp = 12 + rnd(i * 3.3) * 26, x = ((rnd(i * 1.9) * (W + 200) + T * sp * (rnd(i) > 0.5 ? 1 : -0.6)) % (W + 200) + W + 200) % (W + 200) - 100,
+          y = ((rnd(i * 5.1) * H - T * sp * 0.5) % H + H) % H + Math.sin(T * 0.9 + i) * 14, r = 1.5 + rnd(i * 7) * 2.5;
+        g.fillStyle = rgba("#fff3dc", 0.10 + 0.10 * (0.5 + 0.5 * Math.sin(T * 2 + i))); g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); }
+      g.restore(); }
+    return _finish(g, o); }; }
