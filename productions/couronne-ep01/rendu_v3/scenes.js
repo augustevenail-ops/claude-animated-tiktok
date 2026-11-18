@@ -775,11 +775,11 @@ S.p02h_buste_vivant = g => {                              // image 2 v13
   actor(g, 290, 2650, 1.8, { ...HERO, body: "#6e2d5e", bodyDark: "#43193a", ring: "#6e2d5e", ringW: 80, strings: false, torsoW: 165, look: 0.0, arms: [[-1, 10], [1, 10]] }, { rim: TEAL, rimAng: -1.57, rimW: 7, key: "#ffd9a0", shadow: false, ink: 0 });
   // bonnet rouge replié : calotte à côtes qui convergent vers le haut, revers replié en bas (côtes plus foncées)
   const dome = () => { g.beginPath(); g.ellipse(290, 1362, 172, 160, 0, Math.PI, 2 * Math.PI); g.lineTo(462, 1372); g.lineTo(118, 1372); g.closePath(); };
-  g.save(); dome(); g.fillStyle = "#8c9462"; g.fill(); g.clip();
-  g.strokeStyle = "#7b8454"; g.lineWidth = 9; g.lineCap = "round";
+  g.save(); dome(); g.fillStyle = "#6e7650"; g.fill(); g.clip();
+  g.strokeStyle = "#5f6842"; g.lineWidth = 9; g.lineCap = "round";
   for (let k = 0; k <= 10; k++) { const x0 = 118 + k * 34.4; g.beginPath(); g.moveTo(x0, 1380); g.quadraticCurveTo(x0 + (290 - x0) * 0.4, 1260, 290 + (x0 - 290) * 0.08, 1180); g.stroke(); }   // côtes qui rejoignent le sommet
-  g.fillStyle = "#8c9462"; g.fillRect(100, 1318, 380, 60);                                               // revers replié
-  g.strokeStyle = "#7b8454"; g.lineWidth = 9;
+  g.fillStyle = "#6e7650"; g.fillRect(100, 1318, 380, 60);                                               // revers replié
+  g.strokeStyle = "#5f6842"; g.lineWidth = 9;
   for (let k = 0; k <= 16; k++) { const x0 = 118 + k * 22; g.beginPath(); g.moveTo(x0, 1318); g.lineTo(x0, 1378); g.stroke(); }   // côtes du revers
   g.restore();
   g.strokeStyle = "#050405"; g.lineWidth = 7; dome(); g.stroke();
@@ -800,11 +800,11 @@ S.p02i_sol_vivant = g => {                                // image 3 v13
   g.fillStyle = "rgba(0,0,0,0.4)"; g.beginPath(); g.ellipse(880, 1852, 90, 12, 0, 0, 7); g.fill();
   // bonnet rouge replié : calotte à côtes qui convergent vers le haut, revers replié en bas (côtes plus foncées)
   const dome = () => { g.beginPath(); g.ellipse(290, 1362, 172, 160, 0, Math.PI, 2 * Math.PI); g.lineTo(462, 1372); g.lineTo(118, 1372); g.closePath(); };
-  g.save(); dome(); g.fillStyle = "#8c9462"; g.fill(); g.clip();
-  g.strokeStyle = "#7b8454"; g.lineWidth = 9; g.lineCap = "round";
+  g.save(); dome(); g.fillStyle = "#6e7650"; g.fill(); g.clip();
+  g.strokeStyle = "#5f6842"; g.lineWidth = 9; g.lineCap = "round";
   for (let k = 0; k <= 10; k++) { const x0 = 118 + k * 34.4; g.beginPath(); g.moveTo(x0, 1380); g.quadraticCurveTo(x0 + (290 - x0) * 0.4, 1260, 290 + (x0 - 290) * 0.08, 1180); g.stroke(); }   // côtes qui rejoignent le sommet
-  g.fillStyle = "#8c9462"; g.fillRect(100, 1318, 380, 60);                                               // revers replié
-  g.strokeStyle = "#7b8454"; g.lineWidth = 9;
+  g.fillStyle = "#6e7650"; g.fillRect(100, 1318, 380, 60);                                               // revers replié
+  g.strokeStyle = "#5f6842"; g.lineWidth = 9;
   for (let k = 0; k <= 16; k++) { const x0 = 118 + k * 22; g.beginPath(); g.moveTo(x0, 1318); g.lineTo(x0, 1378); g.stroke(); }   // côtes du revers
   g.restore();
   g.strokeStyle = "#050405"; g.lineWidth = 7; dome(); g.stroke();
