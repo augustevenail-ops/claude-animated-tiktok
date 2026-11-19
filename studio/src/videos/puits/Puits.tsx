@@ -21,12 +21,11 @@ export const PUITS_FRAMES = TOTAL;
 type Post = { ink: boolean; lens: boolean; bloom: boolean; grade: boolean; audio: boolean; shadow: boolean; smap: number; dpr?: number; lensTaps: number; lensNear: number };
 const post = (): Post => ({ ink: true, lens: true, bloom: true, grade: true, audio: false, shadow: true, smap: 2048, lensTaps: 32, lensNear: 16, ...((getInputProps() as { post?: Partial<Post> }).post ?? {}) });
 const makeBloom = () => {
-  const b = new BloomEffect({ blendFunction: BlendFunction.ADD, intensity: 0.7, luminanceThreshold: 0.9, luminanceSmoothing: 0.2, mipmapBlur: true, levels: 5, radius: 0.6 });
+  const b = new BloomEffect({ blendFunction: BlendFunction.ADD, intensity: 0.95, luminanceThreshold: 0.84, luminanceSmoothing: 0.22, mipmapBlur: true, levels: 6, radius: 0.72 });
   const mip = b.mipmapBlurPass, setSize = mip.setSize.bind(mip);
   mip.setSize = (w: number, h: number) => setSize(Math.round((1920 * w) / Math.max(h, 1)), 1920);
   return b;
 };
-/** fins de plans (volet noir haut/bas de VIDEO_01) : chaque fin de sous-plan sauf la dernière avant le carton */
 /** sous-titres plus bas quand le plan montre un texte diégétique (stèle de la règle) */
 /** rendu partiel (composition PuitsPatch) : la prop d'entrée « frames » donne l'image de PuitsEp1 à rendre pour chaque image */
 const FMAP = (getInputProps() as { frames?: number[] }).frames;

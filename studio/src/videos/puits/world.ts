@@ -391,8 +391,8 @@ export class World {
     const dusk = lk === 1, flick = (i: number) => 0.8 + 0.2 * Math.sin(t * 13 + i * 2) * Math.sin(t * 5.3 + i);
     const lampK = dusk ? 1 : 0.75;
     this.lamps.forEach((lg, i) => { (lg.material as THREE.MeshBasicMaterial).opacity = lampK * flick(i); lg.lookAt(cam.position); });
-    this.pools.forEach((po, i) => { (po.material as THREE.MeshBasicMaterial).opacity = (dusk ? 0.42 : 0.24) * (0.9 + 0.1 * flick(i)); });
-    this.cones.forEach((cn) => { (cn.material as THREE.MeshBasicMaterial).opacity = dusk ? 0.06 : 0.035; });
+    this.pools.forEach((po, i) => { (po.material as THREE.MeshBasicMaterial).opacity = (dusk ? 0.58 : 0.3) * (0.9 + 0.1 * flick(i)); });
+    this.cones.forEach((cn) => { (cn.material as THREE.MeshBasicMaterial).opacity = dusk ? 0.12 : 0.06; });
     this.awnings.forEach((a, i) => { a.rotation.x = 0.03 * Math.sin(t * 2.3 + i); });
     (this.deepGlow.material as THREE.MeshBasicMaterial).opacity = id === 18 ? 0.25 + 0.15 * Math.sin(t * 3) : 0.12;
     // seau et corde
@@ -421,8 +421,8 @@ export class World {
       return [x0 + a * 6, 8 + a * 30, z0 + (r(2) - 0.5) * 3]; });
     // ---------- toupie ----------
     this.top.visible = id === 4;
-    if (id === 4) { const fall = kc === 3 ? smooth(cu * 1.6) : 0, roll = kc === 3 ? smooth((cu - 0.4) * 2) * 0.5 : 0;
-      this.top.position.set(BRO_STREET[0] + 0.5 + roll, 0, BRO_STREET[2] + 0.35 + roll * 0.4); this.top.rotation.set(0, t * (kc === 3 ? 22 * (1 - fall) : 22), fall * 1.45, "YXZ"); }
+    if (id === 4) { const fall = smooth((t - tW(35) + 0.25) / 0.55), roll = smooth((t - tW(35) - 0.3) / 0.6) * 0.5;   // la toupie tombe sur le clic du mix (W(35) + 0,3 s)
+      this.top.position.set(BRO_STREET[0] + 0.5 + roll, 0, BRO_STREET[2] + 0.35 + roll * 0.4); this.top.rotation.set(0, t * 22 * (1 - fall), fall * 1.45, "YXZ"); }
     // ---------- sac ----------
     this.bag.visible = id === 13 || (id === 14 && kc > 0);
     // ---------- personnages ----------
@@ -458,10 +458,10 @@ export class World {
     if (id === 4) {                                                                       // le marché figé : marchands, porteuses de jarres, ton frère
       STALLS.forEach(([x, z], i) => place(`m${i}`, CROWD[(i * 3) % CROWD.length], [x + Math.sign(x) * -0.2, 0, z + 1.6], { expr: kc === 0 ? "worry" : "calm", look: -Math.sign(x) * 0.8 }));
       [[-1.2, 42], [1.0, 38.5], [-0.8, 31], [2.2, 44.5], [-2.0, 35.6]].forEach(([x, z], i) => place(`p${i}`, { ...CROWD[(i * 7 + 2) % CROWD.length], prop: i % 2 ? undefined : "jar" }, [x, 0, z], { expr: "worry", look: Math.sin(i) * 0.7 }));
-      place("BRO", LOOK.BRO, BRO_STREET, { expr: kc >= 2 ? "worry" : "calm", look: kc >= 2 ? -0.6 : 0.4, blink: false }, KID_S);
+      place("BRO", LOOK.BRO, BRO_STREET, { expr: t > tW(33) ? "worry" : "calm", look: t > tW(33) ? -0.6 : 0.4, blink: false }, KID_S);
       place("kid0", KIDS[0], [BRO_STREET[0] - 0.9, 0, BRO_STREET[2] + 0.6], { expr: "worry", look: 0.5 }, KID_S * 0.95);
     }
-    if (id === 6 && kc === 2) [[-0.9, 1], [0.9, -1]].forEach(([x, s]) => { for (let j = 0; j < 7; j++) place(`q${j}`, { ...CROWD[(j * 3 + (s > 0 ? 1 : 4)) % CROWD.length], prop: "jar" }, [x, 0, 8.5 + j * 2.1], { expr: "calm", look: s * 0.3 }); });
+    if (id === 6 && kc === 1) [[-0.9, 1], [0.9, -1]].forEach(([x, s]) => { for (let j = 0; j < 7; j++) place(`q${j}`, { ...CROWD[(j * 3 + (s > 0 ? 1 : 4)) % CROWD.length], prop: "jar" }, [x, 0, 8.5 + j * 2.1], { expr: "calm", look: s * 0.3 }); });
     if (id === 8 && kc === 0) elders([0.3, 0, -0.3], "frown");
     if (id === 9 && kc === 1 && u > 0.55 && u < 0.78) card("deephand", drawDeepHand, [0, -7.5 + 1.5 * smooth((u - 0.55) * 4), 0], 1.4, true);
     if (id === 10) { const back = kc === 1 ? smooth(cu * 2) * 0.6 : 0; place("K", LOOK.K, [0.95 + back * 0.4, STEP_H, 1.85 + back], { expr: kc === 1 ? "fear" : "calm", look: -0.8 }, KID_S);
@@ -479,8 +479,7 @@ export class World {
     }
     if (id === 13) place("CH", LOOK.CH, CHIEF, { expr: "frown", prop: null });
     if ((id === 12 && kc === 1) || (id === 15 && kc === 0) || (id === 19 && kc !== 1) || id === 20 || (id === 3 && kc === 1)) fgSil(id === 20 ? [-0.75, 0.8] : [-0.62, 0.66]);
-    if (id === 14 && kc === 1) card("hand_dip", (p) => drawHand(p, false), [BAG[0] + 0.02, BAG[1] - 1.177 * 0.3 + 0.1 - 0.16 * smooth(cu * 2), BAG[2] + 0.1], 0.3);
-    if (id === 14 && kc === 2) card("hand_open", (p) => drawHand(p, true), [BAG[0], BAG[1] - 1.09 * 0.24 + 0.1, BAG[2] + 0.3], 0.24);
+    if (id === 14 && kc === 1) card("hand_open", (p) => drawHand(p, true), [BAG[0], BAG[1] - 1.09 * 0.24 + 0.1, BAG[2] + 0.3], 0.24);
     if (id === 15) {
       if (kc === 0) { crowd(RING_A, "worry", 96); place("Y", LOOK.Y, YOU, { expr: "shock", blink: false }); }
       else { const lean = kc >= 1 ? 0.12 * smooth(cu * 2) : 0;
