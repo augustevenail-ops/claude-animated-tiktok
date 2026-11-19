@@ -1,88 +1,75 @@
-# Le Puits — épisode 1 : script v1 (2026-11-19, à valider)
+# Le Puits — épisode 1 : script v2 (2026-11-19, à valider)
 
-Série : *Le Puits*. Oasis au milieu du désert rouge, cercle de pierres blanches, un puits. Narration « tu », voix clonée Fish Audio.
-≈ 230 mots ≈ 75 s. Règles amenées une par une dans le récit (jamais listées d'affilée). Les Anciens ne sont **pas nommés** :
-on ne voit que trois silhouettes à lanternes, puis une voix âgée à la toute fin.
+Série : *Le Puits*. Immense oasis (10 000 habitants) au milieu du désert rouge, un seul puits. Narration « tu », voix clonée Fish Audio.
+≈ 200 mots ≈ 65-70 s. L'épisode 1 **présente l'univers** : le héros ne descend pas. v1 (descente du héros) : historique git.
 
-## Mystère et logique
-- Ce qu'on croit : l'eau vient de « Celui d'en bas », un monstre au fond du puits ; quand l'eau baisse, un enfant tiré au sort lui est offert.
-- Le signal : ton petit frère (8 ans) promet de toquer deux fois s'il n'y a pas de monstre. Il toque deux fois.
-- Ce qu'on découvre : au fond, pas de monstre, une vanne rouillée encore mouillée (quelqu'un coupe et rend l'eau) et les petites traces
-  de ton frère qui partent dans un tunnel vers des lumières lointaines. Qui sont les trois silhouettes, et où mène le tunnel : épisode 2.
-- Règles (amenées au fil de l'histoire) : 1. personne ne franchit le cercle de pierres ; 2. quand l'eau baisse, la pierre noire désigne qui descend ;
-  3. une fois la corde coupée, on ne prononce plus jamais son nom.
-- Choix : remonter dire la vérité au village (le couvercle vient d'être refermé) / suivre ton frère dans le tunnel.
-- « Celui d'en bas » n'existe peut-être pas, mais on le **montre** comme le village l'imagine : fresques sur les murs de terre, ombre dans le puits
-  dans les plans d'accroche et de légende (silhouette lumineuse, sans yeux, bras trop longs). Le spectateur doute jusqu'au « toc toc ».
+## Fond de la série (non dit dans l'ép. 1)
+- Les Anciens contrôlent le puits et coupent eux-mêmes l'eau (vanne au fond) : **un peuple qui dépend de l'eau obéit**.
+  « Celui d'en bas » est leur mensonge ; le tirage entretient la peur. Révélé au fil des épisodes suivants.
+- Ép. 1 : on montre seulement les Anciens comme gardiens respectés du puits ; le seul indice est le « toc toc ».
+
+## Structure
+Imagine → la musique du tirage (son diégétique : tambour lent + long cor depuis la tour du puits) → tout le monde se fige
+→ l'oasis, 10 000 personnes, un puits → Celui d'en bas → règle (amenée dans le récit) → le seau de sable → tirage → le petit frère
+→ promesse « toc toc » → descente, corde coupée → toc toc (rapide) → personne n'a compris, sauf toi → choix.
 
 ## Script à lire (une phrase par ligne)
 ```
-Toc… toc.
-Ton petit frère est au fond du puits. Et il vient de te dire que le monstre n'existe pas.
 Imagine.
-Tu vis dans une oasis perdue au milieu du désert rouge.
-Quelques maisons de terre, des palmiers, et au centre, un puits.
-Tout autour, un cercle de pierres blanches. Personne ne le franchit. On dit qu'au-delà, le désert rend fou.
-L'eau du puits, on la doit à Celui d'en bas.
-Et cette année, le seau remonte plein de sable.
-Alors, comme chaque fois que l'eau baisse, on tire une pierre dans un sac.
-La pierre noire désigne celui qui descendra porter l'offrande.
-Ton petit frère plonge la main dans le sac… Elle est noire.
-Cette nuit-là, il te chuchote : « S'il n'y a pas de monstre en bas… je toquerai deux fois. »
-À l'aube, on l'attache à la corde. Il descend dans le noir. Puis on coupe la corde.
-Ici, quand la corde est coupée, plus personne ne prononce son nom.
-Tu restes penché au bord. Une minute. Dix.
+Tu vis dans une oasis, au milieu du désert. Et quand cette musique retentit…
+ça veut dire que quelqu'un va devoir descendre.
+Tout le monde arrête de respirer. Même ton petit frère arrête de jouer.
+Ton oasis est immense. Plus de dix mille personnes.
+Pas de rivière. Pas de pluie. Toute la ville dépend d'un seul puits.
+Personne ne sait ce qu'il y a au fond.
+Les Anciens disent qu'il y vit Celui d'en bas. C'est lui qui donne l'eau.
+Et quand l'eau baisse… c'est qu'il a faim.
+Personne n'a le droit de regarder au fond du puits. Celui qui regarde descend le prochain.
+Ce matin, le seau est remonté plein de sable.
+Alors, sur la grande place, chaque enfant plonge la main dans un sac de pierres blanches.
+Une seule est noire.
+Ton petit frère plonge la main… Elle est noire.
+Avant qu'on l'attache à la corde, il se penche vers toi et chuchote :
+« S'il n'y a pas de monstre en bas… je toquerai deux fois. »
+Il descend dans le noir. Les Anciens coupent la corde.
+Silence.
 Toc… toc.
-Le soir même, l'eau revient. Claire. Fraîche.
-Et cette nuit-là, tu vois trois silhouettes, lanternes à la main, se glisser jusqu'au puits.
-Tu attends qu'elles repartent… et tu descends.
-Au fond, pas de monstre.
-Juste une grosse vanne rouillée. Encore mouillée.
-Et des petites traces de pas qui s'enfoncent dans un tunnel.
-Sur la paroi, à la craie : une flèche. Et deux traits.
-Au bout du tunnel, très loin, des lumières.
-Au-dessus de toi, une voix âgée murmure : « Encore un. » Et on referme le couvercle.
-Alors, tu remontes dire la vérité au village, ou tu suis ton frère dans le tunnel ? Dis-le en commentaire.
+Personne ne réagit. Personne n'a compris ce bruit… à part toi.
+Alors, tu révèles à tout le monde ce que tu viens d'apprendre, ou tu te tais ? Dis-le en commentaire.
 OUTRO: Abonne-toi pour l'épisode deux.
 ```
-Balises Fish : accroche (« Toc… toc. » + phrase 2) `(scared)(whispering)` ; chuchotement du frère `(whispering)` ; tout le reste `(serious)(soft tone)`.
-Les « toc » de l'accroche et de la ligne 16 sont aussi des bruitages (deux coups sourds sur la pierre, avec écho de puits).
-Cartes A/B : **A « REMONTER »** (vert) / **B « LE TUNNEL »** (rouge).
+Balises Fish : « Imagine. » et la ligne 2-3 `(serious)(soft tone)` (pas d'accroche chuchotée : l'ouverture se fait sur « Imagine » + la musique) ;
+chuchotement du frère `(whispering)` ; « Toc… toc. » `(whispering)` ; tout le reste `(serious)(soft tone)`.
+Les « toc » sont doublés au mix par deux coups sourds sur la pierre, avec écho de puits.
+Cartes A/B : **A « RÉVÉLER »** (vert) / **B « SE TAIRE »** (rouge).
 
 ## Plans (temps indicatifs, recalés sur `words.json` ; ~59 sous-plans au montage)
-Palette : désert rouge-orangé saturé le jour, nuit bleu profond, lanternes et feux ambre, eau turquoise, craie blanche, fond du puits vert-bleu froid.
-HUD : `OASIS · JOUR 1` puis `NUIT`, compteur `EAU : 12 %` qui tombe, puis remonte à `100 %`.
+Palette : désert rouge-orangé saturé, ciel cobalt, palmiers vert vif, tissus colorés (indigo, safran, grenat), eau turquoise,
+nuit bleu profond, lanternes ambre ; puits = pierre ocre et gouffre noir-vert. HUD : `OASIS · 10 000 HABITANTS`, compteur `EAU : 12 %`.
 | # | ≈ s | Phrase | Image / caméra / son |
 |---|---|---|---|
-| 1 | 0-1,5 | Toc… toc. | Nuit. **Plongée verticale** dans le puits, cercle de lune au bout ; deux coups sourds qui résonnent ; la caméra tombe d'un cran à chaque « toc ». |
-| 2 | 1,5-5 | Ton petit frère est au fond… le monstre n'existe pas. | Toi penché au bord, lanterne, visage éclairé par en dessous ; **zoom éclair** sur tes yeux ; dézoom : au fond, l'ombre d'une longue main… puis plus rien. Flash 2 images. |
-| 3 | 5-6 | Imagine. | Noir → lever de soleil rouge sur les dunes. |
-| 4 | 6-9 | Une oasis perdue au milieu du désert rouge. | **Drone** très haut qui descend vers une tache verte minuscule au milieu de dunes infinies, brume de chaleur. |
-| 5 | 9-12 | Maisons de terre, palmiers, et au centre, un puits. | **Drone rasant** entre les palmiers et les toits de terre, linge qui sèche, chèvres ; finit en orbite autour du puits en pierre. |
-| 6 | 12-17 | Un cercle de pierres blanches… le désert rend fou. | Plongée : l'anneau parfait de pierres blanches autour du village ; ras du sol sur une pierre, un enfant qui recule le pied ; au-delà, dunes et mirage. Texte léger « RÈGLE 1 ». |
-| 7 | 17-19,5 | L'eau du puits, on la doit à Celui d'en bas. | Fresque peinte sur un mur de terre : silhouette blanche géante, sans yeux, bras trop longs, enfants à ses pieds ; travelling lent. Note « tiiin ». |
-| 8 | 19,5-22 | Le seau remonte plein de sable. | Gros plan de la poulie qui grince, seau qui monte… sable qui coule. HUD `EAU : 12 %`. |
-| 9 | 22-25 | On tire une pierre dans un sac. | Place du village au crépuscule rouge, enfants en ligne, sac de toile ; visages inquiets (cernes violets). |
-| 10 | 25-28 | La pierre noire désigne celui qui descendra. | Gros plan d'une main d'adulte qui tient le sac ouvert ; dans le noir du sac, des pierres blanches et une noire. Texte « RÈGLE 2 ». |
-| 11 | 28-31,5 | Ton petit frère plonge la main… Elle est noire. | Gros plan de sa petite main ; **snap** sur le poing qui s'ouvre : pierre noire. Flash + impact. Puis ton visage, choc. |
-| 12 | 31,5-36 | « S'il n'y a pas de monstre… je toquerai deux fois. » | Nuit, intérieur de maison de terre, bougie ; ton frère et toi sur une natte ; il frappe doucement deux fois sur le sol pour montrer ; lent push-in. |
-| 13 | 36-40,5 | À l'aube… on coupe la corde. | Aube orange : on l'attache, il descend (plongée dans le puits, sa lanterne rapetisse) ; gros plan d'un couteau qui tranche la corde. |
-| 14 | 40,5-43,5 | Plus personne ne prononce son nom. | Les villageois qui tournent le dos un par un ; sa natte roulée. Texte « RÈGLE 3 ». |
-| 15 | 43,5-46 | Tu restes penché au bord. Une minute. Dix. | Toi seul au bord du puits ; ombre qui tourne au sol (temps qui passe) ; vent, sable. |
-| 16 | 46-48 | Toc… toc. | Silence total ; **zoom très lent** dans le noir du puits ; deux coups sourds. Ton visage s'illumine. |
-| 17 | 48-50,5 | L'eau revient. Claire. Fraîche. | Seau qui remonte plein d'eau turquoise ; villageois qui boivent ; HUD `EAU : 100 %`. |
-| 18 | 50,5-54,5 | Trois silhouettes, lanternes à la main. | Nuit bleue, **drone** au-dessus des toits : trois lanternes ambre qui glissent vers le puits ; toi caché derrière un mur. |
-| 19 | 54,5-57 | …et tu descends. | Tu enjambes la margelle ; descente le long de la paroi (caméra qui te suit vers le bas). |
-| 20 | 57-58,5 | Au fond, pas de monstre. | Fond du puits vert-bleu, flaque, ta lanterne ; panoramique 360° rapide : rien. |
-| 21 | 58,5-61 | Une grosse vanne rouillée. Encore mouillée. | Gros plan de la vanne, gouttes qui tombent, symbole gravé dessus. |
-| 22 | 61-64 | Des petites traces de pas… un tunnel. | Ras du sol : petites empreintes dans la boue qui partent vers une arche noire. |
-| 23 | 64-67 | Une flèche. Et deux traits. | Craie blanche sur la pierre : flèche + deux traits ; push-in. |
-| 24 | 67-69,5 | Au bout du tunnel, des lumières. | Travelling avant dans le tunnel, au loin des points de lumière dorée. |
-| 25 | 69,5-74 | « Encore un. » Et on referme le couvercle. | **Contre-plongée** depuis le fond : en haut, le cercle de ciel, une lanterne, une silhouette penchée ; le couvercle glisse, le cercle se réduit à un croissant. Crac sourd. |
-| 26 | 74-79 | Tu remontes… ou tu suis ton frère ? | Toi au fond, entre le rai de lumière en haut et le tunnel ; cartes A « REMONTER » / B « LE TUNNEL ». |
-| 27 | 79-82 | Abonne-toi pour l'épisode deux. | Carton final : l'oasis vue du ciel la nuit, cercle de pierres blanches, puits au centre qui luit faiblement ; « LE PUITS — ÉPISODE 1 → 2 ». |
+| 1 | 0-1,2 | Imagine. | **Drone** au ras des dunes rouges au lever du soleil, qui file vers l'horizon. |
+| 2 | 1,2-4,5 | Tu vis dans une oasis… Et quand cette musique retentit… | Le drone passe la crête : l'oasis apparaît, immense ; **la musique démarre** (tambour + cor) ; coupe sur le cor soufflé en haut de la tour du puits. |
+| 3 | 4,5-7 | …quelqu'un va devoir descendre. | **Zoom éclair** sur la bouche noire du puits ; flash 2 images. |
+| 4 | 7-10,5 | Tout le monde arrête de respirer. Même ton petit frère arrête de jouer. | Marché figé : marchands, porteurs d'eau, têtes qui se tournent ; gros plan de ton petit frère, sa toupie qui tombe et roule. |
+| 5 | 10,5-13,5 | Ton oasis est immense. Plus de dix mille personnes. | **Grand drone** qui monte : toits plats, ruelles, voiles colorées, palmeraie à perte de vue ; HUD `10 000 HABITANTS`. |
+| 6 | 13,5-17 | Pas de rivière. Pas de pluie. Un seul puits. | Plongée : toutes les ruelles convergent vers la grande place et le puits au centre ; files de gens avec des jarres. |
+| 7 | 17-19 | Personne ne sait ce qu'il y a au fond. | **Plongée verticale** dans le puits, la lumière disparaît dans le noir. |
+| 8 | 19-23 | Les Anciens disent… Celui d'en bas. C'est lui qui donne l'eau. | Trois Anciens en robes blanches, barbe, bâtons, sur les marches du puits (contre-plongée, dignes) ; fresque d'une silhouette blanche géante, sans yeux, bras trop longs. Note « tiiin ». |
+| 9 | 23-26 | Quand l'eau baisse… c'est qu'il a faim. | Gros plan de la margelle : trait d'eau sec sur la pierre ; ombre d'une longue main dans le noir du puits (une seule image). Crac sourd. |
+| 10 | 26-30,5 | Personne n'a le droit de regarder au fond… descend le prochain. | Un enfant s'approche du bord, sa mère le tire en arrière ; ras du sol sur les pieds qui reculent. Texte « RÈGLE ». |
+| 11 | 30,5-33 | Le seau est remonté plein de sable. | Poulie qui grince, seau qui monte, sable qui coule ; HUD `EAU : 12 %`. |
+| 12 | 33-37 | Sur la grande place, chaque enfant plonge la main… | Crépuscule rouge ; **drone** latéral le long de la file d'enfants ; un Ancien tient le sac ; foule silencieuse autour. |
+| 13 | 37-38,5 | Une seule est noire. | Gros plan dans le sac : pierres blanches, une noire. |
+| 14 | 38,5-42 | Ton petit frère plonge la main… Elle est noire. | Sa petite main ; **snap** sur le poing qui s'ouvre : pierre noire ; flash + impact ; ton visage, choc (cernes, sourcils inversés). |
+| 15 | 42-47,5 | Avant qu'on l'attache… « je toquerai deux fois. » | Gros plan à deux : il se penche à ton oreille, lanterne ; il tapote deux fois sur ta main ; push-in lent. |
+| 16 | 47,5-51 | Il descend dans le noir. Les Anciens coupent la corde. | Plongée : sa lanterne qui rapetisse dans le puits ; gros plan du couteau de l'Ancien qui tranche la corde ; la corde tombe. |
+| 17 | 51-52,5 | Silence. | Plan large figé de la foule autour du puits ; plus aucun son, juste le vent. |
+| 18 | 52,5-54,5 | Toc… toc. | **Zoom lent** dans le noir du puits ; deux coups sourds qui résonnent. |
+| 19 | 54,5-59 | Personne ne réagit… à part toi. | Travelling latéral sur les visages neutres de la foule ; la caméra s'arrête sur toi, yeux grands ouverts ; puis les Anciens qui échangent un regard (indice). |
+| 20 | 59-65 | Tu révèles… ou tu te tais ? | Toi au premier plan, la foule et les Anciens derrière, le puits au centre ; cartes A « RÉVÉLER » / B « SE TAIRE ». |
+| 21 | 65-68 | Abonne-toi pour l'épisode deux. | Carton final : l'oasis vue du ciel la nuit, lanternes, le puits au centre comme un œil noir ; « LE PUITS — ÉPISODE 1 → 2 ». |
 
 ## Points ouverts
-1. Durée ≈ 75-80 s (cible 68 s) : coupes possibles « Le soir même, l'eau revient. Claire. Fraîche. » ou « Ici, quand la corde… ».
-2. « Encore un. » à la fin : garder (indice sur les Anciens) ou finir seulement sur le couvercle ?
-3. Montrer « Celui d'en bas » en fresque et ombre au début (on doute), ou ne jamais le montrer ?
+1. La musique du tirage : tambour lent + long cor (proposition), ou autre instrument (flûte, chant) ?
+2. Les Anciens échangent un regard après le « toc toc » (plan 19) : garder cet indice, ou ne rien laisser voir ?
