@@ -18,6 +18,7 @@ db = lambda v: 10 ** (v / 20)
 dec = lambda p: np.frombuffer(subprocess.run(["ffmpeg", "-v", "error", "-i", p, "-ac", "1", "-ar", str(SR), "-f", "f32le", "-"], capture_output=True).stdout, np.float32).astype(float)
 # v2 (2026-11-19) : nouvelle voix d'enfant au niveau du narrateur, « Toc… toc » parlé retiré
 v = dec(os.path.join(VD, "voice_v2.wav")); voice = np.zeros(N); i0 = int(OFF * SR); voice[i0:i0 + len(v)] = v[: N - i0]
+v_k0, v_k1 = int((44.98 + OFF) * SR), int((words[168]["s"] - 0.03 + OFF) * SR); voice[v_k0:v_k1] *= 0.9   # réplique de l'enfant -10 % (retour utilisateur)
 sp = np.zeros(N, bool)
 for w in words: sp[int((w["s"] + OFF) * SR):min(N, int((w["e"] + OFF) * SR))] = True
 rms = lambda x: 20 * np.log10(np.sqrt(np.mean(x ** 2)) + 1e-9); vref = rms(voice[sp])
@@ -168,11 +169,12 @@ def knock(t0, g_db):
            + 0.4 * lowp(rng.standard_normal(m), 900) * np.exp(-tt / 0.012)
            + 0.7 * np.sin(2 * np.pi * 820 * tt) * np.exp(-tt / 0.008)
            + 0.9 * np.sin(2 * np.pi * 180 * tt) * np.exp(-tt / 0.07))                                      # corps du coup : toc FORT (retour utilisateur)                                     # attaque boisée : on entend « toc »
+    hit = np.tanh(3.0 * hit / np.abs(hit).max())                                                      # saturé : plus fort à crête égale
     x = hit.copy()
     for dly, gg in [(0.07, 0.5), (0.15, 0.36), (0.26, 0.24), (0.4, 0.15), (0.58, 0.09), (0.8, 0.05)]:   # écho dans le conduit de pierre
         s = int(dly * SR); x[s:] += lowp(hit[: m - s], 600) * gg
     put(x, t0, g_db, 0.002, ref_len=int(0.06 * SR))
-knock(W(179) - 0.03, 9); knock(W(180) - 0.03, 9)                  # vrais coups (le narrateur ne les dit plus)
+knock(W(179) - 0.03, 14); knock(W(180) - 0.03, 14)                  # vrais coups (le narrateur ne les dit plus)
 
 # ---------------- coupes rapides : petit souffle à chaque changement de plan ----------------
 # souffles de transition retirés (retour utilisateur : trop forts, entendus tout le temps) -> notes tenues de tension (« tiiin »)
