@@ -11,8 +11,8 @@ import { LensBlurEffect } from "../bridge/lensblur";
 import { GradeEffect } from "../bridge/grade";
 
 import { World } from "./world";
-import { PuitsHud, BarWipe, Question, PuitsTitle } from "./Habillage";
-import { TOTAL, FPS, WORDS, shotAt, dofAt, CHOICE_AT, TITLE_AT, LIGHT, ROLE, waterAt, clockAt, CUTLIST, cutAt, isFpv } from "./story";
+import { PuitsHud, Question, PuitsTitle } from "./Habillage";
+import { TOTAL, FPS, WORDS, shotAt, dofAt, CHOICE_AT, TITLE_AT, LIGHT, ROLE, waterAt, clockAt, CUTLIST, cutAt, isFpv, zoomK } from "./story";
 import { Captions, captionGroups, useFonts, KARAOKE } from "../shared/overlay";
 const GROUPS = captionGroups(WORDS);
 import { GRADES } from "./look";
@@ -27,13 +27,15 @@ const makeBloom = () => {
   return b;
 };
 /** fins de plans (volet noir haut/bas de VIDEO_01) : chaque fin de sous-plan sauf la dernière avant le carton */
-const ENDS = CUTLIST.filter((c) => !isFpv(c.sid, c.k) || (c.sid === 2 && c.k === 0)).map((c) => c.b).filter((b) => b < Math.round(TITLE_AT * FPS));
 /** sous-titres plus bas quand le plan montre un texte diégétique (stèle de la règle) */
+/** rendu partiel (composition PuitsPatch) : la prop d'entrée « frames » donne l'image de PuitsEp1 à rendre pour chaque image */
+const FMAP = (getInputProps() as { frames?: number[] }).frames;
+const useF = () => { const i = useCurrentFrame(); return FMAP ? FMAP[Math.min(i, FMAP.length - 1)] : i; };
 const capTop = (f: number) => { const c = cutAt(f); return ROLE[c.sid] === 10 && c.k === 0 ? 87 : 64; };
 const fwd = new THREE.Vector3(), fpt = new THREE.Vector3();
 
 const Inner: React.FC = () => {
-  const f = useCurrentFrame();
+  const f = useF();
   const { camera, scene, invalidate } = useThree();
   const on = useMemo(post, []);
   const world = useMemo(() => { const w = new World(); w.sun.castShadow = on.shadow; w.sun.shadow.mapSize.set(on.smap, on.smap); return w; }, [on]);
@@ -61,7 +63,8 @@ const Inner: React.FC = () => {
   cam.getWorldDirection(fwd);
   if (d.focus) fpt.set(...d.focus); else fpt.copy(target);
   fx.lens.focus = Math.max(0.3, fpt.sub(cam.position).dot(fwd));
-  fx.lens.cInf = d.cInf;
+  // retour utilisateur : pas de gros flou pendant le dézoom serré du début de plan (le flou revient quand le cadrage se pose)
+  fx.lens.cInf = d.cInf * Math.min(1, zoomK(f) / 0.9) ** 2;
   useEffect(() => { // rendu à la demande : une seule passe complète par image
     const h = delayRender(`frame ${f}`); let done = false;
     const finish = () => { if (!done) { done = true; continueRender(h); } };
@@ -76,7 +79,7 @@ const GRAIN = "data:image/svg+xml;utf8," + encodeURIComponent("<svg xmlns='http:
 
 export const PuitsEp1: React.FC = () => {
   useFonts();
-  const f = useCurrentFrame(), t = f / FPS;
+  const f = useF(), t = f / FPS;
   const on = post();
   return (
     <AbsoluteFill style={{ background: "#04050a" }}>
@@ -87,7 +90,6 @@ export const PuitsEp1: React.FC = () => {
       {t < TITLE_AT ? <PuitsHud clock={clockAt(t)} place={LIGHT[ROLE[shotAt(f).id]] === 1 ? "GRANDE PLACE · NUIT" : "OASIS · PUITS CENTRAL"} label="EAU DU PUITS" count={`${waterAt(t)} %`} alert={waterAt(t) < 20} /> : null}
       {t < TITLE_AT ? <Question t={t} at={CHOICE_AT - 0.5} q={["TU LE RÉVÈLES…", "OU TU TE TAIS ?"]} a="JE LE RÉVÈLE" b="JE ME TAIS" ta={WORDS[194].s} tb={WORDS[206].s} /> : null}
       {t < TITLE_AT ? <Captions t={t} groups={GROUPS} karaoke={KARAOKE} top={capTop(f)} shadow={2} pop={0.05} /> : null}
-      <BarWipe f={f} ends={ENDS} />
       <PuitsTitle t={t} at={TITLE_AT} title="LE PUITS" count="EAU DU PUITS · 12 %" />
       {on.audio ? <Audio src={staticFile("puits/mix.wav")} /> : null}
     </AbsoluteFill>

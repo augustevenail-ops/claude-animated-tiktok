@@ -160,6 +160,11 @@ export const camAt = (sid: number, f: number): Cam => {
   const a = isFpv(sid, k) ? 0 : c0.far > 2000 ? 0.05 : 0.02, n = f * 0.021 + sid * 3.1;   // caméra portée
   return { ...c0, look: [c0.look[0] + a * Math.sin(n * 2.3), c0.look[1] + a * Math.sin(n * 1.7 + 1), c0.look[2] + a * Math.sin(n * 1.1)] };
 };
+/** avancement du dézoom de début de plan (0 = cadrage le plus serré, 1 = cadrage final) ; 1 pour le plan FPV */
+export const zoomK = (f: number) => {
+  const ct = cutAt(f); if (isFpv(ct.sid, ct.k)) return 1;
+  const zd = Math.min(1.0 * FPS, 0.85 * (ct.b - ct.a)); return 1 - Math.pow(1 - clamp01((f - ct.a) / Math.max(1, zd)), 4);
+};
 /** flou de profondeur (px à 1080 à l'infini) */
 export type Dof = { cInf: number; focus?: V3 };
 const DOFS: Record<number, number> = { 1: 1.5, 2: 2, 3: 12, 4: 18, 5: 2, 6: 3, 7: 6, 8: 18, 9: 12, 10: 18, 11: 18, 12: 16, 13: 22, 14: 20, 15: 22, 16: 8, 17: 10, 18: 6, 19: 22, 20: 20 };
