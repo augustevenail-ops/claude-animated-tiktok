@@ -20,16 +20,18 @@
     },
     "blanc_max": 0.3,
     "voix": {
-      "enfant": "9eb4944d78e9400c92b060653d6cf640"
+      "enfant": "9a80c28750b4443cbd0fd300220add88"
     },
     "voix_candidats_enfant": {
       "4db78fc6d8274fb5997cf2609cd5400f": "voix enfant (FR, jeune garçon, doux)",
       "a602bac499c24a2184258351d3319bdd": "Garçon de 10ans (FR)",
-      "9eb4944d78e9400c92b060653d6cf640": "Petit garçon de 10 (FR)"
+      "9eb4944d78e9400c92b060653d6cf640": "Petit garçon de 10 (FR)",
+      "9a80c28750b4443cbd0fd300220add88": "ENFANT 2A (FR, jeune garçon, vif) — choisie le 2026-11-19 : seule voix testée dont la réplique est comprise mot pour mot (whisper), F0 ~314 Hz"
     },
     "reference_id_clone_fish": "e85eb76597a045c08f9031096e973f86",
     "reference_text": "Tu te réveilles au milieu d'un labyrinthe géant. Des murs de trente mètres, à perte de vue. Et aucun souvenir de comment tu es arrivé là. Le jour, le labyrinthe est calme. Mais la nuit… il change. Les murs bougent. Et les Longs sortent. Des créatures blanches de dix mètres, sans visage. Ils ne voient rien. Ils sentent ce qui bouge. Au centre, une clairière.",
     "_note_reference": "2026-11-19 : la voix clonée e85eb… répond 404 sur le compte Fish connecté (0 voix perso). Narrateur recréé en zero-shot à partir de 19 s de la voix off de Le Mur ép. 1 (ref_narrateur.wav).",
-    "reference_id_zero_shot": "file:ref_narrateur.wav"
+    "reference_id_zero_shot": "file:ref_narrateur.wav",
+    "_note_voix_v2": "voice_v2.wav = voice.wav + réplique de l'enfant régénérée (essais_enfant2/9a80c2.mp3), mise au niveau du narrateur et calée dans le même créneau (atempo 1,07) ; « Toc… toc » parlé retiré (vrais coups dans le mix)."
   }
 }

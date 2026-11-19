@@ -16,7 +16,8 @@ W = lambda i: words[i]["s"] + OFF
 E = lambda i: words[i]["e"] + OFF
 db = lambda v: 10 ** (v / 20)
 dec = lambda p: np.frombuffer(subprocess.run(["ffmpeg", "-v", "error", "-i", p, "-ac", "1", "-ar", str(SR), "-f", "f32le", "-"], capture_output=True).stdout, np.float32).astype(float)
-v = dec(os.path.join(VD, "voice.wav")); voice = np.zeros(N); i0 = int(OFF * SR); voice[i0:i0 + len(v)] = v[: N - i0]
+# v2 (2026-11-19) : nouvelle voix d'enfant au niveau du narrateur, « Toc… toc » parlé retiré
+v = dec(os.path.join(VD, "voice_v2.wav")); voice = np.zeros(N); i0 = int(OFF * SR); voice[i0:i0 + len(v)] = v[: N - i0]
 sp = np.zeros(N, bool)
 for w in words: sp[int((w["s"] + OFF) * SR):min(N, int((w["e"] + OFF) * SR))] = True
 rms = lambda x: 20 * np.log10(np.sqrt(np.mean(x ** 2)) + 1e-9); vref = rms(voice[sp])
@@ -69,10 +70,8 @@ cue("crowd_shuffle", S(12) + 0.4, -24); cue("crowd_breath", S(12) + 2.0, -25); c
 # ---------------- ouverture FPV : air qui défile, accélération, plongée dans le puits -> noir ----------------
 n = int(FPV_END * SR); t = np.arange(n) / SR
 rush = bp(rng.standard_normal(n), 200, 5000) * np.minimum(1, t / 0.15) * (0.7 + 0.3 * t / FPV_END)
-put(rush, 0.0, -11, 0.02)
-k.whoosh(0.05, 0.6, 0.8)
-for tt in (0.9, 1.7, 2.4): k.whoosh(tt, 0.5, 0.55)                    # dunes qui passent, crête, toits
-k.whoosh(FPV_END - 0.55, 0.7, 1.1)                                   # piqué vers le puits
+put(rush, 0.0, -17, 0.02)
+k.whoosh(FPV_END - 0.55, 0.7, 0.5)                                   # piqué vers le puits (seul souffle gardé : retour utilisateur, souffles trop forts)
 dn = int(0.9 * SR); tt = np.arange(dn) / SR                          # descente : souffle qui devient grave et caverneux
 put(lowp(rng.standard_normal(dn), 500) * np.exp(-tt / 0.5), FPV_END - 0.45, -12, 0.05)
 k.impact(FPV_END - 0.02, 0.9, 40.0, 1.8)                             # noir : coup sourd
@@ -119,7 +118,6 @@ for e in range(int((S(15) - S(12)) / 0.62)): frame_drum(S(12) + 0.1 + e * 0.62, 
 def rule(t0):
     cue("sting_hit", t0 - 0.04, -14); k.impact(t0 - 0.02, 0.5, 44.0, 1.4)
     wind(t0 - 0.1, t0 + 2.6, -15, 120, 2500, 0.35, int(t0 * 10))                    # rafale de vent
-    k.whoosh(t0 + 0.1, 0.9, 0.6)
 rule(W(67))      # « Les Anciens disent qu'il y vit Celui d'en bas » (le monde, la croyance)
 rule(W(81))      # « quand l'eau baisse… c'est qu'il a faim »
 rule(W(89))      # la règle : personne ne regarde au fond
@@ -133,8 +131,7 @@ def top_spin(t0, t1, g_db):                                                     
     x = bp(rng.standard_normal(n), 2000, 7000) * (0.6 + 0.4 * np.sin(2 * np.pi * (14 - 8 * t / (t1 - t0)) * t))
     put(x, t0, g_db, 0.1); k.click(t1, 0.4, 1800.0); k.click(t1 + 0.12, 0.25, 1500.0)
 top_spin(W(33) - 0.4, W(35) + 0.3, -26)
-for tt in (S(5), W(40)): k.whoosh(tt, 0.6, 0.7)                     # vues de drone sur la ville
-wind(S(7), Se(7), -14, 60, 600, 0.5, 7); k.whoosh(S(7) + 0.1, 1.2, 0.8)             # plongée verticale dans le puits
+wind(S(7), Se(7), -14, 60, 600, 0.5, 7);              # plongée verticale dans le puits
 drone(S(7), Se(8), -24, 55.0)                                                       # le fond : grave sourd
 cue("drip", S(9) + 0.6, -22); cue("drip", W(85) + 0.3, -24)                         # margelle sèche, une goutte au fond
 cue("breath_nervous", W(94), -22); sand(W(99), W(102), -26, 90, 9)                  # l'enfant s'approche, ses pieds reculent
@@ -158,7 +155,7 @@ def snap_rope(t0):                                                              
     m = int(0.25 * SR); tt = np.arange(m) / SR
     x = bp(rng.standard_normal(m), 800, 9000) * np.exp(-tt / 0.02) + 0.5 * np.sin(2 * np.pi * (300 - 900 * tt) * tt) * np.exp(-tt / 0.06)
     put(x, t0, -8, 0.003, ref_len=int(0.05 * SR))
-snap_rope(W(175) + 0.15); k.whoosh(W(176), 0.5, 0.5)
+snap_rope(W(175) + 0.15)
 fall = int(1.4 * SR); tt = np.arange(fall) / SR                                     # la corde file dans le noir
 put(bp(rng.standard_normal(fall), 300, 3000) * np.exp(-tt / 0.5), W(176) + 0.1, -22, 0.05)
 
@@ -168,16 +165,25 @@ sfx *= np.convolve(sil, np.ones(6000) / 6000, "same")
 def knock(t0, g_db):
     m = int(1.6 * SR); tt = np.arange(m) / SR
     hit = (np.sin(2 * np.pi * 120 * tt) * np.exp(-tt / 0.035) + 0.6 * np.sin(2 * np.pi * 240 * tt) * np.exp(-tt / 0.02)
-           + 0.4 * lowp(rng.standard_normal(m), 900) * np.exp(-tt / 0.012))
+           + 0.4 * lowp(rng.standard_normal(m), 900) * np.exp(-tt / 0.012)
+           + 0.7 * np.sin(2 * np.pi * 820 * tt) * np.exp(-tt / 0.008))                                     # attaque boisée : on entend « toc »
     x = hit.copy()
     for dly, gg in [(0.07, 0.5), (0.15, 0.36), (0.26, 0.24), (0.4, 0.15), (0.58, 0.09), (0.8, 0.05)]:   # écho dans le conduit de pierre
         s = int(dly * SR); x[s:] += lowp(hit[: m - s], 600) * gg
     put(x, t0, g_db, 0.002, ref_len=int(0.06 * SR))
-knock(W(179) - 0.03, -6); knock(W(180) - 0.03, -6)
+knock(W(179) - 0.03, 5); knock(W(180) - 0.03, 5)                  # vrais coups (le narrateur ne les dit plus)
 
 # ---------------- coupes rapides : petit souffle à chaque changement de plan ----------------
-for sc in range(3, 21): k.whoosh(S(sc), 0.32, 0.3)
-for w in CUTW[1:]: k.whoosh(W(w) - 2 / FPS, 0.3, 0.22)
+# souffles de transition retirés (retour utilisateur : trop forts, entendus tout le temps) -> notes tenues de tension (« tiiin »)
+def tiin(t0, d=2.8, g_db=-17, f=1568.0):
+    n = int(d * SR); t = np.arange(n) / SR
+    env = np.minimum(t / 0.25, 1) * np.exp(-t / (d * 0.5)) * np.minimum(1, (d - t) / 0.5)
+    x = np.sin(2 * np.pi * f * t) + 0.6 * np.sin(2 * np.pi * f * 1.0595 * t + 1) + 0.2 * np.sin(2 * np.pi * f * 2.01 * t)   # demi-ton qui frotte
+    x *= env * (1 + 0.2 * np.sin(2 * np.pi * 5.0 * t))
+    put(x, t0, g_db, 0.02, ref_len=int(0.8 * SR))
+for t_, f_, g_ in [(W(23) - 0.1, 1318.5, -18), (W(58), 1568.0, -19), (W(73) - 0.05, 1174.7, -17), (W(89) - 0.05, 1568.0, -18), (W(130) - 0.05, 1396.9, -17),
+                   (W(141) - 0.05, 1760.0, -16), (W(168), 1174.7, -18), (W(184), 1568.0, -18), (W(192), 1318.5, -17)]:
+    tiin(t_, 2.8, g_, f_)
 
 # ---------------- musique d'ambiance très légère + tension finale ----------------
 REVEAL = [0, 23, 67, 89, 130, 141, 168, 179, 192]
