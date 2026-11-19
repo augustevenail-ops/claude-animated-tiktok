@@ -11,23 +11,23 @@ import { LensBlurEffect } from "../bridge/lensblur";
 import { GradeEffect } from "../bridge/grade";
 
 import { World } from "./world";
-import { OasisTop } from "./OasisTop";
-import { TOTAL, FPS, WORDS, shotAt, dofAt, CHOICE_AT, TITLE_AT, LIGHT, ROLE, waterAt } from "./story";
-import { Captions, captionGroups, Hud, ChoiceCards, TitleCard, useFonts, KARAOKE } from "../shared/overlay";
+import { PuitsHud, BarWipe, Question, PuitsTitle } from "./Habillage";
+import { TOTAL, FPS, WORDS, shotAt, dofAt, CHOICE_AT, TITLE_AT, LIGHT, ROLE, waterAt, clockAt, CUTLIST } from "./story";
+import { Captions, captionGroups, useFonts, KARAOKE } from "../shared/overlay";
 const GROUPS = captionGroups(WORDS);
 import { GRADES } from "./look";
 
 export const PUITS_FRAMES = TOTAL;
 type Post = { ink: boolean; lens: boolean; bloom: boolean; grade: boolean; audio: boolean; shadow: boolean; smap: number; dpr?: number; lensTaps: number; lensNear: number };
-const post = (): Post => ({ ink: true, lens: false, bloom: true, grade: true, audio: false, shadow: true, smap: 2048, lensTaps: 32, lensNear: 16, ...((getInputProps() as { post?: Partial<Post> }).post ?? {}) });
+const post = (): Post => ({ ink: true, lens: true, bloom: true, grade: true, audio: false, shadow: true, smap: 2048, lensTaps: 32, lensNear: 16, ...((getInputProps() as { post?: Partial<Post> }).post ?? {}) });
 const makeBloom = () => {
   const b = new BloomEffect({ blendFunction: BlendFunction.ADD, intensity: 0.7, luminanceThreshold: 0.9, luminanceSmoothing: 0.2, mipmapBlur: true, levels: 5, radius: 0.6 });
   const mip = b.mipmapBlurPass, setSize = mip.setSize.bind(mip);
   mip.setSize = (w: number, h: number) => setSize(Math.round((1920 * w) / Math.max(h, 1)), 1920);
   return b;
 };
-/** flashs de 2 images : blanc sur « descendre », blanc sur « noire » (la pierre), noir sur « corde » (coupée) */
-const FLASHES = [{ w: 22, col: "#fff", o: 0.8 }, { w: 142, col: "#fff", o: 0.85 }, { w: 177, col: "#000", o: 1 }].map((x) => ({ ...x, f: Math.round(WORDS[x.w].s * FPS) - 1 }));
+/** fins de plans (volet noir haut/bas de VIDEO_01) : chaque fin de sous-plan sauf la dernière avant le carton */
+const ENDS = CUTLIST.map((c) => c.b).filter((b) => b < Math.round(TITLE_AT * FPS));
 const fwd = new THREE.Vector3(), fpt = new THREE.Vector3();
 
 const Inner: React.FC = () => {
@@ -55,7 +55,7 @@ const Inner: React.FC = () => {
   const target = world.update(shotAt(f).id, f, cam, scene);
   noInkFallback(world.root);
   const sid = shotAt(f).id; fx.grade.set(GRADES[LIGHT[ROLE[sid]]]);
-  const d = dofAt(sid);
+  const d = dofAt(sid, f);
   cam.getWorldDirection(fwd);
   if (d.focus) fpt.set(...d.focus); else fpt.copy(target);
   fx.lens.focus = Math.max(0.3, fpt.sub(cam.position).dot(fwd));
@@ -82,12 +82,11 @@ export const PuitsEp1: React.FC = () => {
         <Inner />
       </ThreeCanvas>
       <div style={{ position: "absolute", inset: 0, mixBlendMode: "overlay", opacity: 0.13, backgroundImage: `url("${GRAIN}")`, backgroundSize: "260px 260px", backgroundPosition: `${(f * 53) % 260}px ${(f * 97) % 260}px` }} />
-      {(() => { const fl = FLASHES.find((x) => f >= x.f && f < x.f + 2); if (!fl) return null;   // flash / noir de 2 images, calé sur le mot
-        return <div style={{ position: "absolute", inset: 0, background: fl.col, opacity: f === fl.f ? fl.o : fl.o * 0.45 }} />; })()}
-      {t < TITLE_AT ? <Hud episode={1} place={LIGHT[ROLE[shotAt(f).id]] === 1 ? "CRÉPUSCULE" : "OASIS"} label="RÉSERVE D'EAU" count={waterAt(t)} unit="%" alert={waterAt(t) < 20} /> : null}
-      {t < TITLE_AT ? <ChoiceCards t={t} at={CHOICE_AT} a="RÉVÉLER" b="SE TAIRE" /> : null}
-      {t < CHOICE_AT ? <Captions t={t} groups={GROUPS} karaoke={KARAOKE} /> : null}
-      <TitleCard t={t} at={TITLE_AT} title="LE PUITS" episode={1} bg={<OasisTop t={t - TITLE_AT} />} />
+      {t < TITLE_AT ? <PuitsHud clock={clockAt(t)} place={LIGHT[ROLE[shotAt(f).id]] === 1 ? "GRANDE PLACE · NUIT" : "OASIS · PUITS CENTRAL"} label="EAU DU PUITS" count={`${waterAt(t)} %`} alert={waterAt(t) < 20} /> : null}
+      {t < TITLE_AT ? <Question t={t} at={CHOICE_AT - 0.5} q={["TU LE RÉVÈLES…", "OU TU TE TAIS ?"]} a="JE LE RÉVÈLE" b="JE ME TAIS" ta={WORDS[194].s} tb={WORDS[206].s} /> : null}
+      {t < TITLE_AT ? <Captions t={t} groups={GROUPS} karaoke={KARAOKE} /> : null}
+      <BarWipe f={f} ends={ENDS} />
+      <PuitsTitle t={t} at={TITLE_AT} title="LE PUITS" count="EAU DU PUITS · 12 %" />
       {on.audio ? <Audio src={staticFile("puits/mix.wav")} /> : null}
     </AbsoluteFill>
   );

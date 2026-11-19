@@ -10,7 +10,7 @@ import { Pool, Actor } from "../bridge/cast";
 import type { Pen } from "../bridge/toon";
 import { drawPerson, Person, Expr, Pose } from "./people";
 import { painted } from "../shared/painted";
-import { FPS, V3, PLAZA, CITY_R, GROVE_R, DUNE_R, STEP_H, MARG_R, MARG_H, SHAFT_R, SHAFT_D, TOP_Y, TOWER, TOWER_H, FRESCO, ELDERS, CHIEF, BAG,
+import { STELE, FPS, V3, PLAZA, CITY_R, GROVE_R, DUNE_R, STEP_H, MARG_R, MARG_H, SHAFT_R, SHAFT_D, TOP_Y, TOWER, TOWER_H, FRESCO, ELDERS, CHIEF, BAG,
   QUEUE_Z0, YOU, BRO_STREET, RIM, LIGHT, camAt, uOf, ROLE, hash, smooth, tW, cutAt, duneH } from "./story";
 import { LIGHTS } from "./look";
 
@@ -41,28 +41,28 @@ const roofTex = () => ctex("pu_roof", 128, 128, (g) => {
   g.strokeStyle = "rgba(120,70,40,0.5)"; g.lineWidth = 6; g.strokeRect(3, 3, 122, 122);                    // parapet
 });
 const sandTex = () => ctex("pu_sand", 512, 512, (g) => {             // sable rouge-orangé, rides du vent
-  g.fillStyle = "#e07a42"; g.fillRect(0, 0, 512, 512);
+  g.fillStyle = "#9c7656"; g.fillRect(0, 0, 512, 512);
   for (let i = 0; i < 140; i++) { g.fillStyle = `rgba(${hash(i, 41) < 0.5 ? "170,70,40" : "255,190,130"},${0.06 + hash(i, 42) * 0.08})`; g.beginPath(); g.ellipse(hash(i, 43) * 512, hash(i, 44) * 512, 20 + hash(i, 45) * 60, 8 + hash(i, 46) * 20, 0.2, 0, 7); g.fill(); }
   for (let k = 0; k < 46; k++) { const y0 = k * 11.2 + hash(k, 47) * 4; g.strokeStyle = k % 2 ? "rgba(150,60,30,0.28)" : "rgba(255,200,150,0.3)"; g.lineWidth = 2;
     g.beginPath(); for (let x = 0; x <= 512; x += 16) { const y = y0 + 4 * Math.sin(x * 0.03 + k) + 2 * Math.sin(x * 0.09 + k * 2); x ? g.lineTo(x, y) : g.moveTo(x, y); } g.stroke(); }
 });
 const earthTex = () => ctex("pu_earth", 256, 256, (g) => {
-  g.fillStyle = "#d39a62"; g.fillRect(0, 0, 256, 256);
+  g.fillStyle = "#86694e"; g.fillRect(0, 0, 256, 256);
   for (let i = 0; i < 90; i++) { g.fillStyle = `rgba(${hash(i, 11) < 0.5 ? "120,70,40" : "250,220,180"},${0.05 + hash(i, 12) * 0.08})`; g.beginPath(); g.arc(hash(i, 13) * 256, hash(i, 14) * 256, 3 + hash(i, 15) * 14, 0, 7); g.fill(); }
 });
 const paveTex = () => ctex("pu_pave", 256, 256, (g) => {             // dalles de grès de la place
-  g.fillStyle = "#c98f5c"; g.fillRect(0, 0, 256, 256);
+  g.fillStyle = "#6a5644"; g.fillRect(0, 0, 256, 256);
   for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) { const x = c * 64 + (r % 2) * 32, y = r * 64, h = hash(r * 4 + c, 51);
-    g.fillStyle = `rgb(${226 + h * 20},${182 + h * 18},${130 + h * 16})`; g.fillRect(x + 3, y + 3, 58, 58); g.fillRect(x - 256 + 3, y + 3, 58, 58);
+    g.fillStyle = `rgb(${150 + h * 16},${130 + h * 14},${108 + h * 12})`; g.fillRect(x + 3, y + 3, 58, 58); g.fillRect(x - 256 + 3, y + 3, 58, 58);
     g.fillStyle = "rgba(120,70,40,0.12)"; g.beginPath(); g.ellipse(x + 20 + h * 20, y + 30, 14, 9, 0, 0, 7); g.fill(); }
 });
 const stoneTex = () => ctex("pu_stone", 256, 256, (g) => {           // pierres de la margelle et du puits
-  g.fillStyle = "#8a6448"; g.fillRect(0, 0, 256, 256);
+  g.fillStyle = "#4e4034"; g.fillRect(0, 0, 256, 256);
   for (let r = 0; r < 6; r++) for (let c = 0; c < 4; c++) { const x = c * 64 + (r % 2) * 32, y = r * 43, h = hash(r * 4 + c, 61);
-    g.fillStyle = `rgb(${222 + h * 22},${178 + h * 22},${128 + h * 20})`; g.beginPath(); g.roundRect(x + 3, y + 3, 58, 37, 8); g.fill(); g.beginPath(); g.roundRect(x - 256 + 3, y + 3, 58, 37, 8); g.fill(); }
+    g.fillStyle = `rgb(${156 + h * 18},${138 + h * 16},${114 + h * 14})`; g.beginPath(); g.roundRect(x + 3, y + 3, 58, 37, 8); g.fill(); g.beginPath(); g.roundRect(x - 256 + 3, y + 3, 58, 37, 8); g.fill(); }
 });
 const grassTex = () => ctex("pu_grass", 256, 256, (g) => {
-  g.fillStyle = "#4f8a34"; g.fillRect(0, 0, 256, 256);
+  g.fillStyle = "#3e4a2e"; g.fillRect(0, 0, 256, 256);
   for (let i = 0; i < 400; i++) { g.strokeStyle = `rgba(${hash(i, 21) < 0.5 ? "30,70,20" : "170,200,80"},${0.25 + hash(i, 22) * 0.3})`; g.lineWidth = 2; const x = hash(i, 23) * 256, y = hash(i, 24) * 256; g.beginPath(); g.moveTo(x, y); g.lineTo(x + (hash(i, 25) - 0.5) * 6, y - 6 - hash(i, 26) * 8); g.stroke(); }
 });
 /** fresque naïve sur un mur de terre : Celui d'en bas, immense, blanc, sans yeux, bras jusqu'au sol, au-dessus du puits ; enfants minuscules ; vagues bleues */
@@ -92,6 +92,16 @@ const frescoTex = () => ctex("pu_fresco", 1024, 600, (g) => {
   // usure : écailles et fissures
   for (let i = 0; i < 40; i++) { g.fillStyle = `rgba(200,150,100,${0.4 + hash(i, 77) * 0.4})`; g.beginPath(); g.ellipse(hash(i, 78) * 1024, hash(i, 79) * 600, 6 + hash(i, 80) * 18, 4 + hash(i, 81) * 10, hash(i, 82) * 3, 0, 7); g.fill(); }
   g.strokeStyle = "rgba(60,30,20,0.55)"; g.lineWidth = 2; for (let i = 0; i < 6; i++) { let x = hash(i, 83) * 1024, y = 0; g.beginPath(); g.moveTo(x, y); for (let k = 0; k < 10; k++) { x += (hash(i * 9 + k, 84) - 0.5) * 40; y += 30 + hash(i * 9 + k, 85) * 30; g.lineTo(x, y); } g.stroke(); }
+});
+/** stèle de la règle (texte diégétique, comme les plaques « RÈGLE 1 » de VIDEO_01) */
+const steleTex = () => ctex("pu_stele", 512, 640, (g) => {
+  g.fillStyle = "#3a322a"; g.fillRect(0, 0, 512, 640);
+  for (let i = 0; i < 50; i++) { g.fillStyle = `rgba(${hash(i, 91) < 0.5 ? "20,16,12" : "120,105,90"},${0.08 + hash(i, 92) * 0.1})`; g.beginPath(); g.ellipse(hash(i, 93) * 512, hash(i, 94) * 640, 10 + hash(i, 95) * 40, 6 + hash(i, 96) * 20, 0, 0, 7); g.fill(); }
+  g.strokeStyle = "rgba(20,16,12,0.8)"; g.lineWidth = 10; g.strokeRect(22, 22, 468, 596);
+  g.textAlign = "center"; g.font = "bold 92px DejaVu Sans Condensed, DejaVu Sans, sans-serif"; g.shadowColor = "rgba(230,60,40,0.9)"; g.shadowBlur = 24; g.fillStyle = "#e0503a"; g.fillText("RÈGLE", 256, 170);
+  g.font = "bold 44px DejaVu Sans Condensed, DejaVu Sans, sans-serif"; g.shadowBlur = 14; g.fillStyle = "#e8b8a0";
+  ["PERSONNE NE", "REGARDE AU FOND", "DU PUITS."].forEach((l, k) => g.fillText(l, 256, 290 + k * 62));
+  g.shadowBlur = 0; g.font = "bold 30px DejaVu Sans Condensed, DejaVu Sans, sans-serif"; g.fillStyle = "rgba(200,180,150,0.6)"; g.fillText("CELUI QUI REGARDE DESCEND", 256, 520);
 });
 const skyTex = (k: number) => ctex("pu_sky" + k, 64, 512, (g) => {
   const L = LIGHTS[k], v = g.createLinearGradient(0, 0, 0, 512); v.addColorStop(0, L.skyTop); v.addColorStop(0.36, L.skyMid); v.addColorStop(0.5, L.skyLow); v.addColorStop(0.56, L.skyMid); v.addColorStop(1, L.skyTop);
@@ -137,33 +147,33 @@ const drawDeepHand = (p: Pen) => {
 
 // ---------------- personnages ----------------
 const LOOK: Record<string, Partial<Person>> = {
-  Y: { jacket: "#d4533e", pants: "#4b5165", shoes: "#3a2a24", hair: "bob", hairColor: "#3b2b25", hood: true, sash: "#f0b030" },      // toi : tunique rouge brique, capuche
-  BRO: { jacket: "#f0a020", pants: "#3b5b9a", shoes: "#5a3a22", hair: "fringe", hairColor: "#2a1c16" },                              // ton petit frère : tunique safran
-  EL: { jacket: "#efe9dc", pants: "#efe9dc", shoes: "#8a6a4a", hair: "bald", hairColor: "#d8d8d8", robe: true, beard: "#f6f6f6", prop: "staff" },   // les Anciens
-  CH: { jacket: "#f4efe4", pants: "#f4efe4", shoes: "#8a6a4a", hair: "bald", hairColor: "#e0e0e0", robe: true, beard: "#ffffff", sash: "#c8452e", prop: "bag" },
-  H: { jacket: "#9a2a3a", pants: "#3a2a30", shoes: "#3a2a24", hair: "bald", hairColor: "#2a2220", robe: true, scarf: "#f0e6d0", prop: "horn" },   // joueur de cor
-  K: { jacket: "#2aa0a0", pants: "#3b4a6a", shoes: "#3a2a24", hair: "spiky", hairColor: "#1a1412" },                                    // l'enfant trop curieux
-  M: { jacket: "#3a3aa8", pants: "#3a3aa8", shoes: "#3a2a24", hair: "bun", hairColor: "#1a1412", robe: true, scarf: "#e0a020" },        // sa mère
+  Y: { jacket: "#b8602e", pants: "#4a3a30", shoes: "#2a201a", hair: "bob", hairColor: "#2a201a", scarf: "#3e7f80", sash: "#5a6440" },   // toi : tunique rouille, foulard bleu-vert
+  BRO: { jacket: "#c88a3a", pants: "#4a3a30", shoes: "#2a201a", hair: "fringe", hairColor: "#2a1c16", sash: "#3e7f80" },               // ton petit frère : tunique ocre
+  EL: { jacket: "#cfc4ae", pants: "#cfc4ae", shoes: "#4a3a2a", hair: "bald", hairColor: "#bdb6aa", robe: true, beard: "#ece6da", prop: "staff" },   // les Anciens
+  CH: { jacket: "#d8cfbc", pants: "#d8cfbc", shoes: "#4a3a2a", hair: "bald", hairColor: "#c8c2b8", robe: true, beard: "#f2ede4", sash: "#8a2e26", prop: "bag" },
+  H: { jacket: "#6a2e28", pants: "#3a2a24", shoes: "#2a201a", hair: "bald", hairColor: "#2a2220", robe: true, scarf: "#b8ab92", prop: "horn" },
+  K: { jacket: "#3e6a6a", pants: "#3a3430", shoes: "#2a201a", hair: "spiky", hairColor: "#1a1412" },
+  M: { jacket: "#5a4a3e", pants: "#5a4a3e", shoes: "#2a201a", hair: "bun", hairColor: "#1a1412", robe: true, scarf: "#8a2e26" },
 };
 const CROWD: Partial<Person>[] = ([
-  { jacket: "#2f3fa0", pants: "#2f3fa0", hair: "bun", hairColor: "#1a1412", robe: true, scarf: "#e04a3a" },
-  { jacket: "#9a2a3a", pants: "#3a2a30", hair: "spiky", hairColor: "#24180f", sash: "#f0b030" },
-  { jacket: "#1f9a96", pants: "#1f9a96", hair: "bald", hairColor: "#2a2220", robe: true, scarf: "#f4f0e6" },
-  { jacket: "#c98a3a", pants: "#4a3a5a", hair: "fringe", hairColor: "#2a1c16" },
-  { jacket: "#a83a7a", pants: "#a83a7a", hair: "ponytail", hairColor: "#1a1412", robe: true, scarf: "#3a3aa8" },
-  { jacket: "#6a8a3a", pants: "#3a3a2a", hair: "bob", hairColor: "#3a2416", sash: "#c8452e" },
-  { jacket: "#e8dcc4", pants: "#e8dcc4", hair: "bald", hairColor: "#2a2220", robe: true, scarf: "#1f9a96" },
-  { jacket: "#24305a", pants: "#24305a", hair: "bun", hairColor: "#24180f", robe: true, scarf: "#f0a020" },
-  { jacket: "#e0602a", pants: "#3b4a6a", hair: "spiky", hairColor: "#1a1412" },
-  { jacket: "#5a2a7a", pants: "#5a2a7a", hair: "bob", hairColor: "#1a1412", robe: true, scarf: "#f4e0b0" },
-] as Partial<Person>[]).map((c) => ({ shoes: "#3a2a24", ...c }));
+  { jacket: "#5a4436", pants: "#5a4436", hair: "bun", hairColor: "#1a1412", robe: true, scarf: "#7a2e26" },
+  { jacket: "#6e3a2e", pants: "#3a2e28", hair: "spiky", hairColor: "#24180f", sash: "#8a6a2a" },
+  { jacket: "#3e5656", pants: "#3e5656", hair: "bald", hairColor: "#2a2220", robe: true, scarf: "#b8ab92" },
+  { jacket: "#8a6a44", pants: "#3e3430", hair: "fringe", hairColor: "#2a1c16" },
+  { jacket: "#4a3a3a", pants: "#4a3a3a", hair: "ponytail", hairColor: "#1a1412", robe: true, scarf: "#3e5f60" },
+  { jacket: "#5a5e42", pants: "#3a3a2a", hair: "bob", hairColor: "#3a2416", sash: "#7a2e26" },
+  { jacket: "#a89c84", pants: "#a89c84", hair: "bald", hairColor: "#2a2220", robe: true, scarf: "#5a4436" },
+  { jacket: "#2e3238", pants: "#2e3238", hair: "bun", hairColor: "#24180f", robe: true, scarf: "#8a6a2a" },
+  { jacket: "#a0562e", pants: "#3a3430", hair: "spiky", hairColor: "#1a1412" },
+  { jacket: "#4e3a46", pants: "#4e3a46", hair: "bob", hairColor: "#1a1412", robe: true, scarf: "#a89c84" },
+] as Partial<Person>[]).map((c) => ({ shoes: "#2a201a", ...c }));
 const KIDS: Partial<Person>[] = ([
-  { jacket: "#e04a3a", pants: "#3b4a6a", hair: "bob", hairColor: "#2a1c16" }, { jacket: "#1f9a96", pants: "#4a3a5a", hair: "spiky", hairColor: "#1a1412" },
-  { jacket: "#f0c040", pants: "#3b5b9a", hair: "ponytail", hairColor: "#3a2416" }, { jacket: "#3a3aa8", pants: "#3a3a2a", hair: "fringe", hairColor: "#1a1412" },
-  { jacket: "#a83a7a", pants: "#3b4a6a", hair: "bun", hairColor: "#24180f" }, { jacket: "#6a8a3a", pants: "#4a3a5a", hair: "bob", hairColor: "#1a1412" },
-] as Partial<Person>[]).map((c) => ({ shoes: "#3a2a24", ...c }));
+  { jacket: "#8a3a2e", pants: "#3a3430", hair: "bob", hairColor: "#2a1c16" }, { jacket: "#3e5f60", pants: "#4a3a30", hair: "spiky", hairColor: "#1a1412" },
+  { jacket: "#a08040", pants: "#3a3430", hair: "ponytail", hairColor: "#3a2416" }, { jacket: "#4a4a42", pants: "#3a3a2a", hair: "fringe", hairColor: "#1a1412" },
+  { jacket: "#6a4a5a", pants: "#3a3430", hair: "bun", hairColor: "#24180f" }, { jacket: "#5a5e42", pants: "#4a3a30", hair: "bob", hairColor: "#1a1412" },
+] as Partial<Person>[]).map((c) => ({ shoes: "#2a201a", ...c }));
 const KID_S = 0.7;
-type Fo = { pose?: Pose; expr: Expr; blink?: boolean; look?: number; back?: boolean; step?: number; prop?: Person["prop"] | null };
+type Fo = { pose?: Pose; expr: Expr; blink?: boolean; look?: number; back?: boolean; step?: number; prop?: Person["prop"] | null; sil?: boolean };
 const tierOf = (d: number): [number, number, number] => (d < 3.5 ? [1080, 1800, 1.8] : d < 14 ? [600, 1000, 1] : [300, 500, 0.5]);
 /** foule en anneau autour du puits (pas dans la file des enfants, ni devant toi) */
 const crowdRing = (n: number, r0: number, r1: number, seed: number) => {
@@ -186,7 +196,8 @@ export class World {
   private pool = new Pool(); private actors: Actor[] = []; private glows: Actor[] = []; private glowMats: THREE.MeshBasicMaterial[] = [];
   private sky: THREE.Mesh; private skyMaps: THREE.Texture[]; private sunDisc: THREE.Mesh; private parts: Record<string, THREE.Points> = {};
   private bucket: THREE.Group; private rope: THREE.Mesh; private bag: THREE.Group; private top: THREE.Group; private lamps: THREE.Mesh[] = []; private lantern: THREE.Mesh;
-  private awnings: THREE.Mesh[] = []; private deepGlow: THREE.Mesh;
+  private awnings: THREE.Mesh[] = []; private deepGlow: THREE.Mesh; private pools: THREE.Mesh[] = []; private bulbs: THREE.Mesh[] = []; private cones: THREE.Mesh[] = [];
+  private silMats: THREE.MeshBasicMaterial[] = []; private silOn: boolean[] = [];
   constructor() {
     const R = this.root;
     this.hemi = new THREE.HemisphereLight("#9cc4ff", "#a8603a", 0.3); R.add(this.hemi);
@@ -205,7 +216,7 @@ export class World {
     const city = new THREE.Mesh(new THREE.RingGeometry(SHAFT_R - 0.02, CITY_R + 14, 96, 2).rotateX(-Math.PI / 2), solid("earth", "#ffffff", { map: et })); city.position.y = 0.02; city.receiveShadow = true; R.add(city);
     const gt = grassTex(); gt.repeat.set(60, 60);
     const grove = new THREE.Mesh(new THREE.RingGeometry(CITY_R + 10, GROVE_R + 6, 128, 1).rotateX(-Math.PI / 2), solid("grass", "#ffffff", { map: gt })); grove.position.y = 0.03; grove.receiveShadow = true; R.add(grove);
-    const waterM = new THREE.MeshBasicMaterial({ color: "#2ad4d0" });
+    const waterM = new THREE.MeshBasicMaterial({ color: "#2c5a56" });
     for (const r of [CITY_R + 24, CITY_R + 58, GROVE_R - 6]) { const w = new THREE.Mesh(new THREE.RingGeometry(r, r + 2.6, 160, 1).rotateX(-Math.PI / 2), waterM); w.position.y = 0.06; R.add(w); }
     for (let k = 0; k < STREETS; k++) { const a = k * Math.PI * 2 / STREETS + Math.PI / STREETS, w = new THREE.Mesh(new THREE.PlaneGeometry(2.2, GROVE_R - CITY_R).rotateX(-Math.PI / 2), waterM);
       w.position.set(Math.sin(a) * (CITY_R + GROVE_R) / 2, 0.06, Math.cos(a) * (CITY_R + GROVE_R) / 2); w.rotation.y = a; R.add(w); }
@@ -245,7 +256,7 @@ export class World {
     const fr = new THREE.Mesh(new THREE.PlaneGeometry(10.2, 6.0), solid("fresco", "#ffffff", { map: frescoTex() })); fr.position.set(FRESCO[0], 3.3, FRESCO[2] - 0.04); fr.receiveShadow = true; R.add(fr);
     // ---------- maisons de terre en anneaux (instances, une teinte par maison) ----------
     const hs: { x: number; z: number; w: number; d: number; h: number; a: number; c: THREE.Color }[] = [];
-    const MUD = ["#e8b888", "#d99a66", "#f0c89a", "#c98458", "#e6a46e", "#f4d6b0", "#d08a5a", "#f6efe4", "#9cc2e8", "#eaa8a0", "#f6efe4"].map((c) => new THREE.Color(c));
+    const MUD = ["#8e7a60", "#7c664e", "#9c8a70", "#6e5c48", "#a49276", "#5e4e3e", "#b0a088", "#807462"].map((c) => new THREE.Color(c));
     for (let r = PLAZA + 4; r < CITY_R; r += 8.5 + (r > 120 ? 2 : 0)) {
       const n = Math.floor((Math.PI * 2 * r) / 8.2);
       for (let i = 0; i < n; i++) { const a = (i + hash(i, Math.floor(r)) * 0.4) / n * Math.PI * 2, rr = r + (hash(i, r + 1) - 0.5) * 2, x = rr * Math.sin(a), z = rr * Math.cos(a);
@@ -266,7 +277,7 @@ export class World {
         mm.compose(V(h.x + o.x, h.h, h.z + o.z), q, V(1.6 + hash(i, 504) * 1.4, 1.2 + hash(i, 505), 1.6 + hash(i, 506) * 1.4)); pi.setMatrixAt(i, mm); });
       pi.castShadow = pi.receiveShadow = true; R.add(pi);
       // auvents de tissu saturés sur les façades côté rue / place
-      const AW = ["#3a3aa8", "#f0a020", "#c8304a", "#1fb0a8", "#b83a8a", "#e0602a", "#2a8a5a"].map((c) => new THREE.Color(c));
+      const AW = ["#7a2e26", "#3e5f60", "#8a6a2a", "#5a2a30", "#6a4a2e", "#3a4a3a"].map((c) => new THREE.Color(c));
       const ag = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2 + 0.35).translate(0, 0, 0.5), sel2 = hs.filter((h, i) => Math.hypot(h.x, h.z) < 120 && hash(i, 511) < 0.5);
       const am = solid("awning", "#ffffff", { side: THREE.DoubleSide }); const ai = new THREE.InstancedMesh(ag, am, sel2.length);
       sel2.forEach((h, i) => { q.setFromAxisAngle(yUp, h.a + Math.PI); const fw = V(0, 0, h.d / 2).applyQuaternion(q);
@@ -283,12 +294,12 @@ export class World {
         for (let i = 0; i < fp.count; i++) { const y = fp.getY(i), s = y / 3.4; fp.setX(i, fp.getX(i) * Math.sin(Math.PI * Math.min(1, s * 1.15)) * 1.2); fp.setZ(i, -1.6 * s * s); fp.setY(i, y * 0.85); }
         f.rotateX(-0.9 - 0.25 * (k % 2)); f.rotateY(k / 9 * Math.PI * 2); fronds.push(f); }
       const cg = mergeGeos(fronds);
-      const ti = new THREE.InstancedMesh(tg, solid("trunk", "#8a6040"), pos.length), ci = new THREE.InstancedMesh(cg, solid("palm", "#ffffff", { side: THREE.DoubleSide }), pos.length);
+      const ti = new THREE.InstancedMesh(tg, solid("trunk", "#4e3a2a"), pos.length), ci = new THREE.InstancedMesh(cg, solid("palm", "#ffffff", { side: THREE.DoubleSide }), pos.length);
       const lean = new THREE.Quaternion();
       pos.forEach(([x, z, h], i) => { lean.setFromAxisAngle(V(hash(i, 631) - 0.5, 0, hash(i, 632) - 0.5).normalize(), 0.05 + hash(i, 633) * 0.16);
         mm.compose(V(x, 0, z), lean, V(1, h, 1)); ti.setMatrixAt(i, mm);
         const top = V(0, h, 0).applyQuaternion(lean); q.setFromAxisAngle(yUp, hash(i, 634) * 6.28).premultiply(lean); mm.compose(V(x + top.x, top.y, z + top.z), q, V(1, 1, 1).multiplyScalar(0.9 + hash(i, 635) * 0.5)); ci.setMatrixAt(i, mm);
-        ci.setColorAt(i, new THREE.Color().setHSL(0.3 + hash(i, 636) * 0.06, 0.62, 0.36 + hash(i, 637) * 0.1)); });
+        ci.setColorAt(i, new THREE.Color().setHSL(0.2 + hash(i, 636) * 0.05, 0.28, 0.22 + hash(i, 637) * 0.06)); });
       ti.castShadow = ci.castShadow = true; ti.receiveShadow = ci.receiveShadow = true; R.add(ti, ci); }
     // ---------- marché (rue +z) ----------
     for (const [x, z, col] of STALLS) { const s = Math.sign(x);
@@ -305,6 +316,22 @@ export class World {
     for (let k = 0; k < 20; k++) { const a = k / 20 * Math.PI * 2, x = (PLAZA - 4) * Math.sin(a), z = (PLAZA - 4) * Math.cos(a); if (streetDist(x, z) < 1.6) continue;
       b.add(new THREE.CylinderGeometry(0.05, 0.07, 2.6, 6).translate(x, 1.3, z), dark); b.add(new THREE.BoxGeometry(0.26, 0.34, 0.26).translate(x, 2.7, z), solid("lamp", "#f0c060"));
       const lg = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 1.8), new THREE.MeshBasicMaterial({ map: glowTex("255,170,70"), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false })); lg.position.set(x, 2.7, z); lg.layers.set(NOINK); R.add(lg); this.lamps.push(lg); }
+    // ---------- petites lampes suspendues (disque ambre, halo, cône dans la brume, flaque de lumière au sol) ----------
+    const lampAt = (x: number, y: number, z: number, pool = 3.2) => {
+      b.add(new THREE.CylinderGeometry(0.012, 0.012, 2.5, 4).translate(x, y + 1.35, z), dark);
+      b.add(new THREE.ConeGeometry(0.26, 0.18, 16, 1, true).translate(x, y + 0.08, z), solid("shade", "#2a2420", { side: THREE.DoubleSide }));
+      const bu = new THREE.Mesh(new THREE.CircleGeometry(0.15, 16).rotateX(Math.PI / 2), new THREE.MeshBasicMaterial({ color: "#ffd890", side: THREE.DoubleSide })); bu.position.set(x, y, z); bu.layers.set(NOINK); R.add(bu); this.bulbs.push(bu);
+      const gl = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 1.6), new THREE.MeshBasicMaterial({ map: glowTex("255,200,120"), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false })); gl.position.set(x, y - 0.05, z); gl.layers.set(NOINK); R.add(gl); this.lamps.push(gl);
+      const cn = new THREE.Mesh(new THREE.ConeGeometry(pool * 0.75, y, 24, 1, true).translate(0, -y / 2, 0), new THREE.MeshBasicMaterial({ color: "#ffcf8a", transparent: true, opacity: 0.05, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }));
+      cn.position.set(x, y, z); cn.layers.set(NOINK); R.add(cn); this.cones.push(cn);
+      const po = new THREE.Mesh(new THREE.PlaneGeometry(pool * 2, pool * 2).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ map: glowTex("255,190,110"), transparent: true, opacity: 0.32, blending: THREE.AdditiveBlending, depthWrite: false }));
+      po.position.set(x, 0.07, z); po.layers.set(NOINK); R.add(po); this.pools.push(po); };
+    for (let k = 0; k < 9; k++) { const a = k / 9 * Math.PI * 2 + 0.35; lampAt(6.8 * Math.sin(a), 4.4, 6.8 * Math.cos(a)); }
+    lampAt(1.62, STEP_H + 2.7, 0.0, 2.4);                                                 // la lampe du portique, au-dessus du puits
+    for (const z of [30, 38, 46, 54]) lampAt(0, 3.8, z, 3);                                   // rue du marché
+    lampAt(STELE[0], 3.3, STELE[2] + 1.0, 2.2);
+    { const st = new THREE.Mesh(new THREE.BoxGeometry(1.5, 2.1, 0.28).translate(0, 1.05, 0), stoneM); st.position.set(...STELE); st.castShadow = st.receiveShadow = true; R.add(st);
+      const pl = new THREE.Mesh(new THREE.PlaneGeometry(1.36, 1.7), new THREE.MeshBasicMaterial({ map: steleTex() })); pl.position.set(STELE[0], 1.08, STELE[2] + 0.15); R.add(pl); }
     // ---------- sac du tirage (gros plan) : toile, pierres blanches et une noire ----------
     this.bag = new THREE.Group(); { const pr = [V(0.0, 0, 0), V(0.16, 0.01, 0), V(0.21, 0.08, 0), V(0.19, 0.2, 0), V(0.15, 0.27, 0), V(0.18, 0.3, 0)].map((v) => new THREE.Vector2(v.x, v.y));
       const sack = new THREE.Mesh(new THREE.LatheGeometry(pr, 20), solid("sack", "#c89a62", { side: THREE.DoubleSide })); this.bag.add(sack);
@@ -358,10 +385,13 @@ export class World {
     this.fog.near = alt > 25 ? 300 + alt * 0.4 : L.fogNear; this.fog.far = alt > 25 ? Math.min(L.fogFar + alt, 1800 + alt * 3) : L.fogFar;
     scene.fog = this.fog; scene.background = new THREE.Color(L.bg);
     (this.sky.material as THREE.MeshBasicMaterial).map = this.skyMaps[lk]; this.sky.position.copy(cam.position); this.sky.visible = lk !== 2;
-    this.sunDisc.visible = lk !== 2; this.sunDisc.position.copy(cam.position).add(V(-L.sunDir[0], L.sunDir[1] * 0.35, -L.sunDir[2]).normalize().multiplyScalar(-6000)); this.sunDisc.lookAt(cam.position);
+    this.sunDisc.visible = lk === 0; this.sunDisc.position.copy(cam.position).add(V(-L.sunDir[0], L.sunDir[1] * 0.35, -L.sunDir[2]).normalize().multiplyScalar(-6000)); this.sunDisc.lookAt(cam.position);
     const ct = cutAt(f), kc = ct.sid === sid ? ct.k : 0, cu = Math.max(0, Math.min(1, (f - ct.a) / Math.max(1, ct.b - ct.a)));
     const dusk = lk === 1, flick = (i: number) => 0.8 + 0.2 * Math.sin(t * 13 + i * 2) * Math.sin(t * 5.3 + i);
-    this.lamps.forEach((lg, i) => { lg.visible = dusk; (lg.material as THREE.MeshBasicMaterial).opacity = flick(i); lg.lookAt(cam.position); });
+    const lampK = dusk ? 1 : 0.75;
+    this.lamps.forEach((lg, i) => { (lg.material as THREE.MeshBasicMaterial).opacity = lampK * flick(i); lg.lookAt(cam.position); });
+    this.pools.forEach((po, i) => { (po.material as THREE.MeshBasicMaterial).opacity = (dusk ? 0.42 : 0.24) * (0.9 + 0.1 * flick(i)); });
+    this.cones.forEach((cn) => { (cn.material as THREE.MeshBasicMaterial).opacity = dusk ? 0.06 : 0.035; });
     this.awnings.forEach((a, i) => { a.rotation.x = 0.03 * Math.sin(t * 2.3 + i); });
     (this.deepGlow.material as THREE.MeshBasicMaterial).opacity = id === 18 ? 0.25 + 0.15 * Math.sin(t * 3) : 0.12;
     // seau et corde
@@ -396,7 +426,7 @@ export class World {
     this.bag.visible = id === 13 || (id === 14 && kc > 0);
     // ---------- personnages ----------
     const yaw = (p: V3) => Math.atan2(cam.position.x - p[0], cam.position.z - p[2]);
-    let k = 0;
+    let k = 0; this.silOn.fill(false);
     const place = (key: string, look: Partial<Person>, p: V3, fo: Fo, scale = 1, roll = 0) => {
       const A = this.actors[k++]; if (!A) return;
       const d = cam.position.distanceTo(V(p[0], p[1] + 1.1 * scale, p[2])), [w, h, kk] = tierOf(d / scale);
@@ -405,8 +435,11 @@ export class World {
       A.mesh.position.set(...p); A.mesh.up.set(0, 1, 0); A.mesh.rotation.set(0, yaw(p), roll, "YXZ");
       const dy = cam.position.y - (p[1] + 1.0 * scale), hz = Math.hypot(cam.position.x - p[0], cam.position.z - p[2]);
       if (Math.atan2(dy, hz) > 0.55) { A.mesh.up.set(0, 1, 0).applyQuaternion(cam.quaternion); A.mesh.lookAt(cam.position); A.mesh.up.set(0, 1, 0); }
-      A.mesh.scale.setScalar(scale); A.mesh.visible = true;
+      A.mesh.scale.setScalar(scale); A.mesh.visible = true; this.silOn[k - 1] = !!fo.sil;
     };
+    /** silhouettes noires au premier plan, très près de la caméra (floues) : elles encadrent le sujet, comme dans VIDEO_01 */
+    const fgSil = (xs: number[], d = 1.1) => xs.forEach((x, i) => { const q = cam.position.clone().addScaledVector(fwd, d + 0.15 * i).addScaledVector(rgt, x);
+      place(`sil${i % 3}`, CROWD[(i * 3) % CROWD.length], [q.x, Math.max(0, cam.position.y - 2.05 + 0.1 * (i % 2)), q.z], { expr: "calm", back: true, sil: true }); });
     let kg = 0;
     /** carte spéciale (main, couteau, main des profondeurs) : face caméra */
     const card = (key: string, draw: (p: Pen) => void, p: V3, scale: number, glow = false) => {
@@ -444,6 +477,7 @@ export class World {
       }
     }
     if (id === 13) place("CH", LOOK.CH, CHIEF, { expr: "frown", prop: null });
+    if ((id === 12 && kc === 1) || (id === 15 && kc === 0) || (id === 19 && kc !== 1) || id === 20 || (id === 3 && kc === 1)) fgSil(id === 20 ? [-0.75, 0.8] : [-0.62, 0.66]);
     if (id === 14 && kc === 1) card("hand_dip", (p) => drawHand(p, false), [BAG[0] + 0.02, BAG[1] - 1.177 * 0.3 + 0.1 - 0.16 * smooth(cu * 2), BAG[2] + 0.1], 0.3);
     if (id === 14 && kc === 2) card("hand_open", (p) => drawHand(p, true), [BAG[0], BAG[1] - 1.09 * 0.24 + 0.1, BAG[2] + 0.3], 0.24);
     if (id === 15) {
@@ -464,7 +498,9 @@ export class World {
     for (; k < this.actors.length; k++) this.actors[k].mesh.visible = false;
     for (; kg < this.glows.length; kg++) this.glows[kg].mesh.visible = false;
     this.pool.flush();
-    for (const a of [...this.actors, ...this.glows]) if (a.mesh.visible) a.bind();
+    for (const a of [...this.actors, ...this.glows]) if (a.mesh.visible) { a.bind(); a.mesh.material = a.mat; }
+    this.actors.forEach((a, i) => { if (!a.mesh.visible || !this.silOn[i]) return;
+      const m = (this.silMats[i] ??= new THREE.MeshBasicMaterial({ color: "#0c0a08", alphaTest: 0.5, side: THREE.DoubleSide, fog: false })); m.map = a.mat.map; a.mesh.material = m; });
     this.glows.forEach((a, i) => { if (!a.mesh.visible) return;                       // main des profondeurs : lumineuse, non éclairée
       const m = (this.glowMats[i] ??= new THREE.MeshBasicMaterial({ transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide, fog: false }));
       m.map = a.mat.map; m.opacity = 0.75; a.mesh.material = m; });
