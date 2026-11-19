@@ -19,7 +19,7 @@ export type Person = {
    *  sash = ceinture de tissu ; prop = accessoire */
   robe?: boolean; beard?: string; scarf?: string; sash?: string; prop?: "jar" | "staff" | "horn" | "lantern" | "bag";
   /** style VIDEO_01 (héros) : grosse tête ronde lumineuse, corps carré, bonnet / écharpe, badge numéroté */
-  ref?: boolean; cap?: string; wrap?: string; badge?: string;
+  ref?: boolean; cap?: string; wrap?: string; badge?: string; turban?: string;
 };
 const hex = (c: string) => { const n = parseInt(c.slice(1), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; };
 const shade = (c: string, k: number) => `rgb(${hex(c).map((v) => Math.max(0, Math.min(255, Math.round(v * k)))).join(",")})`;
@@ -75,14 +75,19 @@ const drawRef = (p: Pen, s: Person) => {
   // halo autour de la tête
   { const hl = g.createRadialGradient(cx, hy, R * 0.92, cx, hy, R * 1.6); hl.addColorStop(0, "rgba(255,244,222,0.6)"); hl.addColorStop(1, "rgba(255,244,222,0)");
     g.fillStyle = hl; g.beginPath(); g.arc(cx, hy, R * 1.6, 0, 7); g.fill(); }
-  // tête : disque blanc crème lumineux (plus clair en haut à gauche)
-  const hg = g.createRadialGradient(cx - R * 0.25, hy - R * 0.3, 6, cx, hy, R); hg.addColorStop(0, "#ffffff"); hg.addColorStop(0.55, "#f7f2e8"); hg.addColorStop(0.9, "#ded6c6"); hg.addColorStop(1, "#c8bea9");
+  // tête : sphère blanche lisse et parfaitement ronde (comme les modèles et les Anciens) : reflet au centre-haut, bord gris chaud
+  const hg = g.createRadialGradient(cx - R * 0.12, hy - R * 0.22, 6, cx, hy, R); hg.addColorStop(0, "#ffffff"); hg.addColorStop(0.5, "#f5f2ec"); hg.addColorStop(0.85, "#d9d4ca"); hg.addColorStop(1, "#bcb5a8");
   g.beginPath(); g.arc(cx, hy, R, 0, 7); g.fillStyle = hg; g.fill();
-  // cheveux : frange droite sombre (de dos : arrière de la tête)
-  g.save(); g.beginPath(); g.arc(cx, hy, R - 1, 0, 7); g.clip(); g.fillStyle = s.hairColor; g.beginPath();
-  if (s.back) g.rect(cx - R, hy - R, 2 * R, R * 1.7);
-  else { const fr = hy - R * 0.2; g.moveTo(cx - R, hy + R * 0.12); g.lineTo(cx - R, hy - R); g.lineTo(cx + R, hy - R); g.lineTo(cx + R, hy + R * 0.12); g.lineTo(cx + R * 0.82, hy + R * 0.12); g.lineTo(cx + R * 0.74, fr); g.lineTo(cx - R * 0.74, fr); g.lineTo(cx - R * 0.82, hy + R * 0.12); g.closePath(); }
-  g.fill(); g.restore();
+  g.save(); g.beginPath(); g.arc(cx, hy, R, 0, 7); g.clip();
+  g.globalAlpha = 0.55; g.fillStyle = "#ffffff"; g.beginPath(); g.ellipse(cx - R * 0.08, hy - R * 0.12, R * 0.42, R * 0.34, 0, 0, 7); g.fill(); g.globalAlpha = 1;
+  // turban rouge discret : calotte qui épouse le haut de la sphère + 2 plis
+  if (s.turban) { const t = s.turban, ty = hy - R * 0.42;
+    g.beginPath(); g.moveTo(cx - R, ty + 16); g.quadraticCurveTo(cx, ty - 22, cx + R, ty + 16); g.lineTo(cx + R, hy - R); g.lineTo(cx - R, hy - R); g.closePath();
+    const tg = g.createLinearGradient(0, hy - R, 0, ty + 16); tg.addColorStop(0, shade(t, 1.1)); tg.addColorStop(1, shade(t, 0.85)); g.fillStyle = tg; g.fill();
+    g.strokeStyle = RL; g.lineWidth = ROL; g.beginPath(); g.moveTo(cx - R, ty + 16); g.quadraticCurveTo(cx, ty - 22, cx + R, ty + 16); g.stroke();
+    g.strokeStyle = shade(t, 0.62); g.lineWidth = 5; g.beginPath(); g.moveTo(cx - R * 0.8, ty - 6); g.quadraticCurveTo(cx - R * 0.1, hy - R * 0.98, cx + R * 0.7, hy - R * 0.72); g.stroke();
+    g.beginPath(); g.moveTo(cx - R * 0.55, ty - 22); g.quadraticCurveTo(cx + R * 0.15, hy - R * 0.7, cx + R * 0.9, ty - 4); g.stroke(); }
+  g.restore();
   g.beginPath(); g.arc(cx, hy, R, 0, 7); line();
   // bonnet côtelé
   if (s.cap) { const c = s.cap, by = hy - R * 0.36;
