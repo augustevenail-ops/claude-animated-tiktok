@@ -147,8 +147,9 @@ const drawDeepHand = (p: Pen) => {
 
 // ---------------- personnages ----------------
 const LOOK: Record<string, Partial<Person>> = {
-  Y: { jacket: "#b8602e", pants: "#4a3a30", shoes: "#2a201a", hair: "bob", hairColor: "#2a201a", scarf: "#3e7f80", sash: "#5a6440" },   // toi : tunique rouille, foulard bleu-vert
-  BRO: { jacket: "#c88a3a", pants: "#4a3a30", shoes: "#2a201a", hair: "fringe", hairColor: "#2a1c16", sash: "#3e7f80" },               // ton petit frère : tunique ocre
+  // toi et ton frère : style VIDEO_01 (drawRef) — tenue unie + un accessoire de couleur + badge de ration numéroté
+  Y: { ref: true, jacket: "#b8602e", pants: "#a85a2c", shoes: "#2a201a", hair: "fringe", hairColor: "#2a201a", cap: "#3e7f80", wrap: "#5e7a62", badge: "9-112" },   // toi : rouille, bonnet bleu-vert, écharpe vert-de-gris
+  BRO: { ref: true, jacket: "#c88a3a", pants: "#b07a34", shoes: "#2a201a", hair: "fringe", hairColor: "#2a1c16", wrap: "#a8402e", badge: "9-113" },               // ton petit frère : ocre, écharpe rouge
   EL: { jacket: "#cfc4ae", pants: "#cfc4ae", shoes: "#4a3a2a", hair: "bald", hairColor: "#bdb6aa", robe: true, beard: "#ece6da", prop: "staff" },   // les Anciens
   CH: { jacket: "#d8cfbc", pants: "#d8cfbc", shoes: "#4a3a2a", hair: "bald", hairColor: "#c8c2b8", robe: true, beard: "#f2ede4", sash: "#8a2e26", prop: "bag" },
   H: { jacket: "#6a2e28", pants: "#3a2a24", shoes: "#2a201a", hair: "bald", hairColor: "#2a2220", robe: true, scarf: "#b8ab92", prop: "horn" },

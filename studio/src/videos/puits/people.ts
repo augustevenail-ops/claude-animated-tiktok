@@ -18,6 +18,8 @@ export type Person = {
   /** robe jusqu'aux chevilles (couleur du torse) ; beard = couleur de la barbe ; scarf = foulard qui couvre les cheveux (couleur) ;
    *  sash = ceinture de tissu ; prop = accessoire */
   robe?: boolean; beard?: string; scarf?: string; sash?: string; prop?: "jar" | "staff" | "horn" | "lantern" | "bag";
+  /** style VIDEO_01 (héros) : grosse tête ronde lumineuse, corps carré, bonnet / écharpe, badge numéroté */
+  ref?: boolean; cap?: string; wrap?: string; badge?: string;
 };
 const hex = (c: string) => { const n = parseInt(c.slice(1), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; };
 const shade = (c: string, k: number) => `rgb(${hex(c).map((v) => Math.max(0, Math.min(255, Math.round(v * k)))).join(",")})`;
@@ -32,7 +34,77 @@ const rrect = (g: CanvasRenderingContext2D, x0: number, y0: number, x1: number, 
   g.beginPath(); g.moveTo(x0, y1); g.lineTo(x0, y0 + r); g.quadraticCurveTo(x0, y0, x0 + r, y0); g.lineTo(x1 - r, y0); g.quadraticCurveTo(x1, y0, x1, y0 + r); g.lineTo(x1, y1); g.closePath();
 };
 
+// ---- style VIDEO_01 (docs/STYLE_VIDEO01.md) pour toi et ton frère : grosse tête ronde blanche lumineuse avec halo,
+// 2 petits yeux ovales noirs très écartés, pas de bouche (petit « o » si peur), frange droite, bonnet côtelé, corps carré
+// d'une seule couleur, écharpe qui pend, badge crème numéroté ; bras fins, mains rondes sombres ; contour fin.
+const RL = "#2a2420", ROL = 6;
+const drawRef = (p: Pen, s: Person) => {
+  const g = p.g, cx = 300, R = 150, hy = 196, top = 352, hip = 668, tw = 214, J = s.jacket;
+  const stp = Math.sin((s.step ?? 0) * Math.PI * 2);
+  const line = (w = ROL) => { g.lineWidth = w; g.strokeStyle = RL; g.stroke(); };
+  const limb = (pts: number[][], w: number, c: string) => { g.lineCap = "round"; g.lineJoin = "round";
+    const path = () => { g.beginPath(); g.moveTo(pts[0][0], pts[0][1]); for (const q of pts.slice(1)) g.lineTo(q[0], q[1]); };
+    path(); g.strokeStyle = RL; g.lineWidth = w + 2 * ROL; g.stroke(); path(); g.strokeStyle = c; g.lineWidth = w; g.stroke(); };
+  g.save();
+  // jambes fines + chaussures
+  const feet = s.pose === "run" ? [-70 - 16 * stp, 70 + 16 * stp] : [-38, 38];
+  feet.forEach((fx, i) => { const hx = cx + (i ? 44 : -44); limb([[hx, hip - 10], [cx + fx, 940]], 34, shade(s.pants, 1));
+    g.beginPath(); g.ellipse(cx + fx + (i ? 8 : -8), 954, 34, 17, 0, 0, 7); g.fillStyle = s.shoes; g.fill(); line(); });
+  // bras
+  const shL = [cx - tw / 2 + 8, top + 34], shR = [cx + tw / 2 - 8, top + 34];
+  const hang = (sh: number[], sx: number) => [sh, [sh[0] + sx * 18, top + 170], [sh[0] + sx * 14, hip - 20]];
+  const armL = s.pose === "armsUp" ? [shL, [cx - 150, top - 90], [cx - 120, top - 230]] : s.pose === "run" ? [shL, [cx - 150, top + 130 - 40 * stp], [cx - 100, top + 230 - 50 * stp]] : hang(shL, -1);
+  const armR = s.pose === "armsUp" ? [shR, [cx + 150, top - 90], [cx + 120, top - 230]] : s.pose === "reach" ? [shR, [cx + 190, top + 40], [cx + 276, top + 44]]
+    : s.pose === "handMouth" ? [shR, [cx + tw / 2 + 40, top + 130], [cx + 40, hy + 80]] : s.pose === "run" ? [shR, [cx + 150, top + 130 + 40 * stp], [cx + 100, top + 230 + 50 * stp]] : hang(shR, 1);
+  // torse carré (aplat + côté ombré)
+  rrect(g, cx - tw / 2, top, cx + tw / 2, hip, 26);
+  { const cg = g.createLinearGradient(cx - tw / 2, 0, cx + tw / 2, 0); cg.addColorStop(0, shade(J, 1.06)); cg.addColorStop(0.62, J); cg.addColorStop(0.63, shade(J, 0.84)); cg.addColorStop(1, shade(J, 0.8)); g.fillStyle = cg; g.fill(); line(); }
+  if (!s.back) { g.beginPath(); g.moveTo(cx, top + 30); g.lineTo(cx, hip - 6); g.strokeStyle = shade(J, 0.66); g.lineWidth = 5; g.stroke(); }   // fermeture
+  g.beginPath(); g.moveTo(cx - tw / 2 + 4, hip - 40); g.lineTo(cx + tw / 2 - 4, hip - 40); g.strokeStyle = shade(J, 0.66); g.lineWidth = 5; g.stroke();   // ceinture
+  // col (anneau plus sombre)
+  g.beginPath(); g.ellipse(cx, top + 6, 74, 26, 0, 0, 7); g.fillStyle = shade(J, 0.7); g.fill(); line();
+  // écharpe : tour du cou + pan qui pend sur la poitrine
+  if (s.wrap) { const w = s.wrap; g.beginPath(); g.ellipse(cx, top + 4, 90, 32, 0, 0, 7); g.fillStyle = w; g.fill(); line();
+    if (!s.back) { rrect(g, cx + 18, top + 14, cx + 62, top + 214, 6); g.fillStyle = shade(w, 0.9); g.fill(); line();
+      g.strokeStyle = shade(w, 0.7); g.lineWidth = 4; for (const y of [top + 196, top + 204]) { g.beginPath(); g.moveTo(cx + 22, y); g.lineTo(cx + 58, y); g.stroke(); } } }
+  // badge crème numéroté
+  if (s.badge && !s.back) { rrect(g, cx - 92, top + 120, cx - 12, top + 156, 4); g.fillStyle = "#d8cdb4"; g.fill(); g.lineWidth = 3; g.strokeStyle = RL; g.stroke();
+    g.fillStyle = "#3a302a"; g.font = "bold 24px monospace"; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText(s.badge, cx - 52, top + 139); }
+  // bras + mains rondes sombres
+  for (const a of [armL, armR]) { limb(a, 30, shade(J, 0.92)); const h = a[a.length - 1]; g.beginPath(); g.arc(h[0], h[1], 25, 0, 7); g.fillStyle = "#3a2a22"; g.fill(); line(); }
+  // halo autour de la tête
+  { const hl = g.createRadialGradient(cx, hy, R * 0.92, cx, hy, R * 1.6); hl.addColorStop(0, "rgba(255,244,222,0.6)"); hl.addColorStop(1, "rgba(255,244,222,0)");
+    g.fillStyle = hl; g.beginPath(); g.arc(cx, hy, R * 1.6, 0, 7); g.fill(); }
+  // tête : disque blanc crème lumineux (plus clair en haut à gauche)
+  const hg = g.createRadialGradient(cx - R * 0.25, hy - R * 0.3, 6, cx, hy, R); hg.addColorStop(0, "#ffffff"); hg.addColorStop(0.55, "#f7f2e8"); hg.addColorStop(0.9, "#ded6c6"); hg.addColorStop(1, "#c8bea9");
+  g.beginPath(); g.arc(cx, hy, R, 0, 7); g.fillStyle = hg; g.fill();
+  // cheveux : frange droite sombre (de dos : arrière de la tête)
+  g.save(); g.beginPath(); g.arc(cx, hy, R - 1, 0, 7); g.clip(); g.fillStyle = s.hairColor; g.beginPath();
+  if (s.back) g.rect(cx - R, hy - R, 2 * R, R * 1.7);
+  else { const fr = hy - R * 0.2; g.moveTo(cx - R, hy + R * 0.12); g.lineTo(cx - R, hy - R); g.lineTo(cx + R, hy - R); g.lineTo(cx + R, hy + R * 0.12); g.lineTo(cx + R * 0.82, hy + R * 0.12); g.lineTo(cx + R * 0.74, fr); g.lineTo(cx - R * 0.74, fr); g.lineTo(cx - R * 0.82, hy + R * 0.12); g.closePath(); }
+  g.fill(); g.restore();
+  g.beginPath(); g.arc(cx, hy, R, 0, 7); line();
+  // bonnet côtelé
+  if (s.cap) { const c = s.cap, by = hy - R * 0.36;
+    g.beginPath(); g.moveTo(cx - R * 0.98, by); g.bezierCurveTo(cx - R * 0.98, hy - R * 1.32, cx + R * 0.98, hy - R * 1.32, cx + R * 0.98, by); g.closePath();
+    const cg = g.createLinearGradient(0, hy - R * 1.2, 0, by); cg.addColorStop(0, shade(c, 1.12)); cg.addColorStop(1, shade(c, 0.86)); g.fillStyle = cg; g.fill(); line();
+    rrect(g, cx - R * 1.04, by - 6, cx + R * 1.04, by + 50, 22); g.closePath(); g.fillStyle = shade(c, 0.95); g.fill(); line();
+    g.strokeStyle = shade(c, 0.7); g.lineWidth = 4; for (let k = 1; k < 16; k++) { const x = cx - R * 1.04 + k * (R * 2.08) / 16; g.beginPath(); g.moveTo(x, by + 2); g.lineTo(x, by + 42); g.stroke(); } }
+  // visage : 2 petits ovales noirs très écartés, pas de bouche
+  if (!s.back) { const lx = (s.look ?? 0) * 20, ey = hy + R * 0.18;
+    g.fillStyle = RL; g.strokeStyle = RL; g.lineWidth = 6;
+    for (const sx of [-1, 1]) { const x = cx + sx * 52 + lx;
+      if (s.blink || s.expr === "relief") { g.beginPath(); g.arc(x, ey + 4, 12, Math.PI + 0.4, -0.4); g.stroke(); continue; }
+      const ry = s.expr === "fear" ? 15 : s.expr === "shock" ? 18 : 16, rx = s.expr === "shock" ? 8 : 10;
+      g.beginPath(); g.ellipse(x, ey, rx, ry, 0, 0, 7); g.fill();
+      if (s.expr === "worry" || s.expr === "fear" || s.expr === "frown") { const d = s.expr === "frown" ? -1 : 1; g.beginPath(); g.moveTo(x + sx * 18, ey - 30 + (d > 0 ? 0 : -6)); g.lineTo(x - sx * 10, ey - 30 - 8 * d); g.stroke(); } }
+    if ((s.expr === "shock" || s.expr === "fear") && s.pose !== "handMouth") { g.beginPath(); g.ellipse(cx + lx * 0.8, hy + R * 0.58, 8, 12, 0, 0, 7); g.fillStyle = "#4a3a34"; g.fill(); } }
+  if (s.pose === "handMouth") { g.beginPath(); g.arc(cx + 40, hy + 80, 25, 0, 7); g.fillStyle = "#3a2a22"; g.fill(); line(); }
+  g.restore();
+};
+
 export const drawPerson = (p: Pen, s: Person) => {
+  if (s.ref) return drawRef(p, s);
   const g = p.g, cx = 300, R = 122, hy = 196, top = 338, hip = 612, tw = 150;
   g.save(); g.lineCap = "round"; g.lineJoin = "round";
   const J = s.jacket, stp = Math.sin((s.step ?? 0) * Math.PI * 2);
