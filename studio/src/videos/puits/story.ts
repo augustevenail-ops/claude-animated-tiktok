@@ -69,16 +69,31 @@ const add = (p: V3, d: V3): V3 => [p[0] + d[0], p[1] + d[1], p[2] + d[2]];
 const ring = (a: number, r: number, y: number): V3 => [r * Math.sin(a), y, r * Math.cos(a)];   // a = 0 : côté +z
 type Cf = (u: number, U: number) => Cam;
 const T = TOWER, F = FRESCO;
-/** drone au ras des dunes (scène 1) : il suit le relief */
-const duneDrone: Cf = (u) => { const x = lp(60, 24, u), z = lp(1620, 1260, u), y = duneH(x, z) + 4.5 + 2 * u;
-  return XL([x, y, z], [x * 0.6, duneH(x, z - 200) + 8, z - 260], 58); };
-/** passage de la crête : l'oasis apparaît (scène 2) */
-const crest: Cf = (u) => { const k = glide(u), z = lp(1180, 560, k), x = lp(22, 8, k), y = Math.max(duneH(x, z) + 6, lp(14, 120, k * k));
-  return XL([x, y, z], lerp3([0, 18, 600], [0, 0, 0], smooth(u * 1.4)), 52 - 6 * k); };
+/** ouverture (accroche) : un seul plan FPV continu sur « Imagine… au milieu du désert » : rase les dunes à toute vitesse, passe la
+ *  crête, survole les toits de l'oasis, fonce sur la place et plonge dans le puits jusqu'au noir (transition vers le joueur de cor). */
+const FPV_K: [number, V3][] = ([[0, [70, 5, 1760]], [0.2, [46, 4.5, 1180]], [0.38, [22, 7, 640]], [0.54, [10, 17, 270]], [0.68, [4, 12, 96]],
+  [0.79, [1.4, 7.2, 15]], [0.86, [0.3, 3.4, 1.7]], [0.9, [0.05, 2.15, 0.45]], [1, [0.05, -16, 0.4]]] as [number, V3][])
+  .map(([t, p]) => [t, [p[0], p[1] + duneH(p[0], p[2]), p[2]]]);
+const fpvPos = (s: number): V3 => {
+  const n = FPV_K.length; let i = 0; while (i < n - 2 && s > FPV_K[i + 1][0]) i++;
+  const u = clamp01((s - FPV_K[i][0]) / (FPV_K[i + 1][0] - FPV_K[i][0])), P0 = FPV_K[Math.max(0, i - 1)][1], P1 = FPV_K[i][1], P2 = FPV_K[i + 1][1], P3 = FPV_K[Math.min(n - 1, i + 2)][1];
+  const cr = (a: number, b: number, c: number, d: number) => 0.5 * (2 * b + (-a + c) * u + (2 * a - 5 * b + 4 * c - d) * u * u + (-a + 3 * b - 3 * c + d) * u * u * u);
+  const p: V3 = [cr(P0[0], P1[0], P2[0], P3[0]), cr(P0[1], P1[1], P2[1], P3[1]), cr(P0[2], P1[2], P2[2], P3[2])];
+  if (s < 0.6) p[1] = Math.max(p[1], duneH(p[0], p[2]) + 3.5);
+  return p;
+};
+const fpv = (s: number): Cam => {
+  const p = fpvPos(s), q = fpvPos(Math.min(1, s + 0.012)), d = Math.hypot(q[0] - p[0], q[1] - p[1], q[2] - p[2]) || 1;
+  const ahead: V3 = [p[0] + (q[0] - p[0]) / d * 60, p[1] + (q[1] - p[1]) / d * 60 - 4, p[2] + (q[2] - p[2]) / d * 60];
+  const down: V3 = [p[0], p[1] - 30, p[2] - 0.4], k = smooth((s - 0.8) / 0.1);
+  const roll = 0.2 * Math.sin(s * 12) * (1 - smooth((s - 0.55) / 0.2));
+  return s < 0.72 ? P(p, lerp3(ahead, down, k), lp(74, 66, s), roll, 0.5, 9000) : P(p, lerp3(ahead, down, k), lp(70, 62, s), roll, 0.04, 1500);
+};
+const FPV_T1 = SHOTS[1].a / FPS, FPV_T2 = WORDS[10].s - 2 / FPS;                     // fin de « Imagine. », fin du plan FPV
 /** chaque scène découpée en sous-plans : [indice du premier mot (-1 = début de scène), caméra(u du sous-plan, U de la scène)] */
 const CUTS: Record<number, [number, Cf][]> = {
-  1: [[-1, duneDrone]],
-  2: [[-1, crest],
+  1: [[-1, (u) => fpv((u * FPV_T1) / FPV_T2)]],
+  2: [[-1, (u) => fpv((FPV_T1 + u * (FPV_T2 - FPV_T1)) / FPV_T2)],
       [10, (u) => P(lerp3(add(T, [-5.5, TOWER_H + 0.6, 6.5]), add(T, [-3.6, TOWER_H + 1.2, 4.2]), smooth(u)), add(T, [0, TOWER_H + 1.6, 0]), 44, 0.05)]],   // le joueur de cor en haut de la tour
   3: [[-1, (u) => P(lerp3([0.4, 7, 10], [0.05, 3.4, 2.6], snap(u, 0.35)), [0, STEP_H + 0.4, 0], lp(50, 38, snap(u, 0.35)))],                       // zoom éclair sur la bouche noire du puits
       [19, (u) => P(lerp3([2.4, 2.6, 23], [2.0, 2.4, 21], u), [0, 1.2, 0], 40, -0.03)]],                                                                // la place, le puits au loin, les gens se figent
@@ -117,8 +132,8 @@ const CUTS: Record<number, [number, Cf][]> = {
   18: [[-1, (u) => P([0.03, TOP_Y + 1.4 - 0.5 * u, 0.42], [0, -30, 0], lp(50, 32, smooth(u)))]],                                                        // zoom lent dans le noir du puits
   19: [[-1, (u) => { const a = lp(-1.1, -0.3, u); return P(ring(a, 3.6, 1.55), ring(a + 0.1, 6.5, 1.4), 46); }],                                          // les visages : personne ne réagit
        [184, (u) => P(lerp3([0.3, 2.35, 1.3], [0.25, 2.3, 1.05], u), [0, 1.75, -2.9], 40)],                                                              // les Anciens échangent un regard
-       [189, (u) => P(lerp3(add(YOU, [-0.2, 1.52, -1.3]), add(YOU, [-0.15, 1.5, -1.0]), snap(u, 0.35)), add(YOU, [0, 1.46, 0]), lp(40, 30, snap(u, 0.35)))]],   // à part toi
-  20: [[-1, (u) => P(lerp3(add(YOU, [0.8, 1.55, 2.6]), add(YOU, [0.7, 1.52, 2.2]), smooth(u)), add(YOU, [-1.0, 1.35, -3]), 46)],                        // toi au premier plan, la foule, le puits, les Anciens
+       [189, (u) => P(lerp3(add(YOU, [-0.3, 1.5, -2.3]), add(YOU, [-0.25, 1.5, -2.0]), snap(u, 0.35)), add(YOU, [0, 1.42, 0]), lp(42, 34, snap(u, 0.35)))]],   // à part toi
+  20: [[-1, (u) => P(lerp3(add(YOU, [0.8, 1.55, 2.6]), add(YOU, [0.7, 1.52, 2.2]), smooth(u)), add(YOU, [-1.0, 2.0, -3]), 46)],                        // toi au premier plan, la foule, le puits, les Anciens
        [208, (u) => XL(lerp3([5, 6, 16], [4, 9, 20], u), [0, 1, 0], 44)]],
 };
 /** sous-plans (montage) */
@@ -128,17 +143,26 @@ export const CUTLIST: Cut[] = SHOTS.flatMap((s) => {
   return c.map((_, k) => ({ sid: s.id, k, a: st[k], b: k + 1 < c.length ? st[k + 1] : s.b }));
 });
 export const cutAt = (f: number) => CUTLIST.find((c) => f >= c.a && f < c.b) ?? CUTLIST[CUTLIST.length - 1];
+/** le plan FPV d'ouverture (scène 1 + premier sous-plan de la scène 2) est continu : ni volet noir ni dézoom à sa coupe interne */
+export const isFpv = (sid: number, k: number) => sid === 1 || (sid === 2 && k === 0);
 export const camAt = (sid: number, f: number): Cam => {
-  const ct = cutAt(f), cf = CUTS[ROLE[sid]][ct.sid === sid ? ct.k : 0][1];
-  const c0 = cf(clamp01((f - ct.a) / Math.max(1, ct.b - ct.a)), uOf(sid, f)), a = c0.far > 2000 ? 0.03 : 0.012, n = f * 0.021 + sid * 3.1;
-  const close = c0.far < 2000 && Math.hypot(c0.pos[0] - c0.look[0], c0.pos[1] - c0.look[1], c0.pos[2] - c0.look[2]) < 7 && c0.pos[1] > STEP_H;
-  const zd = Math.min(1.2 * FPS, 0.75 * (ct.b - ct.a)), zk = close ? 1 - Math.pow(1 - clamp01((f - ct.a) / Math.max(1, zd)), 3) : 1;
-  const c = { ...c0, fov: c0.fov * (0.55 + 0.45 * zk) };                                   // VIDEO_01 : départ très serré, zoom arrière fluide
-  return { ...c, look: [c.look[0] + a * Math.sin(n * 2.3), c.look[1] + a * Math.sin(n * 1.7 + 1), c.look[2] + a * Math.sin(n * 1.1)] };
+  const ct = cutAt(f), k = ct.sid === sid ? ct.k : 0, cf = CUTS[ROLE[sid]][k][1], uc = clamp01((f - ct.a) / Math.max(1, ct.b - ct.a));
+  let c0 = cf(uc, uOf(sid, f));
+  if (!isFpv(sid, k)) {
+    // mouvement permanent : léger travelling avant (10 %) + orbite lente autour du sujet
+    const L = c0.look, dx = c0.pos[0] - L[0], dz = c0.pos[2] - L[2], push = 1 - (sid === 20 ? 0 : 0.1) * smooth(uc), th = 0.07 * (uc - 0.5) * (sid % 2 ? 1 : -1);
+    const ox = dx * Math.cos(th) - dz * Math.sin(th), oz = dx * Math.sin(th) + dz * Math.cos(th);
+    c0 = { ...c0, pos: [L[0] + ox * push, L[1] + (c0.pos[1] - L[1]) * push, L[2] + oz * push] };
+    // VIDEO_01 : chaque plan démarre extrêmement serré (plus qu'un visage dans l'écran) puis dézoom rapide jusqu'au cadrage final en ~1 s
+    const zd = Math.min(1.0 * FPS, 0.85 * (ct.b - ct.a)), zk = 1 - Math.pow(1 - clamp01((f - ct.a) / Math.max(1, zd)), 4);
+    c0 = { ...c0, fov: c0.fov * (0.3 + 0.7 * zk) };
+  }
+  const a = isFpv(sid, k) ? 0 : c0.far > 2000 ? 0.05 : 0.02, n = f * 0.021 + sid * 3.1;   // caméra portée
+  return { ...c0, look: [c0.look[0] + a * Math.sin(n * 2.3), c0.look[1] + a * Math.sin(n * 1.7 + 1), c0.look[2] + a * Math.sin(n * 1.1)] };
 };
 /** flou de profondeur (px à 1080 à l'infini) */
 export type Dof = { cInf: number; focus?: V3 };
-const DOFS: Record<number, number> = { 1: 3, 2: 3, 3: 12, 4: 18, 5: 2, 6: 3, 7: 6, 8: 18, 9: 12, 10: 18, 11: 18, 12: 16, 13: 22, 14: 20, 15: 22, 16: 8, 17: 10, 18: 6, 19: 22, 20: 20 };
+const DOFS: Record<number, number> = { 1: 1.5, 2: 2, 3: 12, 4: 18, 5: 2, 6: 3, 7: 6, 8: 18, 9: 12, 10: 18, 11: 18, 12: 16, 13: 22, 14: 20, 15: 22, 16: 8, 17: 10, 18: 6, 19: 22, 20: 20 };
 /** point de netteté sur le sujet des plans rapprochés (sinon : le point visé par la caméra) */
 export const dofAt = (sid: number, f = 0): Dof => {
   const id = ROLE[sid], ct = cutAt(f), k = ct.sid === sid ? ct.k : 0, head = (p: V3, h = 1.45): V3 => [p[0], p[1] + h, p[2]];

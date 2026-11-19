@@ -38,15 +38,17 @@ export const captionGroups = (words: Word[]) => {
 };
 /** couleur du mot prononcé (karaoké) : orange sable, pour toutes les séries (décision utilisateur du 2026-11-13) */
 export const KARAOKE = "#FF9A3C";
-export const Captions: React.FC<{ t: number; groups: { s: number; e: number; text: string; ws?: { t: string; s: number }[] }[]; karaoke?: string }> = ({ t, groups, karaoke }) => {
+/** top : position verticale (% de la hauteur) ; shadow : multiplicateur de l'ombre portée ; pop : dézoom à l'arrivée de chaque groupe (ex. 0.05 = 5 % trop gros puis taille normale) */
+export const Captions: React.FC<{ t: number; groups: { s: number; e: number; text: string; ws?: { t: string; s: number }[] }[]; karaoke?: string; top?: number; shadow?: number; pop?: number }> = ({ t, groups, karaoke, top = 64, shadow = 1, pop: gp = 0 }) => {
   const g = groups.find((x) => t >= x.s - 0.03 && t < x.e);
   if (!g) return null;
   const base = { fontFamily: MONT, fontWeight: 900, fontSize: 84, lineHeight: 1.05, letterSpacing: 0.5, color: "#ffffff",
-    WebkitTextStroke: "5px #0b0b0d", paintOrder: "stroke fill", textShadow: "0 5px 12px rgba(0,0,0,0.65), 0 0 2px rgba(0,0,0,0.9)" } as React.CSSProperties;
+    WebkitTextStroke: "5px #0b0b0d", paintOrder: "stroke fill", textShadow: shadow > 1 ? `0 ${5 * shadow}px ${12 * shadow}px rgba(0,0,0,0.85), 0 0 ${8 * shadow}px rgba(0,0,0,0.75), 0 0 2px rgba(0,0,0,0.95)` : "0 5px 12px rgba(0,0,0,0.65), 0 0 2px rgba(0,0,0,0.9)" } as React.CSSProperties;
+  const gk = gp ? 1 + gp * Math.pow(1 - Math.min(1, Math.max(0, (t - g.s + 0.03) / 0.22)), 2) : 1;
   const ws = g.ws ?? [];
   let cur = -1; ws.forEach((w, i) => { if (t >= w.s - 0.03) cur = i; });
   return (
-    <div style={{ position: "absolute", left: 0, right: 0, top: "64%", transform: "translateY(-50%)", textAlign: "center", padding: "0 120px" }}>
+    <div style={{ position: "absolute", left: 0, right: 0, top: `${top}%`, transform: `translateY(-50%) scale(${gk})`, textAlign: "center", padding: "0 120px" }}>
       {karaoke && ws.length ? ws.map((w, i) => { const on = i === cur, pop = on ? 1 + 0.08 * Math.exp(-(t - w.s) * 10) : 1;
         return <span key={i} style={{ ...base, color: on ? karaoke : "#ffffff", display: "inline-block", transform: `scale(${pop})`, margin: "0 0.12em" }}>{w.t}</span>; })
         : <span style={base}>{g.text}</span>}

@@ -40,4 +40,4 @@ Réplique du petit frère : {voix enfant} … {voix narrateur}.
 (serious)(soft tone) Alors, tu révèles à tout le monde ce que tu viens d'apprendre, ou tu te tais ?
 (serious)(soft tone) Dis-le en commentaire.
 
-OUTRO: Abonne-toi pour l'épisode deux.
+OUTRO: Abonne-toi pour la partie 2.

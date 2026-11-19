@@ -12,7 +12,7 @@ import { GradeEffect } from "../bridge/grade";
 
 import { World } from "./world";
 import { PuitsHud, BarWipe, Question, PuitsTitle } from "./Habillage";
-import { TOTAL, FPS, WORDS, shotAt, dofAt, CHOICE_AT, TITLE_AT, LIGHT, ROLE, waterAt, clockAt, CUTLIST } from "./story";
+import { TOTAL, FPS, WORDS, shotAt, dofAt, CHOICE_AT, TITLE_AT, LIGHT, ROLE, waterAt, clockAt, CUTLIST, cutAt, isFpv } from "./story";
 import { Captions, captionGroups, useFonts, KARAOKE } from "../shared/overlay";
 const GROUPS = captionGroups(WORDS);
 import { GRADES } from "./look";
@@ -27,7 +27,9 @@ const makeBloom = () => {
   return b;
 };
 /** fins de plans (volet noir haut/bas de VIDEO_01) : chaque fin de sous-plan sauf la dernière avant le carton */
-const ENDS = CUTLIST.map((c) => c.b).filter((b) => b < Math.round(TITLE_AT * FPS));
+const ENDS = CUTLIST.filter((c) => !isFpv(c.sid, c.k) || (c.sid === 2 && c.k === 0)).map((c) => c.b).filter((b) => b < Math.round(TITLE_AT * FPS));
+/** sous-titres plus bas quand le plan montre un texte diégétique (stèle de la règle) */
+const capTop = (f: number) => { const c = cutAt(f); return ROLE[c.sid] === 10 && c.k === 0 ? 87 : 64; };
 const fwd = new THREE.Vector3(), fpt = new THREE.Vector3();
 
 const Inner: React.FC = () => {
@@ -84,7 +86,7 @@ export const PuitsEp1: React.FC = () => {
       <div style={{ position: "absolute", inset: 0, mixBlendMode: "overlay", opacity: 0.13, backgroundImage: `url("${GRAIN}")`, backgroundSize: "260px 260px", backgroundPosition: `${(f * 53) % 260}px ${(f * 97) % 260}px` }} />
       {t < TITLE_AT ? <PuitsHud clock={clockAt(t)} place={LIGHT[ROLE[shotAt(f).id]] === 1 ? "GRANDE PLACE · NUIT" : "OASIS · PUITS CENTRAL"} label="EAU DU PUITS" count={`${waterAt(t)} %`} alert={waterAt(t) < 20} /> : null}
       {t < TITLE_AT ? <Question t={t} at={CHOICE_AT - 0.5} q={["TU LE RÉVÈLES…", "OU TU TE TAIS ?"]} a="JE LE RÉVÈLE" b="JE ME TAIS" ta={WORDS[194].s} tb={WORDS[206].s} /> : null}
-      {t < TITLE_AT ? <Captions t={t} groups={GROUPS} karaoke={KARAOKE} /> : null}
+      {t < TITLE_AT ? <Captions t={t} groups={GROUPS} karaoke={KARAOKE} top={capTop(f)} shadow={2} pop={0.05} /> : null}
       <BarWipe f={f} ends={ENDS} />
       <PuitsTitle t={t} at={TITLE_AT} title="LE PUITS" count="EAU DU PUITS · 12 %" />
       {on.audio ? <Audio src={staticFile("puits/mix.wav")} /> : null}

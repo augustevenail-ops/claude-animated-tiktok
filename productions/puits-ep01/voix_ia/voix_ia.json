@@ -1,9 +1,9 @@
 {
   "provider": "fish",
-  "_note": "Le Puits ép. 1 : narrateur = voix clonée de l'utilisateur (comme Le Mur) ; réplique du petit frère = voix de bibliothèque Fish (clé voix.enfant, balise {voix enfant}).",
+  "_note": "Le Puits ép. 1 : narrateur = modèle Fish 15ba126e… donné par l'utilisateur (2026-11-19) ; réplique du petit frère = voix enfant (balise {voix enfant}). Ancienne voix zero-shot rangée dans v_zero_shot/.",
   "fish": {
-    "reference_id": "file:ref_narrateur.wav",
-    "voice_name": "Narrateur Dramatique et Captivant (voix de l'utilisateur clonée dans Fish Audio, FR) — défaut depuis 2026-11-14",
+    "reference_id": "15ba126e214c4eae9c69d5a01bbbf53c",
+    "voice_name": "Narrateur Expressif et Profond (Fish, FR) — choisie par l'utilisateur le 2026-11-19",
     "fallback_reference_id": "3bce5f0710f949888abe982ded1ef731",
     "fallback_voice_name": "Lama Faché (FR, homme d'âge moyen, grave, mystérieux, cinématographique, suspense)",
     "model": "s1",
@@ -29,6 +29,7 @@
     },
     "reference_id_clone_fish": "e85eb76597a045c08f9031096e973f86",
     "reference_text": "Tu te réveilles au milieu d'un labyrinthe géant. Des murs de trente mètres, à perte de vue. Et aucun souvenir de comment tu es arrivé là. Le jour, le labyrinthe est calme. Mais la nuit… il change. Les murs bougent. Et les Longs sortent. Des créatures blanches de dix mètres, sans visage. Ils ne voient rien. Ils sentent ce qui bouge. Au centre, une clairière.",
-    "_note_reference": "2026-11-19 : la voix clonée e85eb… répond 404 sur le compte Fish connecté (0 voix perso). Narrateur recréé en zero-shot à partir de 19 s de la voix off de Le Mur ép. 1 (ref_narrateur.wav)."
+    "_note_reference": "2026-11-19 : la voix clonée e85eb… répond 404 sur le compte Fish connecté (0 voix perso). Narrateur recréé en zero-shot à partir de 19 s de la voix off de Le Mur ép. 1 (ref_narrateur.wav).",
+    "reference_id_zero_shot": "file:ref_narrateur.wav"
   }
 }

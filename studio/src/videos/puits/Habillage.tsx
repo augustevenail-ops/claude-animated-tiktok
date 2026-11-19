@@ -6,12 +6,12 @@ const RED = "#e0483a", SH = "0 3px 10px rgba(0,0,0,0.75)";
 
 export const PuitsHud: React.FC<{ clock: string; place: string; label: string; count: string; total?: string; alert?: boolean }> = ({ clock, place, label, count, total, alert }) => (
   <>
-    <div style={{ position: "absolute", left: 120, top: 150, color: "#f2ece2", textShadow: SH }}>
+    <div style={{ position: "absolute", left: 130, top: 210, color: "#f2ece2", textShadow: SH }}>
       <div style={{ fontFamily: MONT, fontWeight: 800, fontSize: 19, letterSpacing: 3, color: RED }}>● ÉPISODE 1</div>
       <div style={{ fontFamily: BEBAS, fontSize: 92, lineHeight: 0.95, marginTop: 4 }}>{clock}</div>
       <div style={{ fontFamily: MONT, fontWeight: 700, fontSize: 15, letterSpacing: 3, color: "rgba(220,210,195,0.55)", marginTop: 2 }}>{place}</div>
     </div>
-    <div style={{ position: "absolute", right: 120, top: 150, textAlign: "right", textShadow: SH }}>
+    <div style={{ position: "absolute", right: 130, top: 210, textAlign: "right", textShadow: SH }}>
       <div style={{ fontFamily: MONT, fontWeight: 800, fontSize: 19, letterSpacing: 3, color: RED }}>{label}</div>
       <div style={{ fontFamily: BEBAS, fontSize: 92, lineHeight: 0.95, marginTop: 4, color: "#f2ece2" }}>
         <span style={{ color: alert ? RED : "#f2ece2" }}>{count}</span>{total ? <span style={{ color: "#f2ece2" }}> / {total}</span> : null}</div>
@@ -19,10 +19,10 @@ export const PuitsHud: React.FC<{ clock: string; place: string; label: string; c
   </>
 );
 
-/** fin de chaque plan (VIDEO_01) : image -2 = tiers haut et bas noirs, image -1 = noir complet */
+/** fin de chaque plan (VIDEO_01) : image -4 = tiers haut et bas noirs, puis 0,1 s (3 images) de noir complet */
 export const BarWipe: React.FC<{ f: number; ends: number[] }> = ({ f, ends }) => {
-  const e = ends.find((b) => f >= b - 2 && f < b); if (e === undefined) return null;
-  if (f === e - 1) return <div style={{ position: "absolute", inset: 0, background: "#000" }} />;
+  const e = ends.find((b) => f >= b - 4 && f < b); if (e === undefined) return null;
+  if (f >= e - 3) return <div style={{ position: "absolute", inset: 0, background: "#000" }} />;
   return <><div style={{ position: "absolute", left: 0, right: 0, top: 0, height: "34%", background: "#000" }} /><div style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: "34%", background: "#000" }} /></>;
 };
 
@@ -35,7 +35,7 @@ export const Question: React.FC<{ t: number; at: number; q: string[]; a: string;
   if (t < at) return null;
   const k = Math.min(1, (t - at) / 0.25), ka = Math.max(0, Math.min(1, (t - ta) / 0.2)), kb = Math.max(0, Math.min(1, (t - tb) / 0.2));
   return (
-    <div style={{ position: "absolute", left: 0, right: 0, top: 330, textAlign: "center", opacity: k }}>
+    <div style={{ position: "absolute", left: 0, right: 0, top: 420, textAlign: "center", opacity: k }}>
       {q.map((l, i) => <div key={i} style={{ fontFamily: BEBAS, fontSize: 96, lineHeight: 1.0, color: "#f2ece2", textShadow: "0 4px 14px rgba(0,0,0,0.85)" }}>{l}</div>)}
       <div style={{ marginTop: 26 }}><Pill text={a} col="#f2ece2" k={ka} /><Pill text={b} col={RED} k={kb} /></div>
     </div>

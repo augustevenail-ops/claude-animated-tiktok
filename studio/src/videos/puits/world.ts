@@ -411,7 +411,7 @@ export class World {
       if (size) (p.material as THREE.PointsMaterial).size = size;
       const a = p.geometry.getAttribute("position") as THREE.BufferAttribute;
       for (let i = 0; i < a.count; i++) { const v = fn(i, (kk) => hash(i, 300 + kk)) ?? [0, -999, 0]; a.setXYZ(i, v[0], v[1], v[2]); } a.needsUpdate = true; };
-    setP("dust", [3, 4, 8, 10, 12, 15, 17, 19, 20].includes(id), (i, r) => nearCam(1.5 + r(0) * 7, (r(1) - 0.5) * 5 + Math.sin(t * 0.6 + i) * 0.3 + t * 0.12, (r(2) - 0.5) * 7 + Math.sin(t * 0.8 + i * 2) * 0.2), 0.06);
+    setP("dust", [3, 4, 6, 8, 9, 10, 11, 12, 13, 14, 15, 17, 19, 20].includes(id), (i, r) => nearCam(1.5 + r(0) * 7, (r(1) - 0.5) * 5 + Math.sin(t * 0.6 + i) * 0.3 + t * 0.12, (r(2) - 0.5) * 7 + Math.sin(t * 0.8 + i * 2) * 0.2), 0.06);
     setP("blow", id === 1 || id === 2, (i, r) => { const a = frc(r(0) + t * (0.3 + r(1) * 0.2)); return nearCam(14 + r(2) * 60, -30 + a * 60, -6 + r(3) * 4 + Math.sin(a * 6 + i) * 1.5); }, 3);   // le vent soulève le sable
     setP("bird", id === 2 || id === 5 || id === 6, (i, r) => { const a = frc(r(0) * 0.4 + t * 0.06); return [-80 + a * 200 + r(1) * 20, 60 + r(2) * 30 + Math.sin(t * 8 + i) * 0.8, -40 + r(3) * 60 + a * 30]; }, 2.2);
     setP("pour", id === 11 && kc === 1, (i, r) => { const a = frc(r(0) + t * 1.6), bx = this.bucket.position.x + 0.16, by = this.bucket.position.y - 0.05;   // le sable coule du seau
@@ -433,10 +433,10 @@ export class World {
       const d = cam.position.distanceTo(V(p[0], p[1] + 1.1 * scale, p[2])), [w, h, kk] = tierOf(d / scale);
       const spec: Person = { ref: true, ...(look as Person), pose: fo.pose ?? "stand", expr: fo.expr, back: fo.back, blink: !!fo.blink, look: fo.look ?? 0, step: fo.step, ...(fo.prop !== undefined ? { prop: fo.prop ?? undefined } : {}) };
       A.r = this.pool.req(`${key}|${JSON.stringify(fo)}`, w, h, kk, (pen: Pen) => drawPerson(pen, spec));
-      A.mesh.position.set(...p); A.mesh.up.set(0, 1, 0); A.mesh.rotation.set(0, yaw(p), roll, "YXZ");
+      A.mesh.position.set(...p); A.mesh.up.set(0, 1, 0); A.mesh.rotation.set(0, yaw(p), roll + (fo.sil ? 0 : 0.022 * Math.sin(f * 0.11 + k * 1.7)), "YXZ");   // léger balancement (vie à l'écran)
       const dy = cam.position.y - (p[1] + 1.0 * scale), hz = Math.hypot(cam.position.x - p[0], cam.position.z - p[2]);
       if (Math.atan2(dy, hz) > 0.55) { A.mesh.up.set(0, 1, 0).applyQuaternion(cam.quaternion); A.mesh.lookAt(cam.position); A.mesh.up.set(0, 1, 0); }
-      A.mesh.scale.setScalar(scale); A.mesh.visible = true; this.silOn[k - 1] = !!fo.sil;
+      A.mesh.scale.set(scale, scale * (1 + 0.012 * Math.sin(f * 0.19 + k * 2.3)), scale); A.mesh.visible = true; this.silOn[k - 1] = !!fo.sil;   // respiration
     };
     /** silhouettes noires au premier plan, très près de la caméra (floues) : elles encadrent le sujet, comme dans VIDEO_01 */
     const fgSil = (xs: number[], d = 1.1) => xs.forEach((x, i) => { const q = cam.position.clone().addScaledVector(fwd, d + 0.15 * i).addScaledVector(rgt, x);
@@ -446,7 +446,7 @@ export class World {
     const card = (key: string, draw: (p: Pen) => void, p: V3, scale: number, glow = false) => {
       const A = glow ? this.glows[kg++] : this.actors[k++]; if (!A) return;
       A.r = this.pool.req(key, 1080, 1800, 1.8, draw); A.mesh.position.set(...p); A.mesh.up.set(0, 1, 0).applyQuaternion(cam.quaternion); A.mesh.lookAt(cam.position); A.mesh.up.set(0, 1, 0);
-      A.mesh.scale.setScalar(scale); A.mesh.visible = true;
+      A.mesh.scale.set(scale, scale * (1 + 0.012 * Math.sin(f * 0.19 + k * 2.3)), scale); A.mesh.visible = true;   // respiration
     };
     const blink = (seed: number) => (f + seed * 37) % 97 < 4;
     const jit = (amp: number, seed: number) => amp * Math.sin(t * 41 + seed) * Math.sin(t * 13 + seed * 2);
