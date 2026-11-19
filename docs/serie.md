@@ -18,6 +18,7 @@ sur *L'appel* (ép. 1-3) et *Le Mur* (ép. 1, v6) ; le détail est dans `personn
 |---|---|---|---|
 | *L'appel* | huis clos, appels/règles (ép. 1-3 publiés ; code retiré le 2026-11-14, récupérable dans l'historique git) | — | — |
 | *Le Mur* | labyrinthe infini, clairière, les « Longs » (géants pâles) la nuit | `studio/src/videos/mur/` | `productions/mur-ep01/` |
+| *Le Quai 9* | station de métro fantôme, rames toutes les 9 min, la « Voyageuse » derrière les vitres (ép. 1 en cours) | `studio/src/videos/quai9/` (à créer) | `productions/quai9-ep01/` (à créer) |
 Idées de nouvelles histoires et règle suite / nouvelle série : `docs/STRATEGIE_SERIE.md`.
 
 ## Recette : nouvelle série
