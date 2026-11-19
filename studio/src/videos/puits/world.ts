@@ -62,7 +62,7 @@ const stoneTex = () => ctex("pu_stone", 256, 256, (g) => {           // pierres 
     g.fillStyle = `rgb(${156 + h * 18},${138 + h * 16},${114 + h * 14})`; g.beginPath(); g.roundRect(x + 3, y + 3, 58, 37, 8); g.fill(); g.beginPath(); g.roundRect(x - 256 + 3, y + 3, 58, 37, 8); g.fill(); }
 });
 const grassTex = () => ctex("pu_grass", 256, 256, (g) => {
-  g.fillStyle = "#3e4a2e"; g.fillRect(0, 0, 256, 256);
+  g.fillStyle = "#5a6a34"; g.fillRect(0, 0, 256, 256);
   for (let i = 0; i < 400; i++) { g.strokeStyle = `rgba(${hash(i, 21) < 0.5 ? "30,70,20" : "170,200,80"},${0.25 + hash(i, 22) * 0.3})`; g.lineWidth = 2; const x = hash(i, 23) * 256, y = hash(i, 24) * 256; g.beginPath(); g.moveTo(x, y); g.lineTo(x + (hash(i, 25) - 0.5) * 6, y - 6 - hash(i, 26) * 8); g.stroke(); }
 });
 /** fresque naïve sur un mur de terre : Celui d'en bas, immense, blanc, sans yeux, bras jusqu'au sol, au-dessus du puits ; enfants minuscules ; vagues bleues */
@@ -111,6 +111,13 @@ const glowTex = (rgb: string) => ctex("pu_glow" + rgb, 128, 128, (g) => {
   const r = g.createRadialGradient(64, 64, 0, 64, 64, 64); r.addColorStop(0, `rgba(${rgb},0.95)`); r.addColorStop(0.35, `rgba(${rgb},0.35)`); r.addColorStop(1, `rgba(${rgb},0)`); g.fillStyle = r; g.fillRect(0, 0, 128, 128);
 });
 
+/** lumière des dunes cuite dans les couleurs de sommets (soleil bas de l'aube) : faces au soleil chaudes et claires, faces à l'ombre violacées */
+const bakeDune = (g: THREE.BufferGeometry) => {
+  const n = g.getAttribute("normal") as THREE.BufferAttribute, sd = new THREE.Vector3(...LIGHTS[0].sunDir).normalize(), col: number[] = [];
+  for (let i = 0; i < n.count; i++) { const d = n.getX(i) * sd.x + n.getY(i) * sd.y + n.getZ(i) * sd.z, k = Math.min(1, Math.max(0, d * 1.8 + 0.18)), e = k * k * (3 - 2 * k);
+    col.push(0.46 + 0.9 * e, 0.38 + 0.68 * e, 0.52 + 0.28 * e); }
+  g.setAttribute("color", new THREE.Float32BufferAttribute(col, 3));
+};
 // ---------------- cartes spéciales (gros plans) ----------------
 const INK = "#221e1d";
 /** main de ton petit frère : « dip » = elle plonge dans le sac ; « open » = paume ouverte, la pierre noire */
@@ -205,19 +212,24 @@ export class World {
     this.sun = new THREE.DirectionalLight("#ffc27a", 1.9); this.sun.castShadow = true; R.add(this.sun, this.sun.target);
     const b = new Batch(), mm = new THREE.Matrix4(), q = new THREE.Quaternion(), yUp = V(0, 1, 0);
     // ---------- sol : dunes (plan déformé), terre de la ville, palmeraie, canaux, place ----------
-    const st = sandTex(); st.repeat.set(220, 220);
+    const st = sandTex(); st.repeat.set(220, 220); const SX = 420, SZ0 = 330, SZ1 = 1900;
     const dg = new THREE.PlaneGeometry(9000, 9000, 360, 360).rotateX(-Math.PI / 2), dp = dg.getAttribute("position") as THREE.BufferAttribute;
     for (let i = 0; i < dp.count; i++) dp.setY(i, duneH(dp.getX(i), dp.getZ(i)) - 0.05);
-    dg.computeVertexNormals();
+    dg.computeVertexNormals(); bakeDune(dg);
     { const ix = dg.getIndex()!, keep: number[] = [];                                  // pas de sol de dunes sous l'oasis (le trou du puits reste ouvert)
-      for (let i = 0; i < ix.count; i += 3) { const a = ix.getX(i), cx = dp.getX(a), cz = dp.getZ(a); if (Math.hypot(cx, cz) > 60) keep.push(a, ix.getX(i + 1), ix.getX(i + 2)); }
+      const inStrip = (x: number, z: number) => Math.abs(x) < SX - 30 && z > SZ0 + 30 && z < SZ1 - 30;
+      for (let i = 0; i < ix.count; i += 3) { const a = ix.getX(i), cx = dp.getX(a), cz = dp.getZ(a); if (Math.hypot(cx, cz) > 60 && !inStrip(cx, cz)) keep.push(a, ix.getX(i + 1), ix.getX(i + 2)); }
       dg.setIndex(keep); }
-    const dunes = new THREE.Mesh(dg, solid("sand", "#ffffff", { map: st })); dunes.receiveShadow = true; R.add(dunes);
+    const dunes = new THREE.Mesh(dg, solid("sandv", "#ffffff", { map: st, vertexColors: true })); dunes.receiveShadow = true; R.add(dunes);
+    { // couloir du drone d'ouverture : maillage fin (4 m) pour des crêtes vives
+      const sg = new THREE.PlaneGeometry(2 * SX, SZ1 - SZ0, Math.round(SX / 2), Math.round((SZ1 - SZ0) / 4)).rotateX(-Math.PI / 2).translate(0, 0, (SZ0 + SZ1) / 2), sp = sg.getAttribute("position") as THREE.BufferAttribute;
+      for (let i = 0; i < sp.count; i++) sp.setY(i, duneH(sp.getX(i), sp.getZ(i)) - 0.05);
+      sg.computeVertexNormals(); bakeDune(sg); const sm = new THREE.Mesh(sg, dunes.material); sm.receiveShadow = true; R.add(sm); }
     const et = earthTex(); et.repeat.set(90, 90);
     const city = new THREE.Mesh(new THREE.RingGeometry(SHAFT_R - 0.02, CITY_R + 14, 96, 2).rotateX(-Math.PI / 2), solid("earth", "#ffffff", { map: et })); city.position.y = 0.02; city.receiveShadow = true; R.add(city);
     const gt = grassTex(); gt.repeat.set(60, 60);
     const grove = new THREE.Mesh(new THREE.RingGeometry(CITY_R + 10, GROVE_R + 6, 128, 1).rotateX(-Math.PI / 2), solid("grass", "#ffffff", { map: gt })); grove.position.y = 0.03; grove.receiveShadow = true; R.add(grove);
-    const waterM = new THREE.MeshBasicMaterial({ color: "#2c5a56" });
+    const waterM = new THREE.MeshBasicMaterial({ color: "#4a9c94" });
     for (const r of [CITY_R + 24, CITY_R + 58, GROVE_R - 6]) { const w = new THREE.Mesh(new THREE.RingGeometry(r, r + 2.6, 160, 1).rotateX(-Math.PI / 2), waterM); w.position.y = 0.06; R.add(w); }
     for (let k = 0; k < STREETS; k++) { const a = k * Math.PI * 2 / STREETS + Math.PI / STREETS, w = new THREE.Mesh(new THREE.PlaneGeometry(2.2, GROVE_R - CITY_R).rotateX(-Math.PI / 2), waterM);
       w.position.set(Math.sin(a) * (CITY_R + GROVE_R) / 2, 0.06, Math.cos(a) * (CITY_R + GROVE_R) / 2); w.rotation.y = a; R.add(w); }
@@ -291,17 +303,36 @@ export class World {
       for (let k = 0; k < 10; k++) { const a = k / 10 * Math.PI * 2 + 0.3; pos.push([(PLAZA - 2) * Math.sin(a), (PLAZA - 2) * Math.cos(a), 8 + hash(k, 621) * 3]); }
       const tg = new THREE.CylinderGeometry(0.16, 0.26, 1, 7, 6).translate(0, 0.5, 0); { const tp = tg.getAttribute("position") as THREE.BufferAttribute; for (let i = 0; i < tp.count; i++) { const y = tp.getY(i); tp.setX(i, tp.getX(i) * (1 + 0.12 * Math.abs(Math.sin(y * 30)))); tp.setZ(i, tp.getZ(i) * (1 + 0.12 * Math.abs(Math.sin(y * 30)))); } tg.computeVertexNormals(); }
       const fronds: THREE.BufferGeometry[] = [];
-      for (let k = 0; k < 9; k++) { const f = new THREE.PlaneGeometry(0.7, 3.4, 1, 6).translate(0, 1.7, 0), fp = f.getAttribute("position") as THREE.BufferAttribute;
+      for (let k = 0; k < 14; k++) { const f = new THREE.PlaneGeometry(0.62, 3.6, 1, 8).translate(0, 1.7, 0), fp = f.getAttribute("position") as THREE.BufferAttribute;
         for (let i = 0; i < fp.count; i++) { const y = fp.getY(i), s = y / 3.4; fp.setX(i, fp.getX(i) * Math.sin(Math.PI * Math.min(1, s * 1.15)) * 1.2); fp.setZ(i, -1.6 * s * s); fp.setY(i, y * 0.85); }
-        f.rotateX(-0.9 - 0.25 * (k % 2)); f.rotateY(k / 9 * Math.PI * 2); fronds.push(f); }
+        f.rotateX(-0.75 - 0.35 * (k % 3) / 2); f.rotateY(k / 14 * Math.PI * 2 + (k % 2) * 0.2); fronds.push(f); }
+      for (let k = 0; k < 4; k++) fronds.push(new THREE.IcosahedronGeometry(0.32, 0).scale(1, 1.4, 1).translate(Math.sin(k * 1.57) * 0.45, -0.45, Math.cos(k * 1.57) * 0.45));   // régimes de dattes
       const cg = mergeGeos(fronds);
       const ti = new THREE.InstancedMesh(tg, solid("trunk", "#4e3a2a"), pos.length), ci = new THREE.InstancedMesh(cg, solid("palm", "#ffffff", { side: THREE.DoubleSide }), pos.length);
       const lean = new THREE.Quaternion();
       pos.forEach(([x, z, h], i) => { lean.setFromAxisAngle(V(hash(i, 631) - 0.5, 0, hash(i, 632) - 0.5).normalize(), 0.05 + hash(i, 633) * 0.16);
         mm.compose(V(x, 0, z), lean, V(1, h, 1)); ti.setMatrixAt(i, mm);
         const top = V(0, h, 0).applyQuaternion(lean); q.setFromAxisAngle(yUp, hash(i, 634) * 6.28).premultiply(lean); mm.compose(V(x + top.x, top.y, z + top.z), q, V(1, 1, 1).multiplyScalar(0.9 + hash(i, 635) * 0.5)); ci.setMatrixAt(i, mm);
-        ci.setColorAt(i, new THREE.Color().setHSL(0.2 + hash(i, 636) * 0.05, 0.28, 0.22 + hash(i, 637) * 0.06)); });
+        ci.setColorAt(i, new THREE.Color().setHSL(0.21 + hash(i, 636) * 0.06, 0.42, 0.26 + hash(i, 637) * 0.08)); });
       ti.castShadow = ci.castShadow = true; ti.receiveShadow = ci.receiveShadow = true; R.add(ti, ci); }
+    // ---------- végétation basse : buissons (palmeraie, canaux, jardins) ----------
+    { const bp: [number, number, number][] = [];
+      for (let i = 0; i < 2600; i++) { const a = hash(i, 701) * Math.PI * 2, r = CITY_R + 6 + Math.sqrt(hash(i, 702)) * (GROVE_R - CITY_R + 10); bp.push([r * Math.sin(a), r * Math.cos(a), 0.5 + hash(i, 703) * 1.0]); }
+      for (let i = 0; i < 260; i++) { const a = hash(i, 711) * Math.PI * 2, r = PLAZA + 8 + hash(i, 712) * (CITY_R - PLAZA - 12), x = r * Math.sin(a), z = r * Math.cos(a); if (streetDist(x, z) < 2.5) continue; bp.push([x, z, 0.4 + hash(i, 713) * 0.5]); }
+      const bg = new THREE.IcosahedronGeometry(1, 1).scale(1, 0.7, 1).translate(0, 0.45, 0), bi = new THREE.InstancedMesh(bg, solid("bush", "#ffffff"), bp.length);
+      bp.forEach(([x, z, sc], i) => { q.setFromAxisAngle(yUp, hash(i, 721) * 6.28); mm.compose(V(x, 0, z), q, V(sc, sc * (0.8 + hash(i, 722) * 0.5), sc)); bi.setMatrixAt(i, mm);
+        bi.setColorAt(i, new THREE.Color().setHSL(0.22 + hash(i, 723) * 0.07, 0.34, 0.13 + hash(i, 724) * 0.08)); });
+      bi.castShadow = bi.receiveShadow = true; R.add(bi); }
+    { // maisons : poutres de bois saillantes en haut des façades (architecture de terre) et quelques coupoles blanchies
+      const beams: THREE.Matrix4[] = [], domes: THREE.Matrix4[] = [];
+      hs.forEach((h, i) => { if (Math.hypot(h.x, h.z) > 200) return; q.setFromAxisAngle(yUp, h.a);
+        for (const [fx, fz, len] of [[0, 1, h.w], [0, -1, h.w], [1, 0, h.d], [-1, 0, h.d]] as [number, number, number][]) {
+          const nb = Math.max(2, Math.floor(len / 1.3));
+          for (let j = 0; j < nb; j++) { const o = (j + 0.5) / nb - 0.5, loc = fz ? V(o * h.w, h.h - 0.45, fz * (h.d / 2 + 0.25)) : V(fx * (h.w / 2 + 0.25), h.h - 0.45, o * h.d);
+            const m = new THREE.Matrix4().compose(loc.applyQuaternion(q).add(V(h.x, 0, h.z)), q.clone().multiply(new THREE.Quaternion().setFromAxisAngle(V(1, 0, 0), Math.PI / 2)).multiply(fz ? new THREE.Quaternion() : new THREE.Quaternion().setFromAxisAngle(V(0, 0, 1), Math.PI / 2)), V(1, 1, 1)); beams.push(m); } }
+        if (hash(i, 741) < 0.12) domes.push(new THREE.Matrix4().compose(V(h.x, h.h, h.z), q, V(1, 1, 1).multiplyScalar(Math.min(h.w, h.d) * 0.36))); });
+      const bmG = new THREE.CylinderGeometry(0.07, 0.08, 0.6, 5), bmI = new THREE.InstancedMesh(bmG, solid("beam", "#5a3c26"), beams.length); beams.forEach((m, i) => bmI.setMatrixAt(i, m)); bmI.castShadow = true; R.add(bmI);
+      const dG = new THREE.SphereGeometry(1, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2), dI = new THREE.InstancedMesh(dG, solid("dome", "#f2e2c8"), domes.length); domes.forEach((m, i) => dI.setMatrixAt(i, m)); dI.castShadow = dI.receiveShadow = true; R.add(dI); }
     // ---------- marché (rue +z) ----------
     for (const [x, z, col] of STALLS) { const s = Math.sign(x);
       for (const [dx, dz] of [[-1, -1.1], [1, -1.1], [-1, 1.1], [1, 1.1]]) b.add(new THREE.CylinderGeometry(0.05, 0.05, 2.4, 6).translate(x + dx * 1.0, 1.2, z + dz), wood);
@@ -412,7 +443,7 @@ export class World {
       const a = p.geometry.getAttribute("position") as THREE.BufferAttribute;
       for (let i = 0; i < a.count; i++) { const v = fn(i, (kk) => hash(i, 300 + kk)) ?? [0, -999, 0]; a.setXYZ(i, v[0], v[1], v[2]); } a.needsUpdate = true; };
     setP("dust", [3, 4, 6, 8, 9, 10, 11, 12, 13, 14, 15, 17, 19, 20].includes(id), (i, r) => nearCam(1.5 + r(0) * 7, (r(1) - 0.5) * 5 + Math.sin(t * 0.6 + i) * 0.3 + t * 0.12, (r(2) - 0.5) * 7 + Math.sin(t * 0.8 + i * 2) * 0.2), 0.06);
-    setP("blow", id === 1 || id === 2, (i, r) => { const a = frc(r(0) + t * (0.3 + r(1) * 0.2)); return nearCam(14 + r(2) * 60, -30 + a * 60, -6 + r(3) * 4 + Math.sin(a * 6 + i) * 1.5); }, 3);   // le vent soulève le sable
+    setP("blow", id === 1 || id === 2, (i, r) => { const a = frc(r(0) + t * (0.3 + r(1) * 0.2)); return nearCam(14 + r(2) * 60, -30 + a * 60, -6 + r(3) * 4 + Math.sin(a * 6 + i) * 1.5); }, 0.5);   // le vent soulève le sable
     setP("bird", id === 2 || id === 5 || id === 6, (i, r) => { const a = frc(r(0) * 0.4 + t * 0.06); return [-80 + a * 200 + r(1) * 20, 60 + r(2) * 30 + Math.sin(t * 8 + i) * 0.8, -40 + r(3) * 60 + a * 30]; }, 2.2);
     setP("pour", id === 11 && kc === 1, (i, r) => { const a = frc(r(0) + t * 1.6), bx = this.bucket.position.x + 0.16, by = this.bucket.position.y - 0.05;   // le sable coule du seau
       return [bx + (r(1) - 0.5) * 0.06 + a * 0.08, by - a * 2.2, this.bucket.position.z + (r(2) - 0.5) * 0.06]; });

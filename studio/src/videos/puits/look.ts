@@ -7,7 +7,7 @@ export type Light = { lit: C3; shade: C3; lift: C3; sat: number; charTint: C3; s
   sunDir: C3; fogCol: string; fogNear: number; fogFar: number; skyTop: string; skyMid: string; skyLow: string; bg: string };
 export const LIGHTS: Light[] = [
   { lit: [1.08, 0.92, 0.74], shade: [0.24, 0.26, 0.34], lift: [0.03, 0.025, 0.02], sat: 0.86, charTint: [1.04, 0.95, 0.84], sunCol: "#d8b48a", sunI: 1.25,
-    hemiSky: "#8a7a68", hemiI: 0.32, sunDir: [-0.6, 0.22, 0.75], fogCol: "#4a3e32", fogNear: 25, fogFar: 520, skyTop: "#1e1a16", skyMid: "#5a4a3a", skyLow: "#a88866", bg: "#2e271f" },
+    hemiSky: "#8a7a68", hemiI: 0.32, sunDir: [-0.6, 0.22, 0.75], fogCol: "#8a6a50", fogNear: 25, fogFar: 520, skyTop: "#40384c", skyMid: "#9a6a4a", skyLow: "#f0b47c", bg: "#2e271f" },
   { lit: [0.74, 0.56, 0.4], shade: [0.09, 0.1, 0.14], lift: [0.02, 0.016, 0.012], sat: 0.86, charTint: [1.06, 0.92, 0.78], sunCol: "#8090a8", sunI: 0.6,
     hemiSky: "#4a3c30", hemiI: 0.26, sunDir: [0.35, 0.8, 0.45], fogCol: "#16120e", fogNear: 14, fogFar: 230, skyTop: "#0a0907", skyMid: "#18140f", skyLow: "#2e241b", bg: "#12100c" },
   { lit: [0.5, 0.6, 0.58], shade: [0.07, 0.08, 0.08], lift: [0.006, 0.008, 0.008], sat: 0.86, charTint: [0.95, 0.9, 0.82], sunCol: "#a8b0a0", sunI: 0.8,

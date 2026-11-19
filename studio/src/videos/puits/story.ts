@@ -22,11 +22,15 @@ export const YOU: V3 = [2.3, 0, 6.6];                                           
 export const BRO_STREET: V3 = [1.3, 0, 34];                                              // ton petit frère qui joue dans la rue du marché
 export const RIM: V3 = [0.55, STEP_H, 2.0];
 export const STELE: V3 = [-4.4, 0, -3.6];                                                 // stèle de la règle (texte diégétique)                                              // ton frère au bord du puits (scène 15)
-/** hauteur des dunes (0 dans l'oasis) */
+/** hauteur des dunes (0 dans l'oasis) : grandes dunes linéaires à crêtes vives (≈ 60 m), parallèles à l'axe z ;
+ *  au nord (z > 0) un couloir creux le long de x = 0 où passe le drone de l'ouverture, entre deux murs de sable */
 export const duneH = (x: number, z: number) => {
-  const r = Math.hypot(x, z), k = smooth((r - DUNE_R) / 160);
+  const r = Math.hypot(x, z), k = smooth((r - DUNE_R) / 200);
   if (k <= 0) return 0;
-  return k * (18 * (0.5 + 0.5 * Math.sin(0.012 * x + 0.005 * z)) * (0.6 + 0.4 * Math.sin(0.004 * x - 0.009 * z + 1)) + 8 * (0.5 + 0.5 * Math.sin(0.023 * z - 0.011 * x + 2)) + 2.5 * Math.sin(0.05 * x + 0.03 * z));
+  const p = 0.03 * x + Math.PI / 2 + 0.3 * Math.sin(0.0023 * z + 0.6 * Math.sin(0.0011 * x));
+  const ridge = Math.pow(1 - Math.abs(Math.sin(p)), 1.7);
+  const wall = z > 0 ? 0.3 + 0.7 * smooth((Math.abs(x) - 8) / 34) : 1;
+  return k * (wall * (82 * ridge + 9 * (0.5 + 0.5 * Math.sin(0.019 * z - 0.013 * x + 2))) + 2.5 * Math.sin(0.05 * x + 0.03 * z) + 3);
 };
 
 // ---------------- temps (voix) ----------------
@@ -71,23 +75,21 @@ type Cf = (u: number, U: number) => Cam;
 const T = TOWER, F = FRESCO;
 /** ouverture (accroche) : un seul plan FPV continu sur « Imagine… au milieu du désert » : rase les dunes à toute vitesse, passe la
  *  crête, survole les toits de l'oasis, fonce sur la place et plonge dans le puits jusqu'au noir (transition vers le joueur de cor). */
-const FPV_K: [number, V3][] = ([[0, [70, 5, 1760]], [0.2, [46, 4.5, 1180]], [0.38, [22, 7, 640]], [0.54, [10, 17, 270]], [0.68, [4, 12, 96]],
-  [0.79, [1.4, 7.2, 15]], [0.86, [0.3, 3.4, 1.7]], [0.9, [0.05, 2.15, 0.45]], [1, [0.05, -16, 0.4]]] as [number, V3][])
-  .map(([t, p]) => [t, [p[0], p[1] + duneH(p[0], p[2]), p[2]]]);
+// drone d'ouverture : ligne droite, sans roulis ni tremblement, au fond du couloir entre les grandes dunes,
+// au-dessus de la palmeraie puis de la rue du marché, jusqu'au puits, et plongée dans le noir
+const FPV_K: [number, V3][] = [[0, [0, 18, 1500]], [0.2, [0, 18, 1060]], [0.38, [0, 21, 650]], [0.54, [0, 21, 300]], [0.68, [0, 13, 100]],
+  [0.79, [0, 7.2, 15]], [0.86, [0, 3.4, 1.7]], [0.9, [0.05, 2.15, 0.45]], [1, [0.05, -16, 0.4]]];
 const fpvPos = (s: number): V3 => {
   const n = FPV_K.length; let i = 0; while (i < n - 2 && s > FPV_K[i + 1][0]) i++;
   const u = clamp01((s - FPV_K[i][0]) / (FPV_K[i + 1][0] - FPV_K[i][0])), P0 = FPV_K[Math.max(0, i - 1)][1], P1 = FPV_K[i][1], P2 = FPV_K[i + 1][1], P3 = FPV_K[Math.min(n - 1, i + 2)][1];
   const cr = (a: number, b: number, c: number, d: number) => 0.5 * (2 * b + (-a + c) * u + (2 * a - 5 * b + 4 * c - d) * u * u + (-a + 3 * b - 3 * c + d) * u * u * u);
-  const p: V3 = [cr(P0[0], P1[0], P2[0], P3[0]), cr(P0[1], P1[1], P2[1], P3[1]), cr(P0[2], P1[2], P2[2], P3[2])];
-  if (s < 0.6) p[1] = Math.max(p[1], duneH(p[0], p[2]) + 3.5);
-  return p;
+  return [cr(P0[0], P1[0], P2[0], P3[0]), cr(P0[1], P1[1], P2[1], P3[1]), cr(P0[2], P1[2], P2[2], P3[2])];
 };
 const fpv = (s: number): Cam => {
   const p = fpvPos(s), q = fpvPos(Math.min(1, s + 0.012)), d = Math.hypot(q[0] - p[0], q[1] - p[1], q[2] - p[2]) || 1;
-  const ahead: V3 = [p[0] + (q[0] - p[0]) / d * 60, p[1] + (q[1] - p[1]) / d * 60 - 4, p[2] + (q[2] - p[2]) / d * 60];
+  const ahead: V3 = [p[0] + (q[0] - p[0]) / d * 60, p[1] + (q[1] - p[1]) / d * 60 - 5, p[2] + (q[2] - p[2]) / d * 60];
   const down: V3 = [p[0], p[1] - 30, p[2] - 0.4], k = smooth((s - 0.8) / 0.1);
-  const roll = 0.2 * Math.sin(s * 12) * (1 - smooth((s - 0.55) / 0.2));
-  return s < 0.72 ? P(p, lerp3(ahead, down, k), lp(74, 66, s), roll, 0.5, 9000) : P(p, lerp3(ahead, down, k), lp(70, 62, s), roll, 0.04, 1500);
+  return s < 0.72 ? P(p, lerp3(ahead, down, k), lp(74, 66, s), 0, 0.5, 9000) : P(p, lerp3(ahead, down, k), lp(70, 62, s), 0, 0.04, 1500);
 };
 const FPV_T1 = SHOTS[1].a / FPS, FPV_T2 = WORDS[10].s - 2 / FPS;                     // fin de « Imagine. », fin du plan FPV
 /** chaque scène découpée en sous-plans : [indice du premier mot (-1 = début de scène), caméra(u du sous-plan, U de la scène)] */
