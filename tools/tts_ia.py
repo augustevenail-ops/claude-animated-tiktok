@@ -22,7 +22,7 @@ FISH = "https://api.fish.audio/v1/tts"
 
 
 def lines(script: Path):
-    out = [l.strip() for l in script.read_text(encoding="utf-8").splitlines() if re.match(r"^(\[|\([a-z]|\{pause|\{vitesse)", l.strip())]
+    out = [l.strip() for l in script.read_text(encoding="utf-8").splitlines() if re.match(r"^(\[|\([a-z]|\{pause|\{vitesse|\{voix)", l.strip())]
     bad = []
     for i, l in enumerate(out, 1):
         if l.startswith("{"): continue
@@ -50,7 +50,12 @@ def tts(cfg: dict, text: str, voice: str):
 def fish(cfg: dict, text: str, ref: str) -> bytes:
     body = {"text": text, "reference_id": ref, "format": cfg["format"], "mp3_bitrate": cfg["mp3_bitrate"], "normalize": cfg["normalize"],
             "latency": cfg["latency"], "temperature": cfg["temperature"], "top_p": cfg["top_p"], "prosody": cfg["prosody"]}
-    req = urllib.request.Request(FISH, json.dumps(body).encode(), {"Content-Type": "application/json", "Authorization": "Bearer proxy-injected", "model": cfg["model"]})
+    if ref.startswith("file:"):    # clonage instantané (zero-shot) : extrait audio + sa transcription envoyés à chaque requête (msgpack)
+        import ormsgpack
+        del body["reference_id"]; body["references"] = [{"audio": Path(cfg["_dir"], ref[5:]).read_bytes(), "text": cfg["reference_text"]}]
+        req = urllib.request.Request(FISH, ormsgpack.packb(body), {"Content-Type": "application/msgpack", "Authorization": "Bearer proxy-injected", "model": cfg["model"]})
+    else:
+        req = urllib.request.Request(FISH, json.dumps(body).encode(), {"Content-Type": "application/json", "Authorization": "Bearer proxy-injected", "model": cfg["model"]})
     try:
         with urllib.request.urlopen(req, timeout=600) as r: return r.read()
     except urllib.error.HTTPError as e:
@@ -76,7 +81,7 @@ def words(al: dict, text: str):
 
 def main():
     ep = Path(sys.argv[1]); d = ep / "voix_ia"; full = json.loads((d / "voix_ia.json").read_text())
-    prov = sys.argv[sys.argv.index("--provider") + 1] if "--provider" in sys.argv else full["provider"]; cfg = full[prov]
+    prov = sys.argv[sys.argv.index("--provider") + 1] if "--provider" in sys.argv else full["provider"]; cfg = full[prov]; cfg["_dir"] = str(d)
     L = lines(d / cfg["script"])
     if "--check" in sys.argv: print(f"{sum(not l.startswith('{') for l in L)} phrases, toutes balisées ({prov})."); return
     if "--texte" in sys.argv:                       # essai libre (court, pour économiser les crédits)
@@ -95,17 +100,20 @@ def main():
         n = int(sys.argv[sys.argv.index("--test") + 1]); text, out = L[n - 1], d / f"essai_{n:02d}_{prov}"
     else:
         text, out = "\n".join(L), d / "voice"
-    PAUSE = re.compile(r"\{(pause|vitesse) ([0-9.]+)\}")       # {pause X} : silence imposé (s) ; {vitesse X} : vitesse de la suite
+    PAUSE = re.compile(r"\{(pause|vitesse|voix) ([0-9a-z._-]+)\}")   # {pause X} : silence imposé (s) ; {vitesse X} : vitesse de la suite
+    # {voix nom} : voix de la suite (clé de cfg["voix"], ex. enfant) ; {voix narrateur} : retour à la voix du narrateur
     sp = PAUSE.split(text); parts = [sp[0]]                       # [texte, (genre, valeur), texte, ...]
-    for q in range(1, len(sp), 3): parts += [(sp[q], float(sp[q + 1])), sp[q + 2]]
+    for q in range(1, len(sp), 3): parts += [(sp[q], sp[q + 1] if sp[q] == "voix" else float(sp[q + 1])), sp[q + 2]]
+    voix = None
     raw, tight = [], []
     for k, seg in enumerate(parts):
         if k % 2:
             if seg[0] == "vitesse": cfg = {**cfg, "prosody": {**cfg["prosody"], "speed": seg[1]}}; continue
+            if seg[0] == "voix": voix = None if seg[1] == "narrateur" else cfg["voix"][seg[1]]; continue
             z = np.zeros(int(seg[1] * SR), np.float32); raw.append(z); tight.append(z); continue
         if not seg.strip(): continue
         if prov == "fish":
-            ref = cfg["fallback_reference_id"] if "--fallback" in sys.argv else cfg["reference_id"]
+            ref = voix or (cfg["fallback_reference_id"] if "--fallback" in sys.argv else cfg["reference_id"])
             x = decode(fish(cfg, seg.strip(), ref))                # pas de minutage : words.json via tools/voix_transcrire.py
         else:
             voice = cfg["fallback_voice_id"] if "--fallback" in sys.argv else cfg["free_voice_id"] if "--free" in sys.argv else cfg["voice_id"]

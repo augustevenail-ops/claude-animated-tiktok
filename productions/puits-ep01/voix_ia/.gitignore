@@ -1,0 +1,2 @@
+# WAV régénérables (tools/tts_ia.py --wav, tools/mur_mix.py) : trop lourds pour git
+*.wav
