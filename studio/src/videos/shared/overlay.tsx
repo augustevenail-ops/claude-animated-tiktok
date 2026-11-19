@@ -56,7 +56,7 @@ export const Captions: React.FC<{ t: number; groups: { s: number; e: number; tex
 
 // ---------------- compteurs du haut ----------------
 // marges latérales de 120 px : TikTok remplit les écrans 19,5:9 en rognant ~9 % de chaque côté (retour utilisateur 2026-11-13)
-export const Hud: React.FC<{ episode: number; place: string; of?: string; label: string; count: number; alert?: boolean }> = ({ episode, place, of, label, count, alert }) => (
+export const Hud: React.FC<{ episode: number; place: string; of?: string; label: string; count: number; unit?: string; alert?: boolean }> = ({ episode, place, of, label, count, unit, alert }) => (
   <>
     <div style={{ position: "absolute", left: 120, top: 150, color: "#fff", textShadow: "0 3px 8px rgba(0,0,0,0.7)" }}>
       <div style={{ fontFamily: MONT, fontWeight: 800, fontSize: 25, letterSpacing: 3.5, opacity: 0.92 }}>● ÉPISODE {episode}</div>
@@ -64,7 +64,7 @@ export const Hud: React.FC<{ episode: number; place: string; of?: string; label:
     </div>
     <div style={{ position: "absolute", right: 120, top: 150, textAlign: "right", textShadow: "0 3px 8px rgba(0,0,0,0.7)" }}>
       <div style={{ fontFamily: MONT, fontWeight: 800, fontSize: 25, letterSpacing: 3.5, color: alert ? "#ffb0a6" : "#dfe6f2" }}>{label}</div>
-      <div style={{ fontFamily: BEBAS, fontSize: 104, lineHeight: 0.95, marginTop: 2, color: alert ? "#ff5a48" : "#ffffff" }}>{count}</div>
+      <div style={{ fontFamily: BEBAS, fontSize: 104, lineHeight: 0.95, marginTop: 2, color: alert ? "#ff5a48" : "#ffffff" }}>{count}{unit ? <span style={{ fontSize: 60, marginLeft: 4 }}>{unit}</span> : null}</div>
     </div>
   </>
 );
