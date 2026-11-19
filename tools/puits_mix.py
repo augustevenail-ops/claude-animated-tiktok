@@ -166,12 +166,13 @@ def knock(t0, g_db):
     m = int(1.6 * SR); tt = np.arange(m) / SR
     hit = (np.sin(2 * np.pi * 120 * tt) * np.exp(-tt / 0.035) + 0.6 * np.sin(2 * np.pi * 240 * tt) * np.exp(-tt / 0.02)
            + 0.4 * lowp(rng.standard_normal(m), 900) * np.exp(-tt / 0.012)
-           + 0.7 * np.sin(2 * np.pi * 820 * tt) * np.exp(-tt / 0.008))                                     # attaque boisée : on entend « toc »
+           + 0.7 * np.sin(2 * np.pi * 820 * tt) * np.exp(-tt / 0.008)
+           + 0.9 * np.sin(2 * np.pi * 180 * tt) * np.exp(-tt / 0.07))                                      # corps du coup : toc FORT (retour utilisateur)                                     # attaque boisée : on entend « toc »
     x = hit.copy()
     for dly, gg in [(0.07, 0.5), (0.15, 0.36), (0.26, 0.24), (0.4, 0.15), (0.58, 0.09), (0.8, 0.05)]:   # écho dans le conduit de pierre
         s = int(dly * SR); x[s:] += lowp(hit[: m - s], 600) * gg
     put(x, t0, g_db, 0.002, ref_len=int(0.06 * SR))
-knock(W(179) - 0.03, 5); knock(W(180) - 0.03, 5)                  # vrais coups (le narrateur ne les dit plus)
+knock(W(179) - 0.03, 9); knock(W(180) - 0.03, 9)                  # vrais coups (le narrateur ne les dit plus)
 
 # ---------------- coupes rapides : petit souffle à chaque changement de plan ----------------
 # souffles de transition retirés (retour utilisateur : trop forts, entendus tout le temps) -> notes tenues de tension (« tiiin »)
