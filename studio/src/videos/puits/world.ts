@@ -116,8 +116,8 @@ const INK = "#221e1d";
 /** main de ton petit frère : « dip » = elle plonge dans le sac ; « open » = paume ouverte, la pierre noire */
 const drawHand = (p: Pen, open: boolean) => {
   const g = p.g; g.save(); g.lineCap = "round"; g.lineJoin = "round";
-  g.beginPath(); g.moveTo(80, 1000); g.lineTo(260, open ? 560 : 520); g.strokeStyle = INK; g.lineWidth = 150 + 22; g.stroke(); g.strokeStyle = "#f0a020"; g.lineWidth = 150; g.stroke();   // manche safran
-  g.beginPath(); g.ellipse(300, open ? 470 : 430, 150, 130, -0.4, 0, 7); g.fillStyle = "#f2f2f4"; g.fill(); g.lineWidth = 11; g.strokeStyle = INK; g.stroke();
+  g.beginPath(); g.moveTo(80, 1000); g.lineTo(260, open ? 560 : 520); g.strokeStyle = INK; g.lineWidth = 150 + 22; g.stroke(); g.strokeStyle = "#b8a27a"; g.lineWidth = 150; g.stroke();   // manche : tunique sable du frère
+  g.beginPath(); g.ellipse(300, open ? 470 : 430, 150, 130, -0.4, 0, 7); g.fillStyle = "#3a2a22"; g.fill(); g.lineWidth = 11; g.strokeStyle = INK; g.stroke();
   if (open) { for (let k = 0; k < 4; k++) { const a = -1.5 + k * 0.42; g.beginPath(); g.moveTo(300 + 110 * Math.cos(a), 470 + 100 * Math.sin(a)); g.lineTo(300 + 190 * Math.cos(a), 470 + 175 * Math.sin(a));
       g.strokeStyle = INK; g.lineWidth = 64 + 22; g.stroke(); g.strokeStyle = "#f2f2f4"; g.lineWidth = 64; g.stroke(); }
     const sg = g.createRadialGradient(285, 450, 6, 300, 470, 80); sg.addColorStop(0, "#4a4a58"); sg.addColorStop(0.5, "#15151c"); sg.addColorStop(1, "#050508");
@@ -148,10 +148,10 @@ const drawDeepHand = (p: Pen) => {
 // ---------------- personnages ----------------
 const LOOK: Record<string, Partial<Person>> = {
   // toi et ton frère : style VIDEO_01 (drawRef) — tenue unie + un accessoire de couleur + badge de ration numéroté
-  Y: { ref: true, jacket: "#b8602e", pants: "#a85a2c", shoes: "#2a201a", hair: "fringe", hairColor: "#2a201a", turban: "#a8382c", badge: "9-112" },   // toi : rouille, turban rouge discret
-  BRO: { ref: true, jacket: "#c88a3a", pants: "#b07a34", shoes: "#2a201a", hair: "fringe", hairColor: "#2a1c16", badge: "9-113" },               // ton petit frère : ocre, tête ronde nue
-  EL: { jacket: "#cfc4ae", pants: "#cfc4ae", shoes: "#4a3a2a", hair: "bald", hairColor: "#bdb6aa", robe: true, beard: "#ece6da", prop: "staff" },   // les Anciens
-  CH: { jacket: "#d8cfbc", pants: "#d8cfbc", shoes: "#4a3a2a", hair: "bald", hairColor: "#c8c2b8", robe: true, beard: "#f2ede4", sash: "#8a2e26", prop: "bag" },
+  Y: { jacket: "#4e6a6e", pants: "#3a3430", shoes: "#2a201a", hair: "bald", hairColor: "#2a201a", sash: "#6a5a44", turban: "#a8382c", badge: "9-112" },   // toi : tunique bleu-gris, turban rouge (pan sur le côté)
+  BRO: { jacket: "#b8a27a", pants: "#4a3a30", shoes: "#2a201a", hair: "bald", hairColor: "#2a1c16", sash: "#5a4a3a", band: "#4a3a5a", badge: "9-113" },   // ton petit frère : tunique sable, bandeau noué
+  EL: { jacket: "#cfc4ae", pants: "#cfc4ae", shoes: "#4a3a2a", hair: "bald", hairColor: "#bdb6aa", robe: true, beard: "#bfb6a6", prop: "staff" },   // les Anciens
+  CH: { jacket: "#d8cfbc", pants: "#d8cfbc", shoes: "#4a3a2a", hair: "bald", hairColor: "#c8c2b8", robe: true, beard: "#c6bdae", sash: "#8a2e26", prop: "bag" },
   H: { jacket: "#6a2e28", pants: "#3a2a24", shoes: "#2a201a", hair: "bald", hairColor: "#2a2220", robe: true, scarf: "#b8ab92", prop: "horn" },
   K: { jacket: "#3e6a6a", pants: "#3a3430", shoes: "#2a201a", hair: "spiky", hairColor: "#1a1412" },
   M: { jacket: "#5a4a3e", pants: "#5a4a3e", shoes: "#2a201a", hair: "bun", hairColor: "#1a1412", robe: true, scarf: "#8a2e26" },
@@ -431,7 +431,7 @@ export class World {
     const place = (key: string, look: Partial<Person>, p: V3, fo: Fo, scale = 1, roll = 0) => {
       const A = this.actors[k++]; if (!A) return;
       const d = cam.position.distanceTo(V(p[0], p[1] + 1.1 * scale, p[2])), [w, h, kk] = tierOf(d / scale);
-      const spec: Person = { ...(look as Person), pose: fo.pose ?? "stand", expr: fo.expr, back: fo.back, blink: !!fo.blink, look: fo.look ?? 0, step: fo.step, ...(fo.prop !== undefined ? { prop: fo.prop ?? undefined } : {}) };
+      const spec: Person = { ref: true, ...(look as Person), pose: fo.pose ?? "stand", expr: fo.expr, back: fo.back, blink: !!fo.blink, look: fo.look ?? 0, step: fo.step, ...(fo.prop !== undefined ? { prop: fo.prop ?? undefined } : {}) };
       A.r = this.pool.req(`${key}|${JSON.stringify(fo)}`, w, h, kk, (pen: Pen) => drawPerson(pen, spec));
       A.mesh.position.set(...p); A.mesh.up.set(0, 1, 0); A.mesh.rotation.set(0, yaw(p), roll, "YXZ");
       const dy = cam.position.y - (p[1] + 1.0 * scale), hz = Math.hypot(cam.position.x - p[0], cam.position.z - p[2]);
