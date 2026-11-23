@@ -1,1 +1,6 @@
 __pycache__/
+studio/snap_bunker/
+productions/bunker/render/
+productions/bunker/*.wav
+productions/bunker/voix/*.wav
+studio/node_modules/
