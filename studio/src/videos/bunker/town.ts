@@ -132,7 +132,7 @@ export class Town {
     box(g, col("#f2c542"), -6.3, 0, 4, -5.3, 10, 4.6); box(g, col("#f2c542"), 5.3, 0, 4, 6.3, 10, 4.6);
     const dome = mesh(new THREE.SphereGeometry(6.2, 40, 20, 0, Math.PI * 2, 0, Math.PI / 2), col("#f2c230", { metalness: 0.9, roughness: 0.2, envMapIntensity: 1.6 }), 0, 11.8, -2.5); g.add(dome);
     for (let k = 0; k < 10; k++) { const a = (k / 10) * Math.PI; const rib = mesh(new THREE.TorusGeometry(6.25, 0.12, 6, 40, Math.PI), col("#d9a21a", { metalness: 0.7, roughness: 0.3 }), 0, 11.8, -2.5); rib.rotation.y = a; g.add(rib); }
-    this.doorGlow = mesh(new THREE.PlaneGeometry(10, 9.4), glow("#fff1d0", 0.55), 0, 4.7, 4.02, false); g.add(this.doorGlow);
+    this.doorGlow = mesh(new THREE.PlaneGeometry(10, 9.4), glow("#3d2a1c", 0.9), 0, 4.7, 4.02, false); g.add(this.doorGlow);
     const steel = col("#8c939c", { metalness: 0.6, roughness: 0.35 });
     this.doorL = mesh(new THREE.BoxGeometry(5, 9.4, 0.5), steel, -2.5, 4.7, 4.3); this.doorR = mesh(new THREE.BoxGeometry(5, 9.4, 0.5), steel, 2.5, 4.7, 4.3); g.add(this.doorL, this.doorR);
     for (const d of [this.doorL, this.doorR]) { for (let k = 0; k < 4; k++) box(d, col("#f2c542", { metalness: 0.6 }), -2.4, -4.5 + k * 3, 0.26, 2.4, -4.2 + k * 3, 0.32); }

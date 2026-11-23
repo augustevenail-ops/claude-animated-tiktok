@@ -53,7 +53,7 @@ export const SHOTS: Shot[] = [
   { w: 21, set: "town", fr: "CPL", mv: "zoomOut", ref: 16, desc: "Il y a cinq ans : ciel bleu au-dessus des tours ; le nuage noir apparaît et envahit le ciel.",
     cam: { p: [26, 2, -62], t: [0, 95, -150], fov: 58 }, st: (w, u, t) => w.town.update(t, { cloudH: H(u, 700, 300), skyK: 1 - smooth(clamp01(u * 1.3)) }) },
   { w: 27, set: "town", fr: "TGP", mv: "orbit", ref: 1, desc: "Très gros plan sur le nuage : bouffées sombres aux reflets violets qui bouillonnent.",
-    cam: { t: [0, 262, -150], d: 110, az: 20, el: -16, amt: 1.2 }, st: (w, u, t) => w.town.update(t, { cloudH: 300, boil: 0.6 }) },
+    cam: { p: [70, 140, 30], t: [0, 265, -160], fov: 50, amt: 1.2 }, st: (w, u, t) => w.town.update(t, { cloudH: 300, boil: 0.6 }) },
   { w: 36, set: "town", fr: "PE", mv: "craneDown", ref: 1, desc: "Chaque jour, le nuage descend sur la ville.",
     cam: { t: [0, 70, -80], d: 260, az: 18, el: 12, amt: 0.8 }, st: (w, u, t) => w.town.update(t, { cloudH: H(u, 300, 235), cloudVit: 2 }) },
   { w: 44, set: "town", fr: "PA", mv: "zoomIn", ref: 3, desc: "Au début, les voisins et la famille regardent le nuage sans inquiétude.",
@@ -117,7 +117,7 @@ export const SHOTS: Shot[] = [
   { w: 193, set: "town", fr: "CPL", mv: "zoomOut", ref: 3, desc: "Contre-plongée : le nuage frôle le toit de la maison bleue.",
     cam: { p: [4, 1.1, 46], t: [0, 13, 26], fov: 52 }, st: (w, u, t) => { w.town.update(t, { cloudH: H(u, 52, 44) }); fam(w, t, 33.5, { expr: "scared", headPitch: -0.4 }); } },
   { w: 197, set: "town", fr: "PA", mv: "zoomIn", ref: 16, desc: "Les riches entrent dans le grand bunker ; les portes blindées se referment.",
-    cam: { p: [2.6, 2.4, -1.2], t: [0, 2.6, -10], fov: 50 }, st: (w, u, t) => { w.town.update(t, { cloudH: 40, doors: 1 - smooth(clamp01((u - 0.25) / 0.75)) });
+    cam: { p: [5, 3.6, 6], t: [0, 3.2, -9], fov: 50 }, st: (w, u, t) => { w.town.update(t, { cloudH: 40, doors: 1 - smooth(clamp01((u - 0.25) / 0.75)) });
       const A = w.town.actors; put(A.rich1, t, -1.2, 0, lerp(-6.5, -11, u), Math.PI, { walk: 1 }); put(A.rich4, t, 1.3, 0, lerp(-5.5, -10.5, u), Math.PI, { walk: 1 }); } },
   { w: 205, set: "town", fr: "PM", mv: "truckR", ref: 16, desc: "La famille et les voisins frappent aux portes fermées et supplient.",
     cam: { p: [3.2, 2.5, -2.4], t: [-0.4, 2.1, -8.4], fov: 52, amt: 0.25 }, st: (w, u, t) => { w.town.update(t, { cloudH: 38, doors: 0 }); const A = w.town.actors;
@@ -181,7 +181,7 @@ export const SHOTS: Shot[] = [
   { w: 368, set: "town", fr: "PL", mv: "flyover", ref: 16, desc: "Plongée : le nuage s'ouvre, le ciel bleu revient sur la ville.",
     cam: { t: [0, 25, -60], d: 220, az: 0, el: 13, amt: 0.6 }, st: (w, u, t) => w.town.update(t, { cloudH: H(u, 170, 230), skyK: smooth(clamp01(u * 1.4)), hole: H(u, 40, 420) }) },
   { w: 381, set: "town", fr: "PM", mv: "truckL", ref: 16, desc: "La famille aide les riches à sortir de leur bunker.",
-    cam: { t: [0, 2, -5], d: 14, az: 28, el: 9, amt: 0.6 }, st: (w, u, t) => { w.town.update(t, { cloudH: 240, skyK: 1, hole: 420, doors: 1 }); const A = w.town.actors;
+    cam: { t: [0, 1.7, -5.5], d: 9, az: 30, el: 5, amt: 0.6 }, st: (w, u, t) => { w.town.update(t, { cloudH: 240, skyK: 1, hole: 420, doors: 1 }); const A = w.town.actors;
       put(A.rich1, t, -0.8, 0, lerp(-9, -4, u), 0, { walk: 0.9, expr: "sad" }); put(A.rich4, t, 1.3, 0, lerp(-10, -5.5, u), 0, { walk: 0.9, expr: "worried" });
       put(A.dad, t, -2.6, 0, -2.5, -2.4, { point: 0.2, expr: "smile" }); put(A.mom, t, 3.4, 0, -2.6, 2.4, { point: 0.2, expr: "smile" }); put(A.narr, t, -4.2, 0, -1.2, -2.6, { wave: "R", expr: "happy" }); put(A.bro, t, 4.8, 0, -1.4, 2.7, { expr: "happy" }); } },
   { w: 391, set: "town", fr: "CPL", mv: "zoomIn", ref: 16, desc: "Contre-plongée : la nouvelle règle, « OUVERT À TOUS » au fronton de l'entrée dorée.",
