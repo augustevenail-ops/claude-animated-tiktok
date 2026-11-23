@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """« Le Nuage » : bruitages (bibliothèque productions/sfx_lib + synthèse numpy), calés plan par plan sur studio/src/videos/bunker/shots.ts,
-mixés sous la voix (voix > bruitages > ambiances ; pas de musique : l'utilisateur fournira la sienne).
+mixés sous la voix (voix > bruitages > musique de l'utilisateur en boucle).
 Sorties : sfx.wav (bruitages seuls, stéréo), mix.wav (voix + bruitages), fiche_audio.md + plans.md (tableaux), cues.json.
   python3 productions/bunker/sound.py
 """
@@ -244,10 +244,22 @@ voice = voice[:N]; v = np.zeros(N); v[: len(voice)] = voice
 env = np.sqrt(sm(v ** 2, SR * 0.2)); duck = 1 - 0.35 * np.clip(env / (env.max() * 0.3), 0, 1)   # bruitages un peu baissés sous la voix
 sfx = out * duck
 sfx = np.tanh(sfx * 1.2) / 1.2
-mix = sfx + np.stack([v, v]) * 0.92
+# musique de l'utilisateur (11,7 s) en boucle, raccords en fondu enchaîné de 0,4 s, sous la voix et les bruitages
+mus = np.frombuffer(subprocess.run(["ffmpeg", "-v", "quiet", "-i", str(D / "musique/musique.wav"), "-ac", "2", "-ar", str(SR), "-f", "f32le", "-"], capture_output=True).stdout, np.float32).astype(np.float64).reshape(-1, 2).T
+xf = int(0.4 * SR); L = mus.shape[1]; step = L - xf; music = np.zeros((2, N + L)); ramp = np.linspace(0, 1, xf)
+for k, i in enumerate(range(0, N, step)):
+    seg = mus.copy()
+    if k > 0: seg[:, :xf] *= ramp
+    seg[:, L - xf:] *= ramp[::-1]
+    music[:, i:i + L] += seg
+music = music[:, :N]; music /= (np.sqrt(np.mean(music ** 2)) + 1e-9)
+mduck = 1 - 0.45 * np.clip(env / (env.max() * 0.3), 0, 1)
+music = music * mduck * 0.075
+fin = np.clip((N / SR - np.arange(N) / SR - 0.0) / 1.5, 0, 1); music *= fin
+mix = sfx + music + np.stack([v, v]) * 0.92
 peak = np.max(np.abs(mix)); mix = mix / peak * 0.95; sfx_n = sfx / peak * 0.95
 def wav(a, p): subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "f64le", "-ar", str(SR), "-ac", "2", "-i", "-", "-c:a", "pcm_s16le", str(p)], input=a.T.astype(np.float64).tobytes(), check=True)
-n = int(TOTAL / FPS * SR); wav(mix[:, :n], D / "mix_raw.wav"); wav(sfx_n[:, :n], D / "sfx.wav")
+n = int(TOTAL / FPS * SR); wav(mix[:, :n], D / "mix_raw.wav"); wav(sfx_n[:, :n], D / "sfx.wav"); wav((music / peak * 0.95)[:, :n], D / "musique_boucle.wav")
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(D / "mix_raw.wav"), "-af", "loudnorm=I=-14:TP=-1.5:LRA=11", "-ar", "48000", "-c:a", "pcm_s16le", str(D / "mix.wav")], check=True)
 
 # ---------------- fiches ----------------
@@ -263,12 +275,12 @@ def text(i):
     return " ".join(w["w"] for w in W if a - 0.05 <= w["s"] < b - 0.05)
 pl = ["# Le Nuage — liste des plans", "", f"{len(SH)} plans · {TOTAL} images · {tc(TOTAL)} · 30 i/s · 2160×3840 (TikTok 4K)", "",
       "| N° | Début | Fin | Durée | Type de plan | Mouvement de caméra | Décor | Réf. | Ce que la réf. apporte | Description |", "|---|---|---|---|---|---|---|---|---|---|"]
-fa = ["# Le Nuage — fiche audio", "", "Voix off : Fish Audio, voix « Narrateur Expressif et Profond » (modèle s1), français. Musique : aucune (fournie plus tard par l'utilisateur) ; intensité musicale = 0 sur tous les plans.", "",
+fa = ["# Le Nuage — fiche audio", "", "Voix off : Fish Audio, voix « Narrateur Expressif et Profond » (modèle s1), français. Musique : morceau fourni par l'utilisateur (11,7 s) en boucle sur toute la vidéo, fondus enchaînés de 0,4 s aux raccords, baissée sous la voix ; fondu de sortie sur la dernière 1,5 s.", "",
       "| N° | Début | Fin | Voix off | Bruitages | Ambiance | Musique |", "|---|---|---|---|---|---|---|"]
 for i, s in enumerate(SH):
     d = (END[i] - START[i]) / FPS
     pl.append(f"| {i + 1} | {tc(START[i])} | {tc(END[i] - 1)} | {d:.2f} s | {FR[s['fr']]} | {MV[s['mv']]} | {SET[s['set']]} | {s['ref']} | {REFDESC[s['ref']]} | {s['desc']} |")
-    fa.append(f"| {i + 1} | {tc(START[i])} | {tc(END[i] - 1)} | {text(i)} | {', '.join(x for x in CUES.get(i + 1, []) if x) or '—'} | {'; '.join(AMB.get(i + 1, [])) or '—'} | 0 (aucune) |")
+    fa.append(f"| {i + 1} | {tc(START[i])} | {tc(END[i] - 1)} | {text(i)} | {', '.join(x for x in CUES.get(i + 1, []) if x) or '—'} | {'; '.join(AMB.get(i + 1, [])) or '—'} | {'moyenne (sous la voix)' if i < len(SH) - 1 else 'moyenne → fondu de sortie'} |")
 (D / "plans.md").write_text("\n".join(pl) + "\n", encoding="utf-8"); (D / "fiche_audio.md").write_text("\n".join(fa) + "\n", encoding="utf-8")
 json.dump({"start": START, "end": END, "total": TOTAL}, open(D / "cues.json", "w"))
 print("ok", len(SH), "plans", TOTAL, "images", tc(TOTAL))

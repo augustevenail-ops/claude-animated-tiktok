@@ -41,7 +41,7 @@ export class Lux {
     box(r, std("tile_p", { color: "#ffffff", map: tiled(tileTex("#efe0c4", "#d9c6a2"), 24, 18) }), -65, -0.5, -55, 65, 0, 35);
     // villa à trois niveaux
     const v = new THREE.Group(); v.position.set(-6, 0, -36); r.add(v);
-    const gm = std("villa_glass", { color: "#ffffff", map: tiled(glassTex("#fff8e4", "#ffffff", "#c89a2a", 8, 1), 3, 1), emissive: "#fff1cc", emissiveIntensity: 0.35 });
+    const gm = std("villa_glass", { color: "#ffffff", map: tiled(glassTex("#fff8e4", "#ffffff", "#c89a2a", 8, 1), 3, 1), emissive: "#fff1cc", emissiveIntensity: 0.35, roughness: 0.1, metalness: 0.2 });
     this.pw.push({ o: gm, base: 0.35, emissive: true });
     for (let k = 0; k < 3; k++) { const w = 64 - k * 9, y = k * 5.2, x = k * 4;
       box(v, gm, x - w / 2, y, -6, x + w / 2, y + 4.6, 6); box(v, col("#f4f6f8"), x - w / 2 - 1, y + 4.6, -7, x + w / 2 + 1, y + 5.2, 7);
@@ -50,7 +50,7 @@ export class Lux {
     // piscine
     box(r, col("#f6f4ee"), -36, 0, -12, 36, 0.35, 8);
     const wt = tiled(waterTex(), 6, 2); this.water.push(wt);
-    r.add(mesh(new THREE.PlaneGeometry(70, 18).rotateX(-Math.PI / 2), std("pool", { color: "#ffffff", map: wt, roughness: 0.12, emissive: "#1a6aa0", emissiveIntensity: 0.2 }), 0, 0.38, -2, false));
+    r.add(mesh(new THREE.PlaneGeometry(70, 18).rotateX(-Math.PI / 2), std("pool", { color: "#ffffff", map: wt, roughness: 0.04, metalness: 0.25, envMapIntensity: 1.5, emissive: "#1a6aa0", emissiveIntensity: 0.2 }), 0, 0.38, -2, false));
     for (let x = -34; x <= 34; x += 2) box(r, col("#ffffff"), x - 0.5, 0.35, -11.6, x + 0.5, 0.42, -11.2, false);
     // transats, parasol doré, arbres
     for (let k = 0; k < 6; k++) { const x = -30 + k * 7, z = 14; const l = new THREE.Group(); l.position.set(x, 0, z); r.add(l);
@@ -58,7 +58,7 @@ export class Lux {
       for (const sx of [-0.7, 0.7]) box(l, col("#d8d4cc"), sx - 0.06, 0, -1.8, sx + 0.06, 0.4, 2.2); }
     const umb = new THREE.Group(); umb.position.set(-12, 0, 20); r.add(umb);
     umb.add(mesh(new THREE.CylinderGeometry(0.12, 0.12, 4.4, 8), col("#d9a21a", { metalness: 0.6, roughness: 0.3 }), 0, 2.2, 0));
-    umb.add(mesh(new THREE.SphereGeometry(2.6, 32, 12, 0, Math.PI * 2, 0, Math.PI / 2.3).scale(1, 0.55, 1), col("#e8b22a", { metalness: 0.55, roughness: 0.3 }), 0, 3.9, 0));
+    umb.add(mesh(new THREE.SphereGeometry(2.6, 32, 12, 0, Math.PI * 2, 0, Math.PI / 2.3).scale(1, 0.55, 1), col("#e8b22a", { metalness: 0.9, roughness: 0.2 }), 0, 3.9, 0));
     umb.add(mesh(new THREE.CylinderGeometry(1.6, 1.6, 0.1, 24), col("#f4f1ea"), 0, 1.4, 0)); umb.add(mesh(new THREE.CylinderGeometry(0.1, 0.1, 1.4, 6), col("#d9a21a"), 0, 0.7, 0));
     tree(r, -44, -20, 2.2, 1); tree(r, 30, -20, 2.2, 2); palm(r, 46, -16, 2.0); palm(r, -52, 10, 2.0); tree(r, 50, 16, 2, 4);
     for (const [x, z] of [[-20, -18], [20, -18], [-8, 6], [8, 6]] as const) { r.add(mesh(new THREE.CylinderGeometry(0.03, 0.03, 9, 4), col("#c89a2a"), x, 25.5, z, false));

@@ -79,7 +79,7 @@ export class Coupe {
     const from = V((MACH.x0 + MACH.x1) / 2, MACH.y1 - 9, 0.4);
     const ends = [V(-26, MANSION.y0, 0.4), V(30, CINEMA.y0, 0.4), V(-22, CITY.y0, 0.4), V(22, CITY.y0, 0.4), V(0, CITY.y0, 0.4), V(-40, -40, 0.4), V(42, -40, 0.4)];
     for (const e of ends) { const c = new THREE.LineCurve3(from, e); r.add(mesh(new THREE.TubeGeometry(c, 2, 0.35, 6), this.cables, 0, 0, 0, false)); }
-    this.cloud = new Cloud(500, 400, 900, 0, -110, 6, 13); r.add(this.cloud.group);
+    this.cloud = new Cloud(500, 400, 1400, 0, -110, 4, 11); r.add(this.cloud.group);
     for (const k of ["narr", "dad", "mom", "bro"]) { const a = new Actor(CAST[k], 0.36, Object.keys(this.actors).length); this.actors[k] = a; r.add(a.root); }
     const fx = [-2.8, -0.8, 1.0, 2.9]; ["dad", "narr", "bro", "mom"].forEach((k, i) => { this.actors[k].root.position.set(fx[i], FAM.y0, -9); });
     this.cabActor = new Actor(CAST.rich1, 0.36, 40); this.cab.add(this.cabActor.root); this.cabActor.root.position.set(0, 0.25, -1);

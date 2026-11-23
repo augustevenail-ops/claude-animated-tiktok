@@ -41,7 +41,7 @@ export class Town {
     this.downtown(); this.midrise(); this.houses(); this.plaza(); this.heroHouse(); this.vehicles();
     for (let i = 0; i < 90; i++) { const x = (hash(i, 61) - 0.5) * 330, z = -50 + hash(i, 62) * 120; if (Math.abs(x) < 9 && z > 20) continue; if (Math.abs(((x % 48) + 48) % 48 - 24) < 20 && hash(i, 63) < 0.5) tree(r, x, z, 1.1 + hash(i, 64) * 0.6, i); }
     // nuage
-    this.cloud = new Cloud(1100, 1000, 2600, 0, -150, 7, 16); r.add(this.cloud.group);
+    this.cloud = new Cloud(1000, 900, 3600, 0, -150, 5, 15); r.add(this.cloud.group);
     // colonnes d'énergie (attirent le nuage)
     const em = new THREE.MeshBasicMaterial({ map: energyTex(), transparent: true, opacity: 0.6, blending: THREE.AdditiveBlending, depthWrite: false, color: "#b48cff", side: THREE.DoubleSide });
     for (const [x, z] of [[-70, -30], [60, -40], [-20, -110], [110, -120]]) { const b = mesh(new THREE.CylinderGeometry(5, 7, 1, 20, 1, true), em.clone(), x, 0, z, false); b.visible = false; this.beams.push(b); r.add(b); }
@@ -63,7 +63,7 @@ export class Town {
   tower(x: number, z: number, h: number, type: number, gl: [string, string, string, string?], i: number, spire = false) {
     const g = new THREE.Group(); g.position.set(x, 0, z); this.root.add(g);
     const tex = glassTex(gl[0], gl[1], gl[2], 4, 12, gl[3]), w = 13 + hash(i, 6) * 5;
-    const gm = (rep: number) => std(`gl_${gl[0]}_${gl[3]}_${rep}`, { color: "#ffffff", map: tiled(tex, 1, rep), roughness: 0.25, metalness: 0.15 });
+    const gm = (rep: number) => std(`gl_${gl[0]}_${gl[3]}_${rep}`, { color: "#ffffff", map: tiled(tex, 1, rep), roughness: 0.08, metalness: 0.35, envMapIntensity: 1.4 });
     const cap = col("#f2f4f6");
     box(g, cap, -w / 2 - 1, 0, -w / 2 - 1, w / 2 + 1, 2.5, w / 2 + 1);
     if (type === 1) { g.add(mesh(new THREE.CylinderGeometry(w / 2, w / 2, h, 28), gm(Math.round(h / 30)), 0, h / 2, 0)); g.add(mesh(new THREE.CylinderGeometry(w / 2 + 0.4, w / 2 + 0.4, 1.5, 28), cap, 0, h + 0.75, 0)); }
@@ -130,7 +130,7 @@ export class Town {
     box(g, col("#f2f4f6"), -9, 0, -6, 9, 11, 4);
     box(g, col("#f2c542"), -9.3, 11, -6.3, 9.3, 11.8, 4.3);
     box(g, col("#f2c542"), -6.3, 0, 4, -5.3, 10, 4.6); box(g, col("#f2c542"), 5.3, 0, 4, 6.3, 10, 4.6);
-    const dome = mesh(new THREE.SphereGeometry(6.2, 40, 20, 0, Math.PI * 2, 0, Math.PI / 2), col("#f2c230", { metalness: 0.65, roughness: 0.25 }), 0, 11.8, -2.5); g.add(dome);
+    const dome = mesh(new THREE.SphereGeometry(6.2, 40, 20, 0, Math.PI * 2, 0, Math.PI / 2), col("#f2c230", { metalness: 0.9, roughness: 0.2, envMapIntensity: 1.6 }), 0, 11.8, -2.5); g.add(dome);
     for (let k = 0; k < 10; k++) { const a = (k / 10) * Math.PI; const rib = mesh(new THREE.TorusGeometry(6.25, 0.12, 6, 40, Math.PI), col("#d9a21a", { metalness: 0.7, roughness: 0.3 }), 0, 11.8, -2.5); rib.rotation.y = a; g.add(rib); }
     this.doorGlow = mesh(new THREE.PlaneGeometry(10, 9.4), glow("#fff1d0", 0.55), 0, 4.7, 4.02, false); g.add(this.doorGlow);
     const steel = col("#8c939c", { metalness: 0.6, roughness: 0.35 });

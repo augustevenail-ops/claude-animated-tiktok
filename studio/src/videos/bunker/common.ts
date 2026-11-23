@@ -41,22 +41,26 @@ export class Cloud {
   w: number; d: number; t = 0;
   constructor(w: number, d: number, n = 700, cx = 0, cz = 0, smin = 6, smax = 15) {
     this.n = n; this.w = w; this.d = d;
-    const g = new THREE.IcosahedronGeometry(1, 2);
+    const g = new THREE.IcosahedronGeometry(1, 3); const gp = g.attributes.position;   // bouffée bosselée (sous-bulles)
+    const bumps = Array.from({ length: 7 }, (_, k) => new THREE.Vector3(hash(k, 91) - 0.5, hash(k, 92) * 0.6, hash(k, 93) - 0.5).normalize());
+    for (let k = 0; k < gp.count; k++) { const v = new THREE.Vector3().fromBufferAttribute(gp, k); let r = 1; for (const b of bumps) r += 0.16 * Math.max(0, v.dot(b)) ** 6;
+      r += 0.04 * Math.sin(v.x * 9) * Math.sin(v.y * 7) * Math.sin(v.z * 8); v.multiplyScalar(r); gp.setXYZ(k, v.x, v.y, v.z); }
+    g.computeVertexNormals();
     const m = new THREE.ShaderMaterial({ uniforms: { uL: { value: new THREE.Vector3(0.35, -0.45, 0.82).normalize() } },
       vertexShader: `varying vec3 vN; varying vec3 vC; varying float vY;
         void main() { mat4 im = modelMatrix * instanceMatrix; vec4 wp = im * vec4(position, 1.0); vN = normalize(mat3(im) * normal); vC = instanceColor; vY = position.y;
           gl_Position = projectionMatrix * viewMatrix * wp; }`,
       fragmentShader: `uniform vec3 uL; varying vec3 vN; varying vec3 vC; varying float vY;
-        void main() { float l = 0.38 + 0.62 * max(dot(vN, uL), 0.0); float top = max(vN.y, 0.0) * 0.25; float rim = pow(1.0 - abs(vN.z), 3.0) * 0.12;
+        void main() { float l = 0.38 + 0.62 * max(dot(vN, uL), 0.0); float top = max(vN.y, 0.0) * 0.25; float rim = pow(1.0 - abs(vN.z), 3.0) * 0.18; float under = max(-vN.y, 0.0) * 0.12;
           vec3 shadow = vec3(0.12, 0.11, 0.18);
-          vec3 c = mix(shadow * vC * 2.2, vC, l) + top * vC + rim * vec3(0.55, 0.45, 0.85);
+          vec3 c = mix(shadow * vC * 2.2, vC * 1.15, l) + top * vC + rim * vec3(0.62, 0.55, 0.85) + under * vec3(0.35, 0.3, 0.45);
           gl_FragColor = vec4(c, 1.0);
           #include <colorspace_fragment>
         }` });
     this.mesh = new THREE.InstancedMesh(g, m, n); this.mesh.castShadow = false; this.mesh.receiveShadow = false;
     const c = new THREE.Color();
     for (let i = 0; i < n; i++) {
-      const s = smin + hash(i, 4) * (smax - smin);
+      const s = smin + Math.pow(hash(i, 4), 1.6) * (smax - smin);
       this.base.push({ x: cx + (hash(i, 1) - 0.5) * w, y: hash(i, 3) * 18, z: cz + (hash(i, 2) - 0.5) * d, s, sp: 0.6 + hash(i, 6) * 1.2 });
       const k = hash(i, 5); c.set(k < 0.12 ? "#463e5c" : k < 0.5 ? "#36343c" : k < 0.85 ? "#44424b" : "#545160"); this.mesh.setColorAt(i, c);
     }

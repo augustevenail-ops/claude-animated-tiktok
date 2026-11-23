@@ -41,8 +41,8 @@ export class Sky {
       const m = mesh(g, mt, Math.cos(a) * d, h / 2 - 10, Math.sin(a) * d); m.rotation.y = hash(i, 8) * 3; r.add(m);
       const cap = mesh(new THREE.ConeGeometry(w * 0.36, h * 0.34, 7, 1), snow, Math.cos(a) * d, h - 10 - h * 0.17 + 1, Math.sin(a) * d); cap.rotation.y = m.rotation.y; r.add(cap);
     }
-    this.cloud = new Cloud(2600, 2600, 3000, 0, 0, 10, 24); r.add(this.cloud.group);
-    this.buildPlane(); this.planeU = petrifyUniforms(V(-1, 0, 0)); petrifyObject(this.plane, this.planeU, "plane");
+    this.cloud = new Cloud(1600, 1600, 4200, 0, 0, 8, 20); r.add(this.cloud.group);
+    this.buildPlane(); this.planeU = petrifyUniforms(V(0, -1, 0)); petrifyObject(this.plane, this.planeU, "plane");
     for (let i = 0; i < 26; i++) {
       const g = new THREE.Group(), bm = col(i % 3 ? "#f2f2f6" : "#dcdce4"), u = petrifyUniforms(V(0, -1, 0));
       g.add(mesh(new THREE.SphereGeometry(0.5, 10, 8).scale(1.6, 0.8, 0.8), bm)); g.add(mesh(new THREE.ConeGeometry(0.18, 0.5, 6).rotateZ(-Math.PI / 2), col("#f2b230"), 1.0, 0.05, 0));
@@ -69,13 +69,13 @@ export class Sky {
   }
   update(t: number, p: { cloudH: number; stone?: number; birdsStone?: number; birdsFall?: number; birdsPos?: THREE.Vector3; boil?: number }) {
     this.cloud.update(p.cloudH, t, 1.6, p.boil ?? 0);
-    this.planeU.thr.value = p.stone === undefined ? -1e9 : -(this.plane.position.x + 30 - p.stone * 62);   // du nez (x+) vers la queue
+    this.planeU.thr.value = p.stone === undefined ? -1e9 : -(this.plane.position.y + 12 - p.stone * 20);   // du nez (x+) vers la queue
     const bp = p.birdsPos ?? V(0, 120, 0);
     for (const b of this.birds) {
       const s = b.seed, fall = Math.max(0, (p.birdsFall ?? 0) - hash(s, 9) * 0.25);
       const x = bp.x + (hash(s, 1) - 0.5) * 34, y = bp.y + (hash(s, 2) - 0.5) * 14 - fall * fall * 140, z = bp.z + (hash(s, 3) - 0.5) * 30;
       b.g.position.set(x, Math.max(1, y), z); b.g.scale.setScalar(2.2);
-      const st = Math.max(0, (p.birdsStone ?? 0) - hash(s, 4) * 0.3) / 0.7; b.u.thr.value = st <= 0 ? -1e9 : -b.g.position.y + 4 - st * 8;
+      const st = Math.max(0, (p.birdsStone ?? 0) - hash(s, 4) * 0.3) / 0.7; b.u.thr.value = st <= 0 ? -1e9 : -(b.g.position.y + 1.6 - st * 3.4);
       const flap = st >= 1 ? 0.2 : Math.sin(t * 16 + s * 2) * 0.8 * (1 - Math.min(1, st));
       b.wl.rotation.x = flap; b.wr.rotation.x = -flap; b.g.rotation.z = fall > 0 ? -fall * 2.2 : 0.05 * Math.sin(t * 3 + s); b.g.rotation.y = fall * 1.3 * (s % 2 ? 1 : -1);
     }
@@ -97,19 +97,19 @@ export class Cabin {
       box(r, glow("#fffbe8", 2.4), s > 0 ? 1.5 : -1.6, 3.35, -L, s > 0 ? 1.6 : -1.5, 3.4, 4, false); box(r, col("#1f2d6a"), s > 0 ? 1.85 : -1.95, 2.48, -L, s > 0 ? 1.95 : -1.85, 2.58, 4, false); }
     box(r, glow("#fffaf0", 1.6), -1.4, 3.6, -L, 1.4, 3.7, 4, false);
     const seat = col("#2c4aa8"), top = col("#f4f6f8");
-    this.u = petrifyUniforms(V(0, 1, 0)); this.heroU = petrifyUniforms(V(0, 1, 0));
+    this.u = petrifyUniforms(V(0, -1, 0)); this.heroU = petrifyUniforms(V(0, -1, 0));
     const kinds = ["n1", "n2", "n3", "n4", "rich4", "rich3", "dad", "mom"];
     let n = 0; this.hero = null as unknown as Actor;
     for (let row = 0; row < 16; row++) for (const x of [-2.4, -1.5, 1.5, 2.4]) {
       const z = 1 - row * 3.2; box(r, seat, x - 0.42, 0.4, z - 0.4, x + 0.42, 0.75, z + 0.35); box(r, seat, x - 0.42, 0.75, z + 0.3, x + 0.42, 1.9, z + 0.55); box(r, top, x - 0.42, 1.6, z + 0.31, x + 0.42, 1.9, z + 0.56);
       if (hash(row * 4 + x, 3) < 0.25 && !(row === 1 && x === 1.5)) continue;
-      const a = new Actor(CAST[kinds[n++ % kinds.length]], 0.3, n); a.root.position.set(x, 0.1, z - 0.1); a.pose(0, { sit: true, expr: "scared", yaw: Math.PI }); r.add(a.root);
+      const a = new Actor(CAST[kinds[n++ % kinds.length]], 0.3, n); a.root.position.set(x, 0.5, z + 0.1); a.pose(0, { sit: true, expr: "scared", yaw: Math.PI }); r.add(a.root);
       if (row === 1 && x === 1.5) { this.hero = a; petrifyObject(a.root, this.heroU, "cabhero"); } else petrifyObject(a.root, this.u, "cab");
     }
     this.u.thr.value = 1e9;
   }
   update(t: number, p: { heroStone: number; flicker?: number }) {
-    this.heroU.thr.value = -0.2 + p.heroStone * 2.2;
+    this.heroU.thr.value = -(2.05 - p.heroStone * 2.2);
     this.light.intensity = 220 * (p.flicker ? (Math.sin(t * 37) > 0.6 ? 0.4 : 1) : 1);
     this.hero.pose(t, { sit: true, expr: p.heroStone > 0.75 ? "scared" : "worried", headYaw: 0.25 * Math.sin(t * 2), headPitch: 0.1 });
     this.hero.root.rotation.y = Math.PI;

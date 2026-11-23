@@ -6,7 +6,8 @@ import { AbsoluteFill, Audio, continueRender, delayRender, getInputProps, static
 import { ThreeCanvas } from "@remotion/three";
 import { useThree, addAfterEffect } from "@react-three/fiber";
 import { EffectComposer } from "@react-three/postprocessing";
-import { BlendFunction, BloomEffect, ToneMappingEffect, ToneMappingMode, VignetteEffect } from "postprocessing";
+import { BlendFunction, BloomEffect, ToneMappingEffect, ToneMappingMode, VignetteEffect, HueSaturationEffect, BrightnessContrastEffect } from "postprocessing";
+import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { useFonts } from "../shared/overlay";
 import { Town } from "./town";
 import { Coupe } from "./under";
@@ -40,21 +41,26 @@ const Inner: React.FC = () => {
     const bloom = new BloomEffect({ blendFunction: BlendFunction.ADD, intensity: 0.85, luminanceThreshold: 0.82, luminanceSmoothing: 0.25, mipmapBlur: true, radius: 0.7, levels: 7 });
     const mip = bloom.mipmapBlurPass, setSize = mip.setSize.bind(mip);   // flou de bloom défini à l'échelle 1920 px de haut, quelle que soit la sortie
     mip.setSize = (w: number, h: number) => setSize(Math.round((1920 * w) / Math.max(h, 1)), 1920);
-    return { bloom, tone: new ToneMappingEffect({ mode: ToneMappingMode.NEUTRAL }), vig: new VignetteEffect({ offset: 0.32, darkness: 0.45 }) };
+    return { bloom, tone: new ToneMappingEffect({ mode: ToneMappingMode.NEUTRAL }), vig: new VignetteEffect({ offset: 0.32, darkness: 0.45 }),
+      sat: new HueSaturationEffect({ saturation: 0.14 }), bc: new BrightnessContrastEffect({ contrast: 0.09, brightness: 0.01 }) };
   }, []);
   const chain = useMemo(() => (
     <EffectComposer multisampling={0}>
       {on.bloom ? <primitive object={fx.bloom} dispose={null} /> : <></>}
       <primitive object={fx.tone} dispose={null} />
+      <primitive object={fx.sat} dispose={null} />
+      <primitive object={fx.bc} dispose={null} />
       <primitive object={fx.vig} dispose={null} />
     </EffectComposer>
   ), [fx, on]);
+  const env = useMemo(() => { const pm = new THREE.PMREMGenerator(gl); const e = pm.fromScene(new RoomEnvironment(), 0.04).texture; pm.dispose(); return e; }, [gl]);
   useEffect(() => { gl.shadowMap.type = THREE.PCFSoftShadowMap; }, [gl]);
   const i = shotAt(f), s = SHOTS[i], u = Math.min(1, Math.max(0, uOf(i, f))), t = f / FPS;
   for (const [k, r] of Object.entries(world.roots)) r.visible = k === s.set;
   world.hideActors();
   s.st(world.w, u, t);
-  scene.background = new THREE.Color(s.set === "town" ? "#0d0b14" : BG[s.set]);
+  scene.background = new THREE.Color(BG[s.set]); scene.environment = env;
+  scene.environmentIntensity = ({ town: 0.45, coupe: 0.3, sky: 0.45, cabin: 0.35, lux: 0.4, machine: 0.25 } as Record<string, number>)[s.set];
   const cam = camera as THREE.PerspectiveCamera, c = camAt(i, f);
   cam.position.copy(c.P); cam.lookAt(c.T); cam.fov = c.fov; cam.near = 0.1; cam.far = 4000; cam.updateProjectionMatrix();
   useEffect(() => {

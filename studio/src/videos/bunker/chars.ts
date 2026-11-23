@@ -28,9 +28,13 @@ export const CAST: Record<string, Spec> = {
 };
 
 const mats = new Map<string, THREE.Material>();
+const fabric = () => ctex("fabric", 128, 128, (g) => { g.fillStyle = "#f2f2f2"; g.fillRect(0, 0, 128, 128);
+  for (let y = 0; y < 128; y += 2) { g.fillStyle = `rgba(0,0,0,${0.03 + hash(y, 1) * 0.04})`; g.fillRect(0, y, 128, 1); }
+  for (let x = 0; x < 128; x += 2) { g.fillStyle = `rgba(255,255,255,${0.03 + hash(x, 2) * 0.05})`; g.fillRect(x, 0, 1, 128); }
+  for (let i = 0; i < 300; i++) { g.fillStyle = `rgba(0,0,0,${hash(i, 3) * 0.06})`; g.fillRect(hash(i, 4) * 128, hash(i, 5) * 128, 3, 3); } }, true);
 const mat = (col: string, extra: THREE.MeshStandardMaterialParameters = {}, key = "") => {
   const k = col + key; let m = mats.get(k);
-  if (!m) { m = new THREE.MeshStandardMaterial({ color: col, roughness: 0.75, metalness: 0, ...extra }); mats.set(k, m); }
+  if (!m) { m = new THREE.MeshStandardMaterial({ color: col, roughness: 0.72, metalness: 0, map: extra.metalness ? undefined : fabric(), ...extra }); mats.set(k, m); }
   return m;
 };
 const geos = new Map<string, THREE.BufferGeometry>();
@@ -110,7 +114,7 @@ export class Actor {
     }
     if (s.style === "dress") { const sk = mesh(new THREE.CylinderGeometry(1.05, 1.35, legH * 0.55, 4, 1).rotateY(Math.PI / 4), top, 0, legH * 0.72, 0); this.body.add(sk); }
     // torse
-    const tm = [top, top, top, top, new THREE.MeshStandardMaterial({ map: torsoTex(s), roughness: 0.75 }), top];
+    const tm = [top, top, top, top, new THREE.MeshStandardMaterial({ map: torsoTex(s), roughness: 0.72 }), top];
     this.torso = new THREE.Mesh(new THREE.BoxGeometry(2, 2 * k + (s.kid ? 0.3 : 0), 1), tm); this.torso.castShadow = true; this.torso.receiveShadow = true;
     const tH = 2 * k + (s.kid ? 0.3 : 0); this.torso.position.y = legH + tH / 2; this.body.add(this.torso);
     if (s.chain) { const ch = new THREE.Group(); const cm = mat(s.chain, { metalness: 0.8, roughness: 0.25, emissive: s.chain, emissiveIntensity: 0.12 }, "chain");
