@@ -53,7 +53,7 @@ export const SHOTS: Shot[] = [
   { w: 21, set: "town", fr: "CPL", mv: "zoomOut", ref: 16, desc: "Il y a cinq ans : ciel bleu au-dessus des tours ; le nuage noir apparaît et envahit le ciel.",
     cam: { p: [26, 2, -62], t: [0, 95, -150], fov: 58 }, st: (w, u, t) => w.town.update(t, { cloudH: H(u, 700, 300), skyK: 1 - smooth(clamp01(u * 1.3)) }) },
   { w: 27, set: "town", fr: "TGP", mv: "orbit", ref: 1, desc: "Très gros plan sur le nuage : bouffées sombres aux reflets violets qui bouillonnent.",
-    cam: { t: [0, 296, -160], d: 95, az: 20, el: -22, amt: 1.2 }, st: (w, u, t) => w.town.update(t, { cloudH: 300, boil: 0.6 }) },
+    cam: { t: [0, 262, -150], d: 110, az: 20, el: -16, amt: 1.2 }, st: (w, u, t) => w.town.update(t, { cloudH: 300, boil: 0.6 }) },
   { w: 36, set: "town", fr: "PE", mv: "craneDown", ref: 1, desc: "Chaque jour, le nuage descend sur la ville.",
     cam: { t: [0, 70, -80], d: 260, az: 18, el: 12, amt: 0.8 }, st: (w, u, t) => w.town.update(t, { cloudH: H(u, 300, 235), cloudVit: 2 }) },
   { w: 44, set: "town", fr: "PA", mv: "zoomIn", ref: 3, desc: "Au début, les voisins et la famille regardent le nuage sans inquiétude.",
@@ -76,7 +76,7 @@ export const SHOTS: Shot[] = [
   { w: 80, set: "sky", fr: "GP", mv: "zoomIn", ref: 6, desc: "Gros plan : les oiseaux se changent en pierre en plein vol.",
     cam: { t: (u, t) => birdsAt(t).add(V(0, -2, 0)), d: 26, az: -20, el: 2, fov: 42 }, st: (w, u, t) => { w.sky.plane.position.set(0, -500, 0); w.sky.update(t, { cloudH: 165, birdsPos: birdsAt(t), birdsStone: smooth(u * 1.1) }); } },
   { w: 87, set: "sky", fr: "PL", mv: "dive", ref: 6, desc: "Plongée : les oiseaux de pierre tombent du ciel vers la prairie.",
-    cam: { t: (u) => birdsAt(26.3).add(V(0, -Math.min(150, (u * 1.15) ** 2 * 140) - 2, 0)), d: 46, az: 10, el: 30, amt: 1.0 }, st: (w, u, t) => { w.sky.plane.position.set(0, -500, 0); w.sky.update(t, { cloudH: 165, birdsPos: birdsAt(26.3), birdsStone: 1, birdsFall: u * 1.15 }); } },
+    cam: { t: (u) => birdsAt(26.3).add(V(0, -Math.min(150, (u * 1.15) ** 2 * 140) - 2, 0)), d: 50, az: 10, el: 9, amt: 1.0 }, st: (w, u, t) => { w.sky.plane.position.set(0, -500, 0); w.sky.update(t, { cloudH: 165, birdsPos: birdsAt(26.3), birdsStone: 1, birdsFall: u * 1.15 }); } },
   { w: 92, set: "coupe", fr: "PE", mv: "truckR", ref: 2, desc: "Coupe : sous chaque maison, on creuse un abri.",
     cam: { t: [0, -6, 0], d: 75, az: 0, el: 6, amt: 0.8 }, st: (w, u, t) => w.coupe.update(t, { cloudH: 200, mach: 0, dig: u }) },
   { w: 104, set: "lux", fr: "GP", mv: "zoomOut", ref: 9, desc: "Gros plan : un milliardaire en costume violet et chaîne en or, sûr de lui.",
@@ -88,7 +88,7 @@ export const SHOTS: Shot[] = [
   { w: 122, set: "lux", fr: "PM", mv: "truckL", ref: 8, desc: "La piscine, les transats, le parasol doré.",
     cam: { t: [-4, 1.4, 6], d: 24, az: -10, el: 12, amt: 0.9 }, st: (w, u, t) => { w.lux.update(t, { power: 1 }); const A = w.lux.actors; put(A.rich3, t, -9, 0, 15, 0.2, { expr: "happy" }); put(A.rich4, t, 1, 0, 11, 0.3, { expr: "smile", wave: "L" }); } },
   { w: 125, set: "lux", fr: "GP", mv: "zoomIn", ref: 9, desc: "La salle de cinéma privée : le milliardaire seul dans un fauteuil rouge.",
-    cam: { t: [CINE_X + 1.5, 4.0, -1.6], d: 4.6, az: 200, el: 4, fov: 42 }, st: (w, u, t) => { w.lux.update(t, { power: 1 }); put(w.lux.actors.rich1, t, CINE_X + 1.5, 2.78, -1.6, Math.PI, { sit: true, expr: "happy", headYaw: 0.1 * Math.sin(t) }); } },
+    cam: { t: [CINE_X + 1.5, 3.9, -1.6], d: 3.3, az: 195, el: 11, fov: 44 }, st: (w, u, t) => { w.lux.update(t, { power: 1 }); put(w.lux.actors.rich1, t, CINE_X + 1.5, 2.78, -1.6, Math.PI, { sit: true, expr: "happy", headYaw: 0.1 * Math.sin(t) }); } },
   { w: 129, set: "lux", fr: "PE", mv: "craneUp", ref: 13, desc: "Son zoo privé : girafe, lion, éléphant dans une grotte éclairée.",
     cam: { t: [ZOO_X + 3, 4, -3], d: 32, az: 0, el: 6, amt: 0.7 }, st: (w, u, t) => { w.lux.update(t, { power: 1 }); put(w.lux.actors.rich3, t, ZOO_X + 8, 0, 13, Math.PI - 0.4, { point: 0.3, expr: "happy" }); } },
   { w: 134, set: "lux", fr: "PL", mv: "orbit", ref: 10, desc: "Une ville entière sous terre, vue de haut, sous son soleil artificiel.",
@@ -117,10 +117,10 @@ export const SHOTS: Shot[] = [
   { w: 193, set: "town", fr: "CPL", mv: "zoomOut", ref: 3, desc: "Contre-plongée : le nuage frôle le toit de la maison bleue.",
     cam: { p: [4, 1.1, 46], t: [0, 13, 26], fov: 52 }, st: (w, u, t) => { w.town.update(t, { cloudH: H(u, 52, 44) }); fam(w, t, 33.5, { expr: "scared", headPitch: -0.4 }); } },
   { w: 197, set: "town", fr: "PA", mv: "zoomIn", ref: 16, desc: "Les riches entrent dans le grand bunker ; les portes blindées se referment.",
-    cam: { p: [7, 3, 12], t: [0, 3.5, -9], fov: 46 }, st: (w, u, t) => { w.town.update(t, { cloudH: 40, doors: 1 - smooth(clamp01((u - 0.25) / 0.75)) });
+    cam: { p: [2.6, 2.4, -1.2], t: [0, 2.6, -10], fov: 50 }, st: (w, u, t) => { w.town.update(t, { cloudH: 40, doors: 1 - smooth(clamp01((u - 0.25) / 0.75)) });
       const A = w.town.actors; put(A.rich1, t, -1.2, 0, lerp(-6.5, -11, u), Math.PI, { walk: 1 }); put(A.rich4, t, 1.3, 0, lerp(-5.5, -10.5, u), Math.PI, { walk: 1 }); } },
   { w: 205, set: "town", fr: "PM", mv: "truckR", ref: 16, desc: "La famille et les voisins frappent aux portes fermées et supplient.",
-    cam: { p: [6, 2.2, -1.5], t: [0, 2.0, -8.4], fov: 48, amt: 0.25 }, st: (w, u, t) => { w.town.update(t, { cloudH: 38, doors: 0 }); const A = w.town.actors;
+    cam: { p: [3.2, 2.5, -2.4], t: [-0.4, 2.1, -8.4], fov: 52, amt: 0.25 }, st: (w, u, t) => { w.town.update(t, { cloudH: 38, doors: 0 }); const A = w.town.actors;
       put(A.dad, t, -2.2, 0, -8.6, Math.PI, { bang: true }); put(A.narr, t, -0.6, 0, -8.5, Math.PI, { bang: true }); put(A.mom, t, 1.2, 0, -8.6, Math.PI, { bang: true }); put(A.bro, t, 2.6, 0, -8.2, Math.PI + 0.3, { armsUp: 0.6 });
       put(A.n1, t, -3.8, 0, -7.4, Math.PI - 0.3, { armsUp: 0.8 }); put(A.n3, t, 3.9, 0, -7.2, Math.PI + 0.4, { bang: true }); } },
   { w: 215, set: "lux", fr: "GP", mv: "orbit", ref: 9, desc: "Gros plan : à l'abri, le milliardaire refuse d'un signe de tête.",

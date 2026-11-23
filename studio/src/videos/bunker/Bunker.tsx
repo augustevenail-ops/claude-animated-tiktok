@@ -20,7 +20,7 @@ export const BUNKER_FRAMES = TOTAL;
 export const BW = 2160, BH = 3840;
 type Post = { audio: boolean; shadow: boolean; smap: number; bloom: boolean };
 const post = (): Post => ({ audio: true, shadow: true, smap: 4096, bloom: true, ...((getInputProps() as { post?: Partial<Post> }).post ?? {}) });
-const BG: Record<string, string> = { town: "#0d0b14", coupe: "#0d0b14", sky: "#0d0b14", cabin: "#1a1f3a", lux: "#1a1410", machine: "#120e22" };
+const BG: Record<string, string> = { town: "#221f2c", coupe: "#221f2c", sky: "#25222f", cabin: "#1a1f3a", lux: "#1a1410", machine: "#120e22" };
 
 class World {
   w: W; roots: Record<string, THREE.Group>;
