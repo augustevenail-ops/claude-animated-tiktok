@@ -14,12 +14,13 @@ import { Coupe } from "./under";
 import { Sky, Cabin } from "./sky";
 import { Lux } from "./lux";
 import { Machine } from "./machine";
-import { SHOTS, WORDS, TOTAL, FPS, shotAt, uOf, camAt, W } from "./shots";
+import { SHOTS, TOTAL, FPS, shotAt, uOf, camAt, W } from "./shots";
+import CAPW from "./words_caps.json";
 
 export const BUNKER_FRAMES = TOTAL;
 export const BW = 2160, BH = 3840;
-type Post = { audio: boolean; shadow: boolean; smap: number; bloom: boolean };
-const post = (): Post => ({ audio: true, shadow: true, smap: 4096, bloom: true, ...((getInputProps() as { post?: Partial<Post> }).post ?? {}) });
+type Post = { audio: boolean; shadow: boolean; smap: number; bloom: boolean; caps: boolean };
+const post = (): Post => ({ audio: true, shadow: true, smap: 4096, bloom: true, caps: true, ...((getInputProps() as { post?: Partial<Post> }).post ?? {}) });
 const BG: Record<string, string> = { town: "#221f2c", coupe: "#221f2c", sky: "#25222f", cabin: "#1a1f3a", lux: "#1a1410", machine: "#120e22" };
 
 class World {
@@ -76,15 +77,25 @@ const Inner: React.FC = () => {
 
 // ---------------- sous-titres : un mot à la fois, jaune, contour noir épais, ombre (réf. 1-16) ----------------
 const clean = (w: string) => w.replace(/[«»"“”]/g, "").replace(/…/g, "").replace(/^[:;!?]+$/, "").replace(/[.,:;!?]+$/g, "").toLowerCase();
-const CAPS = WORDS.map((w, i) => ({ t: clean(w.w), s: w.s, e: Math.min(WORDS[i + 1]?.s ?? w.e + 0.5, w.e + 0.45) })).filter((x) => x.t.length > 0);
+// minutage des sous-titres : alignement forcé (words_caps.json), indépendant du découpage des plans (words.json).
+// Un mot reste affiché jusqu'au mot suivant (ou 0,22 s après sa fin s'il y a une pause) ; un mot très court
+// (moins de 0,2 s, 3 lettres max) est affiché avec le mot suivant pour rester lisible.
+const CW = (CAPW as { w: string; s: number; e: number }[]).map((w) => ({ t: clean(w.w), s: w.s, e: w.e, p: /[.,:;!?…]$/.test(w.w.trim()) })).filter((x) => x.t.length > 0);
+const CAPS: { t: string; s: number; e: number; p: boolean }[] = [];
+for (let i = 0; i < CW.length; ) {
+  const g = { ...CW[i] }; i++;
+  while (i < CW.length && !g.p && CW[i].s - g.s < 0.22 && (g.t + " " + CW[i].t).length <= 16) { g.t += " " + CW[i].t; g.e = CW[i].e; g.p = CW[i].p; i++; }
+  CAPS.push(g);
+}
+for (let i = 0; i < CAPS.length; i++) { const c = CAPS[i], n = CAPS[i + 1]; c.s -= 0.03; c.e = n && n.s - 0.03 - c.e < 0.25 ? n.s - 0.03 : c.e + 0.22; }
 const Caption: React.FC<{ t: number }> = ({ t }) => {
   const c = CAPS.find((x) => t >= x.s - 0.02 && t < x.e);
   if (!c) return null;
   const pop = 1 + 0.12 * Math.exp(-(t - c.s) * 14);
-  const size = c.t.length > 12 ? 190 : 230;
+  const size = c.t.length > 14 ? 150 : c.t.length > 11 ? 175 : 230;
   return (
     <div style={{ position: "absolute", left: 0, right: 0, top: "67%", transform: "translateY(-50%)", textAlign: "center", padding: "0 220px" }}>
-      <span style={{ display: "inline-block", transform: `scale(${pop})`, fontFamily: "'Montserrat', 'Liberation Sans', sans-serif", fontWeight: 900, fontSize: size, lineHeight: 1, letterSpacing: 1,
+      <span style={{ display: "inline-block", whiteSpace: "nowrap", transform: `scale(${pop})`, fontFamily: "'Montserrat', 'Liberation Sans', sans-serif", fontWeight: 900, fontSize: size, lineHeight: 1, letterSpacing: 1,
         color: "#F6F23C", WebkitTextStroke: "22px #0a0a0a", paintOrder: "stroke fill", textShadow: "0 14px 0 rgba(0,0,0,0.55), 0 18px 34px rgba(0,0,0,0.55)" }}>{c.t}</span>
     </div>
   );
@@ -98,8 +109,15 @@ export const Bunker: React.FC = () => {
       <ThreeCanvas width={BW} height={BH} frameloop="demand" shadows gl={{ antialias: false, stencil: false, powerPreference: "high-performance" }} camera={{ fov: 45, near: 0.1, far: 4000 }}>
         <Inner />
       </ThreeCanvas>
-      <Caption t={t} />
+      {on.caps ? <Caption t={t} /> : null}
       {on.audio ? <Audio src={staticFile("bunker/mix.wav")} /> : null}
     </AbsoluteFill>
   );
+};
+
+// sous-titres seuls sur fond transparent : incrustés ensuite sur le rendu 3D sans sous-titres
+export const BunkerCaps: React.FC = () => {
+  useFonts();
+  const f = useCurrentFrame();
+  return <AbsoluteFill><Caption t={f / FPS} /></AbsoluteFill>;
 };
