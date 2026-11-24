@@ -29,3 +29,4 @@
 - **ProRes** : non fourni ; le rendu 4K se fait sur processeur (environ 3 h 30), seule la version H.264 est livrée.
 - **Musique** : ton extrait dure 11,7 s, il est donc répété environ 11 fois sur 2 min 11 s.
 - **Fin** : la vidéo dure environ 1,4 s de plus que la voix, pour laisser la dernière image respirer.
+- **Fichier envoyé** : version 4K à 21 Mb/s (346 Mo) pour respecter la limite d'envoi ; la version à 52 Mb/s (858 Mo) reste disponible dans `productions/bunker/final/`.
