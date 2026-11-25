@@ -5,6 +5,7 @@ import { MurEp1, MUR_FRAMES } from "./videos/mur/Mur";
 import { MurPlanche } from "./videos/mur/Planche";
 import { Bunker, BunkerCaps, BUNKER_FRAMES, BW, BH } from "./videos/bunker/Bunker";
 import { Monstre, MONSTRE_FRAMES, MW, MH } from "./videos/monstre/Monstre";
+import { AppelStill, APPEL_W, APPEL_H } from "./videos/appel/Appel";
 
 export const Root: React.FC = () => (
   <>
@@ -14,5 +15,6 @@ export const Root: React.FC = () => (
     <Composition id="Bunker" component={Bunker} durationInFrames={BUNKER_FRAMES} fps={30} width={BW} height={BH} />
       <Composition id="BunkerCaps" component={BunkerCaps} durationInFrames={BUNKER_FRAMES} fps={30} width={BW} height={BH} />
     <Composition id="Monstre" component={Monstre} durationInFrames={MONSTRE_FRAMES} fps={30} width={MW} height={MH} />
+    <Composition id="AppelStill" component={AppelStill} durationInFrames={1} fps={30} width={APPEL_W} height={APPEL_H} defaultProps={{ scene: 1 }} />
   </>
 );
