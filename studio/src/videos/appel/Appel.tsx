@@ -214,6 +214,7 @@ const sun = (root: THREE.Group, c: string, i: number, x: number, y: number, z: n
 // 1. fin d'après-midi, intérieur chaud, fenêtre sur le ciel du soir
 const buildFamily = (): Built => {
   const root = new THREE.Group(); const bg = "#4a3f50";
+  roomShell(root, "#e6dccb", "#b8926e");
   root.add(new THREE.HemisphereLight("#ffd6b0", "#3a2a24", 1.4));
   sun(root, "#ffc890", 2.4, -5, 3.5, 2.5);
   // pièce
@@ -251,6 +252,16 @@ const buildFamily = (): Built => {
   return { root, bg, fog: null, cam: { P: V(-2.6, 1.3, 4.3), T: V(0.1, 1.1, -1.1), fov: 46 } };
 };
 
+// coque de pièce fermée : sol, plafond, murs latéraux et mur avant, pour que la caméra ne voie jamais le vide
+const roomShell = (root: THREE.Group, wall: string, floor: string, ceil = "#efe8da") => {
+  // la coque ne projette pas d'ombre : les lumières placées à l'extérieur de la pièce restent actives
+  const add = (g: THREE.BufferGeometry, m: THREE.Material, x: number, y: number, z: number) => { const o = M(g, m, x, y, z); o.castShadow = false; root.add(o); };
+  add(new THREE.BoxGeometry(9, 0.1, 13), std(floor, 0.7), 0, -0.05, 1.5);
+  add(new THREE.BoxGeometry(9, 0.1, 13), std(ceil, 0.95), 0, 3.25, 1.5);
+  add(new THREE.BoxGeometry(0.2, 3.3, 13), std(wall, 0.95), -4.5, 1.6, 1.5);
+  add(new THREE.BoxGeometry(0.2, 3.3, 13), std(wall, 0.95), 4.5, 1.6, 1.5);
+  add(new THREE.BoxGeometry(9, 3.3, 0.2), std(wall, 0.95), 0, 1.6, 8.0);
+};
 // 1 (version maison) : salon d'une maison normale, murs crème, sofa gris-bleu, table en bois ;
 // le téléphone rouge et les vêtements vifs ressortent sur les teintes neutres, avec une flaque de lumière sur la table
 const buildFamilyHouse = (): Built => {
@@ -399,6 +410,7 @@ const buildHouseFire = (): Built => {
 const buildBedroom = (calm = false): Built => {
   const k = calm ? 0 : 1; // calm : chambre au calme, sans feu
   const root = new THREE.Group(); const bg = "#07080f";
+  roomShell(root, "#38405e", "#5a4030", "#2a2e44");
   root.add(new THREE.HemisphereLight("#5a64a8", "#2a2030", 1.6));
   // lumière de face douce sur les personnages (sans éblouir)
   const faceL = new THREE.PointLight("#dfe6ff", calm ? 26 : 0, 10, 1.3); faceL.position.set(0.2, 1.6, 2.6); root.add(faceL);
@@ -434,6 +446,7 @@ const buildBedroom = (calm = false): Built => {
 // 5. vieux pompier à la porte, soir : lumière dorée par l'entrée
 const buildDoor = (): Built => {
   const root = new THREE.Group(); const bg = "#2a2a40";
+
   sky(root, "#3a3f78", "#f4a070", 0, 4, -6, 16, 10);
   root.add(new THREE.HemisphereLight("#8898d8", "#3a2a24", 1.6));
   // lumière de face douce sur les personnages (sans éblouir)
