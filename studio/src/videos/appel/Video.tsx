@@ -69,9 +69,9 @@ const motion = (k: number) => ({
 });
 
 // limites intérieures des pièces [xmin, xmax, ymin, ymax, zmin, zmax] (murs, plafond, sol avec marge)
-const ROOM_BED: number[] = [-2.35, 4.25, 0.3, 3.0, -2.15, 7.7];
+const ROOM_BED: number[] = [-1.75, 3.6, 0.3, 3.0, -2.15, 7.0];
 const BOUNDS: Record<string, number[]> = {
-  family: [-4.25, 4.25, 0.3, 3.0, -4.75, 7.7], bed: ROOM_BED, bedCalm: ROOM_BED, door: ROOM_BED,
+  family: [-3.6, 3.6, 0.3, 3.0, -4.75, 7.0], bed: ROOM_BED, bedCalm: ROOM_BED, door: ROOM_BED,
 };
 const OUTDOOR: number[] = [-1e9, 1e9, 0.3, 1e9, -1e9, 1e9];
 
