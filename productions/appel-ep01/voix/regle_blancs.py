@@ -14,6 +14,28 @@ fin_para = set(np.cumsum([len(p) for p in paras])[:-1] - 1)
 FORT = {"passent.", "minuit.", "pas.", "jamais."}                       # temps forts : un souffle de plus
 e = 20 * np.log10(np.sqrt(np.mean(x[: len(x) // n * n].reshape(-1, n) ** 2, 1)) + 1e-9)
 
+# Début de mot dédoublé (artefact Fish, entendu comme un grésillement avant « Chaque », « Après », « Lucas ») : bouffée
+# ≤ 0,12 s qui commence au début aligné du mot suivant une ponctuation, suivie d'un vrai trou (< -50 dB, creux < -70 dB)
+# puis du mot -> la bouffée est effacée avec fondus de 5 ms.
+nett = []
+for a, b in zip(w, w[1:]):
+    if a["w"][-1] not in ".!?,:": continue
+    f, f1 = int(a["e"] * 100) + 3, int(b["s"] * 100) + 3
+    while f <= f1:
+        if e[f] > -45 and e[f - 4:f].min() < -50:
+            while e[f - 1] > -50: f -= 1
+            g = f
+            while g < len(e) and e[g] > -50: g += 1
+            h = g
+            while h < len(e) and e[h] < -50: h += 1
+            if g - f <= 12 and h - g >= 3 and e[g:h].min() < -70:
+                F = int(0.005 * SR); q0, q1 = f * n, g * n
+                x[q0:q1] = 0; x[q0 - F:q0] *= np.linspace(1, 0, F); x[q1:q1 + F] *= np.linspace(0, 1, F)
+                nett.append(f"{b['w']} {f / 100:.2f}")
+            break
+        f += 1
+e = 20 * np.log10(np.sqrt(np.mean(x[: len(x) // n * n].reshape(-1, n) ** 2, 1)) + 1e-9)
+
 
 def run(f0, f1):                                                       # plus long silence (trames) dans [f0, f1)
     best, cur, st = (0, 0), 0, 0
@@ -56,4 +78,4 @@ for k, q in enumerate(parts):
         if k < len(parts) - 1: q[-F:] *= np.linspace(1, 0, F)
 y = np.concatenate(parts)
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "f32le", "-ar", str(SR), "-ac", "1", "-i", "-", "-b:a", "192k", dst], input=y.tobytes(), check=True)
-print("\n".join(rep)); print(f"{len(edits)} pauses réglées ; durée {len(y) / SR:.2f} s")
+print("\n".join(rep)); print("débuts dédoublés effacés :", nett); print(f"{len(edits)} pauses réglées ; durée {len(y) / SR:.2f} s")
