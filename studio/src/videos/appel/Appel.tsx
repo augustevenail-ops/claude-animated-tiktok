@@ -168,23 +168,22 @@ const sun = (root: THREE.Group, c: string, i: number, x: number, y: number, z: n
 // 1. fin d'après-midi, intérieur chaud, fenêtre sur le ciel du soir
 const buildFamily = (): Built => {
   const root = new THREE.Group(); const bg = "#4a3f50";
-  root.add(new THREE.HemisphereLight("#ffd6b0", "#4a3a34", 3.2));
-  sun(root, "#ffd4a0", 3.4, -5, 3.5, 2.5);
-  const fillF = new THREE.PointLight("#ffe2b8", 30, 24, 1.1); fillF.position.set(0, 2.4, 3.5); root.add(fillF);
+  root.add(new THREE.HemisphereLight("#ffd6b0", "#3a2a24", 1.4));
+  sun(root, "#ffc890", 2.4, -5, 3.5, 2.5);
   // pièce
-  root.add(M(new THREE.BoxGeometry(12, 0.1, 12), std("#5a4030", 0.7), 0, -0.05, -2));
-  root.add(M(new THREE.BoxGeometry(12, 6, 0.2), std("#7a5a50", 0.95, 0, "#000", 0, { map: stripeTex("#7a5a50", "#00000022") }), 0, 3, -5));
-  root.add(M(new THREE.BoxGeometry(0.2, 6, 12), std("#6a4a44", 0.95), -4.5, 3, -2));
+  root.add(M(new THREE.BoxGeometry(12, 0.1, 12), std("#9a7458", 0.7), 0, -0.05, -2));
+  root.add(M(new THREE.BoxGeometry(12, 6, 0.2), std("#c09482", 0.95, 0, "#000", 0, { map: stripeTex("#c09482", "#ffffff22") }), 0, 3, -5));
+  root.add(M(new THREE.BoxGeometry(0.2, 6, 12), std("#b08878", 0.95), -4.5, 3, -2));
   // fenêtre avec ciel du soir et cadre
   sky(root, "#3a3f78", "#f0a070", -1.6, 2.0, -4.85, 2.4, 2.0);
   root.add(B(2.6, 0.1, 0.1, "#f2e6d0", -1.6, 3.05, -4.82), B(2.6, 0.1, 0.1, "#f2e6d0", -1.6, 0.95, -4.82), B(0.1, 2.2, 0.1, "#f2e6d0", -1.6, 2.0, -4.82), B(0.1, 2.2, 0.1, "#f2e6d0", -0.3, 2.0, -4.82), B(0.1, 2.2, 0.1, "#f2e6d0", -2.9, 2.0, -4.82));
   // tapis, meuble, cadre, lampe
-  root.add(M(new THREE.CircleGeometry(1.8, 32), std("#7a2a2a", 1), 0, 0.01, -0.8, -Math.PI / 2));
-  root.add(B(1.2, 1.4, 0.5, "#4a3428", 2.2, 0.7, -2.6, 0.03, 0.6));
+  root.add(M(new THREE.CircleGeometry(1.8, 32), std("#b04a4a", 1), 0, 0.01, -0.8, -Math.PI / 2));
+  root.add(B(1.2, 1.4, 0.5, "#8a6448", 2.2, 0.7, -2.6, 0.03, 0.6));
   root.add(B(0.45, 0.6, 0.04, "#c8a060", 2.2, 2.0, -4.8, 0.02));
   root.add(C(0.1, 0.16, 0.3, "#f0d9a0", 2.2, 1.6, -2.6, 0, 0, 0, 0.9), C(0.02, 0.02, 0.55, "#2a211e", 2.2, 1.25, -2.6));
   // table basse et téléphone
-  root.add(B(1.7, 0.1, 0.9, "#4a3428", 0, 0.9, -0.4, 0.03, 0.6));
+  root.add(B(1.7, 0.1, 0.9, "#8a6448", 0, 0.9, -0.4, 0.03, 0.6));
   for (const [x, z] of [[-0.75, -0.8], [0.75, -0.8], [-0.75, 0], [0.75, 0]] as const) root.add(B(0.08, 0.86, 0.08, "#2a211e", x, 0.43, z, 0.02));
   root.add(telephone(0, 0.95, -0.4, 0.05, 1.6));
   // famille
