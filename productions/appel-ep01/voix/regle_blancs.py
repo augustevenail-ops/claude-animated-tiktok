@@ -1,47 +1,58 @@
-# Règle les blancs d'après l'alignement (words.json) : 0,55 s après chaque point, 0,80 s entre paragraphes, léger silence
-# de 0,20 s aux virgules (ajouté seulement, jamais retiré) — consigne utilisateur : la voix ne doit pas ignorer la ponctuation.
-# (« Les heures passent. », « minuit. », « Lucas. ») 0,60 s, fin de paragraphe 0,75 s. Le silence est ajouté ou retiré
-# à l'endroit le plus calme du blanc ; les blancs à l'intérieur des phrases ne sont pas touchés.
-#   python3 regle_blancs.py voice.mp3 words.json texte.txt voice_regle.mp3
+# Règle les pauses d'après l'alignement (words.json) en mesurant le silence RÉEL (< -45 dB) à chaque ponctuation :
+# point 0,36 s, temps forts 0,50 s, fin de paragraphe 0,60 s, virgule / deux-points 0,14 s. Le silence n'est ajouté ou
+# retiré qu'à l'intérieur d'un vrai silence (jamais dans un son : pas de « euh » coupé) ; virgule sans silence = laissée telle quelle.
+#   python3 regle_blancs.py voice_brut.mp3 words_brut.json texte.txt voice.mp3
 import json, re, subprocess, sys
 import numpy as np
 
-src, wj, txt, dst = sys.argv[1:5]; SR = 44100
+src, wj, txt, dst = sys.argv[1:5]; SR = 44100; n = SR // 100
 x = np.frombuffer(subprocess.run(["ffmpeg", "-v", "error", "-i", src, "-f", "f32le", "-ac", "1", "-ar", str(SR), "-"],
                                  capture_output=True, check=True).stdout, np.float32).copy()
 w = json.load(open(wj, encoding="utf-8"))
 paras = [p.split() for p in open(txt, encoding="utf-8").read().replace("«", "").replace("»", "").split("\n\n") if p.strip()]
-fin_para = set(np.cumsum([len(p) for p in paras])[:-1] - 1)          # index du dernier mot de chaque paragraphe
-LONG = {"passent.", "minuit.", "Lucas."}                           # temps qui passe, énumération de la famille
+fin_para = set(np.cumsum([len(p) for p in paras])[:-1] - 1)
+FORT = {"passent.", "minuit.", "pas.", "jamais."}                       # temps forts : un souffle de plus
+e = 20 * np.log10(np.sqrt(np.mean(x[: len(x) // n * n].reshape(-1, n) ** 2, 1)) + 1e-9)
 
-cuts = []                                                              # (position en échantillons, delta en s)
+def run(f0, f1):                                                       # plus long silence (trames) dans [f0, f1)
+    best, cur, st = (0, 0), 0, 0
+    for f in range(max(0, f0), min(len(e), f1)):
+        if e[f] < -45:
+            if not cur: st = f
+            cur += 1
+            if cur > best[1] - best[0]: best = (st, st + cur)
+        else: cur = 0
+    return best
+
+edits, rep = [], []                                                    # (position éch., delta s)
 for i, (a, b) in enumerate(zip(w, w[1:])):
-    virg = a["w"].endswith(",")
-    if not (virg or re.search(r"[.!?]$", a["w"])): continue
-    tgt = 0.20 if virg else 0.80 if i in fin_para else 0.55
-    g = b["s"] - a["e"]
-    if abs(g - tgt) < 0.06 or (virg and g > tgt): continue
-    s0, s1 = int(a["e"] * SR), int(b["s"] * SR); n = SR // 100
-    if s1 - s0 > 8 * n:                                                # centre de la fenêtre de 80 ms la plus calme du blanc
-        e = [np.max([np.sqrt(np.mean(x[q:q + n] ** 2)) for q in range(k, k + 8 * n, n)]) for k in range(s0, s1 - 8 * n, n)]
-        pos = s0 + int(np.argmin(e)) * n + 4 * n
-    else:                                                              # mots liés : trame de 10 ms la plus calme autour de la frontière
-        lo = max(0, min(s0, s1) - 4 * n); hi = max(s0, s1) + 4 * n
-        e = [np.sqrt(np.mean(x[k:k + n] ** 2)) for k in range(lo, hi, n)]; pos = lo + int(np.argmin(e)) * n + n // 2
-    cuts.append((pos, tgt - g, max(0, s1 - s0)))
+    p = a["w"][-1]
+    if p not in ".!?,:": continue
+    tgt = 0.14 if p in ",:" else 0.60 if i in fin_para else 0.50 if a["w"] in FORT else 0.36
+    r0, r1 = run(int(a["e"] * 100) - 10, int(b["s"] * 100) + 10); L = (r1 - r0) / 100
+    if L >= 0.03:
+        f = r0 + int(np.argmin(e[r0:r1])); pos = f * n + n // 2
+        if L < tgt - 0.03: edits.append((pos, tgt - L))
+        elif L > tgt + 0.12: edits.append((pos, -(L - tgt), (r0 * n, r1 * n)))
+    elif p not in ",:":                                                # point sans silence : trame la plus calme si assez basse
+        f0 = int(a["e"] * 100) - 6; f = f0 + int(np.argmin(e[f0:int(b["s"] * 100) + 6]))
+        if e[f] < -35: edits.append((f * n + n // 2, tgt))
+        else: rep.append(f"point sans creux : {a['w']} {b['w']}")
 
 parts, last = [], 0
-for pos, d, gap in cuts:
+for ed in sorted(edits):
+    pos, d = ed[0], ed[1]
     if d > 0: parts += [x[last:pos], np.zeros(int(d * SR), np.float32)]; last = pos
-    else:
-        r = min(int(-d * SR), max(0, gap - int(0.1 * SR)))             # on garde au moins 0,1 s du blanc d'origine
-        parts.append(x[last:pos - r // 2]); last = pos + (r - r // 2)
+    else:                                                              # retrait centré, borné au silence mesuré
+        r = int(-d * SR); lo = max(ed[2][0] + n, pos - r // 2); hi = min(ed[2][1] - n, lo + r)
+        parts.append(x[last:lo]); last = hi
 parts.append(x[last:])
-F = int(0.012 * SR)                                                    # fondus 12 ms à chaque raccord : pas de clic
-for k, p in enumerate(parts):
-    if len(p) > 2 * F and p.any():
-        if k: p[:F] *= np.linspace(0, 1, F)
-        if k < len(parts) - 1: p[-F:] *= np.linspace(1, 0, F)
+F = int(0.008 * SR)                                                    # fondus 8 ms aux raccords (dans le silence)
+for k, q in enumerate(parts):
+    if len(q) > 2 * F and q.any():
+        q = parts[k] = q.copy()
+        if k: q[:F] *= np.linspace(0, 1, F)
+        if k < len(parts) - 1: q[-F:] *= np.linspace(1, 0, F)
 y = np.concatenate(parts)
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "f32le", "-ar", str(SR), "-ac", "1", "-i", "-", "-b:a", "192k", dst], input=y.tobytes(), check=True)
-print(f"{len(cuts)} blancs réglés ; durée {len(y) / SR:.2f} s")
+print("\n".join(rep)); print(f"{len(edits)} pauses réglées ; durée {len(y) / SR:.2f} s")

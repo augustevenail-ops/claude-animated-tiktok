@@ -8,8 +8,8 @@ import numpy as np, torch
 from torchaudio.pipelines import MMS_FA as B
 
 D = pathlib.Path(__file__).parent; P = D / "prises"; P.mkdir(exist_ok=True)
-MAXT = 6
-REF, SR, TAKES = (sys.argv[1] if len(sys.argv) > 1 else "787591f6a440423a9f21106a05637a57"), 44100, 3
+MAXT = 8
+REF, SR, TAKES = (sys.argv[1] if len(sys.argv) > 1 else "787591f6a440423a9f21106a05637a57"), 44100, 4
 PAUSE_PHRASE, PAUSE_PARA = 0.28, 0.65
 BL_MIN, BL_MAX = 0.30, 0.50
 
@@ -21,12 +21,13 @@ def units(p):                     # phrases très courtes regroupées (seules, F
         if u and (len(s.split()) < 7 or len(u[-1].split()) < 6): u[-1] += " " + s
         else: u.append(s)
     return u
-phr = [(re.split(r"(?<=[.!?])\s+", p), ) for p in paras]   # une unité = une phrase : la voix 787591f6 enchaîne les phrases
-                                                           # sans pause ni chute ; seule, chaque phrase finit vers le bas
+phr = [([p], ) for p in paras]          # une unité = un paragraphe : débit et liaisons naturels (phrase par phrase :
+                                        # « euh » coupés aux raccords, silences trop longs — retour utilisateur)
+SPEED = 0.9                             # la voix 787591f6 parle à ~4,6 mots/s à 1,0 : 0,9 donne ~4,3 mots/s, plus posé
 
 def fish(t: str) -> np.ndarray:
     body = {"text": t, "reference_id": REF, "format": "wav", "normalize": True, "latency": "normal",
-            "temperature": 0.6, "top_p": 0.7, "prosody": {"speed": 1.0, "volume": 0}}
+            "temperature": 0.6, "top_p": 0.7, "prosody": {"speed": SPEED, "volume": 0}}
     req = urllib.request.Request("https://api.fish.audio/v1/tts", json.dumps(body).encode(),
                                  {"Content-Type": "application/json", "Authorization": "Bearer proxy-injected", "model": "s1"})
     b = urllib.request.urlopen(req, timeout=300).read()
@@ -97,7 +98,7 @@ for pi, (ps,) in enumerate(phr):
         k += 1; best = None
         for n in range(MAXT):
             if n >= TAKES and best[1] >= 0.8: break
-            f = P / f"{hashlib.md5((REF + t).encode()).hexdigest()[:8]}_{n}.wav"
+            f = P / f"{hashlib.md5((REF + t + f"v{SPEED}").encode()).hexdigest()[:8]}_{n}.wav"
             x = trim(fish(t)) if not f.exists() else np.frombuffer(subprocess.run(["ffmpeg", "-v", "error", "-i", str(f), "-f", "f32le", "-ac", "1", "-ar", str(SR), "-"], capture_output=True).stdout, np.float32).copy()
             if not f.exists():
                 subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "f32le", "-ar", str(SR), "-ac", "1", "-i", "-", str(f)], input=x.tobytes(), check=True)
@@ -109,7 +110,8 @@ for pi, (ps,) in enumerate(phr):
             ch = chute(x)
             if t.endswith(".") and ch > -1.5: mn -= 0.15  # fin de phrase qui ne descend pas : prise pénalisée
             if best is None or (round(mn, 2), mu) > (round(best[1], 2), best[2]): best = (x, mn, mu, wk, n)
-        out.append(regle(best[0])); rep.append(f"{k:02d} prise {best[4]}/{n + 1}  min {best[1]:.2f} ({best[3]})  moy {best[2]:.2f}  chute {chute(best[0]):+.1f}  {t}")
+        out.append(best[0])              # aucun montage interne : les pauses sont réglées par regle_blancs.py
+        rep.append(f"{k:02d} prise {best[4]}/{n + 1}  min {best[1]:.2f} ({best[3]})  moy {best[2]:.2f}  chute {chute(best[0]):+.1f}  {t}")
         last = si == len(ps) - 1 and pi < len(phr) - 1
         if not (si == len(ps) - 1 and pi == len(phr) - 1):
             out.append(np.zeros(int((PAUSE_PARA if last else PAUSE_PHRASE) * SR), np.float32))
