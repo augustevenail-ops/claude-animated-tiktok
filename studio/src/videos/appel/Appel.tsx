@@ -92,6 +92,14 @@ const fire = (root: THREE.Group, cx: number, cy: number, cz: number, w: number, 
     root.add(spr(smokeTex(), "#5a5e68", x, y, z, 1.6 + hash(i, seed + 9) * 2.4, 0.35, false));
   }
 };
+// fumée noire qui monte et s'étale (sprites sombres, éclairés par le feu en dessous)
+const blackSmoke = (root: THREE.Group, cx: number, cy: number, cz: number, w: number, n: number, seed: number) => {
+  for (let i = 0; i < n; i++) {
+    const x = cx + (hash(i, seed) - 0.5) * w, y = cy + hash(i, seed + 1) * 6.5, z = cz + (hash(i, seed + 2) - 0.5) * 1.2;
+    const s = 2.2 + hash(i, seed + 3) * 2.8 + (y - cy) * 0.35;
+    root.add(spr(smokeTex(), hash(i, seed + 4) > 0.5 ? "#26272c" : "#1a1b20", x, y, z, s, 0.5 - (y - cy) * 0.04, false));
+  }
+};
 // maison à deux étages, fenêtres allumées ou éteintes (face avant à z = cz + d/2)
 const house = (root: THREE.Group, cx: number, cz: number, w: number, h: number, d: number, wall: string, roof: string, lit: boolean[][]) => {
   root.add(B(w, h, d, wall, cx, h / 2, cz, 0.03, 0.95));
@@ -138,7 +146,7 @@ const telephone = (x: number, y: number, z: number, ry = 0, scale = 1.6) => {
 type Built = { root: THREE.Group; bg: string; fog: THREE.Scene["fog"]; cam: { P: THREE.Vector3; T: THREE.Vector3; fov: number } };
 const sun = (root: THREE.Group, c: string, i: number, x: number, y: number, z: number) => {
   const d = new THREE.DirectionalLight(c, i); d.position.set(x, y, z); d.target.position.set(0, 0.8, -1);
-  d.castShadow = true; d.shadow.mapSize.set(2048, 2048); Object.assign(d.shadow.camera, { left: -8, right: 8, top: 8, bottom: -8, far: 40 });
+  d.castShadow = true; d.shadow.mapSize.set(4096, 4096); d.shadow.bias = -0.0005; Object.assign(d.shadow.camera, { left: -14, right: 14, top: 14, bottom: -14, far: 60 });
   root.add(d, d.target);
 };
 
@@ -167,6 +175,12 @@ const buildFamily = (): Built => {
   root.add(person(CAST.hero, -0.7, -1.7, "scared", 51, { top: "#f2b51c", topDark: "#c98f10" }).root);
   root.add(person(CAST.pink, 0.65, -1.7, "worried", 52, { top: "#6b5a86", topDark: "#4a3d60", sleeve: "#6b5a86" }).root);
   root.add(person(CAST.c2, 0, -2.5, "sad", 53, { hair: "bun", hairCol: "#d8d8d8", top: "#4a4f5e", topDark: "#333845", sleeve: "#4a4f5e" }).root);
+  // détails de salon : plante, étagère avec livres, pouf
+  root.add(C(0.2, 0.15, 0.4, "#8a4a2a", -3.2, 0.2, -3.8));
+  for (let i = 0; i < 4; i++) root.add(M(new THREE.SphereGeometry(0.28 + hash(i, 11) * 0.1, 10, 8), std("#2f6a3a", 0.9, 0, "#000", 0, { flatShading: true }), -3.2 + (hash(i, 12) - 0.5) * 0.4, 0.8 + hash(i, 13) * 0.5, -3.8 + (hash(i, 14) - 0.5) * 0.4));
+  root.add(B(1.6, 2.2, 0.35, "#3a2a20", -3.4, 1.1, -4.8, 0.02, 0.6));
+  for (let s = 0; s < 4; s++) for (let b = 0; b < 5; b++) root.add(B(0.2, 0.36, 0.22, ["#c0392b", "#2e86ab", "#e0b030", "#5a7a46", "#8e5ab0"][b], -3.9 + b * 0.22, 0.4 + s * 0.5, -4.6, 0.01));
+  root.add(M(new THREE.CylinderGeometry(0.45, 0.45, 0.3, 20), std("#5a3a6a", 0.9), 0.6, 0.15, -0.2));
   // plan de trois quarts, légèrement en contre-plongée
   return { root, bg, fog: null, cam: { P: V(-2.6, 1.3, 4.3), T: V(0.1, 1.1, -1.1), fov: 46 } };
 };
@@ -175,8 +189,8 @@ const buildFamily = (): Built => {
 const buildCemetery = (): Built => {
   const root = new THREE.Group(); const bg = "#aeb8c6";
   sky(root, "#c8d0dc", "#8e9aa8", 0, 14, -30, 120, 60);
-  root.add(new THREE.HemisphereLight("#dfe8f4", "#4a5a40", 2.6));
-  sun(root, "#ffffff", 1.4, 2, 9, 5);
+  root.add(new THREE.HemisphereLight("#dfe8f4", "#4a5a40", 1.5));
+  sun(root, "#fff4e0", 2.6, 4, 7, 6);
   root.add(M(new THREE.PlaneGeometry(90, 90), std("#7a8a6a", 1, 0, "#000", 0, { map: groundTex("#7a8a6a", "#4a5a40", "#a0b088") }), 0, 0, -6, -Math.PI / 2));
   root.add(M(new THREE.PlaneGeometry(1.6, 30), std("#a09480", 1), 0, 0.01, -8, -Math.PI / 2));
   // grille du fond
@@ -184,6 +198,26 @@ const buildCemetery = (): Built => {
   root.add(B(12.2, 0.05, 0.05, "#2a3038", 0, 1.0, -10.5, 0.01, 0.5, 0.6), B(12.2, 0.05, 0.05, "#2a3038", 0, 0.45, -10.5, 0.01, 0.5, 0.6));
   // arbres (feuillage plus clair, jour)
   tree(root, -5.2, -8.2, 1.3, "#4a6a3a"); tree(root, 5.0, -9.0, 1.2, "#5a7a46"); tree(root, -1.2, -11, 1.5, "#4a6a3a");
+  // colline et arbres du fond (pas de plaine vide)
+  root.add(M(new THREE.SphereGeometry(14, 16, 10), std("#2c3e2c", 1, 0, "#000", 0, { flatShading: true }), 0, -6, -26));
+  for (const [x, z, s] of [[-9, -20, 1.6], [-4, -22, 1.9], [2, -21, 1.7], [8, -19, 1.8], [12, -15, 1.4], [-13, -16, 1.5]] as const) tree(root, x, z, s, "#3a5a36");
+  // terre fraîche, gravier, pierres au sol, buissons
+  for (let i = 0; i < 6; i++) root.add(B(1.0 + hash(i, 40) * 0.6, 0.2, 1.4, "#4a3a2a", -6 + i * 2.4 + hash(i, 41), 0.1, -5.5 - hash(i, 42) * 3, 0.08, 1));
+  for (let i = 0; i < 90; i++) root.add(M(new THREE.DodecahedronGeometry(0.025 + hash(i, 43) * 0.03, 0), std("#8a8478", 1), -7 + hash(i, 44) * 14, 0.02, -1 - hash(i, 45) * 10));
+  for (let i = 0; i < 8; i++) root.add(B(0.9, 0.7, 0.8, "#2c4a2c", -6.5 + i * 1.8, 0.35, -1.2 - (i % 2) * 0.6, 0.3, 1));
+  // pierres tombales variées : arrondies, plates, croix, rochers
+  for (let i = 0; i < 26; i++) {
+    const x = -7 + hash(i, 61) * 14, z = -2 - hash(i, 62) * 9;
+    if (Math.abs(x) < 1.6 && z > -4.5) continue;
+    const kind = Math.floor(hash(i, 63) * 4); const c = ["#cfcac0", "#bdb8ae", "#d8d2c6", "#a9a59c"][i % 4];
+    const h = 0.7 + hash(i, 64) * 0.9, w = 0.5 + hash(i, 65) * 0.3, ry = (hash(i, 66) - 0.5) * 0.6;
+    if (kind === 0) tombstone(root, x, z, ry, w, h, c);
+    else if (kind === 1) root.add(B(w + 0.1, 0.12, 0.6, c, x, 0.06, z, 0.03, 0.9));
+    else if (kind === 2) { root.add(B(0.12, h, 0.1, "#9a958b", x, h / 2, z, 0.02, 0.9), B(0.42, 0.1, 0.1, "#9a958b", x, h * 0.8, z, 0.02, 0.9)); }
+    else root.add(M(new THREE.DodecahedronGeometry(0.22 + hash(i, 67) * 0.12, 0), std("#8c8880", 1), x, 0.12, z));
+  }
+  // fleurs sur quelques tombes
+  for (let i = 0; i < 10; i++) root.add(M(new THREE.SphereGeometry(0.06, 8, 6), std(["#f4f1ea", "#e8a0b0", "#f0d070"][i % 3], 0.6), -4 + hash(i, 68) * 8, 0.15, -3 - hash(i, 69) * 3));
   // rangées de tombes
   const stones: [number, number, number, number, number, string][] = [
     [-3.6, -4.5, 0.2, 0.7, 1.2, "#d8d4cc"], [-1.6, -5.4, -0.1, 0.6, 1.0, "#c8c4bc"], [1.2, -4.8, 0.15, 0.75, 1.3, "#dcd8d0"],
@@ -222,7 +256,11 @@ const buildHouseFire = (): Built => {
   for (let i = 0; i <= 11; i++) root.add(B(0.07, 0.9, 0.07, "#1a1d24", -12 + i * 0.55, 0.45, 1.8, 0.01, 0.5, 0.6));
   tree(root, -10.5, -4.5, 1.4); tree(root, 4.5, -6.0, 1.1, "#243a2a");
   // fenêtres du premier étage (cadre cassé) et lueur sur la façade
+  // feu : fenêtres du premier étage, fenêtre du rez-de-chaussée, toit ; fumée noire au-dessus
   fire(root, -1.6, 2.2, -0.2, 3.0, 3.4, 45, 11);
+  fire(root, 1.6, 1.0, 0.1, 1.6, 1.8, 20, 13);
+  fire(root, -1.0, 4.0, -0.6, 3.8, 1.2, 22, 17);
+  blackSmoke(root, -1.2, 4.6, -0.6, 4.8, 28, 23);
   const fireL = new THREE.PointLight("#ff6a1a", 26, 14, 1.4); fireL.position.set(-1.6, 2.6, 1.0); root.add(fireL);
   const fireL2 = new THREE.PointLight("#ff8a2a", 12, 10, 1.4); fireL2.position.set(0.8, 3.8, 0.4); root.add(fireL2);
   // camion de pompiers avec échelle, gyrophares
@@ -240,9 +278,10 @@ const buildHouseFire = (): Built => {
   root.add(B(2.2, 0.7, 1.1, "#5f6f88", -4.2, 0.5, 4.2, 0.1, 0.4, 0.2), B(1.2, 0.55, 0.95, "#4a5a72", -4.0, 1.1, 4.2, 0.1, 0.3, 0.2));
   for (const x of [-5.0, -3.4]) for (const z of [3.8, 4.6]) root.add(M(new THREE.CylinderGeometry(0.22, 0.22, 0.2, 14), std("#111", 0.8), x, 0.22, z, 0, 0, Math.PI / 2));
   // pompiers en tenue jaune
-  const coat = { top: "#e0a020", topDark: "#b07a10", sleeve: "#e0a020", pants: "#2a2a2a", capCol: "#e8b020" };
+  // tenue de pompier : veste rouge, pantalon sombre, casque noir
+  const coat = { top: "#c81e2b", topDark: "#961520", sleeve: "#c81e2b", pants: "#2a2a2e", capCol: "#141414" };
   root.add(person(CAST.guard, 1.9, 2.0, "focus", 71, coat).root);
-  root.add(person(CAST.guard2, 3.0, 2.6, "shout", 72, { ...coat, top: "#d89418", sleeve: "#d89418" }).root);
+  root.add(person(CAST.guard2, 3.0, 2.6, "shout", 72, { ...coat, top: "#a8161f", sleeve: "#a8161f" }).root);
   // lampadaire
   root.add(C(0.05, 0.07, 3.6, "#1a1d24", -4.2, 1.8, 2.4));
   root.add(M(new THREE.SphereGeometry(0.18, 12, 8), glow("#ffb46a", 4), -4.2, 3.7, 2.4));
@@ -269,6 +308,11 @@ const buildBedroom = (): Built => {
   root.add(M(new THREE.PlaneGeometry(1.1, 1.3), std("#120806", 0.5, 0, "#ff6a1a", 2.6), -2.5, 1.7, -0.9, 0, Math.PI / 2, 0));
   root.add(B(0.06, 1.3, 0.08, "#2a211e", -2.46, 1.7, -0.9, 0.01));
   const winL = new THREE.PointLight("#ff6a1a", 10, 7, 1.5); winL.position.set(-2.0, 1.6, -0.9); root.add(winL);
+  // table de nuit avec lampe éteinte, pile de livres, tapis
+  root.add(B(0.5, 0.6, 0.5, "#4a3428", -1.9, 0.3, -0.9, 0.03, 0.6));
+  root.add(C(0.08, 0.12, 0.25, "#d8c8a0", -1.9, 0.72, -0.9, 0, 0, 0, 0.9), C(0.02, 0.02, 0.2, "#2a211e", -1.9, 0.6, -0.9));
+  root.add(B(0.3, 0.06, 0.22, "#c0392b", -1.9, 0.63, -0.6, 0.01), B(0.28, 0.06, 0.2, "#2e86ab", -1.9, 0.69, -0.62, 0.01));
+  root.add(M(new THREE.PlaneGeometry(2.0, 1.4), std("#2a2028", 1), 0.4, 0.01, -0.6, -Math.PI / 2));
   // lit, couvre-lit bleu, oreiller
   root.add(B(1.2, 0.4, 2.0, "#3c4d7a", -1.0, 0.2, -1.2, 0.05, 0.95));
   root.add(B(1.25, 0.12, 0.9, "#4b5f92", -1.0, 0.45, -1.4, 0.05, 0.95));
@@ -299,6 +343,11 @@ const buildDoor = (): Built => {
   // vieux pompier dans l'encadrement, Lucas adulte à gauche
   root.add(person(CAST.c3, 0.85, -1.1, "sad", 91, { top: "#2d3b5c", topDark: "#1e2a44", sleeve: "#2d3b5c", pants: "#2a2e38", hair: "cap", hairCol: "#d8d8d8", capCol: "#1f3460", beard: "#d8d8d8", mustache: "#d8d8d8", radio: true }).root);
   root.add(person(CAST.hero, -0.4, -0.6, "worried", 92, { kid: false, top: "#2c3140", topDark: "#1c1f2a", sleeve: "#2c3140", hair: "messy" }).root);
+  // porte-manteau, tapis d'entrée, chaussures
+  root.add(C(0.04, 0.04, 1.9, "#2a211e", -1.9, 0.95, -1.8), B(0.5, 0.06, 0.06, "#2a211e", -1.9, 1.8, -1.8, 0.01));
+  root.add(B(0.5, 0.9, 0.04, "#3a4a6a", -1.9, 0.9, -1.85, 0.02, 0.9), B(0.4, 0.9, 0.04, "#5a3a2a", -1.5, 0.9, -1.85, 0.02, 0.9));
+  root.add(M(new THREE.PlaneGeometry(1.2, 0.7), std("#5a2a2a", 1), 0.2, 0.01, 0.2, -Math.PI / 2));
+  root.add(B(0.3, 0.1, 0.1, "#1a1a1e", -1.4, 0.05, -0.1, 0.02), B(0.3, 0.1, 0.1, "#1a1a1e", -1.1, 0.05, -0.1, 0.02));
   // plan de trois quarts, travelling latéral
   return { root, bg, fog: null, cam: { P: V(-2.6, 1.6, 2.6), T: V(0.3, 1.3, -1.0), fov: 48 } };
 };
