@@ -14,6 +14,7 @@ fin_para = set(np.cumsum([len(p) for p in paras])[:-1] - 1)
 FORT = {"passent.", "minuit.", "pas.", "jamais."}                       # temps forts : un souffle de plus
 e = 20 * np.log10(np.sqrt(np.mean(x[: len(x) // n * n].reshape(-1, n) ** 2, 1)) + 1e-9)
 
+
 def run(f0, f1):                                                       # plus long silence (trames) dans [f0, f1)
     best, cur, st = (0, 0), 0, 0
     for f in range(max(0, f0), min(len(e), f1)):
@@ -28,7 +29,7 @@ edits, rep = [], []                                                    # (positi
 for i, (a, b) in enumerate(zip(w, w[1:])):
     p = a["w"][-1]
     if p not in ".!?,:": continue
-    tgt = 0.14 if p in ",:" else 0.60 if i in fin_para else 0.50 if a["w"] in FORT else 0.36
+    tgt = 0.28 if a["w"] == "heures," and b["w"].startswith("minuit") else 0.14 if p in ",:" else 0.60 if i in fin_para else 0.50 if a["w"] in FORT else 0.36
     r0, r1 = run(int(a["e"] * 100) - 10, int(b["s"] * 100) + 10); L = (r1 - r0) / 100
     if L >= 0.03:
         f = r0 + int(np.argmin(e[r0:r1])); pos = f * n + n // 2

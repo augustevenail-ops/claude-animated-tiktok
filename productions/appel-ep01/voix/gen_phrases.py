@@ -23,7 +23,7 @@ def units(p):                     # phrases très courtes regroupées (seules, F
     return u
 phr = [([p], ) for p in paras]          # une unité = un paragraphe : débit et liaisons naturels (phrase par phrase :
                                         # « euh » coupés aux raccords, silences trop longs — retour utilisateur)
-SPEED = 1.0                             # la voix 787591f6 parle à ~4,6 mots/s : ralentie après coup (rubberband 0,92) —
+SPEED = 1.0                             # vitesse ×1 (0,92 jugé trop lent par l'utilisateur) —
                                         # crédit Fish épuisé le 2026-11-25, on réutilise les prises en cache à 1,0
 
 def fish(t: str) -> np.ndarray:
@@ -91,7 +91,18 @@ def score(x, t):
         em, _ = model(torch.from_numpy(np.frombuffer(a, np.float32).copy())[None])
         spans = aligner(em[0], tok(w))
     s = [float(np.mean([c.score for c in sp])) for sp in spans]
+    r = len(x) / SR / em.shape[1]; ws = [v for v in t.split() if rom(v)]
+    global FIN, MANQUE                     # fin du dernier mot (s) ; ponctuations sans aucun silence réel
+    FIN = spans[-1][-1].end * r; e = db(x); MANQUE = 0
+    for v, a, b in zip(ws, spans, spans[1:]):
+        if v[-1] in ",.!?:" and not np.any(e[max(0, int(a[-1].end * r * 100) - 8): int(b[0].start * r * 100) + 8] < -45): MANQUE += 1
     return min(s), float(np.mean(s)), w[int(np.argmin(s))]
+
+def coupe_queue(x, fin):                   # son parasite après le dernier mot (« euh » tronqué) : coupé au premier silence
+    e = db(x); f = int(fin * 100)
+    while f < len(e) - 3 and not np.all(e[f:f + 3] < -45): f += 1
+    if f >= len(e) - 3: return x
+    y = x[: f * (SR // 100) + int(0.06 * SR)].copy(); F = int(0.04 * SR); y[-F:] *= np.linspace(1, 0, F); return y
 
 out, rep, k = [], [], 0
 for pi, (ps,) in enumerate(phr):
@@ -105,10 +116,12 @@ for pi, (ps,) in enumerate(phr):
             if not f.exists():
                 subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "f32le", "-ar", str(SR), "-ac", "1", "-i", "-", str(f)], input=x.tobytes(), check=True)
             mn, mu, wk = score(x, t)
+            x = coupe_queue(x, FIN)
             longb = max([(j - i) / 100 for i, j in blancs(x)] + [0])
             if longb > 1.1: mn -= 0.3                     # blanc anormal (coupure) : prise pénalisée
             e = db(x); cut = int(np.sum((e[:-12] > -25) & (e[1:-11] < -50)))
             mn -= 0.3 * cut                               # son coupé net en pleine parole (artefact) : prise pénalisée
+            mn -= 0.08 * MANQUE                           # ponctuation dite sans aucune pause : prise pénalisée
             ch = chute(x)
             if t.endswith(".") and ch > -1.5: mn -= 0.15  # fin de phrase qui ne descend pas : prise pénalisée
             if best is None or (round(mn, 2), mu) > (round(best[1], 2), best[2]): best = (x, mn, mu, wk, n)
