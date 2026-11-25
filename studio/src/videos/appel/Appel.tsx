@@ -156,6 +156,19 @@ const quartier = (root: THREE.Group, zA = -13, zB = -21) => {
     if (i % 2 === 1) tree(root, x + 1.6, z + 2.4, 0.9 + hash(i, 109) * 0.3, "#2f4a2c");
     if (i % 3 === 0) root.add(C(0.03, 0.04, 2.6, "#1a1d24", x - 1.4, 1.3, z + 2.2), M(new THREE.SphereGeometry(0.14, 10, 8), glow("#ffb46a", 3), x - 1.4, 2.7, z + 2.2));
     if (i % 4 === 2) root.add(B(1.6, 0.6, 0.8, "#5f6f88", x + 0.2, 0.35, z + 4.2, 0.1, 0.4, 0.2), B(0.9, 0.5, 0.7, "#4a5a72", x + 0.2, 0.9, z + 4.2, 0.1, 0.3, 0.2));
+    // vie quotidienne : rideaux, plantes aux fenêtres, boîte aux lettres, poubelles, vélo, jardin fleuri, lumière du perron
+    const cols = ["#e0a0a0", "#f0e0a0", "#a0c8e0", "#c8e0a0", "#e0c0e0"];
+    for (let c = 0; c < 2; c++) for (let r = 0; r < 2; r++) if (hash(i * 4 + r * 2 + c, 110) > 0.35) {
+      const wx = x + (hash(i, 103) - 0.5) * 0.6 + (c - 0.5) * 1.5, wy = 0.75 + r * 1.5 + (2.4 + hash(i, 102) * 1.4) * 0.4, wz = z + 1.12;
+      root.add(B(0.1, 0.7, 0.03, cols[(i + c) % cols.length], wx - 0.42, wy, wz, 0.01), B(0.1, 0.7, 0.03, cols[(i + r) % cols.length], wx + 0.42, wy, wz, 0.01));
+      root.add(M(new THREE.SphereGeometry(0.12, 8, 6), std("#3f8a4a", 0.9), wx, wy - 0.45, wz + 0.1));
+    }
+    root.add(B(0.45, 0.22, 0.02, "#7a7a80", x, 0.12, z + 1.5, 0.01));
+    root.add(B(0.42, 0.62, 0.42, ["#3a4a4a", "#4a4a3a", "#2a3a4a"][i % 3], x + 1.1, 0.31, z + 1.7, 0.05, 0.7));
+    root.add(B(0.12, 0.3, 0.2, ["#2a3a8a", "#8a2a2a", "#2a7a3a"][i % 3], x - 0.9, 0.8, z + 1.4, 0.03, 0.5));
+    for (let f = 0; f < 4; f++) root.add(M(new THREE.SphereGeometry(0.08, 8, 6), std(["#e8a0c0", "#f0d060", "#ffffff", "#e06040"][(i + f) % 4], 0.6), x - 2.2 + f * 0.25, 0.15, z + 1.9));
+    root.add(M(new THREE.SphereGeometry(0.1, 8, 6), glow("#fff0c0", 2), x, 2.2, z + 1.25));
+    if (i % 3 === 1) { root.add(M(new THREE.TorusGeometry(0.3, 0.035, 6, 14), std("#202020", 0.6), x + 2.4, 0.3, z + 2.2)); root.add(M(new THREE.TorusGeometry(0.3, 0.035, 6, 14), std("#202020", 0.6), x + 3.1, 0.3, z + 2.2)); root.add(B(0.6, 0.06, 0.06, "#c0392b", x + 2.75, 0.5, z + 2.2, 0.01)); }
   }
 };
 
@@ -223,6 +236,11 @@ const buildFamily = (): Built => {
   root.add(person(CAST.hero, -0.7, -1.7, "scared", 51, { top: "#f2b51c", topDark: "#c98f10" }).root);
   root.add(person(CAST.pink, 0.65, -1.7, "worried", 52, { skin: "#f1c7a0", top: "#6b5a86", topDark: "#4a3d60", sleeve: "#6b5a86" }).root);
   root.add(person(CAST.c2, 0, -2.5, "sad", 53, { skin: "#f1c7a0", hair: "bun", hairCol: "#d8d8d8", top: "#4a4f5e", topDark: "#333845", sleeve: "#4a4f5e" }).root);
+  // salon habité : tapis, cadres de famille, coussins, bibliothèque
+  root.add(B(1.9, 1.2, 0.3, "#5a4030", 3.4, 0.6, -4.7, 0.02));
+  for (let b = 0; b < 8; b++) root.add(B(0.14, 0.5 + hash(b, 60) * 0.3, 0.2, ["#c0392b", "#2e86ab", "#e0b030", "#5a7a46", "#8e5ab0", "#f0e0c0"][b % 6], 2.7 + b * 0.18, 1.45, -4.6, 0.01));
+  for (let f = 0; f < 3; f++) root.add(B(0.4, 0.4, 0.04, ["#d0b080", "#a0c0d0", "#e0a0a0"][f], -2.2 + f * 0.5, 2.5, -4.85, 0.01));
+  root.add(B(0.3, 0.3, 0.12, "#e0a040", -0.3, 0.5, -3.3, 0.06), B(0.3, 0.3, 0.12, "#4a8a6a", 1.1, 0.5, -3.3, 0.06));
   // détails de salon : plante, étagère avec livres, pouf
   root.add(C(0.2, 0.15, 0.4, "#8a4a2a", -3.2, 0.2, -3.8));
   for (let i = 0; i < 4; i++) root.add(M(new THREE.SphereGeometry(0.28 + hash(i, 11) * 0.1, 10, 8), std("#2f6a3a", 0.9, 0, "#000", 0, { flatShading: true }), -3.2 + (hash(i, 12) - 0.5) * 0.4, 0.8 + hash(i, 13) * 0.5, -3.8 + (hash(i, 14) - 0.5) * 0.4));
@@ -331,6 +349,8 @@ const buildHouseFire = (): Built => {
   const moon = new THREE.SpotLight("#9fb2ff", 60, 0, 0.5, 0.7, 1.5); moon.position.set(-6, 12, 8); moon.target.position.set(0, 2, -1); moon.castShadow = true; moon.shadow.mapSize.set(2048, 2048);
   root.add(moon, moon.target);
   quartier(root, -12, -20);
+  // éclairage du quartier : lampes et fenêtres allumées, sans éclairer trop fort les personnages au premier plan
+  const quartLight = new THREE.PointLight("#ffc890", 60, 45, 1.1); quartLight.position.set(0, 7, -12); root.add(quartLight);
   // rue, trottoir, pelouse
   root.add(M(new THREE.PlaneGeometry(60, 40), std("#2a2d36", 0.95), 0, 0, 0, -Math.PI / 2));
   root.add(M(new THREE.PlaneGeometry(60, 30), std("#3a4a32", 1, 0, "#000", 0, { map: groundTex("#3a4a32", "#243020", "#50683a") }), -12, 0.005, -12, -Math.PI / 2));

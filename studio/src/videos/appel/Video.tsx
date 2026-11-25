@@ -60,6 +60,14 @@ const blinkTex = (s: Spec, e: Expr) => {
   const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; blinkCache.set(key, t); return t;
 };
 
+// mouvement de caméra propre à chaque plan : orbite autour du sujet, avancée ou recul, montée, zoom
+const motion = (k: number) => ({
+  orb: (k % 2 ? -1 : 1) * (8 + (k % 4) * 2.5),
+  dol: k % 3 === 0 ? -0.12 : 0.08,
+  crane: k % 2 ? 0.45 : -0.35,
+  zoom: k % 3 === 1 ? -4 : 3,
+});
+
 const shotIndex = (t: number) => { let k = 0; for (let i = 0; i < SHOTS.length; i++) if (SHOTS[i].start <= t) k = i; return k; };
 const shotEnd = (k: number) => (k + 1 < SHOTS.length ? SHOTS[k + 1].start : VIDEO_SEC);
 const ease = (u: number) => { const x = Math.min(1, Math.max(0, u)); return x * x * (3 - 2 * x); };
@@ -89,8 +97,15 @@ const VideoInner: React.FC<{ t: number }> = ({ t }) => {
   // recul de caméra : tous les plans sont plus larges, sujets dans la zone centrale (marges TikTok)
   const zo = ZOOM_OUT;
   const px = c[3] + (c[0] - c[3]) * zo, py = c[4] + (c[1] - c[4]) * zo, pz = c[5] + (c[2] - c[5]) * zo;
+  // orbite autour du sujet, avancée/recul et montée sur le plan
+  const mo = motion(k);
+  const ang = mo.orb * (u - 0.5) * Math.PI / 180, ca = Math.cos(ang), sa = Math.sin(ang);
+  const ox0 = px - c[3], oz0 = pz - c[5], dl = 1 + mo.dol * u;
+  const ox = (ox0 * ca - oz0 * sa) * dl, oz = (ox0 * sa + oz0 * ca) * dl;
+  const oy = (py - c[4]) + mo.crane * u;
   const cm = camera as THREE.PerspectiveCamera;
-  cm.position.set(px + hx, py + hy, pz); cm.lookAt(c[3] + hx * 0.5, c[4] + hy * 0.5, c[5]); cm.fov = c[6]; cm.near = 0.05; cm.far = 200; cm.updateProjectionMatrix();
+  cm.position.set(c[3] + ox + hx, c[4] + oy + hy, c[5] + oz); cm.lookAt(c[3] + hx * 0.5, c[4] + hy * 0.5, c[5]);
+  cm.fov = c[6] + mo.zoom * u; cm.near = 0.05; cm.far = 200; cm.updateProjectionMatrix();
   // animation des personnages : respiration, bras levés (plans marqués), parole du vieux pompier
   for (const r of built.actors) {
     let w: "L" | "R" | "both" | undefined = sh.wave && (r.name === "guard" || r.name === "guard2") ? "both" : undefined;
