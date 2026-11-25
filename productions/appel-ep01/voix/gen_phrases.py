@@ -9,7 +9,7 @@ from torchaudio.pipelines import MMS_FA as B
 
 D = pathlib.Path(__file__).parent; P = D / "prises"; P.mkdir(exist_ok=True)
 MAXT = 8
-REF, SR, TAKES = (sys.argv[1] if len(sys.argv) > 1 else "a829cc490b6c4c0085b9e86c15dfcc42"), 44100, 4
+REF, SR, TAKES = (sys.argv[1] if len(sys.argv) > 1 else "f7a979abb1944ee7acc1c5bb39df2636"), 44100, 4
 PAUSE_PHRASE, PAUSE_PARA = 0.28, 0.65
 BL_MIN, BL_MAX = 0.30, 0.50
 
