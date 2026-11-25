@@ -392,11 +392,14 @@ const Inner: React.FC<{ scene: number }> = ({ scene }) => {
 // grain, sépia léger et vignette : uniquement sur les flashbacks
 const GRAIN = "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>\")";
 
+// étalonnage par image (saturation et luminosité) : seule l'image 1 est modifiée pour l'instant
+const GRADE: Record<number, string> = { 1: "saturate(1.35) brightness(1.1) contrast(1.04)" };
+
 export const AppelStill: React.FC<{ scene: number }> = ({ scene }) => {
   const old = FLASH.has(scene);
   return (
     <AbsoluteFill style={{ background: "#05060c" }}>
-      <AbsoluteFill style={old ? { filter: "sepia(0.22) saturate(0.8) contrast(1.05) brightness(0.97)" } : {}}>
+      <AbsoluteFill style={old ? { filter: "sepia(0.22) saturate(0.8) contrast(1.05) brightness(0.97)" } : GRADE[scene] ? { filter: GRADE[scene] } : {}}>
         <ThreeCanvas width={APPEL_W} height={APPEL_H} frameloop="demand" shadows gl={{ antialias: true, stencil: false, powerPreference: "high-performance" }} camera={{ fov: 45, near: 0.05, far: 200 }}>
           <Inner scene={scene} />
         </ThreeCanvas>
