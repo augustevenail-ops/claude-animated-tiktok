@@ -17,7 +17,22 @@ import { Actor, CAST, Expr, Spec } from "../monstre/chars";
 import { hash } from "../monstre/tex";
 
 export const APPEL_W = 1440, APPEL_H = 2560;
-const WORDS = ["Dans", "meurt", "nuit", "attends", "vérité"];
+const WORDS = ["dans", "meurt", "nuit", "attends", "vérité"];
+// sous-titre : géométrique arrondi très gras, minuscules, jaune #F5FF3B, contour noir arrondi, dézoom 130 % -> 100 % en 6 images
+const SUB_FONT = "Fredoka, Nunito, 'Varela Round', 'Arial Rounded MT Bold', Arial, sans-serif";
+const SubWord: React.FC<{ word: string }> = ({ word }) => {
+  const f = useCurrentFrame();
+  const t = Math.min(1, f / 6);
+  const s = 1.3 - 0.3 * (1 - Math.pow(1 - t, 3));
+  return (
+    <div style={{ position: "absolute", left: 0, right: 0, top: 1715, transform: `translateY(-50%) scale(${s})`, transformOrigin: "50% 50%" }}>
+      <svg width={APPEL_W} height={260} viewBox={`0 0 ${APPEL_W} 260`} style={{ overflow: "visible", display: "block" }}>
+        <text x="50%" y="190" textAnchor="middle" fontFamily={SUB_FONT} fontWeight={900} fontSize={170} letterSpacing="-4"
+          fill="#F5FF3B" stroke="#000000" strokeWidth={28} strokeLinejoin="round" strokeLinecap="round" paintOrder="stroke fill">{word}</text>
+      </svg>
+    </div>
+  );
+};
 const FLASH = new Set([3, 4, 5]);
 
 // ---------- helpers ----------
@@ -393,11 +408,7 @@ export const AppelStill: React.FC<{ scene: number }> = ({ scene }) => {
         <div style={{ position: "absolute", left: 412, top: 300, width: 1, height: 620, background: "rgba(255,246,220,0.12)" }} />
         <div style={{ position: "absolute", left: 1010, top: 1400, width: 1, height: 420, background: "rgba(255,246,220,0.09)" }} />
       </>}
-      <div style={{
-        position: "absolute", left: 0, right: 0, top: 1715, transform: "translateY(-50%)", textAlign: "center",
-        fontFamily: "Montserrat, 'Arial Black', Arial, sans-serif", fontWeight: 900, fontSize: 150, lineHeight: 1,
-        color: "#FFE900", WebkitTextStroke: "16px #0A0A0A", paintOrder: "stroke fill", textShadow: "0 8px 0 #0A0A0A", textTransform: "uppercase",
-      }}>{WORDS[scene - 1]}</div>
+      <SubWord word={WORDS[scene - 1]} />
     </AbsoluteFill>
   );
 };

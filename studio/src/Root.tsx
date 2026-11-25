@@ -15,6 +15,6 @@ export const Root: React.FC = () => (
     <Composition id="Bunker" component={Bunker} durationInFrames={BUNKER_FRAMES} fps={30} width={BW} height={BH} />
       <Composition id="BunkerCaps" component={BunkerCaps} durationInFrames={BUNKER_FRAMES} fps={30} width={BW} height={BH} />
     <Composition id="Monstre" component={Monstre} durationInFrames={MONSTRE_FRAMES} fps={30} width={MW} height={MH} />
-    <Composition id="AppelStill" component={AppelStill} durationInFrames={1} fps={30} width={APPEL_W} height={APPEL_H} defaultProps={{ scene: 1 }} />
+    <Composition id="AppelStill" component={AppelStill} durationInFrames={7} fps={30} width={APPEL_W} height={APPEL_H} defaultProps={{ scene: 1 }} />
   </>
 );
