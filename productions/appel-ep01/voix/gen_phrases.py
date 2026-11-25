@@ -23,7 +23,8 @@ def units(p):                     # phrases très courtes regroupées (seules, F
     return u
 phr = [([p], ) for p in paras]          # une unité = un paragraphe : débit et liaisons naturels (phrase par phrase :
                                         # « euh » coupés aux raccords, silences trop longs — retour utilisateur)
-SPEED = 0.9                             # la voix 787591f6 parle à ~4,6 mots/s à 1,0 : 0,9 donne ~4,3 mots/s, plus posé
+SPEED = 1.0                             # la voix 787591f6 parle à ~4,6 mots/s : ralentie après coup (rubberband 0,92) —
+                                        # crédit Fish épuisé le 2026-11-25, on réutilise les prises en cache à 1,0
 
 def fish(t: str) -> np.ndarray:
     body = {"text": t, "reference_id": REF, "format": "wav", "normalize": True, "latency": "normal",
@@ -98,7 +99,8 @@ for pi, (ps,) in enumerate(phr):
         k += 1; best = None
         for n in range(MAXT):
             if n >= TAKES and best[1] >= 0.8: break
-            f = P / f"{hashlib.md5((REF + t + f"v{SPEED}").encode()).hexdigest()[:8]}_{n}.wav"
+            f = P / f"{hashlib.md5((REF + t + ("" if SPEED == 1.0 else f"v{SPEED}")).encode()).hexdigest()[:8]}_{n}.wav"
+            if not f.exists() and n >= TAKES: break             # pas de nouvelle requête au-delà du minimum
             x = trim(fish(t)) if not f.exists() else np.frombuffer(subprocess.run(["ffmpeg", "-v", "error", "-i", str(f), "-f", "f32le", "-ac", "1", "-ar", str(SR), "-"], capture_output=True).stdout, np.float32).copy()
             if not f.exists():
                 subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "f32le", "-ar", str(SR), "-ac", "1", "-i", "-", str(f)], input=x.tobytes(), check=True)
