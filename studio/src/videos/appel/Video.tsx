@@ -43,6 +43,9 @@ const SHOTS: Shot[] = [
   { start: 70.6, scene: "family", a: [0, 1.9, 3.2, 0, 0.98, -0.4, 40], b: [0, 1.9, 3.2, 0, 0.98, -0.4, 40] },
 ];
 
+// facteur de recul appliqué à chaque caméra (1 = réglage précédent, plus serré)
+const ZOOM_OUT = 1.9;
+
 const shotIndex = (t: number) => { let k = 0; for (let i = 0; i < SHOTS.length; i++) if (SHOTS[i].start <= t) k = i; return k; };
 const shotEnd = (k: number) => (k + 1 < SHOTS.length ? SHOTS[k + 1].start : VIDEO_SEC);
 const ease = (u: number) => { const x = Math.min(1, Math.max(0, u)); return x * x * (3 - 2 * x); };
@@ -68,8 +71,11 @@ const VideoInner: React.FC<{ t: number }> = ({ t }) => {
   three.environmentIntensity = 0.2;
   const e = ease(u);
   const c = sh.a.map((v, i) => v + (sh.b[i] - v) * e);
+  // recul de caméra : tous les plans sont plus larges, sujets dans la zone centrale (marges TikTok)
+  const zo = ZOOM_OUT;
+  const px = c[3] + (c[0] - c[3]) * zo, py = c[4] + (c[1] - c[4]) * zo, pz = c[5] + (c[2] - c[5]) * zo;
   const cm = camera as THREE.PerspectiveCamera;
-  cm.position.set(c[0], c[1], c[2]); cm.lookAt(c[3], c[4], c[5]); cm.fov = c[6]; cm.near = 0.05; cm.far = 200; cm.updateProjectionMatrix();
+  cm.position.set(px, py, pz); cm.lookAt(c[3], c[4], c[5]); cm.fov = c[6]; cm.near = 0.05; cm.far = 200; cm.updateProjectionMatrix();
   // animation des personnages : respiration, bras levés (plans marqués), parole du vieux pompier
   for (const r of built.actors) {
     const w = sh.wave && (r.name === "guard" || r.name === "guard2") ? "both" : undefined;

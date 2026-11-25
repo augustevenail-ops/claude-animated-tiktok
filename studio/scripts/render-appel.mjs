@@ -10,7 +10,7 @@ const composition = await selectComposition({ serveUrl, id: "AppelVideo", browse
 const t0 = Date.now();
 await renderMedia({
   composition, serveUrl, codec: "h264", outputLocation: out, browserExecutable, chromiumOptions,
-  concurrency: 3, timeoutInMilliseconds: 600000, imageFormat: "jpeg", jpegQuality: 92, crf: 18, pixelFormat: "yuv420p",
+  concurrency: 2, timeoutInMilliseconds: 600000, imageFormat: "jpeg", jpegQuality: 92, crf: 18, pixelFormat: "yuv420p",
   onProgress: ({ renderedFrames }) => { if (renderedFrames % 150 === 0) console.log(((Date.now() - t0) / 60000).toFixed(1) + " min", renderedFrames, "/", composition.durationInFrames); },
 });
 console.log("done", ((Date.now() - t0) / 60000).toFixed(1) + " min");
