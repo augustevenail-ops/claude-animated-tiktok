@@ -4,6 +4,7 @@ import { BridgeShort, BRIDGE_FRAMES } from "./videos/bridge/Bridge";
 import { MurEp1, MUR_FRAMES } from "./videos/mur/Mur";
 import { MurPlanche } from "./videos/mur/Planche";
 import { Bunker, BunkerCaps, BUNKER_FRAMES, BW, BH } from "./videos/bunker/Bunker";
+import { Monstre, MONSTRE_FRAMES, MW, MH } from "./videos/monstre/Monstre";
 
 export const Root: React.FC = () => (
   <>
@@ -12,5 +13,6 @@ export const Root: React.FC = () => (
     <Composition id="MurEp1" component={MurEp1} durationInFrames={MUR_FRAMES} fps={30} width={1080} height={1920} />
     <Composition id="Bunker" component={Bunker} durationInFrames={BUNKER_FRAMES} fps={30} width={BW} height={BH} />
       <Composition id="BunkerCaps" component={BunkerCaps} durationInFrames={BUNKER_FRAMES} fps={30} width={BW} height={BH} />
+    <Composition id="Monstre" component={Monstre} durationInFrames={MONSTRE_FRAMES} fps={30} width={MW} height={MH} />
   </>
 );
