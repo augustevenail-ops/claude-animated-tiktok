@@ -1,4 +1,4 @@
-# Règle les blancs entre phrases d'après l'alignement (words.json) : fin de phrase 0,45 s (silence net à chaque point), temps qui passe
+# Règle les blancs entre phrases d'après l'alignement (words.json) : 0,40 s après chaque point (consigne utilisateur).
 # (« Les heures passent. », « minuit. », « Lucas. ») 0,60 s, fin de paragraphe 0,75 s. Le silence est ajouté ou retiré
 # à l'endroit le plus calme du blanc ; les blancs à l'intérieur des phrases ne sont pas touchés.
 #   python3 regle_blancs.py voice.mp3 words.json texte.txt voice_regle.mp3
@@ -16,7 +16,7 @@ LONG = {"passent.", "minuit.", "Lucas."}                           # temps qui p
 cuts = []                                                              # (position en échantillons, delta en s)
 for i, (a, b) in enumerate(zip(w, w[1:])):
     if not re.search(r"[.!?]$", a["w"]): continue
-    tgt = 0.75 if i in fin_para else 0.60 if a["w"] in LONG else 0.45   # consigne : un vrai silence à chaque point
+    tgt = 0.40                                                         # consigne utilisateur : 0,40 s après chaque point
     g = b["s"] - a["e"]
     if abs(g - tgt) < 0.06: continue
     s0, s1 = int(a["e"] * SR), int(b["s"] * SR); n = SR // 100
