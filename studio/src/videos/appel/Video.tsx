@@ -120,7 +120,7 @@ export const AppelVideo: React.FC = () => {
   const sh = SHOTS[shotIndex(t)];
   return (
     <AbsoluteFill style={{ background: "#05060c" }}>
-      <AbsoluteFill style={sh.flash ? { filter: "sepia(0.22) saturate(0.8) contrast(1.05) brightness(0.97)" } : {}}>
+      <AbsoluteFill style={sh.flash ? { filter: "sepia(0.22) saturate(0.8) contrast(1.05) brightness(0.97)" } : { filter: "saturate(1.4) brightness(1.06) contrast(1.04)" }}>
         <ThreeCanvas width={APPEL_W} height={APPEL_H} frameloop="demand" shadows gl={{ antialias: true, stencil: false, powerPreference: "high-performance" }} camera={{ fov: 45, near: 0.05, far: 200 }}>
           <VideoInner t={t} />
         </ThreeCanvas>
