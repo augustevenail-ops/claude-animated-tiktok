@@ -232,7 +232,7 @@ const buildFamilyHouse = (): Built => {
   root.add(C(0.22, 0.28, 0.35, "#f4ead8", 2.6, 1.9, -2.8, 0, 0, 0, 0.9));
   // famille (mêmes personnages, tenues vives pour ressortir)
   root.add(person(CAST.hero, -0.7, -1.7, "scared", 51, { top: "#f2b51c", topDark: "#c98f10" }).root);
-  root.add(person(CAST.pink, 0.65, -1.7, "worried", 52, { skin: "#f1c7a0", top: "#c2185b", topDark: "#8e1040", sleeve: "#c2185b" }).root);
+  root.add(person(CAST.pink, 0.65, -1.7, "worried", 52, { skin: "#f1c7a0", top: "#2a9d8f", topDark: "#1d6f66", sleeve: "#2a9d8f" }).root);
   root.add(person(CAST.c2, 0, -2.5, "sad", 53, { skin: "#f1c7a0", hair: "bun", hairCol: "#d8d8d8", top: "#2e6fa8", topDark: "#1f4a78", sleeve: "#2e6fa8" }).root);
   return { root, bg, fog: null, cam: { P: V(-2.6, 1.3, 4.3), T: V(0.1, 1.1, -1.1), fov: 46 } };
 };
