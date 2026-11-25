@@ -68,6 +68,13 @@ const motion = (k: number) => ({
   zoom: k % 3 === 1 ? -4 : 3,
 });
 
+// limites intérieures des pièces [xmin, xmax, ymin, ymax, zmin, zmax] (murs, plafond, sol avec marge)
+const ROOM_BED: number[] = [-2.35, 4.25, 0.3, 3.0, -2.15, 7.7];
+const BOUNDS: Record<string, number[]> = {
+  family: [-4.25, 4.25, 0.3, 3.0, -4.75, 7.7], bed: ROOM_BED, bedCalm: ROOM_BED, door: ROOM_BED,
+};
+const OUTDOOR: number[] = [-1e9, 1e9, 0.3, 1e9, -1e9, 1e9];
+
 const shotIndex = (t: number) => { let k = 0; for (let i = 0; i < SHOTS.length; i++) if (SHOTS[i].start <= t) k = i; return k; };
 const shotEnd = (k: number) => (k + 1 < SHOTS.length ? SHOTS[k + 1].start : VIDEO_SEC);
 const ease = (u: number) => { const x = Math.min(1, Math.max(0, u)); return x * x * (3 - 2 * x); };
@@ -86,6 +93,7 @@ const VideoInner: React.FC<{ t: number }> = ({ t }) => {
     const b = SCENES[sh.scene]();
     return { b, actors: [...REG], phone: REGPHONE };
   }, [sh.scene]);
+
   gl.shadowMap.type = THREE.PCFSoftShadowMap;
   const b = built.b;
   three.background = new THREE.Color(b.bg);
@@ -103,9 +111,29 @@ const VideoInner: React.FC<{ t: number }> = ({ t }) => {
   const ox0 = px - c[3], oz0 = pz - c[5], dl = 1 + mo.dol * u;
   const ox = (ox0 * ca - oz0 * sa) * dl, oz = (ox0 * sa + oz0 * ca) * dl;
   const oy = (py - c[4]) + mo.crane * u;
+  // collision caméra : rayon du sujet vers la caméra ; si un mur ou un objet est sur le trajet,
+  // la caméra s'arrête devant et l'angle s'élargit pour garder le même cadrage
+  const tgt = new THREE.Vector3(c[3] + hx * 0.5, c[4] + hy * 0.5, c[5]);
+  const want = new THREE.Vector3(c[3] + ox + hx, c[4] + oy + hy, c[5] + oz);
+  const dir = want.clone().sub(tgt); const dist = dir.length(); dir.normalize();
+  let fov = c[6] + mo.zoom * u;
+  // limites intérieures du décor : la caméra reste dans la pièce (ou au-dessus du sol dehors)
+  const bx = BOUNDS[sh.scene] ?? OUTDOOR;
+  let tmax = dist;
+  for (let a = 0; a < 3; a++) {
+    const p0 = [tgt.x, tgt.y, tgt.z][a], dv = [dir.x, dir.y, dir.z][a], lo = bx[a * 2], hi = bx[a * 2 + 1];
+    if (dv > 1e-6) tmax = Math.min(tmax, (hi - p0) / dv); else if (dv < -1e-6) tmax = Math.min(tmax, (lo - p0) / dv);
+  }
+  {
+    const d = Math.max(0.8, tmax);
+    if (d < dist) {
+      want.copy(tgt).addScaledVector(dir, d);
+      fov = Math.min(78, (2 * Math.atan(Math.tan((fov * Math.PI) / 360) * dist / d) * 180) / Math.PI);
+    }
+  }
   const cm = camera as THREE.PerspectiveCamera;
-  cm.position.set(c[3] + ox + hx, c[4] + oy + hy, c[5] + oz); cm.lookAt(c[3] + hx * 0.5, c[4] + hy * 0.5, c[5]);
-  cm.fov = c[6] + mo.zoom * u; cm.near = 0.05; cm.far = 200; cm.updateProjectionMatrix();
+  cm.position.copy(want); cm.lookAt(tgt);
+  cm.fov = fov; cm.near = 0.05; cm.far = 200; cm.updateProjectionMatrix();
   // animation des personnages : respiration, bras levés (plans marqués), parole du vieux pompier
   for (const r of built.actors) {
     let w: "L" | "R" | "both" | undefined = sh.wave && (r.name === "guard" || r.name === "guard2") ? "both" : undefined;

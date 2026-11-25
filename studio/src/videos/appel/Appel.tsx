@@ -261,6 +261,7 @@ const roomShell = (root: THREE.Group, wall: string, floor: string, ceil = "#efe8
   add(new THREE.BoxGeometry(0.2, 3.3, 13), std(wall, 0.95), -4.5, 1.6, 1.5);
   add(new THREE.BoxGeometry(0.2, 3.3, 13), std(wall, 0.95), 4.5, 1.6, 1.5);
   add(new THREE.BoxGeometry(9, 3.3, 0.2), std(wall, 0.95), 0, 1.6, 8.0);
+  add(new THREE.BoxGeometry(9, 3.3, 0.2), std(wall, 0.95), 0, 1.6, -5.1);
 };
 // 1 (version maison) : salon d'une maison normale, murs crème, sofa gris-bleu, table en bois ;
 // le téléphone rouge et les vêtements vifs ressortent sur les teintes neutres, avec une flaque de lumière sur la table
@@ -363,7 +364,7 @@ const buildHouseFire = (): Built => {
   // éclairage du quartier : lampes et fenêtres allumées, sans éclairer trop fort les personnages au premier plan
   const quartLight = new THREE.PointLight("#ffc890", 60, 45, 1.1); quartLight.position.set(0, 7, -12); root.add(quartLight);
   // rue, trottoir, pelouse
-  root.add(M(new THREE.PlaneGeometry(60, 40), std("#2a2d36", 0.95), 0, 0, 0, -Math.PI / 2));
+  root.add(M(new THREE.PlaneGeometry(140, 140), std("#2a2d36", 0.95), 0, 0, 0, -Math.PI / 2));
   root.add(M(new THREE.PlaneGeometry(60, 30), std("#3a4a32", 1, 0, "#000", 0, { map: groundTex("#3a4a32", "#243020", "#50683a") }), -12, 0.005, -12, -Math.PI / 2));
   root.add(B(40, 0.14, 2.4, "#5a5e68", 0, 0.07, 2.4, 0.02, 0.9));
   // maison brûlante (centre) et voisine sombre (gauche)
@@ -446,6 +447,7 @@ const buildBedroom = (calm = false): Built => {
 // 5. vieux pompier à la porte, soir : lumière dorée par l'entrée
 const buildDoor = (): Built => {
   const root = new THREE.Group(); const bg = "#2a2a40";
+  roomShell(root, "#2b2f44", "#5a4030", "#2a2e44");
 
   sky(root, "#3a3f78", "#f4a070", 0, 4, -6, 16, 10);
   root.add(new THREE.HemisphereLight("#8898d8", "#3a2a24", 1.6));
