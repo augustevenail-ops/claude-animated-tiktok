@@ -88,6 +88,7 @@ export class Monster {
     const spk = new THREE.MeshStandardMaterial({ color: "#16171b", roughness: 0.25, metalness: 0.95 });
     for (let i = 0; i < 7; i++) { const L = 1.3 + hash(i, 81) * 1.4, sp = msh(new THREE.ConeGeometry(0.09 + hash(i, 82) * 0.06, L, 7), spk, (i - 3) * 0.2, HH * 0.45 + (hash(i, 83)) * HH * 0.55, -HD / 2);
       sp.rotation.set(-Math.PI / 2 - 0.5 - hash(i, 84) * 0.5, 0, (i - 3) * 0.12); sp.geometry = sp.geometry.clone().translate(0, L / 2, 0); H.add(sp); }
+    R.scale.setScalar(3);
     this.pose(0);
   }
   /** posture immobile, bras légèrement écartés ; frisson très léger optionnel */

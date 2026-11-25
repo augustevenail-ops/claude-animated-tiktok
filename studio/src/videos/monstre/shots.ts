@@ -16,20 +16,20 @@ const glide = (P0: THREE.Vector3, P1: THREE.Vector3, T0: THREE.Vector3, T1: THRE
 
 export const SHOTS: Shot[] = [
   { id: 1, desc: "Dans cette ville, il existe un monstre", mood: "night",
-    cam: (_w, u) => { const e = sm(u); const P = new THREE.CatmullRomCurve3([V(-30, 62, 132), V(-16, 38, 76), V(-6, 17, 33)]).getPoint(e); return { P, T: lerpV(V(0, 2, 0), V(1, 8, 0), e), fov: 50 }; } },
+    cam: (_w, u) => { const e = sm(u); const P = new THREE.CatmullRomCurve3([V(-34, 80, 160), V(-20, 50, 100), V(-10, 24, 56)]).getPoint(e); return { P, T: lerpV(V(0, 6, 0), V(1, 19, 0), e), fov: 50 }; } },
   { id: 2, desc: "qui ne peut se déplacer que dans l'obscurité.", mood: "night",
-    cam: (w, u) => { const H = w.mon.headWorld(V(0, 0.95, 0.2)); return glide(H.clone().add(V(0, -5.5, 20)), H.clone().add(V(0, -0.55, 3.9)), H.clone().add(V(0, -2, 0)), H, 42, u, Math.pow(u, 0.85)); } },
+    cam: (w, u) => { const H = w.mon.headWorld(V(0, 0.95, 0.2)); return glide(H.clone().add(V(0, -16, 55)), H.clone().add(V(0, -1.6, 11.5)), H.clone().add(V(0, -6, 0)), H, 42, u, Math.pow(u, 0.85)); } },
   { id: 3, desc: "Et si les lumières s'éteignent, ne serait-ce qu'une seconde,", mood: "night",
     cam: (w, u) => { const t = w.city.towers[1].root.position, top = V(t.x, 40.5, t.z), dir = top.clone().setY(0).normalize();
       const perp = V(-dir.z, 0, dir.x); const P0 = top.clone().sub(dir.clone().multiplyScalar(20)).add(perp.clone().multiplyScalar(4)).setY(24), P1 = top.clone().sub(dir.clone().multiplyScalar(17.5)).add(perp.clone().multiplyScalar(3.5)).setY(26);
       return glide(P0, P1, top.clone().add(V(0, 1.5, 0)), top.clone().add(V(0, 1.6, 0)), 50, u); },
     st: (w, u) => { const f = u > 0.45 && u < 0.62 ? 0.35 + 0.65 * Math.abs(Math.sin(u * 180)) : 1; const t = w.city.towers[1]; t.lens.emissiveIntensity = 9 * f; t.spot.intensity = 5.5 * f; for (const b of t.beams) b.set(0, 0.3 * f); } },
   { id: 4, desc: "c'est la fin pour nous tous.", mood: "night",
-    cam: (_w, u) => glide(V(0.8, 1.5, 23.5), V(0.6, 1.6, 21.2), V(0, 8.2, 0), V(0, 8.3, 0), 56, u) },
+    cam: (_w, u) => glide(V(1, 1.5, 46), V(0.8, 1.6, 42), V(0, 17.5, 0), V(0, 17.8, 0), 58, u) },
   { id: 5, desc: "Il y a trois ans, cette chose est apparue en plein cœur de notre ville.", mood: "flash",
     cam: (w, u) => { const p = w.pink.root.position, e = sm(u);
       const P = new THREE.CatmullRomCurve3([V(3, 3.2, 150), V(1.8, 2.3, 118), p.clone().add(V(0.25, 1.55, 1.7))]).getPoint(e);
-      const T = lerpV(V(0, 7, 0), p.clone().add(V(0, 1.5, 0)), Math.pow(e, 1.8)); return { P, T, fov: 46 - 8 * e }; } },
+      const T = lerpV(V(0, 20, 0), p.clone().add(V(0, 1.5, 0)), Math.pow(e, 1.8)); return { P, T, fov: 46 - 8 * e }; } },
   { id: 6, desc: "test personnages", mood: "night",
     cam: (_w, u) => glide(V(9.6, 1.0, 26.5), V(9.55, 1.05, 26.2), V(9.15, 1.25, 19.6), V(9.15, 1.25, 19.6), 24, u),
     st: (w, _u, t) => { w.hero.root.visible = w.dad.root.visible = true; w.hero.pose(t, { yaw: 0.35, expr: "worried", point: 0.3, headPitch: -0.05 }); w.dad.pose(t, { yaw: -0.1, expr: "focus" });
@@ -49,7 +49,7 @@ export const makeGuards = (root: THREE.Object3D) => {
 };
 export const poseGuards = (w: World, t: number) => w.guards.forEach((g, i) => {
   const q = g.root.position; g.pose(t, { point: 0.9, expr: "focus", headPitch: -0.35, yaw: Math.atan2(-q.x, -q.z) }); g.root.updateMatrixWorld(true);
-  const tip = g.torch!.localToWorld(V(0, 0, 1.6)); w.gBeams[i].place(tip, MON_TARGET.clone().add(V(Math.sin(i) * 1.2, 1 + Math.cos(i * 2), 0)), 9); w.gBeams[i].set(t);
+  const tip = g.torch!.localToWorld(V(0, 0, 1.6)); w.gBeams[i].place(tip, MON_TARGET.clone().add(V(Math.sin(i) * 2, -6 + Math.cos(i * 2) * 3, 0)), 14); w.gBeams[i].set(t);
 });
 /** habitants du flashback dans la rue, la personne en rose face caméra */
 export const makeCivilians = (root: THREE.Object3D) => {
