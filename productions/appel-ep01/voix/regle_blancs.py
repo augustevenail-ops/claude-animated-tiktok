@@ -11,7 +11,7 @@ x = np.frombuffer(subprocess.run(["ffmpeg", "-v", "error", "-i", src, "-f", "f32
 w = json.load(open(wj, encoding="utf-8"))
 paras = [p.split() for p in open(txt, encoding="utf-8").read().replace("«", "").replace("»", "").split("\n\n") if p.strip()]
 fin_para = set(np.cumsum([len(p) for p in paras])[:-1] - 1)          # index du dernier mot de chaque paragraphe
-LONG = {"rouge.", "heures."}                                           # avant / pendant le compte à rebours
+LONG = {"passent.", "minuit.", "Lucas."}                           # temps qui passe, énumération de la famille
 
 cuts = []                                                              # (position en échantillons, delta en s)
 for i, (a, b) in enumerate(zip(w, w[1:])):
