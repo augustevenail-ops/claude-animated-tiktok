@@ -200,6 +200,43 @@ const buildFamily = (): Built => {
   return { root, bg, fog: null, cam: { P: V(-2.6, 1.3, 4.3), T: V(0.1, 1.1, -1.1), fov: 46 } };
 };
 
+// 1 (version maison) : salon d'une maison normale, murs crème, sofa gris-bleu, table en bois ;
+// le téléphone rouge et les vêtements vifs ressortent sur les teintes neutres, avec une flaque de lumière sur la table
+const buildFamilyHouse = (): Built => {
+  const root = new THREE.Group(); const bg = "#5a6470";
+  root.add(new THREE.HemisphereLight("#ffd6b0", "#3a2a24", 1.4));
+  sun(root, "#ffc890", 2.4, -5, 3.5, 2.5);
+  const spot = new THREE.SpotLight("#fff0d8", 40, 0, 0.45, 0.7, 1.5);
+  spot.position.set(0.8, 4.0, 1.6); spot.target.position.set(0, 0.9, -0.4); spot.castShadow = true; spot.shadow.mapSize.set(1024, 1024);
+  root.add(spot, spot.target);
+  // pièce : parquet clair, murs crème, plinthe
+  root.add(M(new THREE.BoxGeometry(12, 0.1, 12), std("#b8926e", 0.6), 0, -0.05, -2));
+  root.add(M(new THREE.BoxGeometry(12, 6, 0.2), std("#e6dccb", 0.9), 0, 3, -5));
+  root.add(M(new THREE.BoxGeometry(0.2, 6, 12), std("#d9cfbd", 0.9), -4.5, 3, -2));
+  root.add(B(12, 0.25, 0.06, "#f4efe6", 0, 0.12, -4.95, 0.01));
+  // fenêtre sur ciel du soir, rideaux, cadre
+  sky(root, "#6a7aa8", "#e8b890", -1.6, 2.0, -4.85, 2.4, 2.0);
+  root.add(B(2.6, 0.1, 0.1, "#f4efe6", -1.6, 3.05, -4.82), B(2.6, 0.1, 0.1, "#f4efe6", -1.6, 0.95, -4.82), B(0.1, 2.2, 0.1, "#f4efe6", -1.6, 2.0, -4.82), B(0.1, 2.2, 0.1, "#f4efe6", -0.3, 2.0, -4.82), B(0.1, 2.2, 0.1, "#f4efe6", -2.9, 2.0, -4.82));
+  root.add(B(0.5, 2.6, 0.08, "#8a9bb0", -3.2, 2.0, -4.75, 0.03), B(0.5, 2.6, 0.08, "#8a9bb0", 0.0, 2.0, -4.75, 0.03));
+  // canapé gris-bleu, coussins, table basse en bois
+  root.add(B(2.6, 0.5, 0.95, "#6d7c93", -1.0, 0.3, -3.5, 0.08, 0.9), B(2.6, 0.75, 0.25, "#6d7c93", -1.0, 0.75, -3.9, 0.08, 0.9));
+  root.add(B(0.25, 0.7, 0.95, "#5a687e", -2.4, 0.5, -3.5, 0.08, 0.9), B(0.25, 0.7, 0.95, "#5a687e", 0.4, 0.5, -3.5, 0.08, 0.9));
+  root.add(B(0.5, 0.15, 0.4, "#c9a88a", -1.6, 0.6, -3.4, 0.06, 0.9), B(0.5, 0.15, 0.4, "#c9a88a", -0.5, 0.6, -3.4, 0.06, 0.9));
+  root.add(M(new THREE.CircleGeometry(1.8, 32), std("#cdbfa8", 1), 0, 0.01, -0.8, -Math.PI / 2));
+  root.add(B(1.7, 0.1, 0.9, "#9a7a5a", 0, 0.9, -0.4, 0.03, 0.6));
+  for (const [x, z] of [[-0.75, -0.8], [0.75, -0.8], [-0.75, 0], [0.75, 0]] as const) root.add(B(0.08, 0.86, 0.08, "#6a5040", x, 0.43, z, 0.02));
+  root.add(telephone(0, 0.95, -0.4, 0.05, 1.6));
+  // cadre mural et lampadaire d'angle
+  root.add(B(0.6, 0.75, 0.04, "#c8b08a", 2.0, 2.0, -4.85, 0.02), M(new THREE.PlaneGeometry(0.5, 0.65), std("#a8b8c8", 0.8), 2.0, 2.0, -4.82));
+  root.add(C(0.03, 0.03, 1.8, "#3a3a40", 2.6, 0.9, -2.8));
+  root.add(C(0.22, 0.28, 0.35, "#f4ead8", 2.6, 1.9, -2.8, 0, 0, 0, 0.9));
+  // famille (mêmes personnages, tenues vives pour ressortir)
+  root.add(person(CAST.hero, -0.7, -1.7, "scared", 51, { top: "#f2b51c", topDark: "#c98f10" }).root);
+  root.add(person(CAST.pink, 0.65, -1.7, "worried", 52, { skin: "#f1c7a0", top: "#c2185b", topDark: "#8e1040", sleeve: "#c2185b" }).root);
+  root.add(person(CAST.c2, 0, -2.5, "sad", 53, { skin: "#f1c7a0", hair: "bun", hairCol: "#d8d8d8", top: "#2e6fa8", topDark: "#1f4a78", sleeve: "#2e6fa8" }).root);
+  return { root, bg, fog: null, cam: { P: V(-2.6, 1.3, 4.3), T: V(0.1, 1.1, -1.1), fov: 46 } };
+};
+
 // 2. cimetière, jour couvert, plongée depuis la hauteur
 const buildCemetery = (): Built => {
   const root = new THREE.Group(); const bg = "#aeb8c6";
@@ -367,7 +404,7 @@ const buildDoor = (): Built => {
   return { root, bg, fog: null, cam: { P: V(-2.6, 1.6, 2.6), T: V(0.3, 1.3, -1.0), fov: 48 } };
 };
 
-const BUILD: Record<number, () => Built> = { 1: buildFamily, 2: buildCemetery, 3: buildHouseFire, 4: buildBedroom, 5: buildDoor };
+const BUILD: Record<number, () => Built> = { 1: buildFamilyHouse, 2: buildCemetery, 3: buildHouseFire, 4: buildBedroom, 5: buildDoor };
 
 const Inner: React.FC<{ scene: number }> = ({ scene }) => {
   const f = useCurrentFrame();
