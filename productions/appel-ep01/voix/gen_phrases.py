@@ -8,8 +8,8 @@ import numpy as np, torch
 from torchaudio.pipelines import MMS_FA as B
 
 D = pathlib.Path(__file__).parent; P = D / "prises"; P.mkdir(exist_ok=True)
-MAXT = 8
-REF, SR, TAKES = (sys.argv[1] if len(sys.argv) > 1 else "787591f6a440423a9f21106a05637a57"), 44100, 4
+MAXT = 6
+REF, SR, TAKES = (sys.argv[1] if len(sys.argv) > 1 else "787591f6a440423a9f21106a05637a57"), 44100, 3
 PAUSE_PHRASE, PAUSE_PARA = 0.28, 0.65
 BL_MIN, BL_MAX = 0.30, 0.50
 
@@ -21,7 +21,8 @@ def units(p):                     # phrases très courtes regroupées (seules, F
         if u and (len(s.split()) < 7 or len(u[-1].split()) < 6): u[-1] += " " + s
         else: u.append(s)
     return u
-phr = [([p], ) for p in paras]          # une unité = un paragraphe
+phr = [(re.split(r"(?<=[.!?])\s+", p), ) for p in paras]   # une unité = une phrase : la voix 787591f6 enchaîne les phrases
+                                                           # sans pause ni chute ; seule, chaque phrase finit vers le bas
 
 def fish(t: str) -> np.ndarray:
     body = {"text": t, "reference_id": REF, "format": "wav", "normalize": True, "latency": "normal",
@@ -65,6 +66,21 @@ def regle(x):                              # blancs entre phrases ramenés dans 
 rom = lambda w: re.sub(r"[^a-z']", "", unicodedata.normalize("NFD", w.lower().replace("œ", "oe")).encode("ascii", "ignore").decode()).strip("'")
 model, tok, aligner = B.get_model(), B.get_tokenizer(), B.get_aligner()
 
+def f0(x):                                 # hauteur (Hz) par trame de 10 ms, NaN si non voisé
+    y = x[::2]; sr = SR // 2; n = int(0.04 * sr); h = int(0.01 * sr); out = []
+    for k in range(0, len(y) - n, h):
+        q = y[k:k + n] - y[k:k + n].mean()
+        if np.sqrt(np.mean(q ** 2)) < 10 ** (-38 / 20): out.append(np.nan); continue
+        ac = np.correlate(q, q, "full")[n - 1:]; ac /= ac[0] + 1e-9
+        lo, hi = int(sr / 300), int(sr / 70); m = lo + int(np.argmax(ac[lo:hi]))
+        out.append(sr / m if ac[m] > 0.5 else np.nan)
+    return np.array(out)
+
+def chute(x):                              # demi-tons : fin de phrase (dernières 0,4 s voisées) - médiane de la phrase
+    F = f0(x); v = F[~np.isnan(F)]
+    if len(v) < 20: return 0.0
+    st = lambda a: 12 * np.log2(a / 100); return float(st(np.median(v[-20:])) - st(np.median(v)))
+
 def score(x, t):
     w = [rom(v) for v in t.split()]; w = [v for v in w if v]
     a = subprocess.run(["ffmpeg", "-v", "quiet", "-f", "f32le", "-ar", str(SR), "-ac", "1", "-i", "-", "-ar", "16000", "-f", "f32le", "-"],
@@ -90,8 +106,10 @@ for pi, (ps,) in enumerate(phr):
             if longb > 1.1: mn -= 0.3                     # blanc anormal (coupure) : prise pénalisée
             e = db(x); cut = int(np.sum((e[:-12] > -25) & (e[1:-11] < -50)))
             mn -= 0.3 * cut                               # son coupé net en pleine parole (artefact) : prise pénalisée
+            ch = chute(x)
+            if t.endswith(".") and ch > -1.5: mn -= 0.15  # fin de phrase qui ne descend pas : prise pénalisée
             if best is None or (round(mn, 2), mu) > (round(best[1], 2), best[2]): best = (x, mn, mu, wk, n)
-        out.append(regle(best[0])); rep.append(f"{k:02d} prise {best[4]}/{n + 1}  min {best[1]:.2f} ({best[3]})  moy {best[2]:.2f}  {t}")
+        out.append(regle(best[0])); rep.append(f"{k:02d} prise {best[4]}/{n + 1}  min {best[1]:.2f} ({best[3]})  moy {best[2]:.2f}  chute {chute(best[0]):+.1f}  {t}")
         last = si == len(ps) - 1 and pi < len(phr) - 1
         if not (si == len(ps) - 1 and pi == len(phr) - 1):
             out.append(np.zeros(int((PAUSE_PARA if last else PAUSE_PHRASE) * SR), np.float32))

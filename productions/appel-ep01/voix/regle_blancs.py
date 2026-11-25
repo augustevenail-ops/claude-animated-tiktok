@@ -1,4 +1,5 @@
-# Règle les blancs entre phrases d'après l'alignement (words.json) : 0,40 s après chaque point (consigne utilisateur).
+# Règle les blancs d'après l'alignement (words.json) : 0,55 s après chaque point, 0,80 s entre paragraphes, léger silence
+# de 0,20 s aux virgules (ajouté seulement, jamais retiré) — consigne utilisateur : la voix ne doit pas ignorer la ponctuation.
 # (« Les heures passent. », « minuit. », « Lucas. ») 0,60 s, fin de paragraphe 0,75 s. Le silence est ajouté ou retiré
 # à l'endroit le plus calme du blanc ; les blancs à l'intérieur des phrases ne sont pas touchés.
 #   python3 regle_blancs.py voice.mp3 words.json texte.txt voice_regle.mp3
@@ -15,15 +16,18 @@ LONG = {"passent.", "minuit.", "Lucas."}                           # temps qui p
 
 cuts = []                                                              # (position en échantillons, delta en s)
 for i, (a, b) in enumerate(zip(w, w[1:])):
-    if not re.search(r"[.!?]$", a["w"]): continue
-    tgt = 0.40                                                         # consigne utilisateur : 0,40 s après chaque point
+    virg = a["w"].endswith(",")
+    if not (virg or re.search(r"[.!?]$", a["w"])): continue
+    tgt = 0.20 if virg else 0.80 if i in fin_para else 0.55
     g = b["s"] - a["e"]
-    if abs(g - tgt) < 0.06: continue
+    if abs(g - tgt) < 0.06 or (virg and g > tgt): continue
     s0, s1 = int(a["e"] * SR), int(b["s"] * SR); n = SR // 100
     if s1 - s0 > 8 * n:                                                # centre de la fenêtre de 80 ms la plus calme du blanc
         e = [np.max([np.sqrt(np.mean(x[q:q + n] ** 2)) for q in range(k, k + 8 * n, n)]) for k in range(s0, s1 - 8 * n, n)]
         pos = s0 + int(np.argmin(e)) * n + 4 * n
-    else: pos = (s0 + s1) // 2
+    else:                                                              # mots liés : trame de 10 ms la plus calme autour de la frontière
+        lo = max(0, min(s0, s1) - 4 * n); hi = max(s0, s1) + 4 * n
+        e = [np.sqrt(np.mean(x[k:k + n] ** 2)) for k in range(lo, hi, n)]; pos = lo + int(np.argmin(e)) * n + n // 2
     cuts.append((pos, tgt - g, max(0, s1 - s0)))
 
 parts, last = [], 0
