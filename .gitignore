@@ -26,3 +26,5 @@ productions/monstre-ep01/voix/v9/raw/
 productions/monstre-ep01/voix/v10/raw/
 productions/monstre-ep01/voix/v10/gen.log
 productions/monstre-ep01/voix/v11/gen.log
+productions/monstre-ep01/render/chunks_v2/
+productions/monstre-ep01/render/*_v2.log

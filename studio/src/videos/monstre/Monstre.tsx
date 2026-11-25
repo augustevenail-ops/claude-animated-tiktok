@@ -63,6 +63,8 @@ const Inner: React.FC = () => {
   scene.background = new THREE.Color("#0b0e20"); scene.environment = env; scene.environmentIntensity = 0.22;
   const s = applyShot(w, i, u, t);
   const cam = camera as THREE.PerspectiveCamera, c = s.cam(w, u, t);
+  const dbg = (getInputProps() as { dbg?: number[] }).dbg; // contrôle : caméra autour de la tête du garde tenu
+  if (dbg) { w.held.root.updateMatrixWorld(true); const h = w.held.neck.localToWorld(new THREE.Vector3(0, 0.7, 0)); c.T = h; c.P = h.clone().add(new THREE.Vector3(dbg[0], dbg[1], dbg[2])); c.fov = 40; }
   cam.position.copy(c.P); cam.lookAt(c.T); cam.fov = c.fov; cam.near = 0.1; cam.far = 3000; cam.updateProjectionMatrix();
   if (rainOn(i)) w.props.rainAt(t, c.P, c.T.clone().sub(c.P));
   useEffect(() => {

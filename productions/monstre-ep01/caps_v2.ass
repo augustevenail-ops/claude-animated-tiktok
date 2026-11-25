@@ -1,0 +1,258 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 2160
+PlayResY: 3840
+WrapStyle: 2
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Cap,MonstreCaps,230,&H0000E9FF,&H0000E9FF,&H000A0A0A,&H60000000,0,0,0,0,100,100,2,0,1,22,11,5,100,100,0,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.23,0:00:00.55,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}dans cette
+Dialogue: 0,0:00:00.55,0:00:00.89,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}ville
+Dialogue: 0,0:00:00.89,0:00:01.31,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}il existe
+Dialogue: 0,0:00:01.31,0:00:01.83,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}un monstre
+Dialogue: 0,0:00:01.83,0:00:02.15,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}qui ne peut
+Dialogue: 0,0:00:02.15,0:00:02.75,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}se déplacer
+Dialogue: 0,0:00:02.75,0:00:02.99,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}que dans
+Dialogue: 0,0:00:02.99,0:00:03.70,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}l'obscurité
+Dialogue: 0,0:00:03.89,0:00:04.13,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}et si
+Dialogue: 0,0:00:04.13,0:00:04.53,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}les lumières
+Dialogue: 0,0:00:04.53,0:00:05.05,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}s'éteignent
+Dialogue: 0,0:00:05.05,0:00:05.59,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}ne serait-ce
+Dialogue: 0,0:00:05.59,0:00:05.85,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}qu'une
+Dialogue: 0,0:00:05.85,0:00:06.41,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}seconde
+Dialogue: 0,0:00:06.41,0:00:06.69,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}c'est la
+Dialogue: 0,0:00:06.69,0:00:07.01,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}fin pour
+Dialogue: 0,0:00:07.01,0:00:07.56,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}nous tous
+Dialogue: 0,0:00:07.75,0:00:07.99,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}il y a
+Dialogue: 0,0:00:07.99,0:00:08.29,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}trois
+Dialogue: 0,0:00:08.29,0:00:08.45,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}ans
+Dialogue: 0,0:00:08.45,0:00:08.79,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}cette chose
+Dialogue: 0,0:00:08.79,0:00:09.29,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}est apparue
+Dialogue: 0,0:00:09.29,0:00:09.63,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}en plein
+Dialogue: 0,0:00:09.63,0:00:09.93,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}cœur de
+Dialogue: 0,0:00:09.93,0:00:10.15,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}notre
+Dialogue: 0,0:00:10.15,0:00:10.58,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}ville
+Dialogue: 0,0:00:10.79,0:00:11.44,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}cette nuit-là
+Dialogue: 0,0:00:11.49,0:00:11.71,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}sept
+Dialogue: 0,0:00:11.71,0:00:12.07,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}personnes
+Dialogue: 0,0:00:12.07,0:00:12.74,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}ont disparu
+Dialogue: 0,0:00:12.89,0:00:13.31,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}mais au lever
+Dialogue: 0,0:00:13.31,0:00:13.89,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}du soleil
+Dialogue: 0,0:00:13.89,0:00:14.43,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}le monstre
+Dialogue: 0,0:00:14.43,0:00:15.04,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}s'est figé
+Dialogue: 0,0:00:15.25,0:00:15.53,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}c'est là
+Dialogue: 0,0:00:15.53,0:00:15.79,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}que nous
+Dialogue: 0,0:00:15.79,0:00:16.39,Cap,,0,0,0,,{\pos(1080,2573)\fs150\fscx135\fscy135\t(0,180,\fscx100\fscy100)}avons découvert
+Dialogue: 0,0:00:16.39,0:00:16.77,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}son point
+Dialogue: 0,0:00:16.77,0:00:17.21,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}faible
+Dialogue: 0,0:00:17.21,0:00:18.04,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}la lumière
+Dialogue: 0,0:00:18.17,0:00:18.81,Cap,,0,0,0,,{\pos(1080,2573)\fs150\fscx135\fscy135\t(0,180,\fscx100\fscy100)}le gouvernement
+Dialogue: 0,0:00:18.81,0:00:19.07,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}a donc
+Dialogue: 0,0:00:19.07,0:00:19.53,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}installé
+Dialogue: 0,0:00:19.53,0:00:20.21,Cap,,0,0,0,,{\pos(1080,2573)\fs150\fscx135\fscy135\t(0,180,\fscx100\fscy100)}six projecteurs
+Dialogue: 0,0:00:20.21,0:00:20.55,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}géants
+Dialogue: 0,0:00:20.55,0:00:21.26,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}tout autour
+Dialogue: 0,0:00:21.49,0:00:21.89,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}chacun
+Dialogue: 0,0:00:21.89,0:00:22.31,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}est équipé
+Dialogue: 0,0:00:22.31,0:00:22.55,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}de son
+Dialogue: 0,0:00:22.55,0:00:22.87,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}propre
+Dialogue: 0,0:00:22.87,0:00:23.29,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}générateur
+Dialogue: 0,0:00:23.29,0:00:23.96,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}de secours
+Dialogue: 0,0:00:24.11,0:00:24.47,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}et chaque
+Dialogue: 0,0:00:24.47,0:00:24.83,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}nuit
+Dialogue: 0,0:00:24.83,0:00:25.11,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}douze
+Dialogue: 0,0:00:25.11,0:00:25.38,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}gardes
+Dialogue: 0,0:00:25.38,0:00:25.97,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}le surveillent
+Dialogue: 0,0:00:25.97,0:00:26.27,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}munis
+Dialogue: 0,0:00:26.27,0:00:26.79,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}de puissantes
+Dialogue: 0,0:00:26.79,0:00:27.54,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}lampes torches
+Dialogue: 0,0:00:27.75,0:00:28.04,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}depuis
+Dialogue: 0,0:00:28.04,0:00:28.31,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}trois
+Dialogue: 0,0:00:28.31,0:00:28.54,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}ans
+Dialogue: 0,0:00:28.54,0:00:29.04,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}le monstre
+Dialogue: 0,0:00:29.04,0:00:29.36,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}n'a pas
+Dialogue: 0,0:00:29.36,0:00:29.59,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}bougé
+Dialogue: 0,0:00:29.59,0:00:30.24,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}d'un pouce
+Dialogue: 0,0:00:30.42,0:00:30.72,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}jusqu'à
+Dialogue: 0,0:00:30.72,0:00:31.51,Cap,,0,0,0,,{\pos(1080,2573)\fs150\fscx135\fscy135\t(0,180,\fscx100\fscy100)}la nuit dernière
+Dialogue: 0,0:00:31.70,0:00:32.18,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}mon père
+Dialogue: 0,0:00:32.18,0:00:32.56,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}est chef
+Dialogue: 0,0:00:32.56,0:00:33.30,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}de la sécurité
+Dialogue: 0,0:00:33.30,0:00:33.56,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}et il a
+Dialogue: 0,0:00:33.56,0:00:33.80,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}fini
+Dialogue: 0,0:00:33.80,0:00:34.52,Cap,,0,0,0,,{\pos(1080,2573)\fs150\fscx135\fscy135\t(0,180,\fscx100\fscy100)}par m'autoriser
+Dialogue: 0,0:00:34.52,0:00:34.96,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}à rejoindre
+Dialogue: 0,0:00:34.96,0:00:35.34,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}son équipe
+Dialogue: 0,0:00:35.34,0:00:35.85,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}de nuit
+Dialogue: 0,0:00:35.98,0:00:36.42,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}tout semblait
+Dialogue: 0,0:00:36.42,0:00:36.90,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}normal
+Dialogue: 0,0:00:36.90,0:00:37.30,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}jusqu'à
+Dialogue: 0,0:00:37.30,0:00:37.94,Cap,,0,0,0,,{\pos(1080,2573)\fs150\fscx135\fscy135\t(0,180,\fscx100\fscy100)}deuxheurestreize
+Dialogue: 0,0:00:37.94,0:00:38.53,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}du matin
+Dialogue: 0,0:00:38.74,0:00:39.19,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}boum
+Dialogue: 0,0:00:39.42,0:00:39.66,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}l'un des
+Dialogue: 0,0:00:39.66,0:00:40.10,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}projecteurs
+Dialogue: 0,0:00:40.10,0:00:40.72,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}a explosé
+Dialogue: 0,0:00:40.72,0:00:40.96,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}mais mon
+Dialogue: 0,0:00:40.96,0:00:41.24,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}père est
+Dialogue: 0,0:00:41.24,0:00:41.48,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}resté
+Dialogue: 0,0:00:41.48,0:00:41.99,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}calme
+Dialogue: 0,0:00:42.10,0:00:42.36,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}pas de
+Dialogue: 0,0:00:42.36,0:00:42.80,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}panique
+Dialogue: 0,0:00:42.80,0:00:43.04,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}il nous
+Dialogue: 0,0:00:43.04,0:00:43.42,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}en reste
+Dialogue: 0,0:00:43.42,0:00:43.87,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}cinq
+Dialogue: 0,0:00:44.10,0:00:44.54,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}soudain
+Dialogue: 0,0:00:44.54,0:00:44.94,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}sa radio
+Dialogue: 0,0:00:44.94,0:00:45.64,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}a grésillé
+Dialogue: 0,0:00:45.64,0:00:46.06,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}chef
+Dialogue: 0,0:00:46.06,0:00:46.46,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}le câble
+Dialogue: 0,0:00:46.46,0:00:47.04,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}d'alimentation
+Dialogue: 0,0:00:47.04,0:00:47.56,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}principal
+Dialogue: 0,0:00:47.56,0:00:48.29,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}est endommagé
+Dialogue: 0,0:00:48.46,0:00:48.72,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}on doit
+Dialogue: 0,0:00:48.72,0:00:48.96,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}couper
+Dialogue: 0,0:00:48.96,0:00:49.65,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}le système
+Dialogue: 0,0:00:49.78,0:00:49.96,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}et les
+Dialogue: 0,0:00:49.96,0:00:50.40,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}générateurs
+Dialogue: 0,0:00:50.40,0:00:51.05,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}de secours
+Dialogue: 0,0:00:51.20,0:00:51.76,Cap,,0,0,0,,{\pos(1080,2573)\fs150\fscx135\fscy135\t(0,180,\fscx100\fscy100)}ils surchauffent
+Dialogue: 0,0:00:51.76,0:00:52.29,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}monsieur
+Dialogue: 0,0:00:52.42,0:00:52.78,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}mon père
+Dialogue: 0,0:00:52.78,0:00:53.22,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}a aussitôt
+Dialogue: 0,0:00:53.22,0:00:53.48,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}saisi
+Dialogue: 0,0:00:53.48,0:00:54.06,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}sa radio
+Dialogue: 0,0:00:54.06,0:00:54.62,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}à tous
+Dialogue: 0,0:00:54.62,0:00:55.10,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}en position
+Dialogue: 0,0:00:55.10,0:00:55.81,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}d'urgence
+Dialogue: 0,0:00:55.94,0:00:56.32,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}en quelques
+Dialogue: 0,0:00:56.32,0:00:56.72,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}minutes
+Dialogue: 0,0:00:56.72,0:00:57.14,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}des voitures
+Dialogue: 0,0:00:57.14,0:00:57.58,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}de police
+Dialogue: 0,0:00:57.58,0:00:58.10,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}ont encerclé
+Dialogue: 0,0:00:58.10,0:00:58.71,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}la place
+Dialogue: 0,0:00:58.84,0:00:59.26,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}leurs phares
+Dialogue: 0,0:00:59.26,0:00:59.78,Cap,,0,0,0,,{\pos(1080,2573)\fs150\fscx135\fscy135\t(0,180,\fscx100\fscy100)}étaient braqués
+Dialogue: 0,0:00:59.78,0:01:00.51,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}sur le monstre
+Dialogue: 0,0:01:00.66,0:01:01.12,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}les gardes
+Dialogue: 0,0:01:01.12,0:01:01.46,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}ont levé
+Dialogue: 0,0:01:01.46,0:01:01.78,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}leurs lampes
+Dialogue: 0,0:01:01.78,0:01:02.35,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}torches
+Dialogue: 0,0:01:02.52,0:01:02.84,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}même les
+Dialogue: 0,0:01:02.84,0:01:03.18,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}habitants
+Dialogue: 0,0:01:03.18,0:01:03.68,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}des immeubles
+Dialogue: 0,0:01:03.68,0:01:04.16,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}voisins
+Dialogue: 0,0:01:04.16,0:01:04.64,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}ont dirigé
+Dialogue: 0,0:01:04.64,0:01:04.96,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}des lampes
+Dialogue: 0,0:01:04.96,0:01:05.28,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}depuis leurs
+Dialogue: 0,0:01:05.28,0:01:05.87,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}fenêtres
+Dialogue: 0,0:01:05.94,0:01:06.26,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}puis
+Dialogue: 0,0:01:06.26,0:01:06.72,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}clic
+Dialogue: 0,0:01:06.72,0:01:06.96,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}toute
+Dialogue: 0,0:01:06.96,0:01:07.26,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}la ville
+Dialogue: 0,0:01:07.26,0:01:07.62,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}a plongé
+Dialogue: 0,0:01:07.62,0:01:08.25,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}dans le noir
+Dialogue: 0,0:01:08.48,0:01:08.76,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}sauf
+Dialogue: 0,0:01:08.76,0:01:09.39,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}le monstre
+Dialogue: 0,0:01:09.56,0:01:10.16,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}des centaines
+Dialogue: 0,0:01:10.16,0:01:10.56,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}de faisceaux
+Dialogue: 0,0:01:10.56,0:01:10.92,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}lumineux
+Dialogue: 0,0:01:10.92,0:01:11.38,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}continuaient
+Dialogue: 0,0:01:11.38,0:01:12.00,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}de l'éclairer
+Dialogue: 0,0:01:12.00,0:01:12.46,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}l'empêchant
+Dialogue: 0,0:01:12.46,0:01:13.03,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}de bouger
+Dialogue: 0,0:01:13.20,0:01:13.56,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}je croyais
+Dialogue: 0,0:01:13.56,0:01:14.00,Cap,,0,0,0,,{\pos(1080,2573)\fs150\fscx135\fscy135\t(0,180,\fscx100\fscy100)}que nous étions
+Dialogue: 0,0:01:14.00,0:01:14.66,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}en sécurité
+Dialogue: 0,0:01:14.66,0:01:15.00,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}mais un coup
+Dialogue: 0,0:01:15.00,0:01:15.38,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}de tonnerre
+Dialogue: 0,0:01:15.38,0:01:16.00,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}a retenti
+Dialogue: 0,0:01:16.00,0:01:16.42,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}et une pluie
+Dialogue: 0,0:01:16.42,0:01:16.90,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}torrentielle
+Dialogue: 0,0:01:16.90,0:01:17.63,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}s'est abattue
+Dialogue: 0,0:01:17.78,0:01:18.14,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}un garde
+Dialogue: 0,0:01:18.14,0:01:18.70,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}a glissé
+Dialogue: 0,0:01:18.70,0:01:19.10,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}laissant
+Dialogue: 0,0:01:19.10,0:01:19.48,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}échapper
+Dialogue: 0,0:01:19.48,0:01:19.75,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}sa lampe
+Dialogue: 0,0:01:19.75,0:01:20.28,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}torche
+Dialogue: 0,0:01:20.41,0:01:20.77,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}puis
+Dialogue: 0,0:01:20.77,0:01:21.12,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}les phares
+Dialogue: 0,0:01:21.12,0:01:21.56,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}d'une voiture
+Dialogue: 0,0:01:21.56,0:01:21.97,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}de police
+Dialogue: 0,0:01:21.97,0:01:22.25,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}se sont
+Dialogue: 0,0:01:22.25,0:01:22.73,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}éteints
+Dialogue: 0,0:01:22.91,0:01:23.44,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}gardez-le
+Dialogue: 0,0:01:23.44,0:01:24.30,Cap,,0,0,0,,{\pos(1080,2573)\fs150\fscx135\fscy135\t(0,180,\fscx100\fscy100)}sous la lumière
+Dialogue: 0,0:01:24.44,0:01:24.80,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}a crié
+Dialogue: 0,0:01:24.80,0:01:25.42,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}mon père
+Dialogue: 0,0:01:25.57,0:01:25.89,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}j'ai voulu
+Dialogue: 0,0:01:25.89,0:01:26.49,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}intervenir
+Dialogue: 0,0:01:26.49,0:01:26.75,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}mais j'ai
+Dialogue: 0,0:01:26.75,0:01:27.21,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}trébuché
+Dialogue: 0,0:01:27.21,0:01:27.92,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}sur un câble
+Dialogue: 0,0:01:28.05,0:01:28.43,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}ma lampe
+Dialogue: 0,0:01:28.43,0:01:28.89,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}m'a échappé
+Dialogue: 0,0:01:28.89,0:01:29.31,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}des mains
+Dialogue: 0,0:01:29.31,0:01:29.41,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}et
+Dialogue: 0,0:01:29.41,0:01:29.65,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}pendant
+Dialogue: 0,0:01:29.65,0:01:30.31,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}une seconde
+Dialogue: 0,0:01:30.31,0:01:30.81,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}le monstre
+Dialogue: 0,0:01:30.81,0:01:31.31,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}s'est retrouvé
+Dialogue: 0,0:01:31.31,0:01:31.73,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}plongé
+Dialogue: 0,0:01:31.73,0:01:31.99,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}dans une
+Dialogue: 0,0:01:31.99,0:01:32.53,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}obscurité
+Dialogue: 0,0:01:32.53,0:01:33.18,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}totale
+Dialogue: 0,0:01:33.35,0:01:33.69,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}un cri
+Dialogue: 0,0:01:33.69,0:01:34.21,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}terrifiant
+Dialogue: 0,0:01:34.21,0:01:34.73,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}a retenti
+Dialogue: 0,0:01:34.73,0:01:35.46,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}sur la place
+Dialogue: 0,0:01:35.55,0:01:35.91,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}tout le monde
+Dialogue: 0,0:01:35.91,0:01:36.65,Cap,,0,0,0,,{\pos(1080,2573)\fs150\fscx135\fscy135\t(0,180,\fscx100\fscy100)}a immédiatement
+Dialogue: 0,0:01:36.65,0:01:37.15,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}redirigé
+Dialogue: 0,0:01:37.15,0:01:37.55,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}ses lumières
+Dialogue: 0,0:01:37.55,0:01:37.97,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}vers lui
+Dialogue: 0,0:01:37.97,0:01:38.53,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}et le monstre
+Dialogue: 0,0:01:38.53,0:01:39.16,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}s'est figé
+Dialogue: 0,0:01:39.31,0:01:39.61,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}mais il ne
+Dialogue: 0,0:01:39.61,0:01:40.01,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}se trouvait
+Dialogue: 0,0:01:40.01,0:01:40.33,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}plus au
+Dialogue: 0,0:01:40.33,0:01:40.59,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}centre
+Dialogue: 0,0:01:40.59,0:01:41.30,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}de la place
+Dialogue: 0,0:01:41.45,0:01:41.71,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}il se
+Dialogue: 0,0:01:41.71,0:01:41.99,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}tenait
+Dialogue: 0,0:01:41.99,0:01:42.31,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}juste
+Dialogue: 0,0:01:42.31,0:01:42.55,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}devant
+Dialogue: 0,0:01:42.55,0:01:42.73,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}nous
+Dialogue: 0,0:01:42.73,0:01:42.99,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}et dans
+Dialogue: 0,0:01:42.99,0:01:43.23,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}son
+Dialogue: 0,0:01:43.23,0:01:43.57,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}immense
+Dialogue: 0,0:01:43.57,0:01:43.89,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}main se
+Dialogue: 0,0:01:43.89,0:01:44.23,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}trouvait
+Dialogue: 0,0:01:44.23,0:01:44.53,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}l’un des
+Dialogue: 0,0:01:44.53,0:01:44.97,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}gardes
+Dialogue: 0,0:01:44.97,0:01:45.25,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}encore
+Dialogue: 0,0:01:45.25,0:01:45.72,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}en vie
+Dialogue: 0,0:01:45.83,0:01:46.33,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}papa
+Dialogue: 0,0:01:46.33,0:01:46.59,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}il faut
+Dialogue: 0,0:01:46.59,0:01:47.24,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}le sauver
+Dialogue: 0,0:01:47.43,0:01:47.85,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}mais papa
+Dialogue: 0,0:01:47.85,0:01:48.25,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}m’a saisi
+Dialogue: 0,0:01:48.25,0:01:48.74,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}le bras
+Dialogue: 0,0:01:48.95,0:01:49.31,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}ne bouge
+Dialogue: 0,0:01:49.31,0:01:49.70,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}pas
+Dialogue: 0,0:01:49.83,0:01:50.40,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}pourquoi
+Dialogue: 0,0:01:50.61,0:01:51.25,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}il a désigné
+Dialogue: 0,0:01:51.25,0:01:51.73,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}le monstre
+Dialogue: 0,0:01:51.73,0:01:52.26,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}du doigt
+Dialogue: 0,0:01:52.35,0:01:52.69,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}parce que
+Dialogue: 0,0:01:52.69,0:01:52.93,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}si ces
+Dialogue: 0,0:01:52.93,0:01:53.25,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}lumières
+Dialogue: 0,0:01:53.25,0:01:53.57,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}s’éteignent
+Dialogue: 0,0:01:53.57,0:01:54.01,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}à nouveau
+Dialogue: 0,0:01:54.01,0:01:54.74,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}il est mort

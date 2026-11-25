@@ -60,17 +60,23 @@ export const SHOTS: Shot[] = [
   /* 16 */ { env: "dusk", fr: "Plan à deux", mv: "Plan fixe", cam: (_w, u) => G(V(13.4, 1.25, 31.2), V(13.3, 1.27, 31.0), V(10.4, 1.35, 24.7), V(10.4, 1.35, 24.7), 36, u),
     st: (w, u, t) => { w.hero.pose(t, { yaw: 0.45, expr: "smile", point: 0.2 }); w.dad.pose(t, { yaw: -0.3, expr: u > 0.35 && u < 0.75 ? "focus" : "neutral" }); torchOn(w, true); } },
   /* 17 */ { env: "dusk", fr: "Plan large en plongée", mv: "Quasi fixe", cam: (_w, u) => G(V(46, 34, 66), V(45, 34.5, 64), V(6, 10, 8), V(6, 10, 8), 50, u), st: (w, u, t) => { w.mon.pose(t, { headYaw: -0.12 * sm(u) }); } },
-  /* 18 */ { env: "night", fr: "Très gros plan (téléphone)", mv: "Zoom avant lent", cam: (w, u) => { const p = w.props.phone.position; return G(add(p, 0.1, 0.55, 1.5), add(p, 0.05, 0.3, 0.85), p, p, 40, u); },
+  /* 18 */ { env: "night", fr: "Très gros plan (téléphone)", mv: "Zoom avant lent", cam: (w, u) => { const p = w.props.phone.position; return G(add(p, 0.9, 2.3, 4.6), add(p, 0.05, 1.4, 2.3), add(p, 0, -0.25, 0), p, 40, u); },
     st: (w) => { const p = w.props.phone; p.visible = true; p.position.set(10.25, 1.05, 25.7); p.rotation.set(-0.55, 0.05, 0); } },
-  /* 19 */ { env: "night", fr: "Contre-plongée", mv: "Caméra fixe", cam: (w) => { const t = w.city.towers[T5].root.position; return { P: V(8, 1.4, 27), T: V(t.x * 0.9, 30, t.z * 0.9), fov: 50 }; }, st: (w, u) => boom(w, (u - 0.12) * 0.9) },
-  /* 20 */ { env: "night", fr: "Plan rapproché", mv: "Léger travelling avant", cam: (w, u) => G(add(headOf(w.hero), 0.6, 0.15, 3.6), add(headOf(w.hero), 0.4, 0.1, 2.6), headOf(w.hero), headOf(w.hero), 38, u),
-    st: (w, u, t) => { boom(w, 0.75 + u * 0.4); w.hero.pose(t, { yaw: 0.1, headYaw: -0.9 * sm(u * 2), expr: "scared", point: 0.2 + 0.2 * Math.sin(u * 3) }); } },
-  /* 21 */ { env: "night", fr: "Plan rapproché", mv: "Zoom avant + travelling gauche", cam: (w, u) => G(add(headOf(w.dad), 2.4, 0.1, 4.2), add(headOf(w.dad), 0.8, 0.05, 2.5), headOf(w.dad), headOf(w.dad), 38, u), st: (w, _u, t) => { boom(w, 1.3); w.dad.pose(t, { yaw: 0.2, expr: "focus" }); } },
-  /* 22 */ { env: "night", fr: "Contre-plongée à deux", mv: "Léger travelling avant", cam: (w, u) => G(add(DAD, 0.7, 0.9, -1.4), add(DAD, 0.5, 0.95, -1.0), headOf(w.hero), headOf(w.hero), 46, u),
-    st: (w, _u, t) => { w.dad.pose(t, { yaw: Math.atan2(HERO.x - DAD.x, HERO.z - DAD.z), talk: true, expr: "neutral" }); w.hero.pose(t, { yaw: Math.atan2(DAD.x - HERO.x, DAD.z - HERO.z), expr: "scared" }); } },
-  /* 23 */ { env: "night", fr: "Très gros plan (radio)", mv: "Zoom avant lent", cam: (w, u) => { w.dad.root.updateMatrixWorld(true); const r = w.dad.radio!.localToWorld(V(0, 0, 0)); return G(add(r, 0.35, 0.12, 1.3), add(r, 0.15, 0.05, 0.62), r, r, 36, u); }, st: (w, _u, t) => blink(w, t, 9) },
-  /* 24 */ { env: "night", fr: "Contre-plongée", mv: "Léger mouvement", cam: (_w, u) => G(V(3.6, 0.35, 32), V(3.4, 0.5, 31.4), V(1, 7, 12), V(1, 8, 12), 54, u),
-    st: (w, _u, t) => { w.tech.root.visible = true; w.tech.root.position.set(5.2, 0.12, 29.4); w.tech.pose(t, { yaw: -2.4, expr: "worried", headPitch: 0.4 }); w.tech.body.rotation.x = 0.25; const f = flick(t); w.city.bulb.emissiveIntensity = 8 * f; for (const h of w.city.lampHalos) (h.material as THREE.MeshBasicMaterial).opacity = 0.38 * f; } },
+  /* 19 */ { env: "night", fr: "Contre-plongée", mv: "Caméra fixe", cam: (w) => { const t = w.city.towers[T5].root.position; return { P: V(8, 1.4, 27), T: V(t.x * 0.9, 30, t.z * 0.9), fov: 50 }; }, st: (w, u, t) => boom(w, (u - 0.12) * 0.9, t) },
+  /* 20 */ { env: "night", fr: "Plan rapproché, explosion en arrière-plan", mv: "Léger travelling avant", cam: (w, u) => { const h = headOf(w.hero), E = boomPos(w), d = h.clone().sub(E).setY(0).normalize();
+      const P = L(add(h.clone().addScaledVector(d, 3.1), 0, -0.6, 0), add(h.clone().addScaledVector(d, 2.6), 0, -0.55, 0), sm(u)); const T = P.clone().add(E.clone().sub(P).setY(0).normalize().multiplyScalar(Math.cos(0.36)).setY(Math.sin(0.36)));
+      return { P, T, fov: 48 }; },
+    st: (w, u, t) => { boom(w, 0.42 + u * 0.55, t); const E = boomPos(w); w.hero.pose(t, { yaw: Math.atan2(HERO.x - E.x, HERO.z - E.z), headYaw: Math.PI * 0.55 * sm(u * 2.2), headPitch: -0.25 * sm(u * 2.2), expr: "scared", point: 0.2 + 0.2 * Math.sin(u * 3) }); } },
+  /* 21 */ { env: "night", fr: "Plan rapproché", mv: "Zoom avant + travelling gauche", cam: (w, u) => G(add(headOf(w.dad), 2.4, 0.1, 4.2), add(headOf(w.dad), 0.8, 0.05, 2.5), headOf(w.dad), headOf(w.dad), 38, u), st: (w, _u, t) => { boom(w, 1.3, t); w.dad.pose(t, { yaw: 0.2, expr: "focus" }); } },
+  /* 22 */ { env: "night", fr: "Plan moyen (visage du père)", mv: "Léger travelling avant", cam: (w, u) => { const h = headOf(w.dad), f = fwdOf(w.dad), sd = V(f.z, 0, -f.x);
+      return G(h.clone().addScaledVector(f, 2.9).addScaledVector(sd, 0.5).add(V(0, -0.15, 0)), h.clone().addScaledVector(f, 2.45).addScaledVector(sd, 0.4).add(V(0, -0.12, 0)), add(h, 0, -0.3, 0), add(h, 0, -0.25, 0), 40, u); },
+    st: (w, _u, t) => { w.dad.pose(t, { yaw: 0.35, talk: true, expr: "neutral" }); w.hero.pose(t, { yaw: Math.atan2(DAD.x - HERO.x, DAD.z - HERO.z), expr: "scared" }); } },
+  /* 23 */ { env: "night", fr: "Plan moyen → veste et radio", mv: "Zoom léger", cam: (w, u) => { w.dad.root.updateMatrixWorld(true); const r = w.dad.radio!.localToWorld(V(0, 0, 0)), h = headOf(w.dad), f = fwdOf(w.dad), sd = V(f.z, 0, -f.x);
+      const T0 = h.clone().lerp(r, 0.45), T1 = h.clone().lerp(r, 0.72); return G(T0.clone().addScaledVector(f, 2.7).addScaledVector(sd, -0.45), T1.clone().addScaledVector(f, 2.0).addScaledVector(sd, -0.35), T0, T1, 40, u); },
+    st: (w, u, t) => { blink(w, t, 9); w.dad.pose(t, { yaw: 0.35, expr: u > 0.3 ? "worried" : "focus", headPitch: 0.35 * sm((u - 0.2) * 3), headYaw: -0.25 * sm((u - 0.2) * 3) }); } },
+  /* 24 */ { env: "night", fr: "Plan rapproché (batteries en court-circuit)", mv: "Léger travelling avant", cam: (w, u) => { const b = w.props.batt; b.updateMatrixWorld(true);
+      return G(b.localToWorld(V(4.8, 2.5, 2.4)), b.localToWorld(V(3.9, 2.1, 2.0)), b.localToWorld(V(-0.2, 0.85, 0.8)), b.localToWorld(V(0, 0.9, 0.9)), 46, u); },
+    st: (w, _u, t) => { const fl = w.props.battAt(t); w.props.batt.updateMatrixWorld(true); w.fill.color.set("#bcd8ff"); w.fill.intensity = 4 + 26 * fl; w.fill.position.copy(w.props.batt.localToWorld(V(0.3, 2.3, 1.4))); w.tech.root.visible = true; w.tech.root.position.set(5.2, 0.12, 29.4); w.tech.pose(t, { yaw: -2.4, expr: "worried", headPitch: 0.4 }); w.tech.body.rotation.x = 0.25; const f = flick(t); w.city.bulb.emissiveIntensity = 8 * f; for (const h of w.city.lampHalos) (h.material as THREE.MeshBasicMaterial).opacity = 0.38 * f; } },
   /* 25 */ { env: "night", fr: "Plan rapproché", mv: "Léger travelling avant", cam: (w, u) => G(add(headOf(w.dad), -0.6, -0.05, 3.2), add(headOf(w.dad), -0.4, -0.05, 2.3), headOf(w.dad), headOf(w.dad), 36, u), st: (w, _u, t) => { w.dad.pose(t, { yaw: -0.15, expr: "worried", talk: true }); blink(w, t, 6); } },
   /* 26 */ { env: "night", fr: "Plan rapproché", mv: "Léger travelling avant", cam: (w, u) => G(V(13, 2.4, 29.5), V(14.6, 2.6, 27.6), add(w.props.gen.position, 0, 2.6, 0), add(w.props.gen.position, 0, 2.8, 0), 44, u), st: (w, _u, t) => w.props.genSmokeAt(t) },
   /* 27 */ { env: "night", fr: "Plan rapproché", mv: "Quasi fixe", cam: (w, u) => G(add(headOf(w.dad), 0.9, -0.3, 2.9), add(headOf(w.dad), 0.85, -0.3, 2.75), headOf(w.dad), headOf(w.dad), 32, u), st: (w, u, t) => { w.dad.pose(t, { yaw: 0.2, expr: "angry", point: 0.4 * sm(u * 2) }); blink(w, t, 6); } },
@@ -79,14 +85,14 @@ export const SHOTS: Shot[] = [
   /* 30 */ { env: "night", fr: "Contre-plongée", mv: "Léger travelling avant", cam: (w, u) => { const h = w.props.cars[1].home; return G(add(h.clone().multiplyScalar(1.22), 0, 1.1, 0), add(h.clone().multiplyScalar(1.15), 0, 1.3, 0), V(0, 22, 0), V(0, 23, 0), 54, u); } },
   /* 31 */ { env: "night", fr: "Plan moyen", mv: "Léger travelling avant", cam: (_w, u) => { const a = 0.3 + (2 / 8) * Math.PI * 2 + 0.4; return G(orbit(V(0, 0, 0), 4.5, 1.2, a), orbit(V(0, 0, 0), 5.2, 1.25, a), orbit(V(0, 0, 0), 9, 2.0, a - 0.05), orbit(V(0, 0, 0), 9, 2.1, a - 0.05), 50, u); },
     st: (w, u, t) => { for (const i of [2, 3]) w.guards[i].pose(t, { point: 0.2 + 0.9 * sm(u * 1.5), expr: "focus", headPitch: -0.4, yaw: guardYaw(w.guards[i]) }); } },
-  /* 32 */ { env: "night", fr: "Plongée sur façade", mv: "Léger mouvement", cam: (_w, u) => G(V(-24, 30, -46), V(-25, 28.5, -49), V(-26, 13, -71.5), V(-26, 12.5, -71.5), 50, u), st: (w, _u, t) => { const f = 0.8 + 0.2 * flick(t * 0.7); for (const m of w.city.winMats) m.emissiveIntensity *= f; } },
+  /* 32 */ { env: "night", fr: "Plongée sur façade", mv: "Léger mouvement", cam: (_w, u) => G(V(-12, 5, -44), V(-14, 6.5, -50), V(-24, 15, -72.7), V(-25, 15.5, -72.7), 52, u), st: (w, _u, t) => { const f = 0.8 + 0.2 * flick(t * 0.7); for (const m of w.city.winMats) m.emissiveIntensity *= f; w.props.facadeWin.emissiveIntensity = 1.6 * f; } },
   /* 33 */ { env: "night", fr: "Contre-plongée", mv: "Léger travelling avant", cam: (_w, u) => G(V(2.4, 1.2, 15.5), V(2.1, 1.35, 14), V(0, 24, 0), V(0, 25, 0), 56, u), st: (w, _u, t) => winBeams(w, t, 0.8 + 0.2 * flick(t)) },
   /* 34 */ { env: "night", fr: "Plan rapproché (levier)", mv: "Léger mouvement", cam: (w, u) => { w.props.panel.updateMatrixWorld(true); const c = w.props.panel.localToWorld(V(0.2, 1.5, 0.3)); return G(w.props.panel.localToWorld(V(1.4, 1.9, 2.4)), w.props.panel.localToWorld(V(1.2, 1.8, 2.1)), c, c, 42, u); },
     st: (w, u, t) => { const k = sm((u - 0.2) * 2.5); w.props.lever.rotation.x = 1.3 * k; w.props.panelLeds.forEach((m, i) => { m.emissiveIntensity = u > 0.45 + i * 0.07 ? 0.05 : 5; });
       w.lev.root.visible = true; w.props.panel.updateMatrixWorld(true); w.lev.root.position.copy(w.props.panel.localToWorld(V(0.9, 0, 1.1))); w.lev.pose(t, { yaw: w.props.panel.rotation.y + Math.PI + 0.6, point: 0.6 - 0.7 * k, expr: "worried" }); } },
   /* 35 */ { env: "black", fr: "Plongée depuis un toit", mv: "Léger travelling avant", cam: (_w, u) => G(V(-32, 44, 66), V(-29, 41, 60), V(0, 12, 0), V(0, 13, 0), 52, u), st: (w, u) => blackout(w, u) },
-  /* 36 */ { env: "black", fr: "Plongée (plus proche)", mv: "Travelling avant", cam: (_w, u) => G(V(-19, 30, 42), V(-16, 27, 36), V(0, 14, 0), V(0, 15, 0), 50, u) },
-  /* 37 */ { env: "black", fr: "Plan d'ensemble bas", mv: "Drone : orbite", cam: (_w, u) => ({ P: orbit(V(0, 0, 0), 24, 6, 1.1 + 0.8 * sm(u)), T: V(0, 17, 0), fov: 58 }) },
+  /* 36 */ { env: "black", fr: "Plongée (plus proche)", mv: "Travelling avant", cam: (_w, u) => G(V(-19, 30, 42), V(-16, 27, 36), V(0, 14, 0), V(0, 15, 0), 50, u), st: (w, _u, t) => floodMonster(w, t) },
+  /* 37 */ { env: "black", fr: "Plan d'ensemble bas", mv: "Drone : orbite", cam: (_w, u) => ({ P: orbit(V(0, 0, 0), 24, 6, 1.1 + 0.8 * sm(u)), T: V(0, 17, 0), fov: 58 }), st: (w, _u, t) => floodMonster(w, t) },
   /* 38 */ { env: "black", fr: "Très gros plan (main)", mv: "Zoom avant lent", cam: (w, u) => { w.mon.root.updateMatrixWorld(true); const h = w.mon.lHand.localToWorld(V(0, -0.9, 0.3)); return G(add(h, 1.5, 0.5, 7), add(h, 1, 0.3, 4.6), h, h, 40, u); }, st: (w, _u, t) => w.mon.pose(t, { twitch: 1 }) },
   /* 39 */ { env: "black", fr: "Plan épaule", mv: "Travelling latéral droite", cam: (w, u) => G(add(HERO, -0.9, 1.6, 1.8), add(HERO, -0.2, 1.6, 1.8), V(-4, 14, 0), V(-2, 14, 0), 48, u), st: (w, _u, t) => w.hero.pose(t, { yaw: Math.PI + 0.35, point: 0.6, expr: "worried" }) },
   /* 40 */ { env: "black", fr: "Plan d'ensemble contre-plongée", mv: "Montée verticale", cam: (_w, u) => G(V(14, 1.4, 34), V(14, 3.2, 34), V(-10, 50, -50), V(-10, 56, -50), 58, u), st: (w, u) => lightning(w, u, 0.32) },
@@ -108,7 +114,7 @@ export const SHOTS: Shot[] = [
   /* 53 */ { env: "black", fr: "Gros plan visage", mv: "Travelling latéral droite", cam: (w, u) => { const H = w.mon.headWorld(V(0, 0.8, 0.6)); return G(add(H, -3, -1.2, 9), add(H, 0.5, -1.2, 9), H, H, 40, u); } },
   /* 54 */ { env: "black", fr: "Plan d'ensemble en plongée", mv: "Montée verticale", cam: (_w, u) => G(V(-2, 9, -24), V(-3, 22, -32), V(2, 0, 2), V(2, 0, 4), 54, u), st: (w) => { w.props.debris.visible = true; } },
   /* 55 */ { env: "black", fr: "Contre-plongée extrême", mv: "Zoom arrière", cam: (w, u) => ({ P: add(HERO, 0.4, 0.4, 1.8), T: w.mon.headWorld(V(0, 0.8, 0.6)), fov: 40 + 34 * sm(u) }), st: (w, _u, t) => { w.hero.pose(t, { yaw: Math.PI + 0.3, expr: "scared", headPitch: -0.6 }); w.dad.pose(t, { yaw: Math.PI - 0.2, expr: "scared", headPitch: -0.6 }); } },
-  /* 56 */ { env: "black", fr: "Plan moyen (main)", mv: "Travelling latéral gauche", cam: (w, u) => { const h = headOf(w.held); return G(add(h, 5, -0.5, 9), add(h, 2.5, -0.5, 9), h, h, 42, u); } },
+  /* 56 */ { env: "black", fr: "Plan moyen (main)", mv: "Travelling latéral gauche", cam: (w, u) => { const h = headOf(w.held); return G(add(h, -2.6, -0.4, 7.2), add(h, -1.2, -0.3, 6.2), add(h, 0, -0.9, 0), add(h, 0, -0.8, 0), 42, u); } },
   /* 57 */ { env: "black", fr: "Gros plan", mv: "Zoom avant", cam: (w, u) => { const h = headOf(w.held); return G(add(h, 0.3, 0.1, 2.4), add(h, 0.15, 0.05, 1.5), h, h, 38, u); } },
   /* 58 */ { env: "black", fr: "Plan épaule", mv: "Travelling latéral droite", cam: (w, u) => G(add(DAD, 0.9, 1.55, -0.9), add(DAD, 1.1, 1.55, -0.4), headOf(w.hero), headOf(w.hero), 40, u),
     st: (w, u, t) => { w.hero.pose(t, { yaw: Math.atan2(DAD.x - HERO.x, DAD.z - HERO.z) * sm(u * 2) + (Math.PI + 0.3) * (1 - sm(u * 2)), expr: "shout", talk: true }); } },
@@ -116,7 +122,7 @@ export const SHOTS: Shot[] = [
     st: (w, u, t) => { w.dad.root.position.copy(add(HERO, 1.3, 0, -0.2)); w.dad.pose(t, { yaw: -Math.PI / 2 - 0.3, point: 0.3 + 0.2 * sm(u * 3), expr: "angry" }); w.hero.pose(t, { yaw: Math.PI / 2 - 0.3, expr: "scared" }); } },
   /* 60 */ { env: "black", fr: "Gros plan frontal", mv: "Zoom avant", cam: (w, u) => G(add(headOf(w.dad), -0.8, 0, 2.2), add(headOf(w.dad), -0.55, 0, 1.6), headOf(w.dad), headOf(w.dad), 36, u), st: (w, _u, t) => w.dad.pose(t, { yaw: -0.35, expr: "angry", talk: true }) },
   /* 61 */ { env: "black", fr: "Contre-plongée", mv: "Montée verticale", cam: (w, u) => G(add(HERO, 0.5, 0.5, 1.5), add(HERO, 0.5, 0.8, 1.5), headOf(w.hero), headOf(w.hero), 46, u), st: (w, _u, t) => w.hero.pose(t, { yaw: 0.3, expr: "sad", headPitch: -0.2 }) },
-  /* 62 */ { env: "black", fr: "Plan américain de dos", mv: "Travelling latéral gauche", cam: (w, u) => G(add(DAD, 1.6, 1.4, 4.2), add(DAD, 0.3, 1.4, 4.2), add(headOf(w.held), 0, -2, 0), add(headOf(w.held), 0, -2, 0), 52, u), st: (w, _u, t) => w.dad.pose(t, { yaw: Math.PI + 0.25, point: 1.2, expr: "angry" }) },
+  /* 62 */ { env: "black", fr: "Plan américain de dos", mv: "Travelling latéral gauche", cam: (w, u) => { const H = w.mon.headWorld(V(0, 0, 0.6)); return G(add(DAD, 1.6, 1.5, 3.4), add(DAD, 0.6, 1.5, 3.2), add(H, 0, -15, 0), add(H, 0, -14.5, 0), 62, u); }, st: (w, _u, t) => { w.dad.pose(t, { yaw: Math.PI + 0.25, point: 1.2, expr: "angry" }); w.fill.intensity = 12; w.fill.position.copy(add(DAD, 0.8, 2.6, 2.2)); } },
   /* 63 */ { env: "black", fr: "Plan d'ensemble", mv: "Drone : orbite en recul", cam: (w, u) => { const H = w.mon.headWorld(V(0, 0.4, 0.6)), e = sm(u); return { P: L(add(H, 6, -3, 14), V(60, 70, 110), e), T: L(add(H, -1, -4, 0), V(5, 8, 5), e), fov: 44 + 8 * e }; },
     st: (w, u, t) => { if (u > 0.82) w.city.towers.forEach((tw) => void tw); winBeams(w, t, u > 0.86 && u < 0.93 ? 0.3 + 0.7 * Math.abs(Math.sin(t * 90)) : 1); } },
 ];
@@ -128,7 +134,13 @@ const guardYaw = (g: Actor) => Math.atan2(-g.root.position.x, -g.root.position.z
 export const towerLevel = (tw: Tower, k: number) => { tw.lens.emissiveIntensity = 0.3 + 8.7 * k; tw.spot.intensity = 5.5 * k; tw.spot.visible = k > 0.01; for (const b of tw.beams) { b.mesh.visible = k > 0.01; b.mat.uniforms.uOp.value = 0.3 * k; } };
 const blink = (w: World, t: number, i: number) => { if (w.dad.led) (w.dad.led.material as THREE.MeshStandardMaterial).emissiveIntensity = Math.sin(t * 9) > 0 ? i : 0.4; };
 const torchOn = (w: World, on: boolean) => { if (w.hero.torch) w.hero.torch.visible = on; w.heroBeam.mesh.visible = on; };
-const boom = (w: World, k: number) => { if (k <= 0) return; const t = w.city.towers[T5]; t.root.updateMatrixWorld(true); w.props.boomAt(Math.min(1.4, k), t.root.localToWorld(V(0, 40, 2))); };
+const boomPos = (w: World) => { const tw = w.city.towers[T5]; tw.root.updateMatrixWorld(true); return tw.root.localToWorld(V(0, 40, 2)); };
+const boom = (w: World, k: number, t = 0) => { if (k <= 0) return; w.props.boomAt(Math.min(1.4, k), boomPos(w), t); };
+const fwdOf = (a: Actor) => V(Math.sin(a.root.rotation.y), 0, Math.cos(a.root.rotation.y));
+/** « sauf le monstre » : gardes, voitures, fenêtres et habitants l'inondent de lumière, projecteur blanc sur lui */
+const floodMonster = (w: World, t: number) => { winBeams(w, t, 2.6); for (const b of w.gBeams) if (b.mesh.visible) b.mat.uniforms.uOp.value = 0.55;
+  for (const c of w.props.cars) for (const b of c.beams) if (b.mesh.visible) b.mat.uniforms.uOp.value = 0.5;
+  w.key.intensity = 14; w.key.position.set(-30, 45, 40); w.key.target.position.set(0, 14, 0); w.key.angle = 0.32; (w.mon.plate as THREE.MeshPhysicalMaterial).emissiveIntensity = 0.12; };
 const winBeams = (w: World, t: number, k: number) => w.props.winBeams.forEach((b, i) => { b.mesh.visible = k > 0.01; b.set(t, (0.12 + (i % 5) * 0.02) * k); });
 const lightning = (w: World, u: number, at: number) => { const on = u > at && u < at + 0.12; w.props.bolt.visible = on; const f = on ? 1 - (u - at) / 0.12 : 0;
   (w.city.sky.material as THREE.ShaderMaterial).uniforms.flash.value = f * 0.9; w.city.hemi.intensity += f * 2.5; };
@@ -143,7 +155,7 @@ const hash01 = (i: number) => { const s = Math.sin(i * 91.7 + 3.1) * 43758.5; re
 const darkness = (w: World, k: number) => { const f = 1 - k; for (const b of [...w.gBeams, ...w.props.winBeams]) b.mat.uniforms.uOp.value *= f; for (const c of w.props.cars) { for (const b of c.beams) b.mat.uniforms.uOp.value *= f; c.head.emissiveIntensity *= f; }
   w.heroBeam.mat.uniforms.uOp.value *= f; for (const g of w.guards) if (g.torch) g.torch.visible = f > 0.3; w.key.intensity *= f; };
 const CIV0: [number, number][] = [[-3.2, 95], [2.8, 94.2], [-1.4, 91.5], [4.4, 96.5], [-4.8, 97.5], [1.2, 90.8]];
-const poseCiv = (w: World, t: number) => { w.civ.forEach((a, i) => { const ph = t - 9.1; a.root.position.set(CIV0[i][0], 0, CIV0[i][1] + ph * (0.9 + (i % 3) * 0.3)); a.pose(t, { walk: 2.2, yaw: (i - 2.5) * 0.12, headYaw: i % 2 ? 0.9 : -0.9, expr: "scared" }); }); w.pink.pose(t, { expr: "scared", headPitch: -0.04, yaw: 0.12 }); };
+const poseCiv = (w: World, t: number) => { w.civ.forEach((a, i) => { const ph = t - START[4] / FPS; a.root.position.set(CIV0[i][0], 0, CIV0[i][1] + ph * (0.9 + (i % 3) * 0.3)); a.pose(t, { walk: 2.2, yaw: (i - 2.5) * 0.12, headYaw: i % 2 ? 0.9 : -0.9, expr: "scared" }); }); w.pink.pose(t, { expr: "scared", headPitch: -0.04, yaw: 0.12 }); };
 
 // ---------------- construction ----------------
 export const buildCast = (root: THREE.Object3D, mon: Monster) => {
@@ -157,7 +169,8 @@ export const buildCast = (root: THREE.Object3D, mon: Monster) => {
   const tech = new Actor({ ...CAST.guard, name: "tech", top: "#f07a1a", topDark: "#c45a10", sleeve: "#f07a1a" }, 0.36, 31); root.add(tech.root);
   const lev = new Actor({ ...CAST.guard2, name: "lev" }, 0.36, 32); root.add(lev.root);
   const slip = new Actor({ ...CAST.guard, name: "slip" }, 0.36, 33); root.add(slip.root);
-  const held = new Actor({ ...CAST.guard2, name: "held" }, 0.36, 34); mon.rHand.add(held.root); held.root.scale.setScalar(1 / 3); held.root.position.set(0, -0.75, 0.25); held.root.rotation.set(Math.PI, 0, 0);
+  const held = new Actor({ ...CAST.guard2, name: "held" }, 0.36, 34); mon.rHand.add(held.root); held.root.scale.setScalar(1 / 3);
+  held.root.position.set(-0.12, -0.6, -0.47); held.root.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(V(0, 0, -1), V(1, 0, 0), V(0, -1, 0)));
   const heroBeam = new Beam(1.2, 0.1, 0.3, "#fff4dc"); root.add(heroBeam.mesh);
   return { guards, gBeams, civ, pink, hero, dad, tech, lev, slip, held, heroBeam };
 };
@@ -168,7 +181,7 @@ export const applyShot = (w: World, i: number, u: number, t: number) => {
   p.reset(); vis([...w.civ, w.pink, w.hero, w.dad, w.tech, w.lev, w.slip], false); w.held.root.visible = false;
   for (let k = 0; k < c.winMats.length; k++) c.winMats[k].emissiveIntensity = w.winBase[k];
   c.bulb.emissiveIntensity = 8; for (const h of c.lampHalos) (h.material as THREE.MeshBasicMaterial).opacity = 0.38;
-  sky.uniforms.flash.value = 0; w.fill.intensity = 0; w.key.intensity = 0; c.moon.intensity = 0.35;
+  sky.uniforms.flash.value = 0; w.fill.intensity = 0; w.fill.color.set("#ffb46a"); w.key.intensity = 0; c.moon.intensity = 0.35;
   for (const tw of c.towers) towerLevel(tw, 1);
   const flash = s.env === "flash"; c.installs(!flash); vis(w.guards, !flash); for (const b of w.gBeams) { b.mesh.visible = !flash; b.mat.uniforms.uOp.value = 0.22; }
   for (const g of w.guards) if (g.torch) g.torch.visible = true;
@@ -195,7 +208,7 @@ export const applyShot = (w: World, i: number, u: number, t: number) => {
   else torchOn(w, false);
   if (i >= P_BOOM + 1) towerLevel(c.towers[T5], 0); else if (i === P_BOOM) towerLevel(c.towers[T5], u < 0.13 ? 1 : 0);
   if (i >= P_POLICE + 1) p.carsAt(t, 2, true, i > P_CARDEAD || (i === P_CARDEAD && u > 0.55 && Math.sin(u * 60) < 0.5) ? 0 : -1);
-  if (i >= S(31)) { p.facade.visible = true; for (const r of p.residents) r.pose(t, { point: 0.8, yaw: Math.atan2(-r.root.position.x - p.facade.position.x, -p.facade.position.z), expr: "scared" }); }
+  if (i >= S(31)) { p.facade.visible = true; for (const r of p.residents) r.pose(t, { point: 0.8, yaw: Math.atan2(-r.root.position.x - p.facade.position.x, -p.facade.position.z), expr: "scared" }); if (i < P_DARK) p.resBeamsAt(t, V(0, 14, 0), i > P_CLIC ? 0.5 : 0.34); }
   if (i >= S(32)) winBeams(w, t, 1);
   if (i > P_CLIC) { blackout(w, 1); for (const tw of c.towers) towerLevel(tw, 0); }
   if (i >= P_RAIN) { p.puddles.visible = true; c.slab.roughness = 0.35; } else c.slab.roughness = 0.85;
@@ -203,7 +216,7 @@ export const applyShot = (w: World, i: number, u: number, t: number) => {
   // monstre : centre de la place, puis devant les héros
   const moved = i >= P_MOVED;
   w.mon.root.position.copy(moved ? M1 : V(0, 0, 0)); w.mon.root.rotation.y = moved ? Math.atan2(HERO.x - M1.x, HERO.z - M1.z) : 0;
-  w.mon.pose(t, moved ? { lean: 0.3, headPitch: 0.25, reach: 1 } : {}); w.held.root.visible = moved; if (moved) w.held.pose(t, { expr: "scared", wave: "both", headPitch: 0.3 });
+  w.mon.pose(t, moved ? { lean: 0.3, headPitch: 0.25, reach: 1 } : {}); (w.mon.plate as THREE.MeshPhysicalMaterial).emissiveIntensity = 0; if (moved) w.mon.grip(HERO.clone().sub(M1)); w.held.root.visible = moved; if (moved) w.held.pose(t, { expr: "scared", wave: "both", headPitch: 0.3 });
   const tgt = moved ? add(M1, 0, 18, 2) : V(0, 19, 0);
   for (const tw of c.towers) aimTower(tw, moved ? tgt : V(0, 19, 0));
   // gardes : lampes braquées sur le monstre

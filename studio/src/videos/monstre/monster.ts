@@ -105,6 +105,19 @@ export class Monster {
     if (r > 0) { this.rArm.rotation.set(-0.12 - 1.25 * r, -0.2 * r, 0.2 + 0.1 * r); this.rFore.rotation.set(-0.22 - 0.75 * r, 0, -0.06); this.rHand.rotation.set(-0.05 - 0.3 * r, -0.25, -0.05);
       this.fingers[1].forEach((f, k) => { if (k < 4) f.rotation.x = 0.12 + 0.8 * r + j(9 + k); else f.rotation.z = -0.7 - 0.5 * r; }); }
   }
+  /** main droite fermée sur un personnage : paume orientée pour que le poing tienne un humain debout (axe x de la main = verticale),
+   *  doigts refermés autour de sa taille, pouce dans son dos ; `fwd` = direction horizontale vers laquelle la main est tendue */
+  grip(fwd: THREE.Vector3, k = 1) {
+    this.root.updateMatrixWorld(true);
+    const X = new THREE.Vector3(0, 1, 0), Y = fwd.clone().setY(0).normalize().negate(), Z = new THREE.Vector3().crossVectors(X, Y);
+    const want = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(X, Y, Z));
+    const par = this.rHand.parent!.getWorldQuaternion(new THREE.Quaternion());
+    this.rHand.quaternion.copy(par.invert().multiply(want));
+    this.fingers[1].forEach((f, n) => { const f2 = f.children.find((c) => c instanceof THREE.Group) as THREE.Group | undefined;
+      if (n < 4) { f.rotation.set(1.45 * k, 0, (n - 1.5) * 0.05); if (f2) f2.rotation.x = 1.75 * k; }
+      else { f.rotation.set(-1.2 * k, 0, 0.35); if (f2) f2.rotation.x = -1.0 * k; } });
+    this.rHand.updateMatrixWorld(true);
+  }
   /** point de la tête dans le monde (pour les cadrages) */
   headWorld(off = new THREE.Vector3(0, 1.0, 0.7)) { this.root.updateMatrixWorld(true); return this.head.localToWorld(off.clone()); }
 }
