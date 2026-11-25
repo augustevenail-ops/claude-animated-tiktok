@@ -366,7 +366,7 @@ const roomShell = (root: THREE.Group, wall: string, floor: string, ceil = "#efe8
   // la coque ne projette pas d'ombre : les lumières placées à l'extérieur de la pièce restent actives
   const add = (g: THREE.BufferGeometry, m: THREE.Material, x: number, y: number, z: number) => { const o = M(g, m, x, y, z); o.castShadow = false; root.add(o); };
   add(new THREE.BoxGeometry(9, 0.1, 13), std(floor, 0.7), 0, -0.05, 1.5);
-  add(new THREE.BoxGeometry(9, 0.1, 13), std(ceil, 0.95, 0, ceil, 0.45), 0, 3.25, 1.5); // plafond légèrement lumineux (éclairé par la pièce)
+  add(new THREE.BoxGeometry(9, 0.1, 13), std(wall, 0.95, 0, wall, 0.2), 0, 3.25, 1.5); // plafond de la couleur des murs, à peine éclairé pour ne pas virer au noir
   add(new THREE.BoxGeometry(0.2, 3.3, 13), std(wall, 0.95), -4.5, 1.6, 1.5);
   add(new THREE.BoxGeometry(0.2, 3.3, 13), std(wall, 0.95), 4.5, 1.6, 1.5);
   add(new THREE.BoxGeometry(9, 3.3, 0.2), std(wall, 0.95), 0, 1.6, 8.0);
