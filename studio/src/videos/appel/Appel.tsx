@@ -167,9 +167,10 @@ const sun = (root: THREE.Group, c: string, i: number, x: number, y: number, z: n
 
 // 1. fin d'après-midi, intérieur chaud, fenêtre sur le ciel du soir
 const buildFamily = (): Built => {
-  const root = new THREE.Group(); const bg = "#2a2030";
-  root.add(new THREE.HemisphereLight("#ffd6b0", "#3a2a24", 1.4));
-  sun(root, "#ffc890", 2.4, -5, 3.5, 2.5);
+  const root = new THREE.Group(); const bg = "#4a3f50";
+  root.add(new THREE.HemisphereLight("#ffd6b0", "#4a3a34", 3.2));
+  sun(root, "#ffd4a0", 3.4, -5, 3.5, 2.5);
+  const fillF = new THREE.PointLight("#ffe2b8", 30, 24, 1.1); fillF.position.set(0, 2.4, 3.5); root.add(fillF);
   // pièce
   root.add(M(new THREE.BoxGeometry(12, 0.1, 12), std("#5a4030", 0.7), 0, -0.05, -2));
   root.add(M(new THREE.BoxGeometry(12, 6, 0.2), std("#7a5a50", 0.95, 0, "#000", 0, { map: stripeTex("#7a5a50", "#00000022") }), 0, 3, -5));
@@ -188,8 +189,8 @@ const buildFamily = (): Built => {
   root.add(telephone(0, 0.95, -0.4, 0.05, 1.6));
   // famille
   root.add(person(CAST.hero, -0.7, -1.7, "scared", 51, { top: "#f2b51c", topDark: "#c98f10" }).root);
-  root.add(person(CAST.pink, 0.65, -1.7, "worried", 52, { top: "#6b5a86", topDark: "#4a3d60", sleeve: "#6b5a86" }).root);
-  root.add(person(CAST.c2, 0, -2.5, "sad", 53, { hair: "bun", hairCol: "#d8d8d8", top: "#4a4f5e", topDark: "#333845", sleeve: "#4a4f5e" }).root);
+  root.add(person(CAST.pink, 0.65, -1.7, "worried", 52, { skin: "#f1c7a0", top: "#6b5a86", topDark: "#4a3d60", sleeve: "#6b5a86" }).root);
+  root.add(person(CAST.c2, 0, -2.5, "sad", 53, { skin: "#f1c7a0", hair: "bun", hairCol: "#d8d8d8", top: "#4a4f5e", topDark: "#333845", sleeve: "#4a4f5e" }).root);
   // détails de salon : plante, étagère avec livres, pouf
   root.add(C(0.2, 0.15, 0.4, "#8a4a2a", -3.2, 0.2, -3.8));
   for (let i = 0; i < 4; i++) root.add(M(new THREE.SphereGeometry(0.28 + hash(i, 11) * 0.1, 10, 8), std("#2f6a3a", 0.9, 0, "#000", 0, { flatShading: true }), -3.2 + (hash(i, 12) - 0.5) * 0.4, 0.8 + hash(i, 13) * 0.5, -3.8 + (hash(i, 14) - 0.5) * 0.4));
