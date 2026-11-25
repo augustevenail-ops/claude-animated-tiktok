@@ -48,9 +48,13 @@ const B = (w: number, h: number, d: number, c: string, x: number, y: number, z: 
 const C = (rt: number, rb: number, h: number, c: string, x: number, y: number, z: number, rx = 0, ry = 0, rz = 0, rough = 0.6, metal = 0) =>
   M(new THREE.CylinderGeometry(rt, rb, h, 20), std(c, rough, metal), x, y, z, rx, ry, rz);
 const glow = (c: string, i: number) => std("#000000", 1, 0, c, i, { toneMapped: false });
+// registres des acteurs et du téléphone de la scène en cours (pour l'animation de la vidéo)
+export let REG: { a: Actor; expr: Expr; name: string }[] = [];
+export let REGPHONE: THREE.Object3D | null = null;
+export const resetReg = () => { REG = []; REGPHONE = null; };
 const person = (spec: Spec, x: number, z: number, expr: Expr, seed: number, over: Partial<Spec> = {}, yaw = 0) => {
   const a = new Actor({ ...spec, ...over }, 0.36, seed);
-  a.root.position.set(x, 0, z); a.pose(0, { yaw, expr }); return a;
+  a.root.position.set(x, 0, z); a.pose(0, { yaw, expr }); REG.push({ a, expr, name: spec.name }); return a;
 };
 const tex = (c: HTMLCanvasElement, rep?: [number, number]) => {
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
@@ -154,11 +158,12 @@ const telephone = (x: number, y: number, z: number, ry = 0, scale = 1.6) => {
   for (const sx of [-1, 1]) hs.add(C(0.05, 0.058, 0.04, R, sx * 0.165, 0.012, 0, 0, 0, 0, 0.3));
   const cord = [V(-0.165, 0.2, 0), V(-0.19, 0.19, 0.02), V(-0.2, 0.17, 0.06), V(-0.205, 0.15, 0.1), V(-0.2, 0.12, 0.14), V(-0.18, 0.09, 0.17), V(-0.16, 0.07, 0.15), V(-0.15, 0.06, 0.13)];
   g.add(M(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(cord), 80, 0.008, 6), std(K, 0.7)));
+  REGPHONE = g;
   return g;
 };
 
 // ---------- scènes ----------
-type Built = { root: THREE.Group; bg: string; fog: THREE.Scene["fog"]; cam: { P: THREE.Vector3; T: THREE.Vector3; fov: number } };
+export type Built = { root: THREE.Group; bg: string; fog: THREE.Scene["fog"]; cam: { P: THREE.Vector3; T: THREE.Vector3; fov: number } };
 const sun = (root: THREE.Group, c: string, i: number, x: number, y: number, z: number) => {
   const d = new THREE.DirectionalLight(c, i); d.position.set(x, y, z); d.target.position.set(0, 0.8, -1);
   d.castShadow = true; d.shadow.mapSize.set(4096, 4096); d.shadow.bias = -0.0005; Object.assign(d.shadow.camera, { left: -14, right: 14, top: 14, bottom: -14, far: 60 });
@@ -342,7 +347,8 @@ const buildHouseFire = (): Built => {
 };
 
 // 4. chambre de Lucas, nuit, contre-plongée basse depuis le sol
-const buildBedroom = (): Built => {
+const buildBedroom = (calm = false): Built => {
+  const k = calm ? 0 : 1; // calm : chambre au calme, sans feu
   const root = new THREE.Group(); const bg = "#07080f";
   root.add(new THREE.HemisphereLight("#5a64a8", "#2a2030", 1.1));
   const moon = new THREE.SpotLight("#8fa0ff", 26, 0, 0.5, 0.8, 1.5); moon.position.set(-3, 5, 4); moon.target.position.set(-0.5, 1, -1); moon.castShadow = true; moon.shadow.mapSize.set(2048, 2048);
@@ -352,14 +358,15 @@ const buildBedroom = (): Built => {
   root.add(M(new THREE.BoxGeometry(0.15, 3.2, 6), std("#303a58", 0.95), -2.6, 1.6, -1.5));
   // porte fermée, lueur du feu dessous et fumée au niveau du plafond
   root.add(B(0.95, 2.1, 0.1, "#5a3a24", 0.9, 1.05, -2.3, 0.02, 0.6));
-  root.add(M(new THREE.PlaneGeometry(0.95, 0.06), glow("#ff7a2a", 6), 0.9, 0.04, -2.28));
-  root.add(M(new THREE.PlaneGeometry(0.9, 0.04), glow("#ffb46a", 2.5), 0.9, 2.12, -2.28));
-  fire(root, 0.9, 0.9, -2.9, 1.8, 1.4, 16, 31);
-  const fireL = new THREE.PointLight("#ff7a2a", 12, 8, 1.6); fireL.position.set(0.9, 0.6, -2.0); root.add(fireL);
-  // fenêtre : lueur orange de l'incendie
-  root.add(M(new THREE.PlaneGeometry(1.1, 1.3), std("#120806", 0.5, 0, "#ff6a1a", 2.6), -2.5, 1.7, -0.9, 0, Math.PI / 2, 0));
+  root.add(M(new THREE.PlaneGeometry(0.95, 0.06), glow("#ff7a2a", 6 * k), 0.9, 0.04, -2.28));
+  root.add(M(new THREE.PlaneGeometry(0.9, 0.04), glow("#ffb46a", 2.5 * k), 0.9, 2.12, -2.28));
+  if (!calm) fire(root, 0.9, 0.9, -2.9, 1.8, 1.4, 16, 31);
+  const fireL = new THREE.PointLight("#ff7a2a", 12 * k, 8, 1.6); fireL.position.set(0.9, 0.6, -2.0); root.add(fireL);
+  // fenêtre : lueur orange de l'incendie (éteinte en calme)
+  root.add(M(new THREE.PlaneGeometry(1.1, 1.3), std(calm ? "#1a1a24" : "#120806", 0.5, 0, "#ff6a1a", 2.6 * k), -2.5, 1.7, -0.9, 0, Math.PI / 2, 0));
   root.add(B(0.06, 1.3, 0.08, "#2a211e", -2.46, 1.7, -0.9, 0.01));
-  const winL = new THREE.PointLight("#ff6a1a", 10, 7, 1.5); winL.position.set(-2.0, 1.6, -0.9); root.add(winL);
+  const winL = new THREE.PointLight("#ff6a1a", 10 * k, 7, 1.5); winL.position.set(-2.0, 1.6, -0.9); root.add(winL);
+  if (calm) { const moonC = new THREE.PointLight("#8fa0ff", 6, 9, 1.4); moonC.position.set(-2.0, 2.4, 0.4); root.add(moonC); }
   // table de nuit avec lampe éteinte, pile de livres, tapis
   root.add(B(0.5, 0.6, 0.5, "#4a3428", -1.9, 0.3, -0.9, 0.03, 0.6));
   root.add(C(0.08, 0.12, 0.25, "#d8c8a0", -1.9, 0.72, -0.9, 0, 0, 0, 0.9), C(0.02, 0.02, 0.2, "#2a211e", -1.9, 0.6, -0.9));
@@ -405,6 +412,11 @@ const buildDoor = (): Built => {
 };
 
 const BUILD: Record<number, () => Built> = { 1: buildFamilyHouse, 2: buildCemetery, 3: buildHouseFire, 4: buildBedroom, 5: buildDoor };
+// décors de la vidéo (clés de plan)
+export const SCENES: Record<string, () => Built> = {
+  family: buildFamilyHouse, cem: buildCemetery, fire: buildHouseFire, bed: () => buildBedroom(false), bedCalm: () => buildBedroom(true), door: buildDoor,
+};
+export { WORDS, FLASH };
 
 const Inner: React.FC<{ scene: number }> = ({ scene }) => {
   const f = useCurrentFrame();
