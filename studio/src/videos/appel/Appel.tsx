@@ -88,11 +88,12 @@ const interior = (root: THREE.Group, zBack: number, wallCol: string, floorCol: s
 const buildFamily = (): Built => {
   const root = new THREE.Group(); const bg = "#0b0e20";
   interior(root, -5, "#2b2f4a", "#2a2630");
-  root.add(new THREE.HemisphereLight("#5868b8", "#1a1622", 0.9));
-  const moon = new THREE.SpotLight("#9fb2ff", 45, 0, 0.5, 0.6, 1.5); moon.position.set(-4, 9, 5); moon.target.position.set(0, 0.5, -1.5); moon.castShadow = true; moon.shadow.mapSize.set(2048, 2048);
-  const violet = new THREE.PointLight("#8a7cff", 9, 14, 1.4); violet.position.set(2.5, 2.4, 3.2);
-  const lamp = new THREE.PointLight("#ffb46a", 4, 9, 1.6); lamp.position.set(1.6, 2.4, -1.2);
-  root.add(moon, moon.target, violet, lamp);
+  root.add(new THREE.HemisphereLight("#7080d0", "#2a2432", 2.2));
+  const moon = new THREE.SpotLight("#9fb2ff", 110, 0, 0.5, 0.6, 1.5); moon.position.set(-4, 9, 5); moon.target.position.set(0, 0.5, -1.5); moon.castShadow = true; moon.shadow.mapSize.set(2048, 2048);
+  const violet = new THREE.PointLight("#8a7cff", 18, 14, 1.4); violet.position.set(2.5, 2.4, 3.2);
+  const lamp = new THREE.PointLight("#ffb46a", 9, 9, 1.6); lamp.position.set(1.6, 2.4, -1.2);
+  const fillF = new THREE.PointLight("#ffd9a8", 14, 16, 1.2); fillF.position.set(0, 2.2, 3.5);
+  root.add(moon, moon.target, violet, lamp, fillF);
   // table de chevet en bois + téléphone
   root.add(B(1.7, 0.1, 0.9, "#4a3428", 0, 0.9, -0.4, 0.03, 0.6));
   for (const [x, z] of [[-0.75, -0.8], [0.75, -0.8], [-0.75, 0], [0.75, 0]] as const) root.add(B(0.08, 0.86, 0.08, "#2a211e", x, 0.43, z, 0.02));
@@ -105,13 +106,13 @@ const buildFamily = (): Built => {
   root.add(person(CAST.hero, -0.7, -1.7, "scared", 51, { top: "#f2b51c", topDark: "#c98f10" }, 0, ).root);
   root.add(person(CAST.pink, 0.65, -1.7, "worried", 52, { top: "#6b5a86", topDark: "#4a3d60", sleeve: "#6b5a86" }).root);
   root.add(person(CAST.c2, 0, -2.5, "sad", 53, { hair: "bun", hairCol: "#d8d8d8", top: "#4a4f5e", topDark: "#333845", sleeve: "#4a4f5e" }).root);
-  return { root, bg, fog: null, cam: { P: V(0, 1.7, 3.6), T: V(0, 1.15, -1.1), fov: 48 } };
+  return { root, bg, fog: null, cam: { P: V(0, 1.9, 5.2), T: V(0, 1.15, -1.1), fov: 48 } };
 };
 
 const buildCemetery = (): Built => {
   const root = new THREE.Group(); const bg = "#070a16";
-  root.add(new THREE.HemisphereLight("#6878c8", "#2a3a2c", 1.8));
-  const moon = new THREE.SpotLight("#a8b8ff", 160, 0, 0.45, 0.7, 1.5); moon.position.set(-6, 14, 6); moon.target.position.set(0, 0.5, -2); moon.castShadow = true; moon.shadow.mapSize.set(2048, 2048);
+  root.add(new THREE.HemisphereLight("#6878c8", "#2a3a2c", 3.0));
+  const moon = new THREE.SpotLight("#a8b8ff", 320, 0, 0.45, 0.7, 1.5); moon.position.set(-6, 14, 6); moon.target.position.set(0, 0.5, -2); moon.castShadow = true; moon.shadow.mapSize.set(2048, 2048);
   root.add(moon, moon.target);
   for (const [x, z] of [[-3.2, -1.2], [3.4, -2.6]] as const) {
     const pole = C(0.03, 0.04, 2.4, "#101418", x, 1.2, z); root.add(pole);
@@ -140,7 +141,6 @@ const buildCemetery = (): Built => {
   // tombe fraîche : monticule de terre, couronne de fleurs, petite croix de bois
   root.add(B(1.0, 0.2, 1.8, "#2e2620", 0, 0.1, -2.1, 0.08, 1));
   root.add(M(new THREE.TorusGeometry(0.3, 0.035, 8, 28), std("#2f5a3a", 0.8), 0, 0.28, -2.1, Math.PI / 2));
-  for (let i = 0; i < 9; i++) { const a = (i / 9) * Math.PI * 2; root.add(M(new THREE.SphereGeometry(0.05, 8, 6), std("#f4f1ea", 0.6), Math.cos(a) * 0.3, 0.3, -2.1 + Math.sin(a) * 0.3)); }
   root.add(B(0.05, 0.5, 0.05, "#5a4330", 0, 0.45, -2.5, 0.01)); root.add(B(0.3, 0.05, 0.05, "#5a4330", 0, 0.6, -2.5, 0.01));
   // famille en deuil devant la tombe
   const mourn = "#1a1a24";
@@ -153,9 +153,10 @@ const buildCemetery = (): Built => {
 
 const buildHouseFire = (): Built => {
   const root = new THREE.Group(); const bg = "#070a16";
-  root.add(new THREE.HemisphereLight("#5868b8", "#1a1622", 0.55));
-  const moon = new THREE.SpotLight("#9fb2ff", 40, 0, 0.5, 0.7, 1.5); moon.position.set(-6, 12, 8); moon.target.position.set(0, 2, -1); moon.castShadow = true; moon.shadow.mapSize.set(2048, 2048);
+  root.add(new THREE.HemisphereLight("#7080d0", "#2a2030", 1.4));
+  const moon = new THREE.SpotLight("#9fb2ff", 90, 0, 0.5, 0.7, 1.5); moon.position.set(-6, 12, 8); moon.target.position.set(0, 2, -1); moon.castShadow = true; moon.shadow.mapSize.set(2048, 2048);
   root.add(moon, moon.target);
+  const fillH = new THREE.PointLight("#ffd0a0", 16, 22, 1.2); fillH.position.set(0, 4, 8); root.add(fillH);
   // rue et trottoir
   root.add(M(new THREE.PlaneGeometry(40, 40), std("#23262e", 0.95), 0, 0, 0, -Math.PI / 2));
   root.add(B(14, 0.14, 2.4, "#6a6e78", 0, 0.07, 2.4, 0.02, 0.9));
@@ -211,8 +212,8 @@ const buildHouseFire = (): Built => {
 
 const buildBedroom = (): Built => {
   const root = new THREE.Group(); const bg = "#07080f";
-  root.add(new THREE.HemisphereLight("#4a5490", "#1a1622", 0.4));
-  const moon = new THREE.SpotLight("#8fa0ff", 10, 0, 0.5, 0.8, 1.5); moon.position.set(-3, 5, 4); moon.target.position.set(-0.5, 1, -1); moon.castShadow = true; moon.shadow.mapSize.set(2048, 2048);
+  root.add(new THREE.HemisphereLight("#5a64a8", "#2a2030", 1.1));
+  const moon = new THREE.SpotLight("#8fa0ff", 26, 0, 0.5, 0.8, 1.5); moon.position.set(-3, 5, 4); moon.target.position.set(-0.5, 1, -1); moon.castShadow = true; moon.shadow.mapSize.set(2048, 2048);
   root.add(moon, moon.target);
   // chambre : sol, mur du fond avec porte, mur gauche avec fenêtre
   root.add(M(new THREE.BoxGeometry(6, 0.1, 6), std("#3a2e28", 0.85), 0, -0.05, -1.5));
@@ -233,15 +234,14 @@ const buildBedroom = (): Built => {
   root.add(B(1.25, 0.12, 0.9, "#4b5f92", -1.0, 0.45, -1.4, 0.05, 0.95));
   root.add(B(0.6, 0.14, 0.3, "#e8e4da", -1.0, 0.56, -2.0, 0.05, 0.9));
   // petit placard et une chaise
-  root.add(B(0.6, 1.0, 0.5, "#5a4330", 1.9, 0.5, -2.0, 0.02));
   // Lucas, debout, face à la porte
   root.add(person(CAST.hero, 0.2, -0.6, "scared", 81, { top: "#f2b51c", topDark: "#c98f10", hair: "messy" }).root);
-  return { root, bg, fog: new THREE.FogExp2("#07080f", 0.04), cam: { P: V(0.15, 1.6, 4.2), T: V(0.0, 1.2, -1.4), fov: 50 } };
+  return { root, bg, fog: new THREE.FogExp2("#07080f", 0.04), cam: { P: V(0.15, 1.7, 5.6), T: V(0.0, 1.2, -1.4), fov: 50 } };
 };
 
 const buildDoor = (): Built => {
   const root = new THREE.Group(); const bg = "#0a0d1c";
-  root.add(new THREE.HemisphereLight("#6f86c8", "#1a1622", 0.5));
+  root.add(new THREE.HemisphereLight("#7a90d8", "#2a2030", 1.2));
   // couloir intérieur chaud, porte d'entrée ouverte sur la nuit bleue
   root.add(M(new THREE.BoxGeometry(6, 0.1, 6), std("#3a2e28", 0.85), 0, -0.05, -1.5));
   root.add(M(new THREE.BoxGeometry(6, 3.2, 0.15), std("#2b2f44", 0.95), 0, 1.6, -2.4));
@@ -249,7 +249,7 @@ const buildDoor = (): Built => {
   // porte ouverte : ouverture bleu nuit au centre
   root.add(M(new THREE.PlaneGeometry(1.4, 2.4), std("#0a1230", 0.9, 0, "#4f6cc0", 1.2), 0.9, 1.2, -2.3));
   root.add(B(0.12, 2.5, 0.12, "#4a3a2c", 0.1, 1.25, -2.28, 0.02)); root.add(B(0.12, 2.5, 0.12, "#4a3a2c", 1.6, 1.25, -2.28, 0.02));
-  const moonDoor = new THREE.SpotLight("#8fa0ff", 22, 0, 0.5, 0.9, 1.5); moonDoor.position.set(3.0, 4.0, 2.5); moonDoor.target.position.set(0.5, 1.2, -1.5); moonDoor.castShadow = true; moonDoor.shadow.mapSize.set(2048, 2048);
+  const moonDoor = new THREE.SpotLight("#8fa0ff", 50, 0, 0.5, 0.9, 1.5); moonDoor.position.set(3.0, 4.0, 2.5); moonDoor.target.position.set(0.5, 1.2, -1.5); moonDoor.castShadow = true; moonDoor.shadow.mapSize.set(2048, 2048);
   root.add(moonDoor, moonDoor.target);
   // cadre photo : le père en uniforme
   const pc = document.createElement("canvas"); pc.width = 128; pc.height = 160; const g = pc.getContext("2d")!;
@@ -259,12 +259,12 @@ const buildDoor = (): Built => {
   root.add(B(0.56, 0.7, 0.04, "#5a4330", -1.2, 1.75, -2.28, 0.02));
   root.add(M(new THREE.PlaneGeometry(0.46, 0.58), std("#ffffff", 0.7, 0, "#000", 0, { map: pt }), -1.2, 1.75, -2.25));
   // lampe chaude du couloir
-  const lamp = new THREE.PointLight("#ffb46a", 6, 9, 1.6); lamp.position.set(-1.0, 2.6, -0.8); root.add(lamp);
+  const lamp = new THREE.PointLight("#ffb46a", 14, 9, 1.6); lamp.position.set(-1.0, 2.6, -0.8); root.add(lamp);
   // vieux pompier (dans l'encadrement) et Lucas adulte
   const oldFire = person(CAST.c3, 0.85, -1.1, "sad", 91, { top: "#2d3b5c", topDark: "#1e2a44", sleeve: "#2d3b5c", pants: "#2a2e38", hair: "cap", hairCol: "#d8d8d8", capCol: "#1f3460", beard: "#d8d8d8", mustache: "#d8d8d8", radio: true }, 0);
   root.add(oldFire.root);
   root.add(person(CAST.hero, -0.4, -0.6, "worried", 92, { kid: false, top: "#2c3140", topDark: "#1c1f2a", sleeve: "#2c3140", hair: "messy" }).root);
-  return { root, bg, fog: null, cam: { P: V(0.1, 1.6, 5.0), T: V(0.3, 1.25, -1.0), fov: 50 } };
+  return { root, bg, fog: null, cam: { P: V(0.1, 1.7, 6.4), T: V(0.3, 1.25, -1.0), fov: 50 } };
 };
 
 const BUILD: Record<number, () => Built> = { 1: buildFamily, 2: buildCemetery, 3: buildHouseFire, 4: buildBedroom, 5: buildDoor };
