@@ -376,7 +376,7 @@ const roomShell = (root: THREE.Group, wall: string, floor: string, ceil = "#efe8
 // le téléphone rouge et les vêtements vifs ressortent sur les teintes neutres, avec une flaque de lumière sur la table
 const buildFamilyHouse = (): Built => {
   const root = new THREE.Group(); const bg = "#5a6470";
-  roomShell(root, "#e6dccb", "#b8926e");
+  roomShell(root, "#e8c49a", "#b8926e");
   furnish(root, -4.5, 4.5, -5, 8, 1);
   root.add(new THREE.HemisphereLight("#ffd6b0", "#3a2a24", 1.4));
   sun(root, "#ffc890", 2.4, -5, 3.5, 2.5);
