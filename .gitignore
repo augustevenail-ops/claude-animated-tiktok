@@ -15,3 +15,7 @@ studio/snap_*/
 productions/monstre-ep01/render/*.log
 productions/monstre-ep01/stills/v_*.png
 productions/monstre-ep01/final/
+productions/monstre-ep01/voix/phrases/*.wav
+productions/monstre-ep01/voix/phrases2/*.wav
+productions/monstre-ep01/voix/phrases2/cut/
+productions/monstre-ep01/voix/__pycache__/

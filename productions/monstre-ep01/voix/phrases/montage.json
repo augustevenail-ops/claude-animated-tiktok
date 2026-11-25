@@ -1,0 +1,452 @@
+[
+ {
+  "i": 0,
+  "take": "00_0.wav",
+  "score": 0.996,
+  "pause": 0.14,
+  "start": 0.25,
+  "end": 4.53,
+  "tail_db": -100.8,
+  "text": "Dans cette ville, il existe un monstre qui ne peut se déplacer que dans l'obscurité."
+ },
+ {
+  "i": 1,
+  "take": "01_1.wav",
+  "score": 0.945,
+  "pause": 0.04,
+  "start": 5.03,
+  "end": 9.24,
+  "tail_db": -73.9,
+  "text": "Et si les lumières s'éteignent, ne serait-ce qu'une seconde, c'est la fin pour nous tous."
+ },
+ {
+  "i": 2,
+  "take": "02_1.wav",
+  "score": 0.978,
+  "pause": 0.05,
+  "start": 9.74,
+  "end": 13.03,
+  "tail_db": -94.4,
+  "text": "Il y a trois ans, cette chose est apparue en plein cœur de notre ville."
+ },
+ {
+  "i": 3,
+  "take": "03_1.wav",
+  "score": 0.941,
+  "pause": 0.03,
+  "start": 13.53,
+  "end": 15.9,
+  "tail_db": -95.3,
+  "text": "Cette nuit-là, sept personnes ont disparu."
+ },
+ {
+  "i": 4,
+  "take": "04_0.wav",
+  "score": 0.967,
+  "pause": 0.01,
+  "start": 16.4,
+  "end": 19.0,
+  "tail_db": -77.3,
+  "text": "Mais au lever du soleil, le monstre s'est figé."
+ },
+ {
+  "i": 5,
+  "take": "05_0.wav",
+  "score": 0.991,
+  "pause": 0.03,
+  "start": 19.5,
+  "end": 22.76,
+  "tail_db": -99.4,
+  "text": "C'est là que nous avons découvert son point faible : la lumière."
+ },
+ {
+  "i": 6,
+  "take": "06_1.wav",
+  "score": 0.945,
+  "pause": 0.09,
+  "start": 23.26,
+  "end": 27.12,
+  "tail_db": -101.3,
+  "text": "Le gouvernement a donc installé six projecteurs géants tout autour."
+ },
+ {
+  "i": 7,
+  "take": "07_0.wav",
+  "score": 0.962,
+  "pause": 0.03,
+  "start": 27.62,
+  "end": 30.48,
+  "tail_db": -96.7,
+  "text": "Chacun est équipé de son propre générateur de secours."
+ },
+ {
+  "i": 8,
+  "take": "08_0.wav",
+  "score": 0.893,
+  "pause": 0.02,
+  "start": 30.98,
+  "end": 35.21,
+  "tail_db": -69.2,
+  "text": "Et chaque nuit, douze gardes le surveillent, munis de puissantes lampes torches."
+ },
+ {
+  "i": 9,
+  "take": "09_1.wav",
+  "score": 0.95,
+  "pause": 0.03,
+  "start": 35.71,
+  "end": 38.62,
+  "tail_db": -83.8,
+  "text": "Depuis trois ans, le monstre n'a pas bougé d'un pouce."
+ },
+ {
+  "i": 10,
+  "take": "10_1.wav",
+  "score": 0.998,
+  "pause": 0.03,
+  "start": 39.22,
+  "end": 40.8,
+  "tail_db": -99.4,
+  "text": "Jusqu'à la nuit dernière."
+ },
+ {
+  "i": 11,
+  "take": "11_1.wav",
+  "score": 0.991,
+  "pause": 0.03,
+  "start": 41.6,
+  "end": 46.24,
+  "tail_db": -98.6,
+  "text": "Mon père est chef de la sécurité, et il a fini par m'autoriser à rejoindre son équipe de nuit."
+ },
+ {
+  "i": 12,
+  "take": "12_1.wav",
+  "score": 0.923,
+  "pause": 0.06,
+  "start": 46.74,
+  "end": 49.64,
+  "tail_db": -80.4,
+  "text": "Tout semblait normal, jusqu'à 2h13 du matin."
+ },
+ {
+  "i": 13,
+  "take": "13_1.wav",
+  "score": 0.931,
+  "pause": 0.0,
+  "start": 50.24,
+  "end": 50.8,
+  "tail_db": -67.7,
+  "text": "Boum !"
+ },
+ {
+  "i": 14,
+  "take": "14_1.wav",
+  "score": 0.988,
+  "pause": 0.32,
+  "start": 51.4,
+  "end": 54.62,
+  "tail_db": -92.2,
+  "text": "L'un des projecteurs a explosé, mais mon père est resté calme."
+ },
+ {
+  "i": 15,
+  "take": "15_1.wav",
+  "score": 0.954,
+  "pause": 0.08,
+  "start": 55.12,
+  "end": 57.35,
+  "tail_db": -93.1,
+  "text": "« Pas de panique, il nous en reste cinq. »"
+ },
+ {
+  "i": 16,
+  "take": "16_0.wav",
+  "score": 0.94,
+  "pause": 0.06,
+  "start": 57.95,
+  "end": 63.39,
+  "tail_db": -96.2,
+  "text": "Soudain, sa radio a grésillé : « Chef, le câble d'alimentation principal est endommagé."
+ },
+ {
+  "i": 17,
+  "take": "17_4.wav",
+  "score": 0.993,
+  "pause": 0.01,
+  "start": 63.74,
+  "end": 65.12,
+  "tail_db": -67.1,
+  "text": "On doit couper le système. »"
+ },
+ {
+  "i": 18,
+  "take": "18_1.wav",
+  "score": 0.96,
+  "pause": 0.0,
+  "start": 65.62,
+  "end": 67.21,
+  "tail_db": -97.0,
+  "text": "« Et les générateurs de secours ? »"
+ },
+ {
+  "i": 19,
+  "take": "19_1.wav",
+  "score": 0.77,
+  "pause": 0.05,
+  "start": 67.61,
+  "end": 69.02,
+  "tail_db": -97.8,
+  "text": "« Ils surchauffent, monsieur. »"
+ },
+ {
+  "i": 20,
+  "take": "20_1.wav",
+  "score": 0.974,
+  "pause": 0.01,
+  "start": 69.52,
+  "end": 73.54,
+  "tail_db": -65.6,
+  "text": "Mon père a aussitôt saisi sa radio : « À tous, en position d'urgence ! »"
+ },
+ {
+  "i": 21,
+  "take": "21_1.wav",
+  "score": 0.988,
+  "pause": 0.02,
+  "start": 74.04,
+  "end": 77.28,
+  "tail_db": -70.9,
+  "text": "En quelques minutes, des voitures de police ont encerclé la place."
+ },
+ {
+  "i": 22,
+  "take": "22_0.wav",
+  "score": 0.873,
+  "pause": 0.02,
+  "start": 77.78,
+  "end": 79.48,
+  "tail_db": -78.8,
+  "text": "Leurs phares étaient braqués sur le monstre."
+ },
+ {
+  "i": 23,
+  "take": "23_0.wav",
+  "score": 0.904,
+  "pause": 0.03,
+  "start": 79.98,
+  "end": 81.85,
+  "tail_db": -91.4,
+  "text": "Les gardes ont levé leurs lampes torches."
+ },
+ {
+  "i": 24,
+  "take": "24_1.wav",
+  "score": 0.971,
+  "pause": 0.02,
+  "start": 82.35,
+  "end": 86.54,
+  "tail_db": -74.5,
+  "text": "Même les habitants des immeubles voisins ont dirigé des lampes depuis leurs fenêtres."
+ },
+ {
+  "i": 25,
+  "take": "25_0.wav",
+  "score": 0.961,
+  "pause": 0.08,
+  "start": 87.04,
+  "end": 89.92,
+  "tail_db": -97.4,
+  "text": "Puis, « clic » : toute la ville a plongé dans le noir."
+ },
+ {
+  "i": 26,
+  "take": "26_1.wav",
+  "score": 0.989,
+  "pause": 0.0,
+  "start": 90.52,
+  "end": 91.48,
+  "tail_db": -78.0,
+  "text": "Sauf le monstre."
+ },
+ {
+  "i": 27,
+  "take": "27_0.wav",
+  "score": 0.918,
+  "pause": 0.18,
+  "start": 92.28,
+  "end": 96.49,
+  "tail_db": -101.3,
+  "text": "Des centaines de faisceaux lumineux continuaient de l'éclairer, l'empêchant de bouger."
+ },
+ {
+  "i": 28,
+  "take": "28_0.wav",
+  "score": 0.926,
+  "pause": 0.03,
+  "start": 96.99,
+  "end": 102.59,
+  "tail_db": -90.1,
+  "text": "Je croyais que nous étions en sécurité, mais un coup de tonnerre a retenti et une pluie torrentielle s'est abattue."
+ },
+ {
+  "i": 29,
+  "take": "29_1.wav",
+  "score": 0.964,
+  "pause": 0.04,
+  "start": 103.09,
+  "end": 105.91,
+  "tail_db": -83.6,
+  "text": "Un garde a glissé, laissant échapper sa lampe torche."
+ },
+ {
+  "i": 30,
+  "take": "30_1.wav",
+  "score": 0.917,
+  "pause": 0.03,
+  "start": 106.41,
+  "end": 109.25,
+  "tail_db": -93.5,
+  "text": "Puis, les phares d'une voiture de police se sont éteints."
+ },
+ {
+  "i": 31,
+  "take": "31_1.wav",
+  "score": 0.999,
+  "pause": 0.0,
+  "start": 109.75,
+  "end": 111.28,
+  "tail_db": -96.0,
+  "text": "« Gardez-le sous la lumière ! »"
+ },
+ {
+  "i": 32,
+  "take": "32_0.wav",
+  "score": 0.997,
+  "pause": 0.02,
+  "start": 111.5,
+  "end": 112.56,
+  "tail_db": -72.6,
+  "text": "a crié mon père."
+ },
+ {
+  "i": 33,
+  "take": "33_1.wav",
+  "score": 0.984,
+  "pause": 0.03,
+  "start": 113.06,
+  "end": 116.2,
+  "tail_db": -100.9,
+  "text": "J'ai voulu intervenir, mais j'ai trébuché sur un câble."
+ },
+ {
+  "i": 34,
+  "take": "34_0.wav",
+  "score": 0.978,
+  "pause": 0.07,
+  "start": 116.7,
+  "end": 122.56,
+  "tail_db": -82.8,
+  "text": "Ma lampe m'a échappé des mains et, pendant une seconde, le monstre s'est retrouvé plongé dans une obscurité totale."
+ },
+ {
+  "i": 35,
+  "take": "35_1.wav",
+  "score": 0.984,
+  "pause": 0.04,
+  "start": 123.26,
+  "end": 125.71,
+  "tail_db": -85.8,
+  "text": "Un cri terrifiant a retenti sur la place."
+ },
+ {
+  "i": 36,
+  "take": "36_0.wav",
+  "score": 0.978,
+  "pause": 0.03,
+  "start": 126.41,
+  "end": 130.59,
+  "tail_db": -94.3,
+  "text": "Tout le monde a immédiatement redirigé ses lumières vers lui, et le monstre s'est figé."
+ },
+ {
+  "i": 37,
+  "take": "37_0.wav",
+  "score": 0.962,
+  "pause": 0.03,
+  "start": 131.09,
+  "end": 133.21,
+  "tail_db": -77.7,
+  "text": "Mais il ne se trouvait plus au centre de la place."
+ },
+ {
+  "i": 38,
+  "take": "38_0.wav",
+  "score": 0.984,
+  "pause": 0.07,
+  "start": 133.81,
+  "end": 138.71,
+  "tail_db": -94.8,
+  "text": "Il se tenait juste devant nous, et dans son immense main se trouvait l’un des gardes, encore en vie."
+ },
+ {
+  "i": 39,
+  "take": "39_1.wav",
+  "score": 0.922,
+  "pause": 0.02,
+  "start": 139.41,
+  "end": 140.77,
+  "tail_db": -82.4,
+  "text": "« Papa, il faut le sauver ! »"
+ },
+ {
+  "i": 40,
+  "take": "40_0.wav",
+  "score": 0.947,
+  "pause": 0.07,
+  "start": 141.27,
+  "end": 142.92,
+  "tail_db": -99.2,
+  "text": "Mais papa m’a saisi le bras."
+ },
+ {
+  "i": 41,
+  "take": "41_0.wav",
+  "score": 0.929,
+  "pause": 0.07,
+  "start": 143.37,
+  "end": 144.3,
+  "tail_db": -80.4,
+  "text": "« Ne bouge pas ! »"
+ },
+ {
+  "i": 42,
+  "take": "42_1.wav",
+  "score": 0.975,
+  "pause": 0.02,
+  "start": 144.75,
+  "end": 145.4,
+  "tail_db": -63.1,
+  "text": "« Pourquoi ? »"
+ },
+ {
+  "i": 43,
+  "take": "43_1.wav",
+  "score": 0.95,
+  "pause": 0.0,
+  "start": 146.0,
+  "end": 147.76,
+  "tail_db": -98.0,
+  "text": "Il a désigné le monstre du doigt."
+ },
+ {
+  "i": 44,
+  "take": "44_1.wav",
+  "score": 0.975,
+  "pause": 0.21,
+  "start": 148.46,
+  "end": 151.4,
+  "tail_db": -94.9,
+  "text": "« Parce que si ces lumières s’éteignent à nouveau, il est mort. »"
+ }
+]

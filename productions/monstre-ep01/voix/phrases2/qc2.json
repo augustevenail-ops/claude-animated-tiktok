@@ -1,0 +1,839 @@
+{
+ "00_0.wav": {
+  "i": 0,
+  "gap": 1.6,
+  "cut_db": -93.4,
+  "dur": 4.51,
+  "meanscore": 0.996,
+  "minscore": 0.974,
+  "worst": "l'obscurité."
+ },
+ "00_1.wav": {
+  "i": 0,
+  "gap": 1.14,
+  "cut_db": -87.9,
+  "dur": 4.25,
+  "meanscore": 0.982,
+  "minscore": 0.884,
+  "worst": "il"
+ },
+ "01_0.wav": {
+  "i": 1,
+  "gap": 1.62,
+  "cut_db": -92.0,
+  "dur": 4.6,
+  "meanscore": 0.94,
+  "minscore": 0.709,
+  "worst": "serait-ce"
+ },
+ "01_1.wav": {
+  "i": 1,
+  "gap": 1.52,
+  "cut_db": -60.1,
+  "dur": 4.45,
+  "meanscore": 0.945,
+  "minscore": 0.743,
+  "worst": "serait-ce"
+ },
+ "02_0.wav": {
+  "i": 2,
+  "gap": 1.62,
+  "cut_db": -90.7,
+  "dur": 3.56,
+  "meanscore": 0.976,
+  "minscore": 0.856,
+  "worst": "cœur"
+ },
+ "02_1.wav": {
+  "i": 2,
+  "gap": 1.22,
+  "cut_db": -87.7,
+  "dur": 3.37,
+  "meanscore": 0.978,
+  "minscore": 0.861,
+  "worst": "cœur"
+ },
+ "03_0.wav": {
+  "i": 3,
+  "gap": 0.89,
+  "cut_db": -82.8,
+  "dur": 2.36,
+  "meanscore": 0.868,
+  "minscore": 0.518,
+  "worst": "sept"
+ },
+ "03_1.wav": {
+  "i": 3,
+  "gap": 1.6,
+  "cut_db": -89.6,
+  "dur": 2.51,
+  "meanscore": 0.941,
+  "minscore": 0.8,
+  "worst": "sept"
+ },
+ "04_0.wav": {
+  "i": 4,
+  "gap": 0.6,
+  "cut_db": -72.8,
+  "dur": 2.78,
+  "meanscore": 0.967,
+  "minscore": 0.897,
+  "worst": "lever"
+ },
+ "04_1.wav": {
+  "i": 4,
+  "gap": 1.98,
+  "cut_db": -76.5,
+  "dur": 2.69,
+  "meanscore": 0.962,
+  "minscore": 0.856,
+  "worst": "au"
+ },
+ "05_0.wav": {
+  "i": 5,
+  "gap": 0.9,
+  "cut_db": -94.4,
+  "dur": 3.46,
+  "meanscore": 0.991,
+  "minscore": 0.97,
+  "worst": "point"
+ },
+ "05_1.wav": {
+  "i": 5,
+  "gap": 0.62,
+  "cut_db": -85.5,
+  "dur": 3.51,
+  "meanscore": 0.985,
+  "minscore": 0.92,
+  "worst": "son"
+ },
+ "06_0.wav": {
+  "i": 6,
+  "gap": 0.58,
+  "cut_db": -94.5,
+  "dur": 3.52,
+  "meanscore": 0.941,
+  "minscore": 0.653,
+  "worst": "six"
+ },
+ "06_1.wav": {
+  "i": 6,
+  "gap": 1.31,
+  "cut_db": -95.9,
+  "dur": 4.11,
+  "meanscore": 0.945,
+  "minscore": 0.666,
+  "worst": "six"
+ },
+ "07_0.wav": {
+  "i": 7,
+  "gap": 1.81,
+  "cut_db": -92.3,
+  "dur": 3.18,
+  "meanscore": 0.962,
+  "minscore": 0.796,
+  "worst": "est"
+ },
+ "07_1.wav": {
+  "i": 7,
+  "gap": 1.45,
+  "cut_db": -82.5,
+  "dur": 3.01,
+  "meanscore": 0.949,
+  "minscore": 0.689,
+  "worst": "est"
+ },
+ "08_0.wav": {
+  "i": 8,
+  "gap": 0.42,
+  "cut_db": -96.3,
+  "dur": 4.26,
+  "meanscore": 0.893,
+  "minscore": 0.752,
+  "worst": "munis"
+ },
+ "08_1.wav": {
+  "i": 8,
+  "gap": 3.48,
+  "cut_db": -84.2,
+  "dur": 4.48,
+  "meanscore": 0.889,
+  "minscore": 0.712,
+  "worst": "lampes"
+ },
+ "09_0.wav": {
+  "i": 9,
+  "gap": 0.56,
+  "cut_db": -81.1,
+  "dur": 2.91,
+  "meanscore": 0.944,
+  "minscore": 0.642,
+  "worst": "pouce."
+ },
+ "09_1.wav": {
+  "i": 9,
+  "gap": 0.6,
+  "cut_db": -75.6,
+  "dur": 2.95,
+  "meanscore": 0.95,
+  "minscore": 0.707,
+  "worst": "pouce."
+ },
+ "10_0.wav": {
+  "i": 10,
+  "gap": 0.58,
+  "cut_db": -91.8,
+  "dur": 1.56,
+  "meanscore": 0.966,
+  "minscore": 0.934,
+  "worst": "nuit"
+ },
+ "10_1.wav": {
+  "i": 10,
+  "gap": 1.16,
+  "cut_db": -93.8,
+  "dur": 1.7,
+  "meanscore": 0.998,
+  "minscore": 0.994,
+  "worst": "Jusqu'à"
+ },
+ "11_0.wav": {
+  "i": 11,
+  "gap": 0.86,
+  "cut_db": -92.7,
+  "dur": 4.93,
+  "meanscore": 0.99,
+  "minscore": 0.921,
+  "worst": "m'autoriser"
+ },
+ "11_1.wav": {
+  "i": 11,
+  "gap": 1.84,
+  "cut_db": -92.0,
+  "dur": 4.72,
+  "meanscore": 0.991,
+  "minscore": 0.885,
+  "worst": "m'autoriser"
+ },
+ "12_0.wav": {
+  "i": 12,
+  "gap": 1.46,
+  "cut_db": -72.1,
+  "dur": 3.04,
+  "meanscore": 0.874,
+  "minscore": 0.588,
+  "worst": "treize"
+ },
+ "12_1.wav": {
+  "i": 12,
+  "gap": 1.6,
+  "cut_db": -69.4,
+  "dur": 3.18,
+  "meanscore": 0.923,
+  "minscore": 0.574,
+  "worst": "treize"
+ },
+ "13_0.wav": {
+  "i": 13,
+  "gap": 1.65,
+  "cut_db": -68.3,
+  "dur": 0.6,
+  "meanscore": 0.669,
+  "minscore": 0.669,
+  "worst": "Boum"
+ },
+ "13_1.wav": {
+  "i": 13,
+  "gap": 0.94,
+  "cut_db": -65.4,
+  "dur": 0.56,
+  "meanscore": 0.931,
+  "minscore": 0.931,
+  "worst": "Boum"
+ },
+ "14_0.wav": {
+  "i": 14,
+  "gap": 1.73,
+  "cut_db": -34.7,
+  "dur": 3.7,
+  "meanscore": 0.981,
+  "minscore": 0.921,
+  "worst": "est"
+ },
+ "14_1.wav": {
+  "i": 14,
+  "gap": 1.85,
+  "cut_db": -85.8,
+  "dur": 3.3,
+  "meanscore": 0.988,
+  "minscore": 0.955,
+  "worst": "L'un"
+ },
+ "15_0.wav": {
+  "i": 15,
+  "gap": 0.56,
+  "cut_db": -90.8,
+  "dur": 2.33,
+  "meanscore": 0.951,
+  "minscore": 0.729,
+  "worst": "cinq."
+ },
+ "15_1.wav": {
+  "i": 15,
+  "gap": 1.51,
+  "cut_db": -80.6,
+  "dur": 2.48,
+  "meanscore": 0.954,
+  "minscore": 0.768,
+  "worst": "cinq."
+ },
+ "16_0.wav": {
+  "i": 16,
+  "gap": 0.56,
+  "cut_db": -89.3,
+  "dur": 5.51,
+  "meanscore": 0.94,
+  "minscore": 0.638,
+  "worst": "grésillé"
+ },
+ "16_1.wav": {
+  "i": 16,
+  "gap": 0.44,
+  "cut_db": -79.0,
+  "dur": 5.35,
+  "meanscore": 0.93,
+  "minscore": 0.732,
+  "worst": "grésillé"
+ },
+ "17_0.wav": {
+  "i": 17,
+  "gap": 1.0,
+  "cut_db": -32.4,
+  "dur": 2.81,
+  "meanscore": 0.972,
+  "minscore": 0.936,
+  "worst": "système."
+ },
+ "17_1.wav": {
+  "i": 17,
+  "gap": 3.87,
+  "cut_db": -23.8,
+  "dur": 1.69,
+  "meanscore": 0.989,
+  "minscore": 0.961,
+  "worst": "doit"
+ },
+ "17_2.wav": {
+  "i": 17,
+  "gap": 0.98,
+  "cut_db": -68.6,
+  "dur": 1.67,
+  "meanscore": 0.988,
+  "minscore": 0.966,
+  "worst": "couper"
+ },
+ "17_3.wav": {
+  "i": 17,
+  "gap": 0.72,
+  "cut_db": -71.6,
+  "dur": 1.54,
+  "meanscore": 0.963,
+  "minscore": 0.879,
+  "worst": "On"
+ },
+ "17_4.wav": {
+  "i": 17,
+  "gap": 0.36,
+  "cut_db": -66.1,
+  "dur": 1.43,
+  "meanscore": 0.993,
+  "minscore": 0.977,
+  "worst": "couper"
+ },
+ "18_0.wav": {
+  "i": 18,
+  "gap": 0.32,
+  "cut_db": -58.6,
+  "dur": 2.39,
+  "meanscore": 0.972,
+  "minscore": 0.929,
+  "worst": "les"
+ },
+ "18_1.wav": {
+  "i": 18,
+  "gap": 1.61,
+  "cut_db": -92.1,
+  "dur": 1.91,
+  "meanscore": 0.96,
+  "minscore": 0.868,
+  "worst": "secours"
+ },
+ "19_0.wav": {
+  "i": 19,
+  "gap": 1.44,
+  "cut_db": -72.0,
+  "dur": 1.29,
+  "meanscore": 0.745,
+  "minscore": 0.592,
+  "worst": "Ils"
+ },
+ "19_1.wav": {
+  "i": 19,
+  "gap": 0.66,
+  "cut_db": -92.5,
+  "dur": 1.6,
+  "meanscore": 0.77,
+  "minscore": 0.679,
+  "worst": "Ils"
+ },
+ "20_0.wav": {
+  "i": 20,
+  "gap": 1.08,
+  "cut_db": -73.2,
+  "dur": 4.63,
+  "meanscore": 0.967,
+  "minscore": 0.852,
+  "worst": "père"
+ },
+ "20_1.wav": {
+  "i": 20,
+  "gap": 0.54,
+  "cut_db": -62.9,
+  "dur": 4.02,
+  "meanscore": 0.974,
+  "minscore": 0.87,
+  "worst": "aussitôt"
+ },
+ "21_0.wav": {
+  "i": 21,
+  "gap": 1.2,
+  "cut_db": -75.1,
+  "dur": 3.35,
+  "meanscore": 0.983,
+  "minscore": 0.912,
+  "worst": "ont"
+ },
+ "21_1.wav": {
+  "i": 21,
+  "gap": 1.99,
+  "cut_db": -68.6,
+  "dur": 3.48,
+  "meanscore": 0.988,
+  "minscore": 0.968,
+  "worst": "minutes,"
+ },
+ "22_0.wav": {
+  "i": 22,
+  "gap": 1.61,
+  "cut_db": -67.7,
+  "dur": 1.86,
+  "meanscore": 0.873,
+  "minscore": 0.384,
+  "worst": "phares"
+ },
+ "22_1.wav": {
+  "i": 22,
+  "gap": 0.52,
+  "cut_db": -69.9,
+  "dur": 1.98,
+  "meanscore": 0.851,
+  "minscore": 0.363,
+  "worst": "phares"
+ },
+ "23_0.wav": {
+  "i": 23,
+  "gap": 0.64,
+  "cut_db": -84.4,
+  "dur": 2.15,
+  "meanscore": 0.904,
+  "minscore": 0.788,
+  "worst": "lampes"
+ },
+ "23_1.wav": {
+  "i": 23,
+  "gap": 0.48,
+  "cut_db": -62.2,
+  "dur": 1.83,
+  "meanscore": 0.897,
+  "minscore": 0.771,
+  "worst": "lampes"
+ },
+ "24_0.wav": {
+  "i": 24,
+  "gap": 1.02,
+  "cut_db": -91.7,
+  "dur": 4.02,
+  "meanscore": 0.969,
+  "minscore": 0.899,
+  "worst": "fenêtres."
+ },
+ "24_1.wav": {
+  "i": 24,
+  "gap": 0.58,
+  "cut_db": -66.1,
+  "dur": 4.29,
+  "meanscore": 0.971,
+  "minscore": 0.908,
+  "worst": "fenêtres."
+ },
+ "25_0.wav": {
+  "i": 25,
+  "gap": 2.26,
+  "cut_db": -91.6,
+  "dur": 3.09,
+  "meanscore": 0.961,
+  "minscore": 0.74,
+  "worst": "clic"
+ },
+ "25_1.wav": {
+  "i": 25,
+  "gap": 3.03,
+  "cut_db": -94.2,
+  "dur": 3.1,
+  "meanscore": 0.94,
+  "minscore": 0.697,
+  "worst": "clic"
+ },
+ "26_0.wav": {
+  "i": 26,
+  "gap": 0.89,
+  "cut_db": -24.7,
+  "dur": 1.29,
+  "meanscore": 0.966,
+  "minscore": 0.914,
+  "worst": "le"
+ },
+ "26_1.wav": {
+  "i": 26,
+  "gap": 0.28,
+  "cut_db": -76.3,
+  "dur": 0.96,
+  "meanscore": 0.989,
+  "minscore": 0.97,
+  "worst": "Sauf"
+ },
+ "27_0.wav": {
+  "i": 27,
+  "gap": 0.88,
+  "cut_db": -95.2,
+  "dur": 4.51,
+  "meanscore": 0.918,
+  "minscore": 0.429,
+  "worst": "faisceaux"
+ },
+ "27_1.wav": {
+  "i": 27,
+  "gap": 0.58,
+  "cut_db": -72.3,
+  "dur": 4.2,
+  "meanscore": 0.915,
+  "minscore": 0.365,
+  "worst": "faisceaux"
+ },
+ "28_0.wav": {
+  "i": 28,
+  "gap": 1.38,
+  "cut_db": -88.0,
+  "dur": 5.67,
+  "meanscore": 0.926,
+  "minscore": 0.5,
+  "worst": "de"
+ },
+ "28_1.wav": {
+  "i": 28,
+  "gap": 0.56,
+  "cut_db": -74.9,
+  "dur": 5.44,
+  "meanscore": 0.926,
+  "minscore": 0.533,
+  "worst": "de"
+ },
+ "29_0.wav": {
+  "i": 29,
+  "gap": 1.1,
+  "cut_db": -24.8,
+  "dur": 3.21,
+  "meanscore": 0.974,
+  "minscore": 0.864,
+  "worst": "lampe"
+ },
+ "29_1.wav": {
+  "i": 29,
+  "gap": 1.52,
+  "cut_db": -78.2,
+  "dur": 2.92,
+  "meanscore": 0.964,
+  "minscore": 0.834,
+  "worst": "lampe"
+ },
+ "30_0.wav": {
+  "i": 30,
+  "gap": 2.05,
+  "cut_db": -90.1,
+  "dur": 3.13,
+  "meanscore": 0.911,
+  "minscore": 0.556,
+  "worst": "éteints."
+ },
+ "30_1.wav": {
+  "i": 30,
+  "gap": 1.42,
+  "cut_db": -88.7,
+  "dur": 3.0,
+  "meanscore": 0.917,
+  "minscore": 0.498,
+  "worst": "phares"
+ },
+ "31_0.wav": {
+  "i": 31,
+  "gap": 1.16,
+  "cut_db": -23.1,
+  "dur": 1.77,
+  "meanscore": 0.996,
+  "minscore": 0.992,
+  "worst": "lumière"
+ },
+ "31_1.wav": {
+  "i": 31,
+  "gap": 0.81,
+  "cut_db": -88.3,
+  "dur": 1.68,
+  "meanscore": 0.999,
+  "minscore": 0.999,
+  "worst": "sous"
+ },
+ "32_0.wav": {
+  "i": 32,
+  "gap": 1.71,
+  "cut_db": -67.6,
+  "dur": 1.19,
+  "meanscore": 0.997,
+  "minscore": 0.994,
+  "worst": "a"
+ },
+ "32_1.wav": {
+  "i": 32,
+  "gap": 1.29,
+  "cut_db": -93.7,
+  "dur": 1.29,
+  "meanscore": 0.978,
+  "minscore": 0.948,
+  "worst": "crié"
+ },
+ "33_0.wav": {
+  "i": 33,
+  "gap": 2.01,
+  "cut_db": -95.8,
+  "dur": 3.29,
+  "meanscore": 0.981,
+  "minscore": 0.914,
+  "worst": "j'ai"
+ },
+ "33_1.wav": {
+  "i": 33,
+  "gap": 2.18,
+  "cut_db": -94.7,
+  "dur": 3.32,
+  "meanscore": 0.984,
+  "minscore": 0.955,
+  "worst": "J'ai"
+ },
+ "34_0.wav": {
+  "i": 34,
+  "gap": 1.94,
+  "cut_db": -77.5,
+  "dur": 6.02,
+  "meanscore": 0.978,
+  "minscore": 0.85,
+  "worst": "lampe"
+ },
+ "34_1.wav": {
+  "i": 34,
+  "gap": 1.66,
+  "cut_db": -69.4,
+  "dur": 5.86,
+  "meanscore": 0.959,
+  "minscore": 0.71,
+  "worst": "m'a"
+ },
+ "35_0.wav": {
+  "i": 35,
+  "gap": 0.46,
+  "cut_db": -56.9,
+  "dur": 2.57,
+  "meanscore": 0.976,
+  "minscore": 0.947,
+  "worst": "cri"
+ },
+ "35_1.wav": {
+  "i": 35,
+  "gap": 0.62,
+  "cut_db": -79.6,
+  "dur": 2.72,
+  "meanscore": 0.984,
+  "minscore": 0.92,
+  "worst": "terrifiant"
+ },
+ "36_0.wav": {
+  "i": 36,
+  "gap": 0.48,
+  "cut_db": -90.1,
+  "dur": 4.31,
+  "meanscore": 0.978,
+  "minscore": 0.889,
+  "worst": "s'est"
+ },
+ "36_1.wav": {
+  "i": 36,
+  "gap": 1.95,
+  "cut_db": -78.0,
+  "dur": 4.7,
+  "meanscore": 0.957,
+  "minscore": 0.78,
+  "worst": "ses"
+ },
+ "37_0.wav": {
+  "i": 37,
+  "gap": 0.84,
+  "cut_db": -77.9,
+  "dur": 2.14,
+  "meanscore": 0.962,
+  "minscore": 0.787,
+  "worst": "ne"
+ },
+ "37_1.wav": {
+  "i": 37,
+  "gap": 1.17,
+  "cut_db": -5.8,
+  "dur": 2.44,
+  "meanscore": 0.996,
+  "minscore": 0.973,
+  "worst": "trouvait"
+ },
+ "38_0.wav": {
+  "i": 38,
+  "gap": 1.56,
+  "cut_db": -90.3,
+  "dur": 5.23,
+  "meanscore": 0.984,
+  "minscore": 0.923,
+  "worst": "l’un"
+ },
+ "38_1.wav": {
+  "i": 38,
+  "gap": 1.92,
+  "cut_db": -91.0,
+  "dur": 5.04,
+  "meanscore": 0.978,
+  "minscore": 0.906,
+  "worst": "et"
+ },
+ "39_0.wav": {
+  "i": 39,
+  "gap": 1.65,
+  "cut_db": -74.6,
+  "dur": 1.92,
+  "meanscore": 0.624,
+  "minscore": 0.218,
+  "worst": "le"
+ },
+ "39_1.wav": {
+  "i": 39,
+  "gap": 1.65,
+  "cut_db": -79.4,
+  "dur": 1.58,
+  "meanscore": 0.922,
+  "minscore": 0.813,
+  "worst": "le"
+ },
+ "40_0.wav": {
+  "i": 40,
+  "gap": 0.58,
+  "cut_db": -93.3,
+  "dur": 1.7,
+  "meanscore": 0.947,
+  "minscore": 0.774,
+  "worst": "bras."
+ },
+ "40_1.wav": {
+  "i": 40,
+  "gap": 2.54,
+  "cut_db": -83.1,
+  "dur": 1.72,
+  "meanscore": 0.85,
+  "minscore": 0.42,
+  "worst": "Mais"
+ },
+ "41_0.wav": {
+  "i": 41,
+  "gap": 2.21,
+  "cut_db": -76.1,
+  "dur": 1.2,
+  "meanscore": 0.929,
+  "minscore": 0.79,
+  "worst": "bouge"
+ },
+ "41_1.wav": {
+  "i": 41,
+  "gap": 1.02,
+  "cut_db": -62.3,
+  "dur": 0.88,
+  "meanscore": 0.925,
+  "minscore": 0.777,
+  "worst": "bouge"
+ },
+ "42_0.wav": {
+  "i": 42,
+  "gap": 0.0,
+  "cut_db": -5.2,
+  "dur": 2.63,
+  "meanscore": 0.044,
+  "minscore": 0.044,
+  "worst": "Pourquoi"
+ },
+ "42_1.wav": {
+  "i": 42,
+  "gap": 1.21,
+  "cut_db": -59.6,
+  "dur": 0.83,
+  "meanscore": 0.975,
+  "minscore": 0.975,
+  "worst": "Pourquoi"
+ },
+ "43_0.wav": {
+  "i": 43,
+  "gap": 0.38,
+  "cut_db": -93.0,
+  "dur": 1.7,
+  "meanscore": 0.947,
+  "minscore": 0.646,
+  "worst": "doigt."
+ },
+ "43_1.wav": {
+  "i": 43,
+  "gap": 1.42,
+  "cut_db": -92.1,
+  "dur": 2.07,
+  "meanscore": 0.95,
+  "minscore": 0.665,
+  "worst": "doigt."
+ },
+ "44_0.wav": {
+  "i": 44,
+  "gap": 0.58,
+  "cut_db": -92.9,
+  "dur": 3.13,
+  "meanscore": 0.97,
+  "minscore": 0.866,
+  "worst": "s’éteignent"
+ },
+ "44_1.wav": {
+  "i": 44,
+  "gap": 3.72,
+  "cut_db": -90.4,
+  "dur": 3.09,
+  "meanscore": 0.975,
+  "minscore": 0.84,
+  "worst": "s’éteignent"
+ }
+}
