@@ -350,7 +350,9 @@ const buildHouseFire = (): Built => {
 const buildBedroom = (calm = false): Built => {
   const k = calm ? 0 : 1; // calm : chambre au calme, sans feu
   const root = new THREE.Group(); const bg = "#07080f";
-  root.add(new THREE.HemisphereLight("#5a64a8", "#2a2030", 1.1));
+  root.add(new THREE.HemisphereLight("#5a64a8", "#2a2030", 1.6));
+  // lumière de face douce sur les personnages (sans éblouir)
+  const faceL = new THREE.PointLight("#dfe6ff", calm ? 26 : 0, 10, 1.3); faceL.position.set(0.2, 1.6, 2.6); root.add(faceL);
   const moon = new THREE.SpotLight("#8fa0ff", 26, 0, 0.5, 0.8, 1.5); moon.position.set(-3, 5, 4); moon.target.position.set(-0.5, 1, -1); moon.castShadow = true; moon.shadow.mapSize.set(2048, 2048);
   root.add(moon, moon.target);
   root.add(M(new THREE.BoxGeometry(6, 0.1, 6), std("#5a4030", 0.8), 0, -0.05, -1.5));
@@ -384,7 +386,9 @@ const buildBedroom = (calm = false): Built => {
 const buildDoor = (): Built => {
   const root = new THREE.Group(); const bg = "#2a2a40";
   sky(root, "#3a3f78", "#f4a070", 0, 4, -6, 16, 10);
-  root.add(new THREE.HemisphereLight("#8898d8", "#3a2a24", 1.0));
+  root.add(new THREE.HemisphereLight("#8898d8", "#3a2a24", 1.6));
+  // lumière de face douce sur les personnages (sans éblouir)
+  const faceD = new THREE.PointLight("#ffe6c8", 16, 12, 1.2); faceD.position.set(0.5, 2.0, 2.6); root.add(faceD);
   sun(root, "#ffb070", 3.2, -3.5, 2.6, -5.5);
   root.add(M(new THREE.BoxGeometry(6, 0.1, 6), std("#5a4030", 0.8), 0, -0.05, -1.5));
   root.add(M(new THREE.BoxGeometry(6, 3.2, 0.15), std("#2b2f44", 0.95), 0, 1.6, -2.4));
