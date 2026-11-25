@@ -16,32 +16,68 @@ export const APPEL_VIDEO_FRAMES = Math.ceil(VIDEO_SEC * FPS);
 
 // caméra : [px, py, pz, tx, ty, tz, fov] au début (a) et à la fin (b) du plan
 type Cam = [number, number, number, number, number, number, number];
-type Shot = { start: number; scene: string; a: Cam; b: Cam; vib?: boolean; talk?: boolean; flash?: boolean; wave?: boolean; point?: boolean };
+type Shot = { start: number; scene: string; a: Cam; b: Cam; m?: number[]; vib?: boolean; talk?: boolean; flash?: boolean; wave?: boolean; point?: boolean };
 
+// préréglages de caméra : [px, py, pz, tx, ty, tz, fov]
+const FW: Cam = [-2.6, 1.3, 4.3, 0.1, 1.1, -1.1, 46];   // famille, large de trois quarts
+const FH: Cam = [0, 3.2, 4.8, 0, 0.9, -1.0, 50];        // famille, plongée
+const PH: Cam = [0.3, 1.8, 2.9, 0, 0.98, -0.4, 40];     // téléphone
+const FF: Cam = [-2.2, 1.2, 3.8, -0.6, 1.2, -1.8, 44];  // visages de la famille, contre-plongée légère
+const CW: Cam = [1.5, 4.8, 8.5, 0, 0.9, -2.2, 44];      // cimetière, plongée large
+const CM: Cam = [-0.3, 1.0, 1.8, -0.3, 1.2, -1.0, 40];  // cimetière, famille en contre-plongée
+const B1: Cam = [1.4, 1.5, 3.4, 0.2, 1.1, -1.2, 50];    // chambre, Lucas
+const B2: Cam = [0, 0.5, 1.2, 0.2, 1.6, -0.6, 50];      // chambre, contre-plongée basse
+const B3: Cam = [1.6, 1.5, 3.4, 0.2, 1.3, -0.6, 42];    // chambre, Lucas parle
+const BD: Cam = [-0.6, 1.4, 2.2, 0.9, 1.0, -2.3, 46];   // chambre, vers la porte
+const IW: Cam = [0.6, 2.2, 10.5, -0.6, 2.8, -0.8, 50];  // incendie, large
+const IL: Cam = [0.6, 0.9, 7.8, -0.6, 3.2, -1.0, 52];   // incendie, contre-plongée
+const IT: Cam = [2.5, 1.4, 6.0, 3.0, 1.4, 2.0, 46];     // incendie, pompiers
+const DL: Cam = [-1.6, 1.6, 4.8, -0.4, 1.3, -0.6, 46];  // entrée, Lucas
+const DW: Cam = [-2.6, 1.6, 2.6, 0.3, 1.3, -1.0, 48];   // entrée, large
+const DO: Cam = [0.2, 1.6, 4.2, 0.85, 1.3, -1.1, 42];   // entrée, vieux pompier
+
+// m = [orbite en degrés, avancée(-)/recul(+), montée, zoom] : intensité propre à chaque plan
+const sh = (start: number, scene: string, cam: Cam, m: number[], f: Partial<Shot> = {}): Shot => ({ start, scene, a: cam, b: cam, m, ...f });
 const SHOTS: Shot[] = [
-  { start: 0.0, scene: "family", a: [-2.6, 1.3, 4.3, 0.1, 1.1, -1.1, 46], b: [-2.2, 1.35, 3.6, 0.1, 1.1, -1.1, 44] },
-  { start: 3.6, scene: "family", vib: true, point: true, a: [0.3, 1.8, 2.9, 0, 0.98, -0.4, 40], b: [0.2, 1.7, 2.6, 0, 0.98, -0.4, 38] },
-  { start: 6.1, scene: "family", a: [0, 3.2, 4.8, 0, 0.9, -1.0, 50], b: [0, 3.4, 4.2, 0, 0.9, -1.0, 50] },
-  { start: 9.6, scene: "cem", a: [1.5, 4.8, 8.5, 0, 0.9, -2.2, 44], b: [1.2, 3.6, 7.0, 0, 1.1, -2.2, 44] },
-  { start: 12.3, scene: "cem", a: [-0.3, 1.0, 1.8, -0.3, 1.2, -1.0, 40], b: [-0.3, 1.1, 1.5, -0.3, 1.2, -1.0, 40] },
-  { start: 13.4, scene: "bedCalm", a: [1.4, 1.5, 3.4, 0.2, 1.1, -1.2, 50], b: [1.0, 1.5, 2.8, 0.2, 1.1, -1.2, 48] },
-  { start: 16.0, scene: "bedCalm", a: [0, 0.5, 1.2, 0.2, 1.6, -0.6, 50], b: [0, 0.5, 1.4, 0.2, 1.6, -0.6, 46] },
-  { start: 20.7, scene: "bedCalm", talk: true, a: [1.6, 1.5, 3.4, 0.2, 1.3, -0.6, 42], b: [1.5, 1.5, 3.2, 0.2, 1.3, -0.6, 40] },
-  { start: 24.5, scene: "fire", flash: true, a: [0.6, 2.2, 10.5, -0.6, 2.8, -0.8, 50], b: [0.3, 2.4, 9.5, -0.6, 2.8, -0.8, 50] },
-  { start: 27.7, scene: "fire", flash: true, a: [0.6, 0.9, 7.8, -0.6, 3.2, -1.0, 52], b: [0.8, 0.9, 7.2, -0.6, 3.2, -1.0, 54] },
-  { start: 30.7, scene: "fire", flash: true, wave: true, a: [2.5, 1.4, 6.0, 3.0, 1.4, 2.0, 46], b: [2.0, 1.4, 5.0, 3.0, 1.4, 2.0, 46] },
-  { start: 33.1, scene: "family", a: [-2.6, 1.3, 4.3, 0.1, 1.1, -1.1, 46], b: [-2.8, 1.4, 4.6, 0.1, 1.1, -1.1, 46] },
-  { start: 36.3, scene: "family", point: true, a: [0, 1.9, 3.2, 0, 0.98, -0.4, 40], b: [0, 1.8, 3.0, 0, 0.98, -0.4, 40] },
-  { start: 38.5, scene: "family", point: true, a: [1.4, 1.7, 3.6, 0, 0.98, -0.4, 42], b: [1.2, 1.7, 3.3, 0, 0.98, -0.4, 42] },
-  { start: 42.5, scene: "family", a: [-2.2, 1.2, 3.8, -0.6, 1.2, -1.8, 44], b: [-2.0, 1.2, 3.6, -0.6, 1.2, -1.8, 44] },
-  { start: 44.2, scene: "door", a: [-1.6, 1.6, 4.8, -0.4, 1.3, -0.6, 46], b: [-1.2, 1.6, 4.2, -0.4, 1.3, -0.6, 46] },
-  { start: 49.3, scene: "door", flash: true, a: [-2.6, 1.6, 2.6, 0.3, 1.3, -1.0, 48], b: [-2.2, 1.6, 3.0, 0.3, 1.3, -1.0, 48] },
-  { start: 50.0, scene: "door", flash: true, talk: true, a: [0.2, 1.6, 4.2, 0.85, 1.3, -1.1, 42], b: [0.2, 1.6, 4.0, 0.85, 1.3, -1.1, 42] },
-  { start: 60.0, scene: "bed", flash: true, a: [1.4, 1.5, 3.4, 0.2, 1.1, -1.2, 50], b: [1.4, 1.5, 3.0, 0.2, 1.1, -1.2, 50] },
-  { start: 63.6, scene: "fire", flash: true, a: [0.6, 2.2, 10.5, -0.6, 2.8, -0.8, 50], b: [0.4, 2.3, 10.0, -0.6, 2.8, -0.8, 50] },
-  { start: 65.7, scene: "family", point: true, flash: true, a: [0.8, 1.7, 3.2, 0, 0.98, -0.4, 40], b: [0.7, 1.7, 3.0, 0, 0.98, -0.4, 40] },
-  { start: 68.7, scene: "door", flash: true, a: [-1.2, 1.6, 3.6, -0.4, 1.3, -0.6, 44], b: [-1.0, 1.6, 3.2, -0.4, 1.3, -0.6, 44] },
-  { start: 70.6, scene: "family", point: true, a: [0, 1.9, 3.2, 0, 0.98, -0.4, 40], b: [0, 1.9, 3.2, 0, 0.98, -0.4, 40] },
+  sh(0.0, "family", FW, [6, -0.45, 0.2, -6], { vib: true }),          // accroche : poussée rapide
+  sh(0.85, "cem", CW, [-10, -0.2, -1.2, 0]),                          // quelqu'un meurt : descente
+  sh(1.85, "family", PH, [28, -0.1, 0, -4], { vib: true, point: true }), // orbite rapide sur le téléphone
+  sh(2.55, "family", PH, [0, -0.5, 0, -10], { vib: true }),           // un seul appel : poussée forte
+  sh(3.55, "cem", CM, [-14, 0.1, 0.3, 0]),                            // lent, solennel
+  sh(6.0, "family", FH, [10, 0, 0.9, 0]),                             // chaque maison : montée
+  sh(7.0, "family", PH, [-8, -0.3, 0, -8], { point: true }),          // téléphone rouge : zoom
+  sh(8.1, "family", PH, [22, 0.05, 0.2, 0], { vib: true }),           // il ne sonne que pour ça
+  sh(9.5, "cem", CW, [14, -0.15, 0.6, 0]),                            // après l'enterrement
+  sh(10.6, "family", FW, [-6, 0.3, 0.2, 4]),                          // toute la famille : recul lent
+  sh(12.3, "family", FF, [4, -0.08, 0, -2]),                          // silence : presque fixe
+  sh(13.3, "bedCalm", B1, [-12, -0.3, 0.2, -4]),                      // Lucas a huit ans
+  sh(16.0, "bedCalm", B2, [24, 0.05, 0.1, 0]),                        // chaque soir : orbite basse
+  sh(18.5, "bedCalm", BD, [6, -0.35, 0, -4]),                         // tu restes dans ta chambre
+  sh(20.6, "bedCalm", B3, [-10, -0.2, 0, -6], { talk: true }),        // je viendrai te chercher
+  sh(21.9, "bedCalm", B3, [18, 0.05, 0.3, 0], { talk: true }),        // promis
+  sh(24.4, "fire", IW, [-12, -0.25, -0.8, 0], { flash: true }),       // une nuit d'hiver
+  sh(25.4, "fire", IL, [8, -0.35, 0, -6], { flash: true }),           // la maison brûle
+  sh(26.6, "fire", IT, [30, -0.1, 0.4, 0], { flash: true, wave: true }), // les pompiers : orbite rapide
+  sh(28.5, "bed", BD, [-6, -0.4, 0, -6], { flash: true }),            // sortent Lucas : poussée vers la porte
+  sh(30.6, "fire", IW, [6, 0.25, 1.0, 4], { flash: true }),           // ne ressort jamais : recul lent
+  sh(33.0, "family", FW, [8, -0.35, 0, -4]),                          // le lendemain
+  sh(34.0, "family", PH, [-16, 0.05, 0.2, 0]),                        // attend devant le téléphone
+  sh(36.2, "family", PH, [0, -0.3, 0, -6]),                           // vingt-trois heures
+  sh(37.4, "family", PH, [0, -0.45, 0, -10]),                         // vingt-quatre : plus serré
+  sh(38.4, "family", FF, [3, -0.05, 0, -2]),                          // il ne sonne pas : immobile
+  sh(39.5, "cem", CW, [-18, 0.2, 0.8, 0]),                            // le quartier chuchote
+  sh(42.4, "family", FF, [-6, -0.35, 0, -6]),                         // il n'aimait personne
+  sh(44.1, "door", DL, [16, -0.2, 0.3, 0]),                           // dix ans plus tard
+  sh(47.4, "door", DW, [-8, 0.15, 0.4, 2]),                           // le soir même
+  sh(49.3, "door", DO, [0, -0.4, 0, -6]),                             // frappe à sa porte : poussée
+  sh(50.7, "door", DO, [-14, -0.1, 0.2, 0], { flash: true, talk: true }), // la caserne a reçu un appel
+  sh(53.9, "fire", IL, [-10, -0.25, 0.6, -4], { flash: true }),       // ton père était déjà mort
+  sh(55.8, "family", PH, [12, -0.2, 0, -4], { flash: true }),         // sa voix était calme
+  sh(58.1, "bed", BD, [4, -0.45, 0, -6], { flash: true }),            // la chambre du fond
+  sh(60.5, "bed", B1, [-20, 0.05, 0.3, 0], { flash: true }),          // il attend, venez le chercher
+  sh(62.9, "door", DL, [10, -0.25, 0, -4]),                           // il ne l'avait pas oublié
+  sh(65.6, "family", PH, [-12, 0.3, 0.6, 4], { point: true }),        // son seul appel : recul lent
+  sh(68.6, "door", DL, [8, 0.2, 1.0, 2]),                             // remet la photo au mur : montée finale
 ];
 
 // facteur de recul appliqué à chaque caméra (1 = réglage précédent, plus serré)
@@ -106,7 +142,7 @@ const VideoInner: React.FC<{ t: number }> = ({ t }) => {
   const zo = ZOOM_OUT;
   const px = c[3] + (c[0] - c[3]) * zo, py = c[4] + (c[1] - c[4]) * zo, pz = c[5] + (c[2] - c[5]) * zo;
   // orbite autour du sujet, avancée/recul et montée sur le plan
-  const mo = motion(k);
+  const mo = sh.m ? { orb: sh.m[0], dol: sh.m[1], crane: sh.m[2], zoom: sh.m[3] } : motion(k);
   const ang = mo.orb * (u - 0.5) * Math.PI / 180, ca = Math.cos(ang), sa = Math.sin(ang);
   const ox0 = px - c[3], oz0 = pz - c[5], dl = 1 + mo.dol * u;
   const ox = (ox0 * ca - oz0 * sa) * dl, oz = (ox0 * sa + oz0 * ca) * dl;
@@ -139,7 +175,7 @@ const VideoInner: React.FC<{ t: number }> = ({ t }) => {
     let w: "L" | "R" | "both" | undefined = sh.wave && (r.name === "guard" || r.name === "guard2") ? "both" : undefined;
     if (sh.talk && r.name === "hero") w = "R";
     if (sh.talk && r.name === "c3") w = "L";
-    r.a.pose(t, { expr: r.expr, talk: !!sh.talk && r.name === "c3", wave: w, point: sh.point && r.name === "hero" ? 0.9 : undefined });
+    r.a.pose(t, { expr: r.expr, talk: !!sh.talk && r.name === "c3", wave: w, point: sh.point && r.name === "hero" ? 0.9 : undefined, headYaw: Math.sin(t * 0.9 + r.a.seed) * 0.35 });
     const m = r.a.face.material as THREE.MeshStandardMaterial;
     const ph = (t + r.a.seed * 0.37) % 3.2;
     const target = ph < 0.13 ? blinkTex(r.a.s, r.expr) : faceTex(r.a.s, r.expr);
