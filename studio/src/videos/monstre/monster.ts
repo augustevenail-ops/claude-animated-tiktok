@@ -92,7 +92,7 @@ export class Monster {
     this.pose(0);
   }
   /** posture immobile, bras légèrement écartés ; frisson très léger optionnel */
-  pose(t: number, p: { headYaw?: number; headPitch?: number; twitch?: number; lean?: number } = {}) {
+  pose(t: number, p: { headYaw?: number; headPitch?: number; twitch?: number; lean?: number; reach?: number } = {}) {
     const tw = p.twitch ?? 0, j = (k: number) => Math.sin(t * 23 + k) * tw * 0.02;
     this.torso.rotation.set(0.2 + (p.lean ?? 0), 0, 0);
     this.neck.rotation.set(0.16 + j(1), 0, 0); this.head.rotation.set(0.16 + (p.headPitch ?? 0) + j(2), p.headYaw ?? 0, j(3) - 0.04);
@@ -101,6 +101,9 @@ export class Monster {
     this.lHand.rotation.set(-0.05, 0.25, 0.05); this.rHand.rotation.set(-0.05, -0.25, -0.05);
     this.lLeg.rotation.set(-0.06, 0, -0.05); this.rLeg.rotation.set(-0.06, 0, 0.05); this.lShin.rotation.set(0.1, 0, 0); this.rShin.rotation.set(0.1, 0, 0);
     this.fingers.forEach((h, s) => h.forEach((f, k) => { if (k < 4) f.rotation.x = 0.12 + 0.1 * k * 0 + j(6 + k + s * 5); }));
+    const r = p.reach ?? 0;
+    if (r > 0) { this.rArm.rotation.set(-0.12 - 1.25 * r, -0.2 * r, 0.2 + 0.1 * r); this.rFore.rotation.set(-0.22 - 0.75 * r, 0, -0.06); this.rHand.rotation.set(-0.05 - 0.3 * r, -0.25, -0.05);
+      this.fingers[1].forEach((f, k) => { if (k < 4) f.rotation.x = 0.12 + 0.8 * r + j(9 + k); else f.rotation.z = -0.7 - 0.5 * r; }); }
   }
   /** point de la tête dans le monde (pour les cadrages) */
   headWorld(off = new THREE.Vector3(0, 1.0, 0.7)) { this.root.updateMatrixWorld(true); return this.head.localToWorld(off.clone()); }

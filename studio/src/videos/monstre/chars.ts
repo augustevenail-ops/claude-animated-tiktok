@@ -15,7 +15,7 @@ export type Spec = {
 
 export const CAST: Record<string, Spec> = {
   hero: { name: "hero", skin: "#f1c7a0", top: "#f2b51c", topDark: "#c98f10", sleeve: "#f2b51c", pants: "#2c3140", shoes: "#e9e9e9", style: "jacket", inner: "#2c3140", hair: "messy", hairCol: "#2a1d16", kid: true },
-  dad: { name: "dad", skin: "#c98a5c", top: "#2d4f8c", topDark: "#1f3866", sleeve: "#2d4f8c", pants: "#4a505c", shoes: "#1a1a1a", style: "uniform", hair: "cap", hairCol: "#1d1712", capCol: "#23407a", mustache: "#2a1d16", radio: true },
+  dad: { name: "dad", skin: "#f1c7a0", top: "#2d4f8c", topDark: "#1f3866", sleeve: "#2d4f8c", pants: "#4a505c", shoes: "#1a1a1a", style: "uniform", hair: "cap", hairCol: "#1d1712", capCol: "#23407a", mustache: "#2a1d16", radio: true },
   guard: { name: "guard", skin: "#e0ac80", top: "#2a3f6a", topDark: "#1c2c4e", sleeve: "#2a3f6a", pants: "#3b404c", shoes: "#151515", style: "uniform", hair: "cap", hairCol: "#2a1d16", capCol: "#1f3460", radio: true },
   guard2: { name: "guard2", skin: "#8a5a3c", top: "#2a3f6a", topDark: "#1c2c4e", sleeve: "#2a3f6a", pants: "#3b404c", shoes: "#151515", style: "uniform", hair: "cap", hairCol: "#111", capCol: "#1f3460", radio: true },
   pink: { name: "pink", skin: "#f5d0b0", top: "#ff3fa4", topDark: "#d02a82", sleeve: "#ff3fa4", pants: "#33405e", shoes: "#f4f4f4", style: "hoodie", hair: "long", hairCol: "#3a2416" },

@@ -7,3 +7,7 @@ studio/node_modules/
 productions/bunker/musique/
 productions/bunker/final/
 productions/monstre-ep01/stills/*.png
+productions/monstre-ep01/stills/k/
+productions/monstre-ep01/render/chunks/
+productions/monstre-ep01/audio/*.wav
+productions/monstre-ep01/voix/*.wav

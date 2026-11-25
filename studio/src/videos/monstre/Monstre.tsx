@@ -10,9 +10,9 @@ import { EffectComposer } from "@react-three/postprocessing";
 import { BlendFunction, BloomEffect, ToneMappingEffect, ToneMappingMode, VignetteEffect, HueSaturationEffect, BrightnessContrastEffect, SMAAEffect, SMAAPreset, ChromaticAberrationEffect, NoiseEffect } from "postprocessing";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { City } from "./city";
-import { Actor, CAST } from "./chars";
 import { Monster } from "./monster";
-import { SHOTS, TOTAL, FPS, shotAt, uOf, World, makeGuards, poseGuards, makeCivilians, poseCivilians } from "./shots";
+import { TOTAL, FPS, shotAt, uOf, World, buildCast, applyShot, rainOn } from "./story";
+import { Props, skyMaterial } from "./props";
 
 export const MONSTRE_FRAMES = TOTAL;
 export const MW = 2160, MH = 3840;
@@ -20,15 +20,15 @@ type Post = { shadow: boolean; smap: number };
 const post = (): Post => ({ shadow: true, smap: 2048, ...((getInputProps() as { post?: Partial<Post> }).post ?? {}) });
 
 const build = (on: Post): { w: World; root: THREE.Group } => {
-  const root = new THREE.Group(), city = new City(), mon = new Monster(); root.add(city.root, mon.root);
+  const root = new THREE.Group(), city = new City(), mon = new Monster(), props = new Props(); root.add(city.root, mon.root, props.root);
+  city.sky.material = skyMaterial();
   for (const t of city.towers) { t.spot.castShadow = on.shadow; t.spot.shadow.mapSize.set(on.smap, on.smap); }
-  const { guards, beams } = makeGuards(root), { civ, pink } = makeCivilians(root);
-  const hero = new Actor(CAST.hero, 0.36, 21), dad = new Actor(CAST.dad, 0.36, 22); hero.addTorch(); hero.root.position.set(8.55, 0.12, 19.9); dad.root.position.set(9.75, 0.12, 19.3); root.add(hero.root, dad.root);
-  // lumière d'appoint du flashback (réverbère proche du groupe) et lune portant les ombres
-  const fill = new THREE.PointLight("#ffb46a", 0, 30, 1.6); fill.position.set(-6, 6.5, 104); root.add(fill);
-  const key = new THREE.SpotLight("#9fb2ff", 0, 400, 0.35, 0.6, 0); key.position.set(-60, 90, 150); key.target.position.set(0, 4, 60); root.add(key, key.target);
-  key.castShadow = on.shadow; key.shadow.mapSize.set(on.smap, on.smap); key.shadow.camera.near = 50; key.shadow.camera.far = 300; key.shadow.bias = -0.0003;
-  return { w: { city, mon, guards, gBeams: beams, civ, pink, hero, dad, fill, key }, root };
+  props.sun.castShadow = on.shadow;
+  const cast = buildCast(root, mon);
+  const fill = new THREE.PointLight("#ffb46a", 0, 30, 1.6); root.add(fill);
+  const key = new THREE.SpotLight("#9fb2ff", 0, 400, 0.35, 0.6, 0); root.add(key, key.target);
+  key.castShadow = on.shadow; key.shadow.mapSize.set(on.smap, on.smap); key.shadow.camera.near = 2; key.shadow.camera.far = 300; key.shadow.bias = -0.0003;
+  return { w: { city, mon, props, ...cast, fill, key, winBase: city.winMats.map((m) => m.emissiveIntensity) }, root };
 };
 
 const Inner: React.FC = () => {
@@ -58,21 +58,13 @@ const Inner: React.FC = () => {
   ), [fx]);
   const env = useMemo(() => { const pm = new THREE.PMREMGenerator(gl); const e = pm.fromScene(new RoomEnvironment(), 0.04).texture; pm.dispose(); return e; }, [gl]);
   useEffect(() => { gl.shadowMap.type = THREE.PCFSoftShadowMap; }, [gl]);
-  const i = shotAt(f), s = SHOTS[i], u = Math.min(1, Math.max(0, uOf(f))), t = f / FPS;
-  // ambiance
-  const flash = s.mood === "flash";
-  w.city.installs(!flash); for (const g of w.guards) g.root.visible = !flash; for (const b of w.gBeams) b.mesh.visible = !flash;
-  for (const a of [...w.civ, w.pink]) a.root.visible = flash; w.hero.root.visible = w.dad.root.visible = false; w.key.angle = 0.35; w.key.position.set(-60, 90, 150); w.key.target.position.set(0, 4, 60);
-  w.fill.intensity = flash ? 60 : 0; w.key.intensity = flash ? 1.6 : 0.0; w.city.moon.intensity = flash ? 1.4 : 0.35;
-  for (const tw of w.city.towers) { tw.lens.emissiveIntensity = 9; tw.spot.intensity = 5.5; for (const b of tw.beams) b.set(t, 0.3); }
-  w.city.hemi.intensity = flash ? 0.7 : 0.5;
-  w.mon.pose(t, {});
-  if (!flash) poseGuards(w, t); else poseCivilians(w, t);
-  s.st?.(w, u, t);
-  scene.fog = new THREE.FogExp2(flash ? "#141a38" : "#1a2046", flash ? 0.0042 : 0.0034);
+  const i = shotAt(f), u = uOf(i, f), t = f / FPS;
+  w.scene = scene;
   scene.background = new THREE.Color("#0b0e20"); scene.environment = env; scene.environmentIntensity = 0.22;
-  const cam = camera as THREE.PerspectiveCamera, c = s.cam(w, u);
+  const s = applyShot(w, i, u, t);
+  const cam = camera as THREE.PerspectiveCamera, c = s.cam(w, u, t);
   cam.position.copy(c.P); cam.lookAt(c.T); cam.fov = c.fov; cam.near = 0.1; cam.far = 3000; cam.updateProjectionMatrix();
+  if (rainOn(i)) w.props.rainAt(t, c.P, c.T.clone().sub(c.P));
   useEffect(() => {
     const h = delayRender(`frame ${f}`); let done = false;
     const finish = () => { if (!done) { done = true; continueRender(h); } };

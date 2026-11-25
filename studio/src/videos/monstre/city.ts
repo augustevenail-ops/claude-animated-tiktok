@@ -67,7 +67,7 @@ export class Tower {
 
 export class City {
   root = new THREE.Group(); towers: Tower[] = []; towerGroup = new THREE.Group(); fence = new THREE.Group(); beams = new THREE.Group();
-  sky: THREE.Mesh; hemi: THREE.HemisphereLight; moon: THREE.DirectionalLight; lampHalos: THREE.Mesh[] = []; winMats: THREE.MeshStandardMaterial[] = [];
+  sky: THREE.Mesh; hemi: THREE.HemisphereLight; moon: THREE.DirectionalLight; lampHalos: THREE.Mesh[] = []; bulb!: THREE.MeshStandardMaterial; slab!: THREE.MeshStandardMaterial; winMats: THREE.MeshStandardMaterial[] = [];
   constructor() {
     const R = this.root;
     // ciel
@@ -79,7 +79,7 @@ export class City {
     const slab = S({ map: rep(slabTex(), 36, 36), bumpMap: rep(slabBump(), 36, 36), bumpScale: 1.4, roughnessMap: rep(slabRough(), 36, 36), roughness: 0.85 });
     const sq = new THREE.Shape(); const h = HALF, r = 6; sq.moveTo(-h + r, -h); sq.lineTo(h - r, -h); sq.quadraticCurveTo(h, -h, h, -h + r); sq.lineTo(h, h - r); sq.quadraticCurveTo(h, h, h - r, h); sq.lineTo(-h + r, h); sq.quadraticCurveTo(-h, h, -h, h - r); sq.lineTo(-h, -h + r); sq.quadraticCurveTo(-h, -h, -h + r, -h);
     const sg = new THREE.ShapeGeometry(sq, 8); sg.rotateX(-Math.PI / 2); const uv = sg.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setXY(i, (uv.getX(i) + h) / (2 * h), (uv.getY(i) + h) / (2 * h));
-    const square = msh(sg, slab, 0, 0.12, 0, false); R.add(square);
+    this.slab = slab; const square = msh(sg, slab, 0, 0.12, 0, false); R.add(square);
     // bordure de la place
     const curb = S({ map: concreteTex(), color: "#c9c9c9", roughness: 0.8 });
     for (const [x, z, w, d] of [[0, -h - 0.4, 2 * h, 0.8], [0, h + 0.4, 2 * h, 0.8], [-h - 0.4, 0, 0.8, 2 * h], [h + 0.4, 0, 0.8, 2 * h]] as const) R.add(msh(new THREE.BoxGeometry(w, 0.3, d), curb, x, 0.1, z));
@@ -129,7 +129,7 @@ export class City {
       if (hash(i, 57) < 0.6) { const red = new THREE.Mesh(new THREE.SphereGeometry(0.8, 8, 6), new THREE.MeshBasicMaterial({ color: "#ff2a2a" })); red.position.set(x, H + (hash(i, 56) < 0.5 ? H * 0.15 : 0) + 1, z); R.add(red); }
     }
     // lampadaires (lueur jaune chaude, flaques de lumière au sol sans lumière réelle)
-    const lampPost = S({ color: "#1e2026", roughness: 0.5, metalness: 0.6 }), bulb = new THREE.MeshStandardMaterial({ color: "#ffd49a", emissive: "#ffc47a", emissiveIntensity: 8 });
+    const lampPost = S({ color: "#1e2026", roughness: 0.5, metalness: 0.6 }), bulb = new THREE.MeshStandardMaterial({ color: "#ffd49a", emissive: "#ffc47a", emissiveIntensity: 8 }); this.bulb = bulb;
     const pool = new THREE.MeshBasicMaterial({ map: haloTex(), color: "#ffb35a", transparent: true, opacity: 0.38, blending: THREE.AdditiveBlending, depthWrite: false });
     const lamp = (x: number, z: number, ry: number) => { const g = new THREE.Group(); g.position.set(x, 0, z); g.rotation.y = ry; R.add(g);
       g.add(msh(new THREE.CylinderGeometry(0.12, 0.18, 7, 8), lampPost, 0, 3.5, 0)); g.add(msh(new THREE.BoxGeometry(0.12, 0.12, 1.8), lampPost, 0, 7, 0.8));
