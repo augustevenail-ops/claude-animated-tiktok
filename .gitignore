@@ -28,3 +28,10 @@ productions/monstre-ep01/voix/v10/gen.log
 productions/monstre-ep01/voix/v11/gen.log
 productions/monstre-ep01/render/chunks_v2/
 productions/monstre-ep01/render/*_v2.log
+productions/monstre-ep01/render/chunks_v3/
+productions/monstre-ep01/render/video_v*_raw.mp4
+productions/dernier-appel-ep01/voix/raw/
+productions/dernier-appel-ep01/voix/gen.log
+productions/dernier-appel-ep01/audio/*_raw.wav
+productions/dernier-appel-ep01/render/
+productions/dernier-appel-ep01/final/
