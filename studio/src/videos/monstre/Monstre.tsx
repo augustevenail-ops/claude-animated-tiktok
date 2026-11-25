@@ -10,6 +10,7 @@ import { EffectComposer } from "@react-three/postprocessing";
 import { BlendFunction, BloomEffect, ToneMappingEffect, ToneMappingMode, VignetteEffect, HueSaturationEffect, BrightnessContrastEffect, SMAAEffect, SMAAPreset, ChromaticAberrationEffect, NoiseEffect } from "postprocessing";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { City } from "./city";
+import { Actor, CAST } from "./chars";
 import { Monster } from "./monster";
 import { SHOTS, TOTAL, FPS, shotAt, uOf, World, makeGuards, poseGuards, makeCivilians, poseCivilians } from "./shots";
 
@@ -22,11 +23,12 @@ const build = (on: Post): { w: World; root: THREE.Group } => {
   const root = new THREE.Group(), city = new City(), mon = new Monster(); root.add(city.root, mon.root);
   for (const t of city.towers) { t.spot.castShadow = on.shadow; t.spot.shadow.mapSize.set(on.smap, on.smap); }
   const { guards, beams } = makeGuards(root), { civ, pink } = makeCivilians(root);
+  const hero = new Actor(CAST.hero, 0.36, 21), dad = new Actor(CAST.dad, 0.36, 22); hero.addTorch(); hero.root.position.set(8.55, 0.12, 19.9); dad.root.position.set(9.75, 0.12, 19.3); root.add(hero.root, dad.root);
   // lumière d'appoint du flashback (réverbère proche du groupe) et lune portant les ombres
   const fill = new THREE.PointLight("#ffb46a", 0, 30, 1.6); fill.position.set(-6, 6.5, 104); root.add(fill);
   const key = new THREE.SpotLight("#9fb2ff", 0, 400, 0.35, 0.6, 0); key.position.set(-60, 90, 150); key.target.position.set(0, 4, 60); root.add(key, key.target);
   key.castShadow = on.shadow; key.shadow.mapSize.set(on.smap, on.smap); key.shadow.camera.near = 50; key.shadow.camera.far = 300; key.shadow.bias = -0.0003;
-  return { w: { city, mon, guards, gBeams: beams, civ, pink, fill, key }, root };
+  return { w: { city, mon, guards, gBeams: beams, civ, pink, hero, dad, fill, key }, root };
 };
 
 const Inner: React.FC = () => {
@@ -60,7 +62,7 @@ const Inner: React.FC = () => {
   // ambiance
   const flash = s.mood === "flash";
   w.city.installs(!flash); for (const g of w.guards) g.root.visible = !flash; for (const b of w.gBeams) b.mesh.visible = !flash;
-  for (const a of [...w.civ, w.pink]) a.root.visible = flash;
+  for (const a of [...w.civ, w.pink]) a.root.visible = flash; w.hero.root.visible = w.dad.root.visible = false; w.key.angle = 0.35; w.key.position.set(-60, 90, 150); w.key.target.position.set(0, 4, 60);
   w.fill.intensity = flash ? 60 : 0; w.key.intensity = flash ? 1.6 : 0.0; w.city.moon.intensity = flash ? 1.4 : 0.35;
   for (const tw of w.city.towers) { tw.lens.emissiveIntensity = 9; tw.spot.intensity = 5.5; for (const b of tw.beams) b.set(t, 0.3); }
   w.city.hemi.intensity = flash ? 0.7 : 0.5;

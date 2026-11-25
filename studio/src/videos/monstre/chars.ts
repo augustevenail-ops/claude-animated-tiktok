@@ -25,14 +25,14 @@ export const CAST: Record<string, Spec> = {
   c4: { name: "c4", skin: "#f5d6bc", top: "#5b6fd8", topDark: "#3f50b0", sleeve: "#5b6fd8", pants: "#262a33", shoes: "#c4283a", style: "cardigan", inner: "#f4f1ea", hair: "bun", hairCol: "#c08a3a" },
 };
 
-const mats = new Map<string, THREE.Material>();
+const mats = new Map<string, THREE.MeshPhysicalMaterial>();
 const fabric = () => ctex("fabric", 128, 128, (g) => { g.fillStyle = "#f2f2f2"; g.fillRect(0, 0, 128, 128);
   for (let y = 0; y < 128; y += 2) { g.fillStyle = `rgba(0,0,0,${0.03 + hash(y, 1) * 0.04})`; g.fillRect(0, y, 128, 1); }
   for (let x = 0; x < 128; x += 2) { g.fillStyle = `rgba(255,255,255,${0.03 + hash(x, 2) * 0.05})`; g.fillRect(x, 0, 1, 128); }
   for (let i = 0; i < 300; i++) { g.fillStyle = `rgba(0,0,0,${hash(i, 3) * 0.06})`; g.fillRect(hash(i, 4) * 128, hash(i, 5) * 128, 3, 3); } }, true);
-const mat = (col: string, extra: THREE.MeshStandardMaterialParameters = {}, key = "") => {
+const mat = (col: string, extra: THREE.MeshPhysicalMaterialParameters = {}, key = "") => {
   const k = col + key; let m = mats.get(k);
-  if (!m) { m = new THREE.MeshStandardMaterial({ color: col, roughness: 0.72, metalness: 0, map: extra.metalness ? undefined : fabric(), ...extra }); mats.set(k, m); }
+  if (!m) { const fb = extra.metalness ? undefined : fabric(); m = new THREE.MeshPhysicalMaterial({ color: col, roughness: 0.6, metalness: 0, map: fb, bumpMap: fb, bumpScale: 2.5, sheen: 0.7, sheenRoughness: 0.45, sheenColor: new THREE.Color(col).lerp(new THREE.Color("#ffffff"), 0.5), ...extra }); mats.set(k, m); }
   return m;
 };
 const geos = new Map<string, THREE.BufferGeometry>();
@@ -105,7 +105,7 @@ export class Actor {
     this.s = s; this.seed = seed;
     const k = s.kid ? 0.72 : 1, legH = s.kid ? 1.3 : 2;
     this.root.add(this.body); this.body.scale.setScalar(scale * (s.kid ? 0.95 : 1));
-    const skin = mat(s.skin), top = mat(s.top), pants = mat(s.style === "dress" ? s.top : s.pants), shoes = mat(s.shoes);
+    const skin = mat(s.skin, { map: null, bumpMap: null, sheen: 0, roughness: 0.38, clearcoat: 0.45, clearcoatRoughness: 0.3 }, "skin"), top = mat(s.top), pants = mat(s.style === "dress" ? s.top : s.pants), shoes = mat(s.shoes);
     // jambes (pivot à la hanche)
     for (const [leg, x] of [[this.lLeg, -0.5], [this.rLeg, 0.5]] as const) {
       leg.position.set(x, legH, 0); this.body.add(leg);
@@ -125,6 +125,11 @@ export class Actor {
     if (s.style === "uniform") { this.body.add(mesh(rbox(0.34, 0.2, 0.08, 0.03), metal, 0, legH + 0.13, 0.55));
       for (const x of [-0.55, 0.55]) this.body.add(mesh(rbox(0.5, 0.14, 0.4, 0.05), dark, x, legH + tH - 0.06, 0.3)); }
     if (s.style === "jacket" || s.style === "uniform" || s.style === "hoodie") { const c = mesh(rbox(1.3, 0.3, 1.1, 0.1), dark, 0, legH + tH + 0.05, 0); this.body.add(c); }
+    // cordons + poche ventrale (sweat), fermeture éclair (veste), coutures d'épaule, pouces
+    if (s.style === "hoodie") { for (const x of [-0.25, 0.25]) { this.body.add(mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.7, 6), mat("#f4f4f4", { map: null, bumpMap: null }, "cord"), x, legH + tH - 0.45, 0.53)); this.body.add(mesh(new THREE.SphereGeometry(0.06, 8, 6), metal, x, legH + tH - 0.82, 0.54)); }
+      this.body.add(mesh(rbox(1.3, 0.55, 0.08, 0.04), dark, 0, legH + 0.55, 0.52)); }
+    if (s.style === "jacket") { this.body.add(mesh(rbox(0.06, tH - 0.1, 0.06, 0.02), metal, 0.02, legH + tH / 2, 0.53)); for (const x of [-0.6, 0.6]) this.body.add(mesh(rbox(0.55, 0.06, 0.08, 0.02), dark, x, legH + 0.6, 0.53)); }
+    for (const [arm, sx] of [[this.lArm, 1], [this.rArm, -1]] as const) arm.add(mesh(rbox(0.32, 0.42, 0.36, 0.1), skin, sx * 0.4, -tH * 0.86 + 0.3, 0.42));
     if (s.radio) { const r = new THREE.Group(); r.position.set(0.62, legH + tH - 0.55, 0.56); this.body.add(r); this.radio = r;
       r.add(mesh(rbox(0.36, 0.56, 0.2, 0.05), mat("#1b1d22", { roughness: 0.5 }, "radio"), 0, 0, 0)); r.add(mesh(new THREE.CylinderGeometry(0.03, 0.04, 0.5, 6), mat("#111", { roughness: 0.4 }, "ant"), 0.1, 0.5, 0));
       const led = new THREE.Mesh(new THREE.SphereGeometry(0.05, 8, 6), new THREE.MeshStandardMaterial({ color: "#ff5a1e", emissive: "#ff5a1e", emissiveIntensity: 3 })); led.position.set(-0.1, 0.2, 0.11); r.add(led); this.led = led; }
@@ -141,7 +146,7 @@ export class Actor {
     // tête
     this.neck.position.set(0, legH + tH, 0); this.body.add(this.neck);
     const head = mesh(rbox(1.3, 1.25, 1.25, 0.22), skin, 0, 0.66, 0); this.neck.add(head);
-    this.face = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 1.2), new THREE.MeshStandardMaterial({ map: faceTex(s, "smile"), transparent: true, roughness: 0.8, polygonOffset: true, polygonOffsetFactor: -2 }));
+    this.face = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 1.2), new THREE.MeshPhysicalMaterial({ map: faceTex(s, "smile"), transparent: true, roughness: 0.35, clearcoat: 0.6, clearcoatRoughness: 0.2, polygonOffset: true, polygonOffsetFactor: -2 }));
     this.face.position.set(0, 0.64, 0.63); this.neck.add(this.face);
     this.hair(s);
   }

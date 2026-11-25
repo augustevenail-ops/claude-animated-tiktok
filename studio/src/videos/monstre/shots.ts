@@ -6,7 +6,7 @@ import { Actor, CAST, Expr } from "./chars";
 import { Beam } from "./beams";
 
 export const FPS = 30, PER = 60;
-export type World = { city: City; mon: Monster; guards: Actor[]; gBeams: Beam[]; civ: Actor[]; pink: Actor; fill: THREE.PointLight; key: THREE.SpotLight };
+export type World = { city: City; mon: Monster; guards: Actor[]; gBeams: Beam[]; civ: Actor[]; pink: Actor; hero: Actor; dad: Actor; fill: THREE.PointLight; key: THREE.SpotLight };
 type Cam = { P: THREE.Vector3; T: THREE.Vector3; fov: number };
 export type Shot = { id: number; desc: string; mood: "night" | "flash"; cam: (w: World, u: number) => Cam; st?: (w: World, u: number, t: number) => void };
 
@@ -30,6 +30,10 @@ export const SHOTS: Shot[] = [
     cam: (w, u) => { const p = w.pink.root.position, e = sm(u);
       const P = new THREE.CatmullRomCurve3([V(3, 3.2, 150), V(1.8, 2.3, 118), p.clone().add(V(0.25, 1.55, 1.7))]).getPoint(e);
       const T = lerpV(V(0, 7, 0), p.clone().add(V(0, 1.5, 0)), Math.pow(e, 1.8)); return { P, T, fov: 46 - 8 * e }; } },
+  { id: 6, desc: "test personnages", mood: "night",
+    cam: (_w, u) => glide(V(9.6, 1.0, 26.5), V(9.55, 1.05, 26.2), V(9.15, 1.25, 19.6), V(9.15, 1.25, 19.6), 24, u),
+    st: (w, _u, t) => { w.hero.root.visible = w.dad.root.visible = true; w.hero.pose(t, { yaw: 0.35, expr: "worried", point: 0.3, headPitch: -0.05 }); w.dad.pose(t, { yaw: -0.1, expr: "focus" });
+      w.key.intensity = 4; w.key.position.set(16, 12, 6); w.key.target.position.set(9, 1, 20); w.key.angle = 0.4; w.fill.intensity = 14; w.fill.position.set(12.5, 2.5, 23); } },
 ];
 export const TOTAL = SHOTS.length * PER;
 export const shotAt = (f: number) => Math.min(SHOTS.length - 1, Math.floor(f / PER));
