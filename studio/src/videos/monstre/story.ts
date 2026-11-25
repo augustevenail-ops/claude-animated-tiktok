@@ -142,7 +142,8 @@ const hash01 = (i: number) => { const s = Math.sin(i * 91.7 + 3.1) * 43758.5; re
 /** obscurité totale autour du monstre : tous les faisceaux tombent */
 const darkness = (w: World, k: number) => { const f = 1 - k; for (const b of [...w.gBeams, ...w.props.winBeams]) b.mat.uniforms.uOp.value *= f; for (const c of w.props.cars) { for (const b of c.beams) b.mat.uniforms.uOp.value *= f; c.head.emissiveIntensity *= f; }
   w.heroBeam.mat.uniforms.uOp.value *= f; for (const g of w.guards) if (g.torch) g.torch.visible = f > 0.3; w.key.intensity *= f; };
-const poseCiv = (w: World, t: number) => { w.civ.forEach((a, i) => a.pose(t, { yaw: Math.PI + (i - 2) * 0.12, expr: (["scared", "worried"] as Expr[])[i % 2], headPitch: -0.25, point: i === 1 ? 0.6 : undefined })); w.pink.pose(t, { expr: "scared", headPitch: -0.04, yaw: 0.12 }); };
+const CIV0: [number, number][] = [[-3.2, 95], [2.8, 94.2], [-1.4, 91.5], [4.4, 96.5], [-4.8, 97.5], [1.2, 90.8]];
+const poseCiv = (w: World, t: number) => { w.civ.forEach((a, i) => { const ph = t - 9.1; a.root.position.set(CIV0[i][0], 0, CIV0[i][1] + ph * (0.9 + (i % 3) * 0.3)); a.pose(t, { walk: 2.2, yaw: (i - 2.5) * 0.12, headYaw: i % 2 ? 0.9 : -0.9, expr: "scared" }); }); w.pink.pose(t, { expr: "scared", headPitch: -0.04, yaw: 0.12 }); };
 
 // ---------------- construction ----------------
 export const buildCast = (root: THREE.Object3D, mon: Monster) => {

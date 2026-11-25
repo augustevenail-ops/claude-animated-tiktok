@@ -11,3 +11,6 @@ productions/monstre-ep01/stills/k/
 productions/monstre-ep01/render/chunks/
 productions/monstre-ep01/audio/*.wav
 productions/monstre-ep01/voix/*.wav
+studio/snap_monstre*/
+productions/monstre-ep01/render/*.log
+productions/monstre-ep01/stills/v_*.png

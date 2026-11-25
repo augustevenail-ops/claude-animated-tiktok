@@ -56,7 +56,7 @@ export class Tower {
       hd.add(msh(new THREE.BoxGeometry(0.16, 0.9, 0.16), housing, -1.25, -0.4, -0.2)); hd.add(msh(new THREE.BoxGeometry(0.16, 0.9, 0.16), housing, 1.25, -0.4, -0.2)); // fourche
     }
     void idx;
-    this.spot = new THREE.SpotLight("#f4f7ff", 0, 160, 0.32, 0.55, 0); this.spot.position.set(0, H + 2.3, 2.0); this.root.add(this.spot, this.spot.target);
+    this.spot = new THREE.SpotLight("#f4f7ff", 0, 160, 0.42, 0.55, 0); this.spot.position.set(0, H + 2.3, 2.0); this.root.add(this.spot, this.spot.target);
   }
   aim(target: THREE.Vector3) {
     this.root.updateMatrixWorld(true);
@@ -154,7 +154,7 @@ export class City {
       t.root.position.set(Math.cos(a) * TOWER_R, 0, Math.sin(a) * TOWER_R); t.root.lookAt(0, 0, 0); this.towerGroup.add(t.root); this.towers.push(t);
       t.aim(MON_TARGET);
       t.spot.castShadow = true; t.spot.shadow.mapSize.set(2048, 2048); t.spot.shadow.bias = -0.0002; t.spot.shadow.normalBias = 0.04; t.spot.shadow.camera.near = 10; t.spot.shadow.camera.far = 110; t.spot.intensity = 5.5;
-      for (const hd of t.heads) { const b = new Beam(12, 1.2, 0.3); hd.updateMatrixWorld(true); this.beams.add(b.mesh); t.beams.push(b); b.place(hd.getWorldPosition(new THREE.Vector3()), MON_TARGET.clone().add(V((hash(k, 3) - 0.5) * 3, (hash(k, 4) - 0.5) * 3, 0))); } }
+      for (const hd of t.heads) { const b = new Beam(18, 1.8, 0.28); hd.updateMatrixWorld(true); this.beams.add(b.mesh); t.beams.push(b); b.place(hd.getWorldPosition(new THREE.Vector3()), MON_TARGET.clone().add(V((hash(k, 3) - 0.5) * 3, (hash(k, 4) - 0.5) * 3, 0))); } }
     R.add(this.beams);
     // enceinte circulaire : barrières noires de 2 m, poteaux, accès
     const fenceM = S({ color: "#15161a", roughness: 0.45, metalness: 0.7 }), bars: THREE.BufferGeometry[] = [], FR = 11.5, N = 64;

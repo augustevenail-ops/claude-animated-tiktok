@@ -20,9 +20,9 @@ export const CAST: Record<string, Spec> = {
   guard2: { name: "guard2", skin: "#8a5a3c", top: "#2a3f6a", topDark: "#1c2c4e", sleeve: "#2a3f6a", pants: "#3b404c", shoes: "#151515", style: "uniform", hair: "cap", hairCol: "#111", capCol: "#1f3460", radio: true },
   pink: { name: "pink", skin: "#f5d0b0", top: "#ff3fa4", topDark: "#d02a82", sleeve: "#ff3fa4", pants: "#33405e", shoes: "#f4f4f4", style: "hoodie", hair: "long", hairCol: "#3a2416" },
   c1: { name: "c1", skin: "#e0ac80", top: "#f08a2a", topDark: "#c46a18", sleeve: "#f08a2a", pants: "#4a4a52", shoes: "#2a2a2a", style: "jacket", inner: "#f4f1ea", hair: "curly", hairCol: "#3a2a1e" },
-  c2: { name: "c2", skin: "#7a4a2e", top: "#2fae7a", topDark: "#1f8a5c", sleeve: "#2fae7a", pants: "#2a3a6a", shoes: "#f4f4f4", style: "tee", hair: "short", hairCol: "#111111" },
+  c2: { name: "c2", skin: "#7a4a2e", top: "#2fae7a", topDark: "#1f8a5c", sleeve: "#2fae7a", pants: "#2a3a6a", shoes: "#f4f4f4", style: "hoodie", backpack: "#2a2f3a", hair: "short", hairCol: "#111111" },
   c3: { name: "c3", skin: "#c98a5c", top: "#9aa4b2", topDark: "#788292", sleeve: "#9aa4b2", pants: "#3a3f4a", shoes: "#2a2a2a", style: "jacket", inner: "#c4283a", hair: "bald", hairCol: "#3a2a1e", beard: "#3a2a1e" },
-  c4: { name: "c4", skin: "#f5d6bc", top: "#5b6fd8", topDark: "#3f50b0", sleeve: "#5b6fd8", pants: "#262a33", shoes: "#c4283a", style: "cardigan", inner: "#f4f1ea", hair: "bun", hairCol: "#c08a3a" },
+  c4: { name: "c4", skin: "#f5d6bc", top: "#5b6fd8", topDark: "#3f50b0", sleeve: "#5b6fd8", pants: "#262a33", shoes: "#c4283a", style: "jacket", inner: "#f4f1ea", hair: "bun", hairCol: "#c08a3a" },
 };
 
 const mats = new Map<string, THREE.MeshPhysicalMaterial>();
