@@ -23,7 +23,7 @@ ScaledBorderAndShadow: yes
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Cap,MonstreCaps,230,&H0000E9FF,&H0000E9FF,&H000A0A0A,&H60000000,0,0,0,0,100,100,2,0,1,17,11,5,100,100,0,1
+Style: Cap,MonstreCaps,230,&H0000E9FF,&H0000E9FF,&H000A0A0A,&H60000000,0,0,0,0,100,100,2,0,1,22,11,5,100,100,0,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
@@ -32,5 +32,5 @@ with open("caps.ass", "w", encoding="utf-8") as f:
     f.write(head)
     for c in C:
         size = 150 if len(c["t"]) > 14 else 175 if len(c["t"]) > 11 else 230
-        f.write(f"Dialogue: 0,{ts(max(0, c['s']))},{ts(c['e'])},Cap,,0,0,0,,{{\\pos(1080,2573)\\fs{size}\\fscx112\\fscy112\\t(0,140,\\fscx100\\fscy100)}}{c['t']}\n")
+        f.write(f"Dialogue: 0,{ts(max(0, c['s']))},{ts(c['e'])},Cap,,0,0,0,,{{\\pos(1080,2573)\\fs{size}\\fscx135\\fscy135\\t(0,180,\\fscx100\\fscy100)}}{c['t']}\n")
 print(len(C))
