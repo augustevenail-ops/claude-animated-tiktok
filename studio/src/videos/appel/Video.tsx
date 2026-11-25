@@ -11,7 +11,7 @@ import WTS from "./words.json";
 import { faceTex, Expr, Spec } from "../monstre/chars";
 
 export const FPS = 30;
-export const VIDEO_SEC = 71.1;
+export const VIDEO_SEC = 76.0;
 export const APPEL_VIDEO_FRAMES = Math.ceil(VIDEO_SEC * FPS);
 
 // caméra : [px, py, pz, tx, ty, tz, fov] au début (a) et à la fin (b) du plan
@@ -38,46 +38,50 @@ const DO: Cam = [0.2, 1.6, 4.2, 0.85, 1.3, -1.1, 42];   // entrée, vieux pompie
 
 // m = [orbite en degrés, avancée(-)/recul(+), montée, zoom] : intensité propre à chaque plan
 const sh = (start: number, scene: string, cam: Cam, m: number[], f: Partial<Shot> = {}): Shot => ({ start, scene, a: cam, b: cam, m, ...f });
-const SHOTS: Shot[] = [
+const SHOTS: Shot[] = [                                               // calés sur words.json (voix 787591f6, texte final)
   sh(0.0, "family", FW, [6, -0.45, 0.2, -6], { vib: true }),          // accroche : poussée rapide
-  sh(0.85, "cem", CW, [-10, -0.2, -1.2, 0]),                          // quelqu'un meurt : descente
-  sh(1.85, "family", PH, [28, -0.1, 0, -4], { vib: true, point: true }), // orbite rapide sur le téléphone
-  sh(2.55, "family", PH, [0, -0.5, 0, -10], { vib: true }),           // un seul appel : poussée forte
-  sh(3.55, "cem", CM, [-14, 0.1, 0.3, 0]),                            // lent, solennel
-  sh(6.0, "family", FH, [10, 0, 0.9, 0]),                             // chaque maison : montée
-  sh(7.0, "family", PH, [-8, -0.3, 0, -8], { point: true }),          // téléphone rouge : zoom
-  sh(8.1, "family", PH, [22, 0.05, 0.2, 0], { vib: true }),           // il ne sonne que pour ça
-  sh(9.5, "cem", CW, [14, -0.15, 0.6, 0]),                            // après l'enterrement
-  sh(10.6, "family", FW, [-6, 0.3, 0.2, 4]),                          // toute la famille : recul lent
-  sh(12.3, "family", FF, [4, -0.08, 0, -2]),                          // silence : presque fixe
-  sh(13.3, "bedCalm", B1, [-12, -0.3, 0.2, -4]),                      // Lucas a huit ans
-  sh(16.0, "bedCalm", B2, [24, 0.05, 0.1, 0]),                        // chaque soir : orbite basse
-  sh(18.5, "bedCalm", BD, [6, -0.35, 0, -4]),                         // tu restes dans ta chambre
-  sh(20.6, "bedCalm", B3, [-10, -0.2, 0, -6], { talk: true }),        // je viendrai te chercher
-  sh(21.9, "bedCalm", B3, [18, 0.05, 0.3, 0], { talk: true }),        // promis
-  sh(24.4, "fire", IW, [-12, -0.25, -0.8, 0], { flash: true }),       // une nuit d'hiver
-  sh(25.4, "fire", IL, [8, -0.35, 0, -6], { flash: true }),           // la maison brûle
-  sh(26.6, "fire", IT, [30, -0.1, 0.4, 0], { flash: true, wave: true }), // les pompiers : orbite rapide
-  sh(28.5, "bed", BD, [-6, -0.4, 0, -6], { flash: true }),            // sortent Lucas : poussée vers la porte
-  sh(30.6, "fire", IW, [6, 0.25, 1.0, 4], { flash: true }),           // ne ressort jamais : recul lent
-  sh(33.0, "family", FW, [8, -0.35, 0, -4]),                          // le lendemain
-  sh(34.0, "family", PH, [-16, 0.05, 0.2, 0]),                        // attend devant le téléphone
-  sh(36.2, "family", PH, [0, -0.3, 0, -6]),                           // vingt-trois heures
-  sh(37.4, "family", PH, [0, -0.45, 0, -10]),                         // vingt-quatre : plus serré
-  sh(38.4, "family", FF, [3, -0.05, 0, -2]),                          // il ne sonne pas : immobile
-  sh(39.5, "cem", CW, [-18, 0.2, 0.8, 0]),                            // le quartier chuchote
-  sh(42.4, "family", FF, [-6, -0.35, 0, -6]),                         // il n'aimait personne
-  sh(44.1, "door", DL, [16, -0.2, 0.3, 0]),                           // dix ans plus tard
-  sh(47.4, "door", DW, [-8, 0.15, 0.4, 2]),                           // le soir même
-  sh(49.3, "door", DO, [0, -0.4, 0, -6]),                             // frappe à sa porte : poussée
-  sh(50.7, "door", DO, [-14, -0.1, 0.2, 0], { flash: true, talk: true }), // la caserne a reçu un appel
-  sh(53.9, "fire", IL, [-10, -0.25, 0.6, -4], { flash: true }),       // ton père était déjà mort
-  sh(55.8, "family", PH, [12, -0.2, 0, -4], { flash: true }),         // sa voix était calme
-  sh(58.1, "bed", BD, [4, -0.45, 0, -6], { flash: true }),            // la chambre du fond
-  sh(60.5, "bed", B1, [-20, 0.05, 0.3, 0], { flash: true }),          // il attend, venez le chercher
-  sh(62.9, "door", DL, [10, -0.25, 0, -4]),                           // il ne l'avait pas oublié
-  sh(65.6, "family", PH, [-12, 0.3, 0.6, 4], { point: true }),        // son seul appel : recul lent
-  sh(68.6, "door", DL, [8, 0.2, 1.0, 2]),                             // remet la photo au mur : montée finale
+  sh(0.75, "cem", CW, [-10, -0.2, -1.2, 0]),                          // quelqu'un meurt : descente
+  sh(1.65, "family", PH, [28, -0.1, 0, -4], { vib: true, point: true }), // il a droit à un seul appel : orbite rapide
+  sh(3.2, "family", PH, [0, -0.5, 0, -10], { vib: true }),            // un seul : poussée forte
+  sh(3.9, "cem", CM, [-14, 0.1, 0.3, 0]),                             // vingt-quatre heures, personne de son choix
+  sh(6.4, "family", FH, [10, 0, 0.9, 0]),                             // chaque maison : montée
+  sh(7.1, "family", PH, [-8, -0.3, 0, -8], { point: true }),          // téléphone rouge : zoom
+  sh(8.2, "family", PH, [22, 0.05, 0.2, 0], { vib: true }),           // il ne sonne que pour ça
+  sh(9.5, "cem", CW, [14, -0.15, 0.6, 0]),                            // après un enterrement
+  sh(10.4, "family", FW, [-6, 0.3, 0.2, 4]),                          // toute la famille attend : recul lent
+  sh(11.7, "family", FF, [4, -0.08, 0, -2]),                          // en silence : presque fixe
+  sh(12.9, "bedCalm", B1, [-12, -0.3, 0.2, -4]),                      // Lucas a huit ans
+  sh(15.2, "bedCalm", B2, [24, 0.05, 0.1, 0]),                        // chaque soir : orbite basse
+  sh(17.2, "bedCalm", BD, [6, -0.35, 0, -4]),                         // s'il y a le feu, tu restes dans ta chambre
+  sh(20.0, "bedCalm", B3, [-10, -0.2, 0, -6], { talk: true }),        // je viendrai te chercher
+  sh(21.2, "bedCalm", B3, [18, 0.05, 0.3, 0], { talk: true }),        // Lucas répond toujours promis
+  sh(23.0, "fire", IW, [-12, -0.25, -0.8, 0], { flash: true }),       // une nuit d'hiver
+  sh(24.0, "fire", IL, [8, -0.35, 0, -6], { flash: true }),           // la maison brûle
+  sh(25.1, "fire", IT, [30, -0.1, 0.4, 0], { flash: true, wave: true }), // son père fonce dans la fumée : orbite rapide
+  sh(27.2, "bed", BD, [-6, -0.4, 0, -6], { flash: true }),            // les pompiers sortent Lucas : poussée vers la porte
+  sh(29.3, "fire", IW, [6, 0.25, 1.0, 4], { flash: true }),           // ne ressort jamais : recul lent
+  sh(31.3, "family", FW, [8, -0.35, 0, -4]),                          // le lendemain
+  sh(32.7, "family", PH, [-16, 0.05, 0.2, 0]),                        // attend devant le téléphone rouge
+  sh(34.0, "family", FF, [-10, -0.2, 0.2, -3]),                       // sa mère, sa grand-mère, Lucas
+  sh(36.1, "family", PH, [0, -0.3, 0, -6]),                           // les heures passent
+  sh(37.4, "family", PH, [0, -0.45, 0, -10]),                         // vingt-trois heures, minuit : plus serré
+  sh(39.2, "family", FF, [3, -0.05, 0, -2]),                          // le téléphone ne sonne pas : immobile
+  sh(40.9, "cem", CW, [-18, 0.2, 0.8, 0]),                            // le quartier chuchote
+  sh(42.7, "family", FF, [-6, -0.35, 0, -6]),                         // il n'a appelé personne, il n'aimait personne
+  sh(45.5, "bedCalm", B1, [14, -0.2, 0.3, -3]),                       // à l'école, on le répète à Lucas
+  sh(47.3, "bedCalm", BD, [-8, -0.3, 0, -5]),                         // il arrête de pleurer
+  sh(48.7, "bedCalm", B2, [4, 0.15, 0.5, 2]),                         // il arrête d'en parler : recul lent
+  sh(50.1, "door", DL, [16, -0.2, 0.3, 0]),                           // dix ans plus tard
+  sh(54.2, "door", DW, [-8, 0.15, 0.4, 2]),                           // le soir même
+  sh(55.8, "door", DO, [0, -0.4, 0, -6]),                             // frappe à sa porte : poussée
+  sh(57.2, "door", DO, [-14, -0.1, 0.2, 0], { flash: true, talk: true }), // la caserne a reçu un appel
+  sh(61.4, "fire", IL, [-10, -0.25, 0.6, -4], { flash: true }),       // ton père était déjà mort
+  sh(62.7, "family", PH, [12, -0.2, 0, -4], { flash: true }),         // sa voix était calme
+  sh(64.0, "bed", BD, [4, -0.45, 0, -6], { flash: true }),            // la chambre du fond
+  sh(66.1, "bed", B1, [-20, 0.05, 0.3, 0], { flash: true }),          // il attend, venez le chercher
+  sh(68.2, "door", DL, [10, -0.25, 0, -4]),                           // il ne l'avait pas oublié
+  sh(69.6, "family", PH, [-12, 0.3, 0.6, 4], { point: true }),        // son seul appel : recul lent
+  sh(72.5, "door", DL, [8, 0.2, 1.0, 2]),                             // remet la photo au mur : montée finale
 ];
 
 // facteur de recul appliqué à chaque caméra (1 = réglage précédent, plus serré)
