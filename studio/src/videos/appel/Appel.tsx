@@ -145,6 +145,34 @@ const tombstone = (g: THREE.Group, x: number, z: number, ry: number, w: number, 
   g.add(M(new THREE.ExtrudeGeometry(s, { depth: 0.09, bevelEnabled: true, bevelSize: 0.02, bevelThickness: 0.02, bevelSegments: 2, curveSegments: 16 }), std(c, 0.9), x, 0, z, 0, ry, 0));
 };
 
+// quartier : quinze maisons alignées sur deux rangs, arbres, lampadaires, voitures garées
+const quartier = (root: THREE.Group, zA = -13, zB = -21) => {
+  const walls = ["#c9a88a", "#b8c4d0", "#d9c6a0", "#a8b8a0", "#c4a0a0", "#9fb0c8"], roofs = ["#5a3a30", "#3a3f4a", "#6a4a3a"];
+  for (let i = 0; i < 15; i++) {
+    const z = i % 2 === 0 ? zA : zB, x = -21 + i * 3;
+    const w = 2.2 + hash(i, 101) * 0.8, h = 2.4 + hash(i, 102) * 1.4;
+    house(root, x + (hash(i, 103) - 0.5) * 0.6, z + (hash(i, 104) - 0.5) * 0.6, w, h, 2.2, walls[i % walls.length], roofs[i % roofs.length],
+      [[hash(i, 105) > 0.4, hash(i, 106) > 0.5], [hash(i, 107) > 0.5, hash(i, 108) > 0.4]]);
+    if (i % 2 === 1) tree(root, x + 1.6, z + 2.4, 0.9 + hash(i, 109) * 0.3, "#2f4a2c");
+    if (i % 3 === 0) root.add(C(0.03, 0.04, 2.6, "#1a1d24", x - 1.4, 1.3, z + 2.2), M(new THREE.SphereGeometry(0.14, 10, 8), glow("#ffb46a", 3), x - 1.4, 2.7, z + 2.2));
+    if (i % 4 === 2) root.add(B(1.6, 0.6, 0.8, "#5f6f88", x + 0.2, 0.35, z + 4.2, 0.1, 0.4, 0.2), B(0.9, 0.5, 0.7, "#4a5a72", x + 0.2, 0.9, z + 4.2, 0.1, 0.3, 0.2));
+  }
+};
+
+// fenêtre sur un quartier : silhouette de maisons éclairées sur le ciel
+const cityWindow = (root: THREE.Group, top: string, bottom: string, x: number, y: number, z: number, w: number, h: number, seed: number) => {
+  const cv = mkc(512, 512); const g = cv.getContext("2d")!;
+  const gr = g.createLinearGradient(0, 0, 0, 512); gr.addColorStop(0, top); gr.addColorStop(1, bottom); g.fillStyle = gr; g.fillRect(0, 0, 512, 512);
+  for (let i = 0; i < 14; i++) {
+    const bw = 30 + hash(i, seed) * 26, bh = 90 + hash(i, seed + 1) * 150, bx = i * 38 - 10, by = 472 - bh;
+    g.fillStyle = "rgba(24,22,40,0.9)"; g.fillRect(bx, by, bw, bh);
+    g.beginPath(); g.moveTo(bx - 4, by); g.lineTo(bx + bw / 2, by - 26); g.lineTo(bx + bw + 4, by); g.fill();
+    for (let r = 0; r < 3; r++) for (let c = 0; c < 2; c++) if (hash(i * 7 + r * 3 + c, seed + 5) > 0.45) { g.fillStyle = "rgba(255,200,120,0.95)"; g.fillRect(bx + 6 + c * (bw / 2 - 2), by + 14 + r * 34, 10, 14); }
+  }
+  g.fillStyle = "rgba(15,15,25,0.95)"; g.fillRect(0, 472, 512, 40);
+  root.add(M(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: tex(cv), toneMapped: false }), x, y, z));
+};
+
 // ---------- téléphone rouge à cadran ----------
 const telephone = (x: number, y: number, z: number, ry = 0, scale = 1.6) => {
   const g = new THREE.Group(); g.position.set(x, y, z); g.rotation.y = ry; g.scale.setScalar(scale);
@@ -220,7 +248,7 @@ const buildFamilyHouse = (): Built => {
   root.add(M(new THREE.BoxGeometry(0.2, 6, 12), std("#d9cfbd", 0.9), -4.5, 3, -2));
   root.add(B(12, 0.25, 0.06, "#f4efe6", 0, 0.12, -4.95, 0.01));
   // fenêtre sur ciel du soir, rideaux, cadre
-  sky(root, "#6a7aa8", "#e8b890", -1.6, 2.0, -4.85, 2.4, 2.0);
+  cityWindow(root, "#6a7aa8", "#e8b890", -1.6, 2.0, -4.85, 2.4, 2.0, 3);
   root.add(B(2.6, 0.1, 0.1, "#f4efe6", -1.6, 3.05, -4.82), B(2.6, 0.1, 0.1, "#f4efe6", -1.6, 0.95, -4.82), B(0.1, 2.2, 0.1, "#f4efe6", -1.6, 2.0, -4.82), B(0.1, 2.2, 0.1, "#f4efe6", -0.3, 2.0, -4.82), B(0.1, 2.2, 0.1, "#f4efe6", -2.9, 2.0, -4.82));
   root.add(B(0.5, 2.6, 0.08, "#8a9bb0", -3.2, 2.0, -4.75, 0.03), B(0.5, 2.6, 0.08, "#8a9bb0", 0.0, 2.0, -4.75, 0.03));
   // canapé gris-bleu, coussins, table basse en bois
@@ -256,7 +284,7 @@ const buildCemetery = (): Built => {
   // arbres (feuillage plus clair, jour)
   tree(root, -5.2, -8.2, 1.3, "#4a6a3a"); tree(root, 5.0, -9.0, 1.2, "#5a7a46"); tree(root, -1.2, -11, 1.5, "#4a6a3a");
   // colline et arbres du fond (pas de plaine vide)
-  root.add(M(new THREE.SphereGeometry(14, 16, 10), std("#2c3e2c", 1, 0, "#000", 0, { flatShading: true }), 0, -6, -26));
+  quartier(root, -13, -21);
   for (const [x, z, s] of [[-9, -20, 1.6], [-4, -22, 1.9], [2, -21, 1.7], [8, -19, 1.8], [12, -15, 1.4], [-13, -16, 1.5]] as const) tree(root, x, z, s, "#3a5a36");
   // terre fraîche, gravier, pierres au sol, buissons
   for (let i = 0; i < 6; i++) root.add(B(1.0 + hash(i, 40) * 0.6, 0.2, 1.4, "#4a3a2a", -6 + i * 2.4 + hash(i, 41), 0.1, -5.5 - hash(i, 42) * 3, 0.08, 1));
@@ -302,6 +330,7 @@ const buildHouseFire = (): Built => {
   root.add(new THREE.HemisphereLight("#5868b8", "#1a1622", 0.9));
   const moon = new THREE.SpotLight("#9fb2ff", 60, 0, 0.5, 0.7, 1.5); moon.position.set(-6, 12, 8); moon.target.position.set(0, 2, -1); moon.castShadow = true; moon.shadow.mapSize.set(2048, 2048);
   root.add(moon, moon.target);
+  quartier(root, -12, -20);
   // rue, trottoir, pelouse
   root.add(M(new THREE.PlaneGeometry(60, 40), std("#2a2d36", 0.95), 0, 0, 0, -Math.PI / 2));
   root.add(M(new THREE.PlaneGeometry(60, 30), std("#3a4a32", 1, 0, "#000", 0, { map: groundTex("#3a4a32", "#243020", "#50683a") }), -12, 0.005, -12, -Math.PI / 2));
@@ -394,7 +423,7 @@ const buildDoor = (): Built => {
   root.add(M(new THREE.BoxGeometry(6, 3.2, 0.15), std("#2b2f44", 0.95), 0, 1.6, -2.4));
   root.add(M(new THREE.BoxGeometry(0.15, 3.2, 6), std("#26293d", 0.95), -2.6, 1.6, -1.5));
   // porte ouverte : ciel du soir au centre
-  sky(root, "#3a3f78", "#f4a070", 0.9, 1.2, -2.25, 1.4, 2.4);
+  cityWindow(root, "#3a3f78", "#f4a070", 0.9, 1.2, -2.25, 1.4, 2.4, 5);
   root.add(B(0.12, 2.5, 0.12, "#4a3a2c", 0.1, 1.25, -2.22, 0.02), B(0.12, 2.5, 0.12, "#4a3a2c", 1.6, 1.25, -2.22, 0.02));
   // cadre photo : le père en uniforme
   const pc = mkc(128, 160); const g = pc.getContext("2d")!;

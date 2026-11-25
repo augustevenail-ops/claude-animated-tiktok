@@ -8,6 +8,7 @@ import { ThreeCanvas } from "@remotion/three";
 import { useThree, addAfterEffect } from "@react-three/fiber";
 import { APPEL_W, APPEL_H, SCENES, REG, REGPHONE, resetReg } from "./Appel";
 import WTS from "./words.json";
+import { faceTex, Expr, Spec } from "../monstre/chars";
 
 export const FPS = 30;
 export const VIDEO_SEC = 71.1;
@@ -15,11 +16,11 @@ export const APPEL_VIDEO_FRAMES = Math.ceil(VIDEO_SEC * FPS);
 
 // caméra : [px, py, pz, tx, ty, tz, fov] au début (a) et à la fin (b) du plan
 type Cam = [number, number, number, number, number, number, number];
-type Shot = { start: number; scene: string; a: Cam; b: Cam; vib?: boolean; talk?: boolean; flash?: boolean; wave?: boolean };
+type Shot = { start: number; scene: string; a: Cam; b: Cam; vib?: boolean; talk?: boolean; flash?: boolean; wave?: boolean; point?: boolean };
 
 const SHOTS: Shot[] = [
   { start: 0.0, scene: "family", a: [-2.6, 1.3, 4.3, 0.1, 1.1, -1.1, 46], b: [-2.2, 1.35, 3.6, 0.1, 1.1, -1.1, 44] },
-  { start: 3.6, scene: "family", vib: true, a: [0.3, 1.8, 2.9, 0, 0.98, -0.4, 40], b: [0.2, 1.7, 2.6, 0, 0.98, -0.4, 38] },
+  { start: 3.6, scene: "family", vib: true, point: true, a: [0.3, 1.8, 2.9, 0, 0.98, -0.4, 40], b: [0.2, 1.7, 2.6, 0, 0.98, -0.4, 38] },
   { start: 6.1, scene: "family", a: [0, 3.2, 4.8, 0, 0.9, -1.0, 50], b: [0, 3.4, 4.2, 0, 0.9, -1.0, 50] },
   { start: 9.6, scene: "cem", a: [1.5, 4.8, 8.5, 0, 0.9, -2.2, 44], b: [1.2, 3.6, 7.0, 0, 1.1, -2.2, 44] },
   { start: 12.3, scene: "cem", a: [-0.3, 1.0, 1.8, -0.3, 1.2, -1.0, 40], b: [-0.3, 1.1, 1.5, -0.3, 1.2, -1.0, 40] },
@@ -30,21 +31,34 @@ const SHOTS: Shot[] = [
   { start: 27.7, scene: "fire", flash: true, a: [0.6, 0.9, 7.8, -0.6, 3.2, -1.0, 52], b: [0.8, 0.9, 7.2, -0.6, 3.2, -1.0, 54] },
   { start: 30.7, scene: "fire", flash: true, wave: true, a: [2.5, 1.4, 6.0, 3.0, 1.4, 2.0, 46], b: [2.0, 1.4, 5.0, 3.0, 1.4, 2.0, 46] },
   { start: 33.1, scene: "family", a: [-2.6, 1.3, 4.3, 0.1, 1.1, -1.1, 46], b: [-2.8, 1.4, 4.6, 0.1, 1.1, -1.1, 46] },
-  { start: 36.3, scene: "family", a: [0, 1.9, 3.2, 0, 0.98, -0.4, 40], b: [0, 1.8, 3.0, 0, 0.98, -0.4, 40] },
-  { start: 38.5, scene: "family", a: [1.4, 1.7, 3.6, 0, 0.98, -0.4, 42], b: [1.2, 1.7, 3.3, 0, 0.98, -0.4, 42] },
+  { start: 36.3, scene: "family", point: true, a: [0, 1.9, 3.2, 0, 0.98, -0.4, 40], b: [0, 1.8, 3.0, 0, 0.98, -0.4, 40] },
+  { start: 38.5, scene: "family", point: true, a: [1.4, 1.7, 3.6, 0, 0.98, -0.4, 42], b: [1.2, 1.7, 3.3, 0, 0.98, -0.4, 42] },
   { start: 42.5, scene: "family", a: [-2.2, 1.2, 3.8, -0.6, 1.2, -1.8, 44], b: [-2.0, 1.2, 3.6, -0.6, 1.2, -1.8, 44] },
   { start: 44.2, scene: "door", a: [-1.6, 1.6, 4.8, -0.4, 1.3, -0.6, 46], b: [-1.2, 1.6, 4.2, -0.4, 1.3, -0.6, 46] },
   { start: 49.3, scene: "door", flash: true, a: [-2.6, 1.6, 2.6, 0.3, 1.3, -1.0, 48], b: [-2.2, 1.6, 3.0, 0.3, 1.3, -1.0, 48] },
   { start: 50.0, scene: "door", flash: true, talk: true, a: [0.2, 1.6, 4.2, 0.85, 1.3, -1.1, 42], b: [0.2, 1.6, 4.0, 0.85, 1.3, -1.1, 42] },
   { start: 60.0, scene: "bed", flash: true, a: [1.4, 1.5, 3.4, 0.2, 1.1, -1.2, 50], b: [1.4, 1.5, 3.0, 0.2, 1.1, -1.2, 50] },
   { start: 63.6, scene: "fire", flash: true, a: [0.6, 2.2, 10.5, -0.6, 2.8, -0.8, 50], b: [0.4, 2.3, 10.0, -0.6, 2.8, -0.8, 50] },
-  { start: 65.7, scene: "family", flash: true, a: [0.8, 1.7, 3.2, 0, 0.98, -0.4, 40], b: [0.7, 1.7, 3.0, 0, 0.98, -0.4, 40] },
+  { start: 65.7, scene: "family", point: true, flash: true, a: [0.8, 1.7, 3.2, 0, 0.98, -0.4, 40], b: [0.7, 1.7, 3.0, 0, 0.98, -0.4, 40] },
   { start: 68.7, scene: "door", flash: true, a: [-1.2, 1.6, 3.6, -0.4, 1.3, -0.6, 44], b: [-1.0, 1.6, 3.2, -0.4, 1.3, -0.6, 44] },
-  { start: 70.6, scene: "family", a: [0, 1.9, 3.2, 0, 0.98, -0.4, 40], b: [0, 1.9, 3.2, 0, 0.98, -0.4, 40] },
+  { start: 70.6, scene: "family", point: true, a: [0, 1.9, 3.2, 0, 0.98, -0.4, 40], b: [0, 1.9, 3.2, 0, 0.98, -0.4, 40] },
 ];
 
 // facteur de recul appliqué à chaque caméra (1 = réglage précédent, plus serré)
 const ZOOM_OUT = 1.9;
+
+// visage aux yeux fermés (même visage, paupières closes)
+const blinkCache = new Map<string, THREE.Texture>();
+const blinkTex = (s: Spec, e: Expr) => {
+  const key = `${s.name}_${e}`; const hit = blinkCache.get(key); if (hit) return hit;
+  const base = faceTex(s, e);
+  const cv = document.createElement("canvas"); cv.width = 256; cv.height = 256; const g = cv.getContext("2d")!;
+  g.drawImage(base.image as CanvasImageSource, 0, 0);
+  g.clearRect(82 - 26, 108 - 22, 52, 44); g.clearRect(174 - 26, 108 - 22, 52, 44);
+  g.strokeStyle = "#1b1410"; g.lineWidth = 8; g.lineCap = "round";
+  for (const x of [82, 174]) { g.beginPath(); g.moveTo(x - 18, 110); g.quadraticCurveTo(x, 116, x + 18, 110); g.stroke(); }
+  const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; blinkCache.set(key, t); return t;
+};
 
 const shotIndex = (t: number) => { let k = 0; for (let i = 0; i < SHOTS.length; i++) if (SHOTS[i].start <= t) k = i; return k; };
 const shotEnd = (k: number) => (k + 1 < SHOTS.length ? SHOTS[k + 1].start : VIDEO_SEC);
@@ -69,17 +83,24 @@ const VideoInner: React.FC<{ t: number }> = ({ t }) => {
   three.background = new THREE.Color(b.bg);
   three.fog = b.fog;
   three.environmentIntensity = 0.2;
-  const e = ease(u);
+  const e = u;
   const c = sh.a.map((v, i) => v + (sh.b[i] - v) * e);
+  const hx = Math.sin(t * 2.3) * 0.04, hy = Math.sin(t * 1.7 + 1) * 0.03;
   // recul de caméra : tous les plans sont plus larges, sujets dans la zone centrale (marges TikTok)
   const zo = ZOOM_OUT;
   const px = c[3] + (c[0] - c[3]) * zo, py = c[4] + (c[1] - c[4]) * zo, pz = c[5] + (c[2] - c[5]) * zo;
   const cm = camera as THREE.PerspectiveCamera;
-  cm.position.set(px, py, pz); cm.lookAt(c[3], c[4], c[5]); cm.fov = c[6]; cm.near = 0.05; cm.far = 200; cm.updateProjectionMatrix();
+  cm.position.set(px + hx, py + hy, pz); cm.lookAt(c[3] + hx * 0.5, c[4] + hy * 0.5, c[5]); cm.fov = c[6]; cm.near = 0.05; cm.far = 200; cm.updateProjectionMatrix();
   // animation des personnages : respiration, bras levés (plans marqués), parole du vieux pompier
   for (const r of built.actors) {
-    const w = sh.wave && (r.name === "guard" || r.name === "guard2") ? "both" : undefined;
-    r.a.pose(t, { expr: r.expr, talk: !!sh.talk && r.name === "c3", wave: w });
+    let w: "L" | "R" | "both" | undefined = sh.wave && (r.name === "guard" || r.name === "guard2") ? "both" : undefined;
+    if (sh.talk && r.name === "hero") w = "R";
+    if (sh.talk && r.name === "c3") w = "L";
+    r.a.pose(t, { expr: r.expr, talk: !!sh.talk && r.name === "c3", wave: w, point: sh.point && r.name === "hero" ? 0.9 : undefined });
+    const m = r.a.face.material as THREE.MeshStandardMaterial;
+    const ph = (t + r.a.seed * 0.37) % 3.2;
+    const target = ph < 0.13 ? blinkTex(r.a.s, r.expr) : faceTex(r.a.s, r.expr);
+    if (m.map !== target) { m.map = target; m.needsUpdate = true; }
   }
   // téléphone : vibration rapide pendant les plans marqués
   if (built.phone) {
