@@ -133,10 +133,10 @@
  },
  {
   "phrase": 4,
-  "take": "p0_1.wav",
-  "drop": -10.62,
-  "mean": 0.974,
-  "min": 0.945,
+  "take": "p0_0.wav",
+  "drop": -8.31,
+  "mean": 0.983,
+  "min": 0.933,
   "drops": [
    [
     "p0_0.wav",
@@ -892,10 +892,10 @@
  },
  {
   "phrase": 27,
-  "take": "p6_1.wav",
-  "drop": -3.25,
-  "mean": 0.942,
-  "min": 0.601,
+  "take": "p6_5.wav",
+  "drop": -3.61,
+  "mean": 0.924,
+  "min": 0.281,
   "drops": [
    [
     "p6_0.wav",
@@ -925,10 +925,10 @@
  },
  {
   "phrase": 28,
-  "take": "p7_5.wav",
-  "drop": -8.11,
-  "mean": 0.99,
-  "min": 0.911,
+  "take": "p7_0.wav",
+  "drop": -7.93,
+  "mean": 0.978,
+  "min": 0.922,
   "drops": [
    [
     "p7_0.wav",

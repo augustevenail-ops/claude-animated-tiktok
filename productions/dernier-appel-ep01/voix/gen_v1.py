@@ -74,6 +74,7 @@ def analyse(f, a, b):
         res.append(dict(seg=(s0, cut), mean=float(np.mean(scs)), min=float(min(scs)), hole=best * 0.01, sd=sdq, drop=drop))
     return x, res
 SEL = []
+FORCE = {4: "p0_0.wav", 27: "p6_5.wav", 28: "p7_0.wav"}   # prises écartées : mots inventés par la synthèse en fin de prise (p0_1 « et haine au tout », p6_1 « ils ont nommé... »)
 out, rep = [np.zeros(int(0.2 * SR))], []
 for p, (a, b) in enumerate(PASS):
     cand = [(f, *analyse(f, a, b)) for f in sorted(RAW.glob(f"p{p}_*.wav"))]
@@ -81,6 +82,7 @@ for p, (a, b) in enumerate(PASS):
         txt = S[a + q].rstrip(" »"); question = txt.endswith("?")
         cs = [(f, x, R[q]) for f, x, R in cand]
         good = [c for c in cs if c[2]["min"] >= 0.3 and c[2]["mean"] >= 0.88 and c[2]["hole"] <= 0.5] or cs
+        if a + q in FORCE: good = [c for c in cs if c[0].name == FORCE[a + q]]
         key = (lambda c: 0.5 * c[2]["sd"] + 5 * c[2]["mean"]) if question else (lambda c: -c[2]["drop"] + 0.3 * c[2]["sd"] + 5 * c[2]["mean"])
         f, x, A = max(good, key=key)
         s0, s1 = A["seg"]; seg = x[int(s0 * SR):int(s1 * SR)].copy()
