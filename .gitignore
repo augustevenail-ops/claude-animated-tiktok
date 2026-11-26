@@ -49,3 +49,10 @@ productions/gentils-ep01/audio/v*_music.wav
 productions/gentils-ep01/render/chunks/
 productions/gentils-ep01/render/*.log
 productions/gentils-ep01/final/
+productions/nom-ep01/voix/raw/
+productions/nom-ep01/audio/v*_raw.wav
+productions/nom-ep01/audio/v*_sfx.wav
+productions/nom-ep01/audio/v*_music.wav
+productions/nom-ep01/render/chunks/
+productions/nom-ep01/render/*.log
+productions/nom-ep01/final/
