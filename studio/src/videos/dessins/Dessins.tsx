@@ -30,7 +30,7 @@ const Inner: React.FC = () => {
   const { camera, scene, invalidate, gl } = useThree();
   const { w, root } = useMemo(build, []);
   const fx = useMemo(() => {
-    const bloom = new BloomEffect({ blendFunction: BlendFunction.ADD, intensity: 1.1, luminanceThreshold: 0.9, luminanceSmoothing: 0.25, mipmapBlur: true, radius: 0.75, levels: 8 });
+    const bloom = new BloomEffect({ blendFunction: BlendFunction.ADD, intensity: 1.1, luminanceThreshold: 0.82, luminanceSmoothing: 0.3, mipmapBlur: true, radius: 0.75, levels: 8 });
     const mip = bloom.mipmapBlurPass, setSize = mip.setSize.bind(mip);
     mip.setSize = (ww: number, h: number) => setSize(Math.round((1920 * ww) / Math.max(h, 1)), 1920);
     return { bloom, tone: new ToneMappingEffect({ mode: ToneMappingMode.AGX }), sat: new HueSaturationEffect({ saturation: 0.15 }),

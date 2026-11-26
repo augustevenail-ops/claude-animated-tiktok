@@ -51,11 +51,11 @@ export const buildCast = (root: THREE.Object3D) => {
 };
 
 // ---------------- ambiances
-const DAY: Partial<Grade> = { bg: "#8cc4f2", fog: "#a8cdf0", fogD: 0.0022, sat: 0.34, con: 0.16, bri: -0.035, bloom: 0.75, env: 0.4 };
-const IN: Partial<Grade> = { bg: "#000", fog: "#000", fogD: 0, sat: 0.32, con: 0.15, bri: -0.035, bloom: 0.75, env: 0.45 };
-const HALLG: Partial<Grade> = { ...IN, sat: 0.28, con: 0.16 };
-const EMPTY: Partial<Grade> = { bg: "#b8bcc4", fog: "#c4c8d0", fogD: 0.007, sat: -0.3, con: 0.18, bri: -0.03, bloom: 0.7, env: 0.35 };
-const OTHG: Partial<Grade> = { bg: "#d8d0c2", fog: "#d4ccbe", fogD: 0.004, sat: 0.26, con: 0.2, bri: -0.06, bloom: 0.4, env: 0.35 };
+const DAY: Partial<Grade> = { bg: "#8cc4f2", fog: "#a8cdf0", fogD: 0.0022, sat: 0.58, con: 0.17, bri: -0.035, bloom: 0.95, env: 0.4 };
+const IN: Partial<Grade> = { bg: "#000", fog: "#000", fogD: 0, sat: 0.55, con: 0.16, bri: -0.035, bloom: 0.95, env: 0.45 };
+const HALLG: Partial<Grade> = { ...IN, sat: 0.5, con: 0.17 };
+const EMPTY: Partial<Grade> = { bg: "#b8bcc4", fog: "#c4c8d0", fogD: 0.007, sat: -0.12, con: 0.18, bri: -0.03, bloom: 0.8, env: 0.35 };
+const OTHG: Partial<Grade> = { bg: "#d8d0c2", fog: "#d4ccbe", fogD: 0.004, sat: 0.45, con: 0.2, bri: -0.06, bloom: 0.6, env: 0.35 };
 
 // ---------------- mises en place récurrentes
 const HB = (w: World) => w.actors.hero;
@@ -128,10 +128,10 @@ export const SHOTS: Shot[] = [
   // ——— 6 Et boum ! Une installation de jeu géante …
   { w: "Et boum", set: "BED", fr: "Plan large : l'installation se trace en or au milieu de la chambre, travelling circulaire", g: IN, cam: (_w, u) => { const a = -0.75 + u * 0.5; return G(at("BED", Math.sin(a) * 2.1, 1.9, 0.6 + Math.cos(a) * 1.6), at("BED", Math.sin(a + 0.12) * 2.1, 1.85, 0.6 + Math.cos(a + 0.12) * 1.6), at("BED", 0.3, 0.75, -0.2), at("BED", 0.3, 0.75, -0.2), 62, u); },
     st: (w, u, t) => { place(HB(w), "BED", 1.6, 0, 1.4, -2.0); HB(w).pose(t, { expr: "scared", armsUp: 0.15 }); w.sets.bedPage.draw(1); pcSet(w, cl(u * 1.15), t); } },
-  { w: "apparue au milieu", set: "BED", fr: "Le héros émerveillé, lumière RGB sur le visage", g: IN, cam: (w, u) => sideCam(HB(w), 0.6, 1.2, 0.1, u, 0.15, 38),
+  { w: "apparue au milieu", set: "BED", fr: "Le héros émerveillé, lumière RGB sur le visage", g: IN, cam: (w, u) => sideCam(HB(w), 0.6, 1.8, 0.15, u, 0.15, 40),
     st: (w, _u, t) => { place(HB(w), "BED", 1.6, 0, 1.4, -2.0); HB(w).pose(t, { expr: "happy", cheer: true }); pcSet(w, 1, t); } },
   // ——— 7 Seul petit souci : … clavier à l'envers.
-  { w: "Seul petit souci", set: "BED", fr: "Retour sur la page : le clavier dessiné (gros plan)", g: { ...IN, sat: 0.18 }, cam: (_w, u) => G(at("BED", 1.6, 1.4, -1.2), at("BED", 1.65, 1.32, -1.25), at("BED", 2.02, 0.75, -1.35), at("BED", 2.02, 0.75, -1.35), 36, u),
+  { w: "Seul petit souci", set: "BED", fr: "Retour sur la page : le clavier dessiné (gros plan)", g: { ...IN, sat: 0.38 }, cam: (_w, u) => G(at("BED", 1.6, 1.4, -1.2), at("BED", 1.65, 1.32, -1.25), at("BED", 2.02, 0.75, -1.35), at("BED", 2.02, 0.75, -1.35), 36, u),
     st: (w, _u, t) => { heroDeskBed(w, t, "worried", false); HB(w).root.visible = false; w.sets.bedPage.draw(1); pcSet(w, 1, t); } },
   { w: "j'avais dessiné le clavier", set: "BED", fr: "Gros plan du vrai clavier : retourné, touches dessous", g: IN, cam: (_w, u) => G(at("BED", 1.0, 1.75, 1.9), at("BED", 0.85, 1.65, 1.75), at("BED", 0.05, 0.85, 0.45), at("BED", 0.05, 0.85, 0.45), 44, u),
     st: (w, _u, t) => { pcSet(w, 1, t); } },
@@ -199,26 +199,26 @@ export const SHOTS: Shot[] = [
     st: (w, u, t) => { benchHero(w, t, "worried"); (w.sets.yardBook.children[2] as THREE.Mesh).material = pageOf(w, "girlFix", 0.88 + u * 0.12); girlAt(w, "YARD", -4.1, 1.9, -2.9, t, "gummy"); } },
   { w: "rien à faire", set: "YARD", fr: "Elle sourit toujours sans dents ; lui, dépité (plan à deux large)", g: DAY, cam: (_w, u) => G(at("YARD", -2.4, 1.3, 5.2), at("YARD", -2.8, 1.25, 4.8), at("YARD", -4.3, 0.9, 1.3), at("YARD", -4.3, 0.9, 1.3), 40, u),
     st: (w, _u, t) => { benchHero(w, t, "sad"); girlAt(w, "YARD", -4.1, 1.9, -2.9, t, "gummy"); } },
-  { w: "une fois qu'une chose", set: "YARD", fr: "La page corrigée en gros plan : rien ne change", g: { ...DAY, sat: 0.15 }, cam: (w, u) => bookCam(HB(w), w.sets.yardBook, u, 0.05, 30),
+  { w: "une fois qu'une chose", set: "YARD", fr: "La page corrigée en gros plan : rien ne change", g: { ...DAY, sat: 0.35 }, cam: (w, u) => bookCam(HB(w), w.sets.yardBook, u, 0.05, 30),
     st: (w, _u, t) => { benchHero(w, t, "sad"); (w.sets.yardBook.children[2] as THREE.Mesh).material = pageOf(w, "girlFix", 1); girlAt(w, "YARD", -4.1, 1.9, -2.9, t, "gummy"); } },
   // ——— 19 Puis, juste avant la sonnerie, un truc étrange s'est produit.
   { w: "Puis, juste avant", set: "HALL", fr: "L'horloge du couloir, l'aiguille avance (gros plan)", g: HALLG, cam: (_w, u) => G(at("HALL", 1.0, 2.45, 1.6), at("HALL", 1.1, 2.5, 1.8), at("HALL", 1.76, 2.6, 2.4), at("HALL", 1.76, 2.6, 2.4), 32, u),
     st: (w, u, t) => { hallReset(w, t); w.sets.clockM.rotation.z = -(5.5 + u * 0.4); w.sets.clockH.rotation.z = -(3.0 + u * 0.03); } },
   { w: "la sonnerie", set: "HALL", fr: "La sonnerie rouge vibre (contre-plongée)", g: HALLG, cam: (_w, u) => G(at("HALL", -0.8, 1.9, 2.6), at("HALL", -0.9, 2.0, 2.4), at("HALL", -1.75, 2.75, 1.5), at("HALL", -1.75, 2.75, 1.5), 36, u),
     st: (w, _u, t) => { hallReset(w, t); w.sets.bell.position.x = -1.75 + Math.sin(t * 60) * 0.006; } },
-  { w: "un truc étrange", set: "CLS", fr: "Classe : les élèves lèvent la tête, inquiets (plan large)", g: { ...IN, sat: 0.15 }, cam: (_w, u) => G(at("CLS", 0.5, 1.6, -3.2), at("CLS", 0.3, 1.5, -2.8), at("CLS", -1.2, 0.95, 1.5), at("CLS", -1.2, 0.95, 1.5), 46, u),
+  { w: "un truc étrange", set: "CLS", fr: "Classe : les élèves lèvent la tête, inquiets (plan large)", g: { ...IN, sat: 0.35 }, cam: (_w, u) => G(at("CLS", 0.5, 1.6, -3.2), at("CLS", 0.3, 1.5, -2.8), at("CLS", -1.2, 0.95, 1.5), at("CLS", -1.2, 0.95, 1.5), 46, u),
     st: (w, _u, t) => { classKids(w, t, "worried", 0.3); w.sets.pool.set(1, t); } },
   // ——— 20 Tous les dessins de l'école ont commencé à disparaître.
-  { w: "Tous les dessins", set: "CLS", fr: "La piscine se défait : traits dorés puis plus rien", g: { ...IN, sat: 0.15 }, cam: (_w, u) => G(at("CLS", -0.4, 2.0, 3.4), at("CLS", -0.1, 1.9, 3.1), at("CLS", 2.4, 0.4, 1.0), at("CLS", 2.4, 0.4, 0.9), 44, u),
+  { w: "Tous les dessins", set: "CLS", fr: "La piscine se défait : traits dorés puis plus rien", g: { ...IN, sat: 0.35 }, cam: (_w, u) => G(at("CLS", -0.4, 2.0, 3.4), at("CLS", -0.1, 1.9, 3.1), at("CLS", 2.4, 0.4, 1.0), at("CLS", 2.4, 0.4, 0.9), 44, u),
     st: (w, u, t) => { classKids(w, t, "scared", 0.9); w.sets.pool.set(1 - cl(u * 1.1), t, 0.12); } },
-  { w: "ont commencé à disparaître", set: "YARD", fr: "Dans la cour, la voiture de sport s'efface", g: { ...DAY, sat: 0.15 }, cam: (_w, u) => G(at("YARD", 9.5, 1.8, 7.5), at("YARD", 9.0, 1.7, 7.0), at("YARD", 5.2, 0.6, 3.2), at("YARD", 5.2, 0.6, 3.2), 40, u),
+  { w: "ont commencé à disparaître", set: "YARD", fr: "Dans la cour, la voiture de sport s'efface", g: { ...DAY, sat: 0.35 }, cam: (_w, u) => G(at("YARD", 9.5, 1.8, 7.5), at("YARD", 9.0, 1.7, 7.0), at("YARD", 5.2, 0.6, 3.2), at("YARD", 5.2, 0.6, 3.2), 40, u),
     st: (w, u, t) => { const a = w.actors.k1; place(a, "YARD", 2.0, 0, 5.8, 2.6); a.pose(t, { expr: "scared", cover: 0.6 }); w.sets.car.set(1 - cl(u * 1.1), t, 0.15); w.actors.girl.root.visible = false; } },
   // ——— 21 Mon PC s'est volatilisé. Le dinosaure a disparu. Même ma petite amie s'est évaporée.
-  { w: "Mon PC", set: "BED", fr: "Chambre vide : le PC se volatilise en traits dorés", g: { ...IN, sat: 0.15 }, cam: (_w, u) => G(at("BED", -1.8, 1.4, 2.0), at("BED", -1.6, 1.35, 1.8), at("BED", 0.1, 0.8, 0.2), at("BED", 0.1, 0.8, 0.2), 44, u),
+  { w: "Mon PC", set: "BED", fr: "Chambre vide : le PC se volatilise en traits dorés", g: { ...IN, sat: 0.35 }, cam: (_w, u) => G(at("BED", -1.8, 1.4, 2.0), at("BED", -1.6, 1.35, 1.8), at("BED", 0.1, 0.8, 0.2), at("BED", 0.1, 0.8, 0.2), 44, u),
     st: (w, u, t) => { pcSet(w, 1 - cl(u * 1.15), t); } },
   { w: "Le dinosaure a disparu", set: "HALL", fr: "Le dinosaure s'efface, Jaden tend les bras vers lui", g: HALLG, cam: (_w, u) => G(at("HALL", 1.2, 1.1, -3.0), at("HALL", 1.1, 1.15, -3.4), at("HALL", -0.2, 1.4, -8.5), at("HALL", -0.2, 1.4, -8.5), 46, u),
     st: (w, u, t) => { hallReset(w, t); const a = w.actors.jaden; place(a, "HALL", -1.0, 0, -5.5, Math.PI); a.pose(t, { expr: "sad", reach: 0.8 }); dinoAt(w, -0.2, -9.5, 0, t, 0, 0, 1 - cl(u * 1.15)); } },
-  { w: "Même ma petite amie", set: "YARD", fr: "La fille s'évapore devant le banc, le héros tend la main", g: { ...DAY, sat: 0.15 }, cam: (_w, u) => G(at("YARD", -6.8, 1.1, 3.8), at("YARD", -6.4, 1.1, 3.4), at("YARD", -4.2, 0.9, 1.5), at("YARD", -4.2, 0.9, 1.5), 40, u),
+  { w: "Même ma petite amie", set: "YARD", fr: "La fille s'évapore devant le banc, le héros tend la main", g: { ...DAY, sat: 0.35 }, cam: (_w, u) => G(at("YARD", -6.8, 1.1, 3.8), at("YARD", -6.4, 1.1, 3.4), at("YARD", -4.2, 0.9, 1.5), at("YARD", -4.2, 0.9, 1.5), 40, u),
     st: (w, u, t) => { w.sets.car.set(0, t); benchHero(w, t, "sad", false); HB(w).pose(t, { sit: true, expr: "sad", reach: 0.7 }); girlAt(w, "YARD", -4.1, 1.9, -2.9, t, "gummy", 1 - cl(u * 1.15)); } },
   // ——— 22 Tout le monde s'est précipité dans le couloir, et là, on a compris.
   { w: "Tout le monde s'est précipité", set: "HALL", fr: "Les élèves déboulent dans le couloir (contre-plongée au sol)", g: HALLG, cam: (_w, u) => G(at("HALL", 0.6, 0.35, -10), at("HALL", 0.5, 0.4, -11), at("HALL", 0, 1.1, 0), at("HALL", 0, 1.0, -2), 48, u),
@@ -268,15 +268,15 @@ export const SHOTS: Shot[] = [
   { w: "Tout le monde a applaudi", set: "HALL", fr: "Les élèves applaudissent et sautent, le héros au centre", g: HALLG, cam: (_w, u) => G(at("HALL", 0.4, 1.3, -11.0), at("HALL", 0.3, 1.25, -10.5), at("HALL", 0, 1.0, -6.0), at("HALL", 0, 1.0, -6.0), 44, u),
     st: (w, _u, t) => { eraserAt(w, -13.2, t, 1, 1); w.sets.eraser.root.position.y = 1.15; hallKids(w, t, -6.5, "happy", 0, true); } },
   // ——— 30 Mais sur le mur, sous la zone effacée, il y avait un autre dessin.
-  { w: "Mais sur le mur", set: "HALL", fr: "Long travelling avant dans le couloir blanc vers le mur du fond", g: { ...HALLG, sat: 0.0 }, cam: (_w, u) => G(at("HALL", 0, 1.5, -15.5), at("HALL", 0, 1.5, -33), at("HALL", 0, 1.5, -42), at("HALL", 0, 1.5, -42), 44, u),
+  { w: "Mais sur le mur", set: "HALL", fr: "Long travelling avant dans le couloir blanc vers le mur du fond", g: { ...HALLG, sat: 0.2 }, cam: (_w, u) => G(at("HALL", 0, 1.5, -15.5), at("HALL", 0, 1.5, -33), at("HALL", 0, 1.5, -42), at("HALL", 0, 1.5, -42), 44, u),
     st: (w, _u, t) => { eraserAt(w, -13.2, t, 1, 1); w.sets.eraser.root.visible = false; w.sets.muralM.map = w.sets.mural2; w.sets.muralM.emissiveIntensity = 0; w.sets.muralM.needsUpdate = true; } },
   // ——— 31 Notre directeur, avec ces mots : « … »
-  { w: "Notre directeur", set: "HALL", fr: "Le portrait du directeur au crayon (gros plan, travelling vertical)", g: { ...HALLG, sat: 0.0 }, cam: (_w, u) => G(at("HALL", 0, 2.1, -39.6), at("HALL", 0, 1.95, -39.4), at("HALL", 0, 2.1, -42), at("HALL", 0, 1.95, -42), 38, u),
+  { w: "Notre directeur", set: "HALL", fr: "Le portrait du directeur au crayon (gros plan, travelling vertical)", g: { ...HALLG, sat: 0.2 }, cam: (_w, u) => G(at("HALL", 0, 2.1, -39.6), at("HALL", 0, 1.95, -39.4), at("HALL", 0, 2.1, -42), at("HALL", 0, 1.95, -42), 38, u),
     st: (w, _u, t) => { eraserAt(w, -13.2, t, 1, 1); w.sets.eraser.root.visible = false; w.sets.muralM.map = w.sets.mural2; } },
-  { w: "Tout ce que vous dessinez", set: "HALL", fr: "Le message écrit sous le portrait, lent travelling arrière", g: { ...HALLG, sat: -0.1 }, cam: (_w, u) => G(at("HALL", 0, 1.15, -40.1), at("HALL", 0, 1.25, -38.8), at("HALL", 0, 1.2, -42), at("HALL", 0, 1.35, -42), 38, u),
+  { w: "Tout ce que vous dessinez", set: "HALL", fr: "Le message écrit sous le portrait, lent travelling arrière", g: { ...HALLG, sat: 0.1 }, cam: (_w, u) => G(at("HALL", 0, 1.15, -40.1), at("HALL", 0, 1.25, -38.8), at("HALL", 0, 1.2, -42), at("HALL", 0, 1.35, -42), 38, u),
     st: (w, _u, t) => { eraserAt(w, -13.2, t, 1, 1); w.sets.eraser.root.visible = false; w.sets.muralM.map = w.sets.mural2; } },
   // ——— 32 J'ai regardé dehors : les rues étaient totalement désertes.
-  { w: "J'ai regardé dehors", set: "CLS", fr: "Le héros à la fenêtre de la classe, de dos", g: { ...IN, sat: 0.0 }, cam: (_w, u) => G(at("CLS", 0.6, 1.8, 2.2), at("CLS", 0.9, 1.75, 1.9), at("CLS", 4.0, 1.4, -0.3), at("CLS", 4.0, 1.4, -0.3), 44, u),
+  { w: "J'ai regardé dehors", set: "CLS", fr: "Le héros à la fenêtre de la classe, de dos", g: { ...IN, sat: 0.2 }, cam: (_w, u) => G(at("CLS", 0.6, 1.8, 2.2), at("CLS", 0.9, 1.75, 1.9), at("CLS", 4.0, 1.4, -0.3), at("CLS", 4.0, 1.4, -0.3), 44, u),
     st: (w, _u, t) => { w.sets.pool.set(0, t); classKids(w, t, "worried", 0); for (const k of ["k1", "k2", "k3", "k4", "k5", "k6", "ami"]) w.actors[k].root.visible = false; place(HB(w), "CLS", 3.6, 0, 0.0, Math.PI / 2); HB(w).pose(t, { expr: "worried" }); } },
   { w: "les rues étaient totalement désertes", set: "TOWN", fr: "La rue vide, sans personne ni voiture, plan large fixe puis léger travelling", g: EMPTY, cam: (_w, u) => G(at("TOWN", -16, 2.2, 3.2), at("TOWN", -13, 2.1, 3.0), at("TOWN", 10, 1.2, 1.0), at("TOWN", 10, 1.2, 1.2), 40, u),
     st: (w, _u, t) => { townCrowd(w, t, false); for (const c of w.sets.cars) c.visible = false; houseState(w, 1, 1, t); } },
@@ -362,7 +362,7 @@ export const shotAt = (f: number) => { let i = 0; while (i + 1 < START.length &&
 export const uOf = (i: number, f: number) => { const a = START[i], b = i + 1 < START.length ? START[i + 1] : TOTAL; return Math.min(1, Math.max(0, (f - a) / Math.max(1, b - a - 1))); };
 
 const ERI = SHOTS.findIndex((x) => x.w === "Quelqu'un avait dessiné");
-const DEF: Grade = { sat: 0.25, con: 0.06, bri: 0, bloom: 0.9, bg: "#000", fog: "#000", fogD: 0, env: 0.5, snow: false };
+const DEF: Grade = { sat: 0.45, con: 0.06, bri: 0, bloom: 0.9, bg: "#000", fog: "#000", fogD: 0, env: 0.5, snow: false };
 export const gradeOf = (i: number): Grade => ({ ...DEF, ...(SHOTS[i].g ?? {}) });
 
 /** remet le monde à zéro puis applique le plan i */
