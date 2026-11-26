@@ -279,7 +279,7 @@ const crowd = (p: THREE.Object3D, n: number) => {
       dummy.position.set(x + (hash(i, 1) - 0.5) * 0.12, y, z); dummy.rotation.set(0, Math.atan2(-x, -z) + (hash(i, 2) - 0.5) * 0.2, 0); const s = 0.92 + hash(i, 3) * 0.16; dummy.scale.set(s, s, s); dummy.updateMatrix();
       for (const m of meshes) m.setMatrixAt(i, dummy.matrix); fm.setMatrixAt(i, dummy.matrix); } }
   // gradins
-  for (let row = 0; row < 40; row++) { const R = 4.5 + row * 0.85; const st = add(p, new THREE.CylinderGeometry(R + 0.42, R + 0.42, 0.32, 96, 1, false, -Math.PI * 0.47, Math.PI * 0.94), M(row % 2 ? "#c9bfae" : "#bcb19f", 0.85), 0, row * 0.32 - 0.16, 0, Math.PI, false); st.receiveShadow = true; }
+  for (let row = 0; row < 40; row++) { const R = 4.5 + row * 0.85; const st = add(p, new THREE.CylinderGeometry(R + 0.42, R + 0.42, 0.32, 96, 1, false, -Math.PI * 0.47, Math.PI * 0.94), M(row % 2 ? "#c9bfae" : "#bcb19f", 0.85), 0, row * 0.32 - 0.16, 0, 0, false); st.receiveShadow = true; }
 };
 
 // ============================================================ décors

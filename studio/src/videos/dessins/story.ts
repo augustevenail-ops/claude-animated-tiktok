@@ -276,7 +276,7 @@ export const SHOTS: Shot[] = [
   { w: "Tout ce que vous dessinez", set: "HALL", fr: "Le message écrit sous le portrait, lent travelling arrière", g: { ...HALLG, sat: 0.1 }, cam: (_w, u) => G(at("HALL", 0, 1.15, -40.1), at("HALL", 0, 1.25, -38.8), at("HALL", 0, 1.2, -42), at("HALL", 0, 1.35, -42), 38, u),
     st: (w, _u, t) => { eraserAt(w, -13.2, t, 1, 1); w.sets.eraser.root.visible = false; w.sets.muralM.map = w.sets.mural2; } },
   // ——— 32 J'ai regardé dehors : les rues étaient totalement désertes.
-  { w: "J'ai regardé dehors", set: "CLS", fr: "Le héros à la fenêtre de la classe, de dos", g: { ...IN, sat: 0.2 }, cam: (_w, u) => G(at("CLS", 0.6, 1.8, 2.2), at("CLS", 0.9, 1.75, 1.9), at("CLS", 4.0, 1.4, -0.3), at("CLS", 4.0, 1.4, -0.3), 44, u),
+  { w: "J'ai regardé dehors", set: "CLS", fr: "Le héros à la fenêtre de la classe, de dos", g: { ...IN, sat: 0.2 }, cam: (_w, u) => G(at("CLS", -0.6, 2.0, 3.2), at("CLS", -0.3, 1.95, 2.9), at("CLS", 4.0, 1.4, -0.3), at("CLS", 4.0, 1.4, -0.3), 44, u),
     st: (w, _u, t) => { w.sets.pool.set(0, t); classKids(w, t, "worried", 0); for (const k of ["k1", "k2", "k3", "k4", "k5", "k6", "ami"]) w.actors[k].root.visible = false; place(HB(w), "CLS", 3.6, 0, 0.0, Math.PI / 2); HB(w).pose(t, { expr: "worried" }); } },
   { w: "les rues étaient totalement désertes", set: "TOWN", fr: "La rue vide, sans personne ni voiture, plan large fixe puis léger travelling", g: EMPTY, cam: (_w, u) => G(at("TOWN", -16, 2.2, 3.2), at("TOWN", -13, 2.1, 3.0), at("TOWN", 10, 1.2, 1.0), at("TOWN", 10, 1.2, 1.2), 40, u),
     st: (w, _u, t) => { townCrowd(w, t, false); for (const c of w.sets.cars) c.visible = false; houseState(w, 1, 1, t); } },
