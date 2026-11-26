@@ -39,3 +39,5 @@ productions/dernier-appel-ep01/final/
 # rendus intermédiaires Les Dessins
 productions/dessins-ep01/render/chunks/
 productions/dessins-ep01/render/*.log
+productions/dessins-ep01/final/
+productions/dessins-ep01/render/list.txt
