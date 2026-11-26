@@ -51,11 +51,11 @@ export const buildCast = (root: THREE.Object3D) => {
 };
 
 // ---------------- ambiances
-const DAY: Partial<Grade> = { bg: "#8cc4f2", fog: "#cfe6ff", fogD: 0.006, sat: 0.28, con: 0.06, bloom: 0.9, env: 0.5 };
-const IN: Partial<Grade> = { bg: "#000", fog: "#000", fogD: 0, sat: 0.26, con: 0.06, bloom: 0.9, env: 0.6 };
-const HALLG: Partial<Grade> = { ...IN, sat: 0.22, con: 0.08 };
-const EMPTY: Partial<Grade> = { bg: "#c8ccd4", fog: "#d8dce4", fogD: 0.012, sat: -0.35, con: 0.12, bloom: 0.8, env: 0.4 };
-const OTHG: Partial<Grade> = { bg: "#f4f1ea", fog: "#f4f1ea", fogD: 0.016, sat: 0.1, con: 0.08, bloom: 1.0, env: 0.7 };
+const DAY: Partial<Grade> = { bg: "#8cc4f2", fog: "#a8cdf0", fogD: 0.0022, sat: 0.34, con: 0.16, bri: -0.035, bloom: 0.75, env: 0.4 };
+const IN: Partial<Grade> = { bg: "#000", fog: "#000", fogD: 0, sat: 0.32, con: 0.15, bri: -0.035, bloom: 0.75, env: 0.45 };
+const HALLG: Partial<Grade> = { ...IN, sat: 0.28, con: 0.16 };
+const EMPTY: Partial<Grade> = { bg: "#b8bcc4", fog: "#c4c8d0", fogD: 0.007, sat: -0.3, con: 0.18, bri: -0.03, bloom: 0.7, env: 0.35 };
+const OTHG: Partial<Grade> = { bg: "#f4f1ea", fog: "#ece8e0", fogD: 0.01, sat: 0.16, con: 0.16, bri: -0.03, bloom: 0.8, env: 0.55 };
 
 // ---------------- mises en place récurrentes
 const HB = (w: World) => w.actors.hero;
