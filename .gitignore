@@ -35,3 +35,7 @@ productions/dernier-appel-ep01/voix/gen.log
 productions/dernier-appel-ep01/audio/*_raw.wav
 productions/dernier-appel-ep01/render/
 productions/dernier-appel-ep01/final/
+
+# rendus intermédiaires Les Dessins
+productions/dessins-ep01/render/chunks/
+productions/dessins-ep01/render/*.log
