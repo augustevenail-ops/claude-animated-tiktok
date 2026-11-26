@@ -55,7 +55,7 @@ const DAY: Partial<Grade> = { bg: "#8cc4f2", fog: "#a8cdf0", fogD: 0.0022, sat: 
 const IN: Partial<Grade> = { bg: "#000", fog: "#000", fogD: 0, sat: 0.32, con: 0.15, bri: -0.035, bloom: 0.75, env: 0.45 };
 const HALLG: Partial<Grade> = { ...IN, sat: 0.28, con: 0.16 };
 const EMPTY: Partial<Grade> = { bg: "#b8bcc4", fog: "#c4c8d0", fogD: 0.007, sat: -0.3, con: 0.18, bri: -0.03, bloom: 0.7, env: 0.35 };
-const OTHG: Partial<Grade> = { bg: "#f4f1ea", fog: "#ece8e0", fogD: 0.01, sat: 0.16, con: 0.16, bri: -0.03, bloom: 0.8, env: 0.55 };
+const OTHG: Partial<Grade> = { bg: "#d8d0c2", fog: "#d4ccbe", fogD: 0.004, sat: 0.26, con: 0.2, bri: -0.06, bloom: 0.4, env: 0.35 };
 
 // ---------------- mises en place récurrentes
 const HB = (w: World) => w.actors.hero;
@@ -229,7 +229,7 @@ export const SHOTS: Shot[] = [
   { w: "Quelqu'un avait dessiné", set: "HALL", fr: "Au fond, la gomme dessinée au mur s'illumine et sort du mur", g: HALLG, cam: (_w, u) => G(at("HALL", 0.3, 1.5, -26), at("HALL", 0.2, 1.5, -29), at("HALL", 0, 1.5, -41), at("HALL", 0, 1.4, -41), 44, u),
     st: (w, u, t) => { hallReset(w, t); const e = w.sets.eraser; e.root.visible = u > 0.45; e.root.position.set(0, 1.25, -41.9 + 3.5 * cl((u - 0.45) / 0.55)); e.set(t, 0, 0);
       w.sets.muralM.map = w.sets.mural2; w.sets.muralM.emissive.set("#ffb040"); w.sets.muralM.emissiveIntensity = 0.5 * Math.max(0, 1 - Math.abs(u - 0.45) * 3); w.sets.muralM.needsUpdate = true; } },
-  { w: "une gomme géante", set: "HALL", fr: "La gomme rose et bleue, aussi large que le couloir, flotte (contre-plongée)", g: HALLG, cam: (_w, u) => G(at("HALL", 1.2, 0.4, -30), at("HALL", 0.9, 0.5, -31), at("HALL", 0, 1.6, -37), at("HALL", 0, 1.5, -37), 50, u),
+  { w: "une gomme géante", set: "HALL", fr: "La gomme rose et bleue, aussi large que le couloir, flotte (contre-plongée)", g: HALLG, cam: (_w, u) => G(at("HALL", 1.3, 0.45, -25), at("HALL", 1.1, 0.5, -26), at("HALL", 0, 1.6, -37), at("HALL", 0, 1.5, -37), 52, u),
     st: (w, u, t) => { hallReset(w, t); eraserAt(w, -38 + u * 1.5, t); w.sets.muralM.emissiveIntensity = 0; } },
   // ——— 24 Elle avançait … les bureaux, les casiers, des salles de classe entières.
   { w: "Elle avançait", set: "HALL", fr: "La gomme avance vers la caméra, plan frontal dans l'axe", g: HALLG, cam: (_w, u) => G(at("HALL", 0, 1.2, -18), at("HALL", 0, 1.2, -17), at("HALL", 0, 1.3, -30), at("HALL", 0, 1.3, -30), 46, u),
@@ -248,21 +248,21 @@ export const SHOTS: Shot[] = [
   // ——— 26 C'est là que j'ai remarqué une chose …
   { w: "C'est là que j'ai remarqué", set: "HALL", fr: "Visage du héros : il comprend (travelling avant lent)", g: HALLG, cam: (w, u) => faceCam(HB(w), 1.8, 0.4, 0.05, u, 0.35, 36),
     st: (w, u, t) => { eraserAt(w, -13.5 + u * 0.5, t); hallKids(w, t, -6, "scared"); HB(w).pose(t, { expr: "focus", headPitch: -0.05 }); w.sets.hallBook.visible = false; } },
-  { w: "la gomme n'effaçait que", set: "HALL", fr: "L'extincteur (réel) reste intact quand les casiers voisins s'effacent", g: HALLG, cam: (_w, u) => G(at("HALL", -0.6, 1.3, -17.5), at("HALL", -0.5, 1.3, -18.5), at("HALL", 1.7, 1.2, -20.4), at("HALL", 1.7, 1.2, -20.6), 42, u),
-    st: (w, u, t) => { eraserAt(w, -24 + u * 4, t); } },
+  { w: "la gomme n'effaçait que", set: "HALL", fr: "L'extincteur (réel) reste intact quand les casiers voisins s'effacent", g: HALLG, cam: (_w, u) => G(at("HALL", -1.0, 1.5, -27), at("HALL", -0.9, 1.45, -26), at("HALL", 1.2, 1.1, -19.5), at("HALL", 1.2, 1.1, -18.8), 46, u),
+    st: (w, u, t) => { eraserAt(w, -13.5 + u * 0.5, t); } },
   // ——— 27 Alors j'ai couru en salle d'arts plastiques …
   { w: "Alors j'ai couru", set: "HALL", fr: "Il court dans le couloir, travelling d'accompagnement", g: HALLG, cam: (_w, u) => G(at("HALL", 0.9, 1.0, 1.0), at("HALL", 0.9, 1.0, 3.6), at("HALL", 0, 0.9, -4), at("HALL", 0, 0.9, -0.5), 46, u),
     st: (w, u, t) => { eraserAt(w, -13, t); walkTo(HB(w), "HALL", 0, -5, 0, 1.0, u, t, 2.4, { expr: "angry" }); } },
-  { w: "j'ai pris un vrai seau", set: "ART", fr: "Salle d'arts : il attrape un seau de peinture jaune sur l'étagère", g: IN, cam: (_w, u) => G(at("ART", 0.6, 1.3, -0.4), at("ART", 0.3, 1.25, -0.8), at("ART", -1.2, 0.8, -2.6), at("ART", -1.2, 0.85, -2.6), 40, u),
+  { w: "j'ai pris un vrai seau", set: "ART", fr: "Salle d'arts : il attrape un seau de peinture jaune sur l'étagère", g: IN, cam: (_w, u) => G(at("ART", 0.2, 1.6, 1.4), at("ART", 0.1, 1.55, 1.1), at("ART", -1.2, 0.9, -2.6), at("ART", -1.2, 0.95, -2.6), 42, u),
     st: (w, u, t) => { place(HB(w), "ART", -1.25, 0, -2.0, Math.PI); HB(w).pose(t, { expr: "angry", reach: 0.6 + u * 0.4 }); const b = w.sets.bucket; b.position.y = 0.525 + u * 0.3; b.position.z = u * 0.35; } },
-  { w: "je l'ai balancé", set: "HALL", fr: "Il lance la peinture : l'éclaboussure jaune vole vers la gomme", g: HALLG, cam: (_w, u) => G(at("HALL", 1.3, 0.8, -6.5), at("HALL", 1.1, 0.9, -7.5), at("HALL", -0.2, 1.3, -10.5), at("HALL", -0.2, 1.4, -11.5), 46, u),
+  { w: "je l'ai balancé", set: "HALL", fr: "Il lance la peinture : l'éclaboussure jaune vole vers la gomme", g: HALLG, cam: (_w, u) => G(at("HALL", 1.5, 1.4, -2.6), at("HALL", 1.3, 1.4, -3.3), at("HALL", -0.1, 1.2, -10.5), at("HALL", -0.1, 1.3, -11.5), 48, u),
     st: (w, u, t) => { eraserAt(w, -13.2, t); place(HB(w), "HALL", 0.1, 0, -7.2, Math.PI); HB(w).pose(t, { expr: "shout", armsUp: 0.55 - u * 0.4 });
       const hb = w.sets.bucketHeld; hb.visible = true; hb.position.copy(at("HALL", 0.1, 1.0 + (0.55 - u * 0.4) * 0.5, -7.55)).sub(O.HALL); hb.rotation.set(-u * 2.2, 0, 0);
       w.sets.splash.forEach((s, i) => { const k = cl(u * 1.6 - 0.25 - hash01(i) * 0.15); s.visible = k > 0 && k < 1; const tgt = V((hash01(i + 3) - 0.5) * 2.4, 1.0 + hash01(i + 5) * 1.4, -11.0); s.position.set(0.1 + (tgt.x - 0.1) * k, 1.1 + (tgt.y - 1.1) * k + Math.sin(k * Math.PI) * 0.8, -7.6 + (tgt.z + 7.6) * k); s.scale.setScalar(1 + k); }); } },
   // ——— 28 La peinture l'a recouverte, et d'un coup, elle ne pouvait plus rien effacer.
-  { w: "La peinture l'a recouverte", set: "HALL", fr: "La gomme se couvre de peinture jaune dégoulinante (plan frontal)", g: HALLG, cam: (_w, u) => G(at("HALL", 0.5, 1.2, -8.2), at("HALL", 0.4, 1.25, -8.6), at("HALL", 0, 1.3, -13.2), at("HALL", 0, 1.3, -13.2), 46, u),
+  { w: "La peinture l'a recouverte", set: "HALL", fr: "La gomme se couvre de peinture jaune dégoulinante (plan frontal)", g: HALLG, cam: (_w, u) => G(at("HALL", 0.7, 1.4, -3.0), at("HALL", 0.6, 1.4, -3.8), at("HALL", 0, 1.3, -13.2), at("HALL", 0, 1.3, -13.2), 50, u),
     st: (w, u, t) => { eraserAt(w, -13.2, t, cl(u * 1.4), cl(u * 1.4)); w.sets.splash.forEach((s) => (s.visible = false)); w.sets.bucketHeld.visible = false; } },
-  { w: "et d'un coup", set: "HALL", fr: "Elle s'immobilise et retombe lourdement au sol (latéral bas)", g: HALLG, cam: (_w, u) => G(at("HALL", 1.5, 0.5, -10.5), at("HALL", 1.4, 0.55, -11.0), at("HALL", -0.2, 0.9, -13.4), at("HALL", -0.2, 0.9, -13.4), 44, u),
+  { w: "et d'un coup", set: "HALL", fr: "Elle s'immobilise et retombe lourdement au sol (latéral bas)", g: HALLG, cam: (_w, u) => G(at("HALL", 1.4, 0.5, -5.5), at("HALL", 1.3, 0.55, -6.2), at("HALL", -0.2, 0.9, -13.4), at("HALL", -0.2, 0.9, -13.4), 48, u),
     st: (w, u, t) => { eraserAt(w, -13.2, t, 1, 1); w.sets.eraser.root.position.y = 1.25 - sm(u * 1.5) * 0.1; } },
   // ——— 29 Tout le monde a applaudi.
   { w: "Tout le monde a applaudi", set: "HALL", fr: "Les élèves applaudissent et sautent, le héros au centre", g: HALLG, cam: (_w, u) => G(at("HALL", 0.4, 1.3, -11.0), at("HALL", 0.3, 1.25, -10.5), at("HALL", 0, 1.0, -6.0), at("HALL", 0, 1.0, -6.0), 44, u),
@@ -276,7 +276,7 @@ export const SHOTS: Shot[] = [
   { w: "Tout ce que vous dessinez", set: "HALL", fr: "Le message écrit sous le portrait, lent travelling arrière", g: { ...HALLG, sat: -0.1 }, cam: (_w, u) => G(at("HALL", 0, 1.15, -40.1), at("HALL", 0, 1.25, -38.8), at("HALL", 0, 1.2, -42), at("HALL", 0, 1.35, -42), 38, u),
     st: (w, _u, t) => { eraserAt(w, -13.2, t, 1, 1); w.sets.eraser.root.visible = false; w.sets.muralM.map = w.sets.mural2; } },
   // ——— 32 J'ai regardé dehors : les rues étaient totalement désertes.
-  { w: "J'ai regardé dehors", set: "CLS", fr: "Le héros à la fenêtre de la classe, de dos", g: { ...IN, sat: 0.0 }, cam: (_w, u) => G(at("CLS", 2.2, 1.4, 0.8), at("CLS", 2.5, 1.35, 0.5), at("CLS", 4.2, 1.5, -0.2), at("CLS", 4.2, 1.5, -0.2), 40, u),
+  { w: "J'ai regardé dehors", set: "CLS", fr: "Le héros à la fenêtre de la classe, de dos", g: { ...IN, sat: 0.0 }, cam: (_w, u) => G(at("CLS", 0.6, 1.8, 2.2), at("CLS", 0.9, 1.75, 1.9), at("CLS", 4.0, 1.4, -0.3), at("CLS", 4.0, 1.4, -0.3), 44, u),
     st: (w, _u, t) => { w.sets.pool.set(0, t); classKids(w, t, "worried", 0); for (const k of ["k1", "k2", "k3", "k4", "k5", "k6", "ami"]) w.actors[k].root.visible = false; place(HB(w), "CLS", 3.6, 0, 0.0, Math.PI / 2); HB(w).pose(t, { expr: "worried" }); } },
   { w: "les rues étaient totalement désertes", set: "TOWN", fr: "La rue vide, sans personne ni voiture, plan large fixe puis léger travelling", g: EMPTY, cam: (_w, u) => G(at("TOWN", -16, 2.2, 3.2), at("TOWN", -13, 2.1, 3.0), at("TOWN", 10, 1.2, 1.0), at("TOWN", 10, 1.2, 1.2), 40, u),
     st: (w, _u, t) => { townCrowd(w, t, false); for (const c of w.sets.cars) c.visible = false; houseState(w, 1, 1, t); } },
@@ -286,7 +286,7 @@ export const SHOTS: Shot[] = [
   { w: "Nous ne faisions que tout voler", set: "TOWN", fr: "Le héros seul au milieu de la rue vide (plan large de face)", g: EMPTY, cam: (_w, u) => G(at("TOWN", 0.6, 1.3, 11), at("TOWN", 0.6, 1.3, 9.5), at("TOWN", 0.4, 1.0, 1.5), at("TOWN", 0.4, 1.0, 1.5), 40, u),
     st: (w, _u, t) => { townCrowd(w, t, false); for (const c of w.sets.cars) c.visible = false; houseState(w, 1, 1, t); place(HB(w), "TOWN", 0.4, 0, 1.5, 0.1); HB(w).pose(t, { expr: "sad", headPitch: 0.2 }); w.sets.doorD.set(0, t); } },
   // ——— 34 Mais il y avait pire : ma propre maison commençait à disparaître.
-  { w: "Mais il y avait pire", set: "TOWN", fr: "Le héros devant sa maison, de dos (plan large)", g: EMPTY, cam: (_w, u) => G(at("TOWN", 2.6, 1.3, 4.5), at("TOWN", 2.0, 1.3, 3.5), at("TOWN", -0.2, 2.6, -10), at("TOWN", -0.2, 2.8, -10), 46, u),
+  { w: "Mais il y avait pire", set: "TOWN", fr: "Le héros devant sa maison, de dos (plan large)", g: EMPTY, cam: (_w, u) => G(at("TOWN", 3.2, 2.1, 7.0), at("TOWN", 2.6, 2.0, 6.0), at("TOWN", -0.2, 2.6, -10), at("TOWN", -0.2, 2.8, -10), 46, u),
     st: (w, u, t) => { townCrowd(w, t, false); for (const c of w.sets.cars) c.visible = false; houseState(w, 1, 1, t); place(HB(w), "TOWN", 0.3, 0, -1.6, Math.PI); HB(w).pose(t, { expr: "scared" }); w.sets.doorD.set(0, t); } },
   // ——— 35 D'abord les fenêtres, puis le toit.
   { w: "D'abord les fenêtres", set: "TOWN", fr: "Les fenêtres se changent en traits dorés et s'effacent", g: EMPTY, cam: (_w, u) => G(at("TOWN", -3.5, 1.5, -2.6), at("TOWN", -3.0, 1.5, -2.9), at("TOWN", 0, 1.8, -6.5), at("TOWN", 0, 1.8, -6.5), 42, u),
@@ -300,7 +300,7 @@ export const SHOTS: Shot[] = [
   { w: "Il fallait que je sache", set: "TOWN", fr: "Visage du héros, déterminé (plan rapproché, contre-plongée légère)", g: EMPTY, cam: (w, u) => faceCam(HB(w), 1.6, 0.3, -0.15, u, 0.2, 36),
     st: (w, _u, t) => { townCrowd(w, t, false); for (const c of w.sets.cars) c.visible = false; houseState(w, 0, 0, t); place(HB(w), "TOWN", 0.3, 0, -1.6, 0.1); HB(w).pose(t, { expr: "angry" }); } },
   // ——— 38 Alors j'ai pris mon crayon, et j'ai tracé une dernière chose : une porte.
-  { w: "Alors j'ai pris mon crayon", set: "TOWN", fr: "Gros plan : il trace une porte dans le carnet", g: EMPTY, cam: (w, u) => bookCam(HB(w), w.sets.townBook, u),
+  { w: "Alors j'ai pris mon crayon", set: "TOWN", fr: "Gros plan : il trace une porte dans le carnet", g: EMPTY, cam: (w, u) => bookCam(HB(w), w.sets.townBook, u, 0.34),
     st: (w, u, t) => { townCrowd(w, t, false); for (const c of w.sets.cars) c.visible = false; houseState(w, 0, 0, t); place(HB(w), "TOWN", 0.3, 0, 1.5, Math.PI); HB(w).pose(t, drawing(t, "focus")); bookInHand(HB(w), w.sets.townBook); (w.sets.townBook.children[2] as THREE.Mesh).material = pageOf(w, "door", cl(u * 1.15)); w.sets.doorD.set(0, t); } },
   { w: "une porte", set: "TOWN", fr: "La porte se trace en or au milieu de la rue vide", g: EMPTY, cam: (_w, u) => G(at("TOWN", 1.8, 1.2, 8.8), at("TOWN", 1.4, 1.2, 8.2), at("TOWN", -1.2, 1.2, 4.2), at("TOWN", -1.2, 1.2, 4.2), 42, u),
     st: (w, u, t) => { townCrowd(w, t, false); for (const c of w.sets.cars) c.visible = false; houseState(w, 0, 0, t); place(HB(w), "TOWN", 0.6, 0, 1.6, -0.6); HB(w).pose(t, { expr: "focus" }); w.sets.townBook.visible = false; w.sets.doorD.set(cl(u * 1.2), t, 0.1); w.sets.door.set(0); } },
@@ -308,9 +308,9 @@ export const SHOTS: Shot[] = [
   { w: "Une porte vers l'endroit", set: "TOWN", fr: "Contre-plongée sur la porte jaune, lumière au bas de la porte", g: EMPTY, cam: (_w, u) => G(at("TOWN", 0.2, 0.3, 6.6), at("TOWN", -0.1, 0.35, 6.2), at("TOWN", -1.2, 1.6, 4.2), at("TOWN", -1.2, 1.7, 4.2), 46, u),
     st: (w, _u, t) => { townCrowd(w, t, false); for (const c of w.sets.cars) c.visible = false; w.sets.doorD.set(1, t); w.sets.door.set(0.02); place(HB(w), "TOWN", 0.6, 0, 1.6, -0.6); HB(w).pose(t, { expr: "focus" }); } },
   // ——— 40 Je l'ai ouverte, et de l'autre côté, des milliers de personnes me fixaient.
-  { w: "Je l'ai ouverte", set: "TOWN", fr: "De dos : il ouvre la porte, lumière blanche éblouissante", g: { ...EMPTY, bloom: 1.4 }, cam: (_w, u) => G(at("TOWN", 0.2, 1.3, 0.2), at("TOWN", -0.3, 1.3, 1.0), at("TOWN", -1.3, 1.2, 4.6), at("TOWN", -1.3, 1.2, 4.6), 42, u),
+  { w: "Je l'ai ouverte", set: "TOWN", fr: "De dos : il ouvre la porte, lumière blanche éblouissante", g: { ...EMPTY, bloom: 1.4 }, cam: (_w, u) => G(at("TOWN", 0.4, 1.5, -1.6), at("TOWN", 0.0, 1.45, -0.8), at("TOWN", -1.3, 1.2, 4.6), at("TOWN", -1.3, 1.2, 4.6), 42, u),
     st: (w, u, t) => { townCrowd(w, t, false); for (const c of w.sets.cars) c.visible = false; w.sets.doorD.set(1, t); w.sets.door.set(sm(u * 1.3)); place(HB(w), "TOWN", -1.1, 0, 3.3, 0.08 * Math.PI); HB(w).pose(t, { expr: "focus", armR: -1.4 }); } },
-  { w: "de l'autre côté", set: "OTH", fr: "Autre monde : le héros passe la porte (contrechamp, foule floue derrière)", g: OTHG, cam: (w, u) => faceCam(HB(w), 2.4, 0.3, 0.1, u, 0.3, 36),
+  { w: "de l'autre côté", set: "OTH", fr: "Autre monde : le héros passe la porte (contrechamp, foule floue derrière)", g: OTHG, cam: (w, u) => faceCam(HB(w), 1.6, 1.0, 0.1, u, 0.3, 36),
     st: (w, _u, t) => { othHero(w, t, "scared"); w.actors.boy.root.visible = false; } },
   { w: "des milliers de personnes", set: "OTH", fr: "Révélation : des milliers de gens sur des gradins, travelling arrière en grue", g: OTHG, cam: (_w, u) => G(at("OTH", 0, 1.6, -0.5), at("OTH", 0, 4.5, -6.5), at("OTH", 0, 2.5, 12), at("OTH", 0, 5.0, 20), 44, u, 54),
     st: (w, _u, t) => { othHero(w, t, "scared"); w.actors.boy.root.visible = false; } },
@@ -318,27 +318,27 @@ export const SHOTS: Shot[] = [
   { w: "Chacune tenait un carnet", set: "OTH", fr: "Travelling latéral le long des premiers rangs : carnets ouverts", g: OTHG, cam: (_w, u) => G(at("OTH", -3.2, 1.4, 3.2), at("OTH", 2.2, 1.4, 3.6), at("OTH", -2.0, 1.25, 7.2), at("OTH", 3.4, 1.25, 7.2), 38, u),
     st: (w, _u, t) => { othHero(w, t, "scared"); w.actors.boy.root.visible = false; } },
   // ——— 42 Un petit garçon, au premier rang, m'a pointé du doigt : « Attends, tu es l'un de nos dessins ! »
-  { w: "Un petit garçon", set: "OTH", fr: "Un petit garçon sort du premier rang (plan moyen)", g: OTHG, cam: (w, u) => faceCam(w.actors.boy, 2.4, 0.4, 0.15, u, 0.4, 38),
+  { w: "Un petit garçon", set: "OTH", fr: "Un petit garçon sort du premier rang (plan moyen)", g: OTHG, cam: (w, u) => faceCam(w.actors.boy, 2.2, 1.7, 0.15, u, 0.4, 38),
     st: (w, u, t) => { othHero(w, t, "scared"); othBoy(w, t, "neutral"); place(w.actors.boy, "OTH", 0, 0, 4.4 - u * 1.4, Math.PI); w.actors.boy.pose(t, { walk: 1.2, expr: "neutral" }); } },
-  { w: "m'a pointé du doigt", set: "OTH", fr: "Il pointe le héros du doigt (par-dessus l'épaule du héros)", g: OTHG, cam: (_w, u) => G(at("OTH", 0.35, 1.35, 0.3), at("OTH", 0.3, 1.32, 0.45), at("OTH", 0, 1.0, 3.0), at("OTH", 0, 1.0, 3.0), 38, u),
+  { w: "m'a pointé du doigt", set: "OTH", fr: "Il pointe le héros du doigt (par-dessus l'épaule du héros)", g: OTHG, cam: (_w, u) => G(at("OTH", 0.8, 1.8, -1.4), at("OTH", 0.75, 1.75, -1.1), at("OTH", 0, 1.0, 3.0), at("OTH", 0, 1.0, 3.0), 42, u),
     st: (w, _u, t) => { othHero(w, t, "scared"); othBoy(w, t, "shout", { point: 0.3 }); } },
-  { w: "Attends", set: "OTH", fr: "Le garçon, plan rapproché : « tu es l'un de nos dessins ! »", g: OTHG, cam: (w, u) => faceCam(w.actors.boy, 1.5, -0.3, 0.05, u, 0.15, 34),
+  { w: "Attends", set: "OTH", fr: "Le garçon, plan rapproché : « tu es l'un de nos dessins ! »", g: OTHG, cam: (w, u) => faceCam(w.actors.boy, 1.5, -1.25, 0.05, u, 0.15, 34),
     st: (w, _u, t) => { othHero(w, t, "scared"); othBoy(w, t, "happy", { point: 0.3, talk: true }); } },
   // ——— 43 J'ai baissé les yeux vers mes mains : elles se transformaient en traits de crayon.
-  { w: "J'ai baissé les yeux", set: "OTH", fr: "Le héros baisse la tête vers ses mains (plan rapproché)", g: OTHG, cam: (w, u) => faceCam(HB(w), 1.7, 0.3, 0.2, u, 0.2, 36),
+  { w: "J'ai baissé les yeux", set: "OTH", fr: "Le héros baisse la tête vers ses mains (plan rapproché)", g: OTHG, cam: (w, u) => faceCam(HB(w), 1.6, 0.95, 0.2, u, 0.2, 36),
     st: (w, u, t) => { othBoy(w, t, "neutral"); othHero(w, t, "scared", 0.2 * u, 0, { headPitch: 0.5, armL: -1.2, armR: -1.2 }); } },
   { w: "elles se transformaient", set: "OTH", fr: "Vue subjective : ses mains deviennent des traits de crayon", g: OTHG, cam: (w, u) => { const h = headOf(HB(w)); return G(h.clone().add(V(0, 0.02, 0.05)), h.clone().add(V(0, 0.0, 0.08)), at("OTH", 0, 0.75, 1.35), at("OTH", 0, 0.72, 1.35), 46, u); },
     st: (w, u, t) => { othBoy(w, t, "neutral"); othHero(w, t, "scared", 0.2 + u * 0.8, 0, { headPitch: 0.6, armL: -1.25, armR: -1.25 }); } },
   // ——— 44 Le garçon a ouvert son carnet, et il a effacé un minuscule détail.
-  { w: "Le garçon a ouvert", set: "OTH", fr: "Le garçon ouvre son carnet : le dessin du héros", g: OTHG, cam: (w, u) => faceCam(w.actors.boy, 1.4, 0.4, 0.3, u, 0.12, 36),
+  { w: "Le garçon a ouvert", set: "OTH", fr: "Le garçon ouvre son carnet : le dessin du héros", g: OTHG, cam: (w, u) => faceCam(w.actors.boy, 1.4, 1.25, 0.3, u, 0.12, 36),
     st: (w, _u, t) => { othHero(w, t, "scared", 1); othBoy(w, t, "smug", { armL: -1.2, armR: -1.1, headPitch: 0.35 }); bookInHand(w.actors.boy, w.sets.boyBook, 0.6); w.sets.boyPage.draw(0); } },
   { w: "il a effacé un minuscule", set: "OTH", fr: "Gros plan carnet : la gomme du crayon efface la main gauche du dessin", g: OTHG, cam: (w, u) => bookCam(w.actors.boy, w.sets.boyBook, u, 0.25),
     st: (w, u, t) => { othHero(w, t, "scared", 1); othBoy(w, t, "smug", { armL: -1.2, armR: -1.3 + Math.sin(t * 20) * 0.12, headPitch: 0.4 }); bookInHand(w.actors.boy, w.sets.boyBook, 0.6); w.sets.boyPage.draw(cl(u * 1.1)); } },
   // ——— 45 Aussitôt, ma main gauche a disparu.
-  { w: "Aussitôt", set: "OTH", fr: "La main gauche du héros disparaît dans une étincelle dorée", g: OTHG, cam: (w, u) => { const hd = headOf(HB(w)); return G(hd.clone().add(V(0.9, -0.35, 0.9)), hd.clone().add(V(0.8, -0.35, 0.8)), hd.clone().add(V(0.1, -0.55, 0.15)), hd.clone().add(V(0.1, -0.55, 0.15)), 38, u); },
+  { w: "Aussitôt", set: "OTH", fr: "La main gauche du héros disparaît dans une étincelle dorée", g: OTHG, cam: (w, u) => { const hd = headOf(HB(w)); return G(hd.clone().add(V(1.6, -0.1, 1.5)), hd.clone().add(V(1.45, -0.1, 1.35)), hd.clone().add(V(0.1, -0.55, 0.15)), hd.clone().add(V(0.1, -0.55, 0.15)), 38, u); },
     st: (w, u, t) => { othBoy(w, t, "smug"); othHero(w, t, "scared", 1, cl(u * 2 - 0.3), { armL: -1.0, armR: -0.3, headPitch: 0.4 }); w.sets.boyBook.visible = false; } },
   // ——— 46 Il m'a regardé, et il a souri : « Ne t'inquiète pas. Je corrige juste une erreur. »
-  { w: "Il m'a regardé", set: "OTH", fr: "Le garçon relève les yeux et sourit (plan rapproché, travelling avant)", g: OTHG, cam: (w, u) => faceCam(w.actors.boy, 1.6, 0.2, 0.05, u, 0.3, 34),
+  { w: "Il m'a regardé", set: "OTH", fr: "Le garçon relève les yeux et sourit (plan rapproché, travelling avant)", g: OTHG, cam: (w, u) => faceCam(w.actors.boy, 1.6, -1.3, 0.05, u, 0.3, 34),
     st: (w, _u, t) => { othHero(w, t, "scared", 1, 1); othBoy(w, t, "smile", { headPitch: -0.1 }); } },
   { w: "Ne t'inquiète pas", set: "OTH", fr: "Plan final : grue arrière, le héros minuscule face à la foule", g: OTHG, cam: (_w, u) => G(at("OTH", 0.8, 1.5, -2.4), at("OTH", 1.5, 7.5, -11), at("OTH", 0, 1.0, 2.0), at("OTH", 0, 2.5, 8), 40, u, 50),
     st: (w, _u, t) => { othHero(w, t, "sad", 1, 1); othBoy(w, t, "smile"); } },

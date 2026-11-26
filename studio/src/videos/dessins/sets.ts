@@ -279,7 +279,7 @@ const crowd = (p: THREE.Object3D, n: number) => {
       dummy.position.set(x + (hash(i, 1) - 0.5) * 0.12, y, z); dummy.rotation.set(0, Math.atan2(-x, -z) + (hash(i, 2) - 0.5) * 0.2, 0); const s = 0.92 + hash(i, 3) * 0.16; dummy.scale.set(s, s, s); dummy.updateMatrix();
       for (const m of meshes) m.setMatrixAt(i, dummy.matrix); fm.setMatrixAt(i, dummy.matrix); } }
   // gradins
-  for (let row = 0; row < 40; row++) { const R = 4.5 + row * 0.85; const st = add(p, new THREE.CylinderGeometry(R + 0.42, R + 0.42, 0.32, 96, 1, false, -Math.PI * 0.47, Math.PI * 0.94), M(row % 2 ? "#e8e2d8" : "#ded6ca", 0.85), 0, row * 0.32 - 0.16, 0, Math.PI, false); st.receiveShadow = true; }
+  for (let row = 0; row < 40; row++) { const R = 4.5 + row * 0.85; const st = add(p, new THREE.CylinderGeometry(R + 0.42, R + 0.42, 0.32, 96, 1, false, -Math.PI * 0.47, Math.PI * 0.94), M(row % 2 ? "#c9bfae" : "#bcb19f", 0.85), 0, row * 0.32 - 0.16, 0, Math.PI, false); st.receiveShadow = true; }
 };
 
 // ============================================================ décors
@@ -481,9 +481,9 @@ export class Sets {
       pt("ART", 0, 2.8, 0, "#fff6e8", 6, 10); }
 
     // ---------------- l'autre monde : foule sur des gradins, chacun un carnet à la main
-    { const p = this.g.OTH; sun("OTH", V(-20, 30, 30), V(0, 0, 10), 3.0, 40, "#fff4e4", "#f0f4ff", "#d8d0c4", 1.2);
-      const sky = new THREE.Mesh(new THREE.SphereGeometry(300, 32, 16), new THREE.MeshBasicMaterial({ color: "#f4f1ea", side: THREE.BackSide, fog: false })); sky.userData.noEdge = true; p.add(sky);
-      plane(p, 400, 400, M("#ffffff", 0.95, rep(paperTex(), 80, 80)), 0, 0, 0, -Math.PI / 2);
+    { const p = this.g.OTH; sun("OTH", V(-20, 30, 30), V(0, 0, 10), 2.3, 40, "#fff4e4", "#f0f4ff", "#d8d0c4", 1.2);
+      const sky = new THREE.Mesh(new THREE.SphereGeometry(300, 32, 16), new THREE.MeshBasicMaterial({ color: "#d8d0c2", side: THREE.BackSide, fog: false })); sky.userData.noEdge = true; p.add(sky);
+      plane(p, 400, 400, M("#e2dacb", 0.95, rep(paperTex(), 80, 80)), 0, 0, 0, -Math.PI / 2);
       const c = grp(p, 0, 0, 1.2); crowd(c, 2600);
       const dd = new Door(); dd.root.position.set(0, 0, 0); dd.root.rotation.y = 0; dd.set(1); dd.light.visible = false; p.add(dd.root); this.othDoor = dd;
       this.boyBook = notebook(p, this.boyPage, 0, 0, 0, 0, 1.4); this.boyBook.visible = false; }
