@@ -25,12 +25,12 @@ const at = (k: SetK, x: number, y: number, z: number) => O[k].clone().add(V(x, y
 const headOf = (a: Actor) => { a.root.updateMatrixWorld(true); return a.neck.localToWorld(V(0, 0.7, 0)); };
 /** caméra face à un personnage : d = distance, side = décalage latéral, dy = hauteur relative (recul généreux) */
 const faceCam = (a: Actor, d0: number, side: number, dy: number, u: number, push = 0.15, fov = 36, ty = -0.12): Cam => {
-  const d = d0 * 2.0, h = headOf(a), y = a.root.rotation.y, f = V(Math.sin(y), 0, Math.cos(y)), r = V(Math.cos(y), 0, -Math.sin(y));
+  const d = d0 * 2.2, h = headOf(a), y = a.root.rotation.y, f = V(Math.sin(y), 0, Math.cos(y)), r = V(Math.cos(y), 0, -Math.sin(y));
   const P0 = h.clone().addScaledVector(f, d).addScaledVector(r, side).add(V(0, dy, 0)), P1 = h.clone().addScaledVector(f, d - push).addScaledVector(r, side * 0.9).add(V(0, dy, 0));
-  return G(P0, P1, h.clone().add(V(0, ty, 0)), h.clone().add(V(0, ty, 0)), fov, u); };
+  return G(P0, P1, h.clone().add(V(0, ty, 0)), h.clone().add(V(0, ty, 0)), Math.max(fov, 42), u); };
 /** caméra tournée autour de la tête : ang = angle depuis l'axe du regard (rad) */
-const sideCam = (a: Actor, ang: number, d0: number, dy: number, u: number, push = 0.12, fov = 36, ty = -0.1): Cam => { const d = d0 * 2.0, h = headOf(a), y = a.root.rotation.y + ang, f = V(Math.sin(y), 0, Math.cos(y));
-  return G(h.clone().addScaledVector(f, d).add(V(0, dy, 0)), h.clone().addScaledVector(f, d - push).add(V(0, dy, 0)), h.clone().add(V(0, ty, 0)), h.clone().add(V(0, ty, 0)), fov, u); };
+const sideCam = (a: Actor, ang: number, d0: number, dy: number, u: number, push = 0.12, fov = 36, ty = -0.1): Cam => { const d = d0 * 2.2, h = headOf(a), y = a.root.rotation.y + ang, f = V(Math.sin(y), 0, Math.cos(y));
+  return G(h.clone().addScaledVector(f, d).add(V(0, dy, 0)), h.clone().addScaledVector(f, d - push).add(V(0, dy, 0)), h.clone().add(V(0, ty, 0)), h.clone().add(V(0, ty, 0)), Math.max(fov, 42), u); };
 const place = (a: Actor, k: SetK, x: number, y: number, z: number, yaw: number) => { a.root.visible = true; a.root.position.copy(at(k, x, y, z)); a.root.rotation.set(0, yaw, 0); };
 const SIT = 0.4;
 const drawing = (t: number, e: Expr = "focus", extra: Pose = {}): Pose => ({ expr: e, armR: -1.0 + Math.sin(t * 13) * 0.1, armL: -0.75, headPitch: 0.42, ...extra });
@@ -59,7 +59,7 @@ const OTHG: Partial<Grade> = { bg: "#f4f1ea", fog: "#f4f1ea", fogD: 0.016, sat: 
 
 // ---------------- mises en place récurrentes
 const HB = (w: World) => w.actors.hero;
-const bookInHand = (a: Actor, book: THREE.Object3D, tilt = 0.9) => { const y = a.root.rotation.y, f = V(Math.sin(y), 0, Math.cos(y)), h = a.s.kid ? 0.82 : 1.1;
+const bookInHand = (a: Actor, book: THREE.Object3D, tilt = 0.9, sit = false) => { const y = a.root.rotation.y, f = V(Math.sin(y), 0, Math.cos(y)), h = (a.s.kid ? 0.82 : 1.1) - (sit ? 0.36 : 0);
   book.visible = true; book.position.copy(a.root.position).addScaledVector(f, 0.32).add(V(0, h, 0)); book.parent!.worldToLocal(book.position); book.rotation.set(0, 0, 0); book.rotateY(y + Math.PI); book.rotateX(tilt); };
 const townCrowd = (w: World, t: number, on = true, clear = false) => { const ps: [string, number, number, number, number][] = [["t1", -14, -2.4, 1, 0.0], ["t2", 9, 6.4, -1, 0.3], ["t3", -4, 6.6, -1, 0.6], ["k3", 14, -2.5, -1, 0.2], ["k4", -8, -2.2, 1, 0.8], ["k6", 2.5, 6.2, 1, 0.5]];
   for (const [k, x, z, dir, ph] of ps) { const a = w.actors[k]; if (!on) { a.root.visible = false; continue; } const xx = x + dir * ((t * 1.1 + ph * 6) % 12); if (clear && Math.abs(xx - 1) < 5.5) { a.root.visible = false; continue; } place(a, "TOWN", xx, 0, z, dir > 0 ? Math.PI / 2 : -Math.PI / 2); a.pose(t, { walk: 1.2, expr: "smile" }); } };
@@ -69,7 +69,7 @@ const bookCam = (a: Actor, book: THREE.Object3D, u: number, side = 0.22, fov = 3
 const pcSet = (w: World, p: number, t: number) => w.sets.pc.set(p, t, 0.1);
 const heroDeskBed = (w: World, t: number, e: Expr = "focus", draw = true) => { place(HB(w), "BED", 1.48, SIT, -1.4, Math.PI / 2); HB(w).pose(t, draw ? drawing(t, e, { sit: true }) : { sit: true, expr: e, headYaw: -0.5 }); };
 const heroGamer = (w: World, t: number, e: Expr, type = 0) => { place(HB(w), "BED", 0.1, 0.42, 1.25, Math.PI); HB(w).pose(t, { sit: true, expr: e, armL: -1.25 + Math.sin(t * 16) * 0.06 * type, armR: -1.25 + Math.sin(t * 15 + 1) * 0.06 * type, headPitch: 0.3 }); };
-const amiDesk = (w: World, t: number, e: Expr = "focus", draw = true) => { place(w.actors.ami, "FRD", 0, SIT, -0.92, Math.PI); w.actors.ami.pose(t, draw ? drawing(t, e, { sit: true }) : { sit: true, expr: e, armL: -1.3, armR: -1.3, headPitch: 0.25 }); };
+const amiDesk = (w: World, t: number, e: Expr = "focus", draw = true) => { place(w.actors.ami, "FRD", 0, SIT, -1.32, 0); w.actors.ami.pose(t, draw ? drawing(t, e, { sit: true }) : { sit: true, expr: e, armL: -1.3, armR: -1.3, headPitch: 0.25 }); };
 const classKids = (w: World, t: number, e: Expr = "focus", look = 0, prof = true) => { const seats: [string, number, number][] = [["k1", -2.6, -0.6], ["k3", -2.6, 0.75], ["k4", -1.1, -0.6], ["k2", -1.1, 0.75], ["k5", 0.4, 0.75], ["k6", -2.6, 2.1], ["hero", 0.4, 2.1], ["ami", -1.1, 2.1], ["jaden", 0.4, -0.6]];
   if (prof) { place(w.actors.prof, "CLS", -1.4, 0, -3.15, 0.25); w.actors.prof.pose(t, look ? { expr: e === "focus" ? "smile" : e, headYaw: look * 0.5 } : { expr: "smile", armR: -2.3 + Math.sin(t * 3) * 0.15, talk: true, headYaw: 0.4 }); }
   for (const [k, x, z] of seats) { place(w.actors[k], "CLS", x, SIT, z + 0.5, Math.PI); w.actors[k].pose(t, look ? { sit: true, expr: e, headYaw: look, headPitch: 0 } : drawing(t + x, e, { sit: true })); } };
@@ -83,7 +83,7 @@ const eraserAt = (w: World, z: number, t: number, cover = 0, stop = 0) => { cons
   w.sets.crumbs.set(t, V(0, 0.2, back), 3.0, 1.0, 1.6); w.sets.crumbs.pts.visible = stop < 0.5; };
 const hallReset = (w: World, t: number) => { for (const d of w.sets.lockers) d.set(1, t); for (const d of w.sets.hallDesks) d.set(1, t); for (const m of w.sets.erased) m.visible = false; w.sets.eraser.root.visible = false; w.sets.crumbs.pts.visible = false; };
 const girlAt = (w: World, k: SetK, x: number, z: number, yaw: number, t: number, e: Expr, p = 1, extra: Pose = {}) => { const g = w.actors.girl; place(g, k, x, 0, z, yaw); g.pose(t, { expr: e, armL: 0.02, armR: -0.02, headYaw: 0, headPitch: 0, ...extra }); w.girlD!.set(p, t, 0.07); };
-const benchHero = (w: World, t: number, e: Expr, draw = true) => { place(HB(w), "YARD", -4.5, 0.36, 0.55, 0.25); HB(w).pose(t, draw ? drawing(t, e, { sit: true }) : { sit: true, expr: e, headPitch: 0.05 }); if (draw) bookInHand(HB(w), w.sets.yardBook, 0.9); };
+const benchHero = (w: World, t: number, e: Expr, draw = true) => { place(HB(w), "YARD", -4.5, 0.36, 0.55, 0.25); HB(w).pose(t, draw ? drawing(t, e, { sit: true }) : { sit: true, expr: e, headPitch: 0.05 }); if (draw) bookInHand(HB(w), w.sets.yardBook, 0.9, true); };
 const dinoAt = (w: World, x: number, z: number, yaw: number, t: number, run: number, roar: number, p = 1) => { const d = w.sets.dino; d.root.position.set(x, 0, z); d.root.rotation.y = yaw; d.set(t, run, roar); w.sets.dinoD.set(p, t, 0.1); };
 const houseState = (w: World, wins: number, roof: number, t: number) => { w.sets.home.dw!.set(wins, t, 0.12); w.sets.home.dr!.set(roof, t, 0.14); };
 const othBoy = (w: World, t: number, e: Expr, pose: Pose = {}) => { place(w.actors.boy, "OTH", 0, 0, 3.0, Math.PI); w.actors.boy.pose(t, { expr: e, ...pose }); };
@@ -106,22 +106,22 @@ export const SHOTS: Shot[] = [
   { w: "absolument n'importe quoi", set: "TOWN", fr: "La voiture réelle, le garçon bondit de joie, travelling latéral", g: DAY, cam: (_w, u) => G(at("TOWN", 9.5, 1.1, 3.5), at("TOWN", 8.0, 1.2, 4.2), at("TOWN", 4.5, 0.8, -1.0), at("TOWN", 4.0, 0.9, -1.2), 42, u),
     st: (w, _u, t) => { const a = w.actors.k5; place(a, "TOWN", 2.6, 0, -2.6, 0.9); a.pose(t, { cheer: true, expr: "happy" }); w.sets.townCar.set(1, t); } },
   // ——— 3 Mon meilleur ami … billet … bureau.
-  { w: "Mon meilleur ami", set: "FRD", fr: "Le meilleur ami à son bureau, plan large de trois quarts", g: IN, cam: (_w, u) => G(at("FRD", 1.75, 1.45, 0.2), at("FRD", 1.5, 1.35, -0.1), at("FRD", -0.1, 0.8, -1.25), at("FRD", -0.1, 0.8, -1.3), 52, u),
+  { w: "Mon meilleur ami", set: "FRD", fr: "Le meilleur ami à son bureau, plan large de trois quarts", g: IN, cam: (_w, u) => G(at("FRD", 1.4, 1.6, 2.6), at("FRD", 1.1, 1.5, 2.2), at("FRD", 0, 0.85, -1.0), at("FRD", 0, 0.85, -1.0), 48, u),
     st: (w, _u, t) => { amiDesk(w, t); w.sets.friendPage.draw(0.2); w.sets.bill.set(0, t); } },
-  { w: "a dessiné un billet", set: "FRD", fr: "Plongée sur la feuille : le billet se dessine", g: IN, cam: (_w, u) => G(at("FRD", 0.35, 1.55, -0.85), at("FRD", 0.3, 1.45, -0.95), at("FRD", -0.05, 0.75, -1.5), at("FRD", -0.05, 0.75, -1.5), 40, u),
+  { w: "a dessiné un billet", set: "FRD", fr: "Plongée sur la feuille : le billet se dessine", g: IN, cam: (_w, u) => G(at("FRD", 0.75, 1.6, -1.75), at("FRD", 0.7, 1.5, -1.7), at("FRD", 0.0, 0.75, -0.8), at("FRD", 0.0, 0.75, -0.8), 42, u),
     st: (w, u, t) => { amiDesk(w, t); w.sets.friendPage.draw(0.2 + u * 0.8); w.sets.bill.set(0, t); } },
-  { w: "sur son devoir", set: "FRD", fr: "Visage concentré du meilleur ami (contrechamp, recul)", g: IN, cam: (w, u) => sideCam(w.actors.ami, 1.25, 1.3, 0.12, u, 0.1, 38),
+  { w: "sur son devoir", set: "FRD", fr: "Visage concentré du meilleur ami (contrechamp, recul)", g: IN, cam: (w, u) => sideCam(w.actors.ami, 0.5, 1.3, 0.12, u, 0.1, 40),
     st: (w, _u, t) => { amiDesk(w, t, "focus"); w.sets.friendPage.draw(1); w.sets.bill.set(0, t); } },
-  { w: "et soudain", set: "FRD", fr: "Gros plan bureau : le billet se trace en or puis devient réel", g: IN, cam: (_w, u) => G(at("FRD", 1.35, 1.35, -0.2), at("FRD", 1.2, 1.3, -0.35), at("FRD", 0.15, 0.8, -1.4), at("FRD", 0.15, 0.8, -1.4), 42, u),
+  { w: "et soudain", set: "FRD", fr: "Gros plan bureau : le billet se trace en or puis devient réel", g: IN, cam: (_w, u) => G(at("FRD", 0.5, 1.4, 1.0), at("FRD", 0.4, 1.35, 0.8), at("FRD", -0.3, 0.78, -0.75), at("FRD", -0.3, 0.78, -0.75), 44, u),
     st: (w, u, t) => { amiDesk(w, t, "scared", false); w.sets.friendPage.draw(1); w.sets.bill.set(cl(u * 1.15), t, 0.03); } },
-  { w: "apparu sur son bureau", set: "FRD", fr: "L'ami brandit le billet, rire (plan taille)", g: IN, cam: (w, u) => sideCam(w.actors.ami, -1.4, 1.35, 0.05, u, 0.15, 40),
-    st: (w, _u, t) => { place(w.actors.ami, "FRD", 0, SIT, -0.92, Math.PI); w.actors.ami.pose(t, { sit: true, expr: "happy", armR: -2.6, armL: -0.3 }); w.sets.friendPage.draw(1); const b = w.sets.bill.root; w.sets.bill.set(1, t);
+  { w: "apparu sur son bureau", set: "FRD", fr: "L'ami brandit le billet, rire (plan taille)", g: IN, cam: (w, u) => sideCam(w.actors.ami, -0.4, 1.35, 0.05, u, 0.15, 40),
+    st: (w, _u, t) => { place(w.actors.ami, "FRD", 0, SIT, -1.32, 0); w.actors.ami.pose(t, { sit: true, expr: "happy", armR: -2.6, armL: -0.3 }); w.sets.friendPage.draw(1); const b = w.sets.bill.root; w.sets.bill.set(1, t);
       w.actors.ami.rArm.updateMatrixWorld(true); const hp = w.actors.ami.rArm.localToWorld(V(0, -1.5, 0.6)); b.position.copy(b.parent!.worldToLocal(hp)); b.rotation.set(1.2, 0, 0.2); } },
   // ——— 4 Alors forcément, il fallait que j'essaie.
   { w: "Alors forcément", set: "BED", fr: "Chambre : le héros s'assoit au bureau, travelling avant", g: IN, cam: (_w, u) => G(at("BED", -1.2, 1.5, 1.8), at("BED", -0.2, 1.3, 0.6), at("BED", 1.8, 0.85, -1.4), at("BED", 1.9, 0.85, -1.4), 42, u),
     st: (w, _u, t) => { heroDeskBed(w, t, "smug", false); w.sets.bedPage.draw(0); pcSet(w, 0, t); } },
   // ——— 5 J'ai pris un crayon … PC de gamer flambant neuf.
-  { w: "J'ai pris un crayon", set: "BED", fr: "Gros plan main et crayon sur le carnet (profil bas)", g: IN, cam: (_w, u) => G(at("BED", 1.95, 1.25, -0.4), at("BED", 1.95, 1.2, -0.55), at("BED", 1.85, 0.8, -1.35), at("BED", 1.85, 0.8, -1.35), 40, u),
+  { w: "J'ai pris un crayon", set: "BED", fr: "Gros plan main et crayon sur le carnet (profil bas)", g: IN, cam: (_w, u) => G(at("BED", 1.3, 1.6, -0.3), at("BED", 1.35, 1.55, -0.45), at("BED", 1.95, 0.8, -1.35), at("BED", 1.95, 0.8, -1.35), 44, u),
     st: (w, u, t) => { heroDeskBed(w, t); w.sets.bedPage.draw(u * 0.3); pcSet(w, 0, t); } },
   { w: "dessiné un PC", set: "BED", fr: "Plongée verticale sur la page : le PC se dessine", g: IN, cam: (_w, u) => G(at("BED", 1.55, 1.55, -1.25), at("BED", 1.6, 1.45, -1.28), at("BED", 2.0, 0.75, -1.35), at("BED", 2.0, 0.75, -1.35), 36, u),
     st: (w, u, t) => { heroDeskBed(w, t); w.sets.bedPage.draw(0.3 + u * 0.7); pcSet(w, 0, t); w.sets.bedBook.rotation.set(0, -Math.PI / 2, 0); } },
@@ -133,7 +133,7 @@ export const SHOTS: Shot[] = [
   // ——— 7 Seul petit souci : … clavier à l'envers.
   { w: "Seul petit souci", set: "BED", fr: "Retour sur la page : le clavier dessiné (gros plan)", g: { ...IN, sat: 0.18 }, cam: (_w, u) => G(at("BED", 1.6, 1.4, -1.2), at("BED", 1.65, 1.32, -1.25), at("BED", 2.02, 0.75, -1.35), at("BED", 2.02, 0.75, -1.35), 36, u),
     st: (w, _u, t) => { heroDeskBed(w, t, "worried", false); HB(w).root.visible = false; w.sets.bedPage.draw(1); pcSet(w, 1, t); } },
-  { w: "j'avais dessiné le clavier", set: "BED", fr: "Gros plan du vrai clavier : retourné, touches dessous", g: IN, cam: (_w, u) => G(at("BED", 0.75, 1.45, 1.55), at("BED", 0.6, 1.35, 1.4), at("BED", 0.05, 0.8, 0.5), at("BED", 0.05, 0.8, 0.5), 40, u),
+  { w: "j'avais dessiné le clavier", set: "BED", fr: "Gros plan du vrai clavier : retourné, touches dessous", g: IN, cam: (_w, u) => G(at("BED", 1.0, 1.75, 1.9), at("BED", 0.85, 1.65, 1.75), at("BED", 0.05, 0.85, 0.45), at("BED", 0.05, 0.85, 0.45), 44, u),
     st: (w, _u, t) => { pcSet(w, 1, t); } },
   // ——— 8 Alors le vrai clavier était, lui aussi, à l'envers.
   { w: "Alors le vrai clavier", set: "BED", fr: "Le héros dans le fauteuil tape sur le clavier à l'envers, perplexe (de dos puis de face)", g: IN, cam: (_w, u) => G(at("BED", 1.6, 1.6, 2.15), at("BED", 1.3, 1.5, 2.1), at("BED", 0.05, 0.9, 0.7), at("BED", 0.05, 0.9, 0.7), 48, u),
@@ -148,7 +148,7 @@ export const SHOTS: Shot[] = [
   // ——— 10 Un gamin a dessiné une voiture de sport …
   { w: "Un gamin a dessiné", set: "YARD", fr: "Dans la cour, un garçon dessine : la voiture de sport se trace en or", g: DAY, cam: (_w, u) => G(at("YARD", 1.0, 1.3, 9.5), at("YARD", 2.0, 1.5, 9.0), at("YARD", 5.0, 0.8, 3.0), at("YARD", 5.2, 0.8, 3.0), 42, u),
     st: (w, u, t) => { const a = w.actors.k1; place(a, "YARD", 2.0, 0, 5.8, 2.6); a.pose(t, drawing(t, "focus", { headPitch: 0.3 })); w.sets.car.set(cl(u * 1.25), t, 0.15); } },
-  { w: "une voiture de sport", set: "YARD", fr: "La voiture rouge brille au soleil, travelling bas autour de la calandre", g: DAY, cam: (_w, u) => G(at("YARD", 11.5, 1.0, 6.5), at("YARD", 10.0, 1.1, 9.0), at("YARD", 5.0, 0.7, 3.4), at("YARD", 4.6, 0.8, 3.6), 42, u),
+  { w: "une voiture de sport", set: "YARD", fr: "La voiture rouge brille au soleil, travelling bas autour de la calandre", g: DAY, cam: (_w, u) => G(at("YARD", 16, 1.5, 12), at("YARD", 13, 1.5, 14), at("YARD", 5.0, 0.8, 3.4), at("YARD", 4.6, 0.8, 3.6), 44, u),
     st: (w, _u, t) => { const a = w.actors.k1; place(a, "YARD", 2.0, 0, 5.8, 2.6); a.pose(t, { cheer: true, expr: "happy" }); w.sets.car.set(1, t); } },
   { w: "un autre a fait apparaître", set: "CLS", fr: "Classe : une piscine se trace en or entre les tables", g: IN, cam: (_w, u) => G(at("CLS", -0.6, 2.4, -3.0), at("CLS", -0.2, 2.2, -2.6), at("CLS", 2.4, 0.4, 1.0), at("CLS", 2.4, 0.4, 1.2), 46, u),
     st: (w, u, t) => { classKids(w, t, "scared", 0.9); w.actors.k2.pose(t, drawing(t, "focus", { sit: true })); w.sets.pool.set(cl(u * 1.2), t, 0.12); w.sets.poolPage.draw(1); } },
@@ -162,8 +162,8 @@ export const SHOTS: Shot[] = [
   // ——— 11 Un dinosaure ! Il a poursuivi notre prof …
   { w: "Un dinosaure", set: "HALL", fr: "Le dinosaure rugit (gros plan de la tête, recul)", g: HALLG, cam: (_w, u) => G(at("HALL", 0.9, 1.5, -4.6), at("HALL", 0.8, 1.6, -5.0), at("HALL", -0.2, 1.9, -9.0), at("HALL", -0.2, 2.0, -9.0), 46, u),
     st: (w, _u, t) => { hallReset(w, t); dinoAt(w, -0.2, -9.5, 0, t, 0, 1); } },
-  { w: "Il a poursuivi notre prof", set: "HALL", fr: "La prof court dans le couloir, le dinosaure derrière, travelling arrière rapide", g: HALLG, cam: (_w, u) => G(at("HALL", 0.4, 1.4, -6), at("HALL", 0.4, 1.4, -0.5), at("HALL", 0, 1.3, -14), at("HALL", 0, 1.3, -9), 46, u),
-    st: (w, u, t) => { hallReset(w, t); const z = -9 - (1 - u) * 6 + u * 1; place(w.actors.prof, "HALL", 0.2, 0, z - 0, 0); w.actors.prof.pose(t, { walk: 2.6, expr: "scared", armsUp: 0.6 }); dinoAt(w, -0.1, z - 4.5, 0, t, 1, 0.6); } },
+  { w: "Il a poursuivi notre prof", set: "HALL", fr: "La prof court dans le couloir, le dinosaure derrière, travelling arrière rapide", g: HALLG, cam: (_w, u) => G(at("HALL", 1.1, 2.2, -6), at("HALL", 1.1, 2.2, -0.5), at("HALL", -0.2, 1.4, -14), at("HALL", -0.2, 1.4, -10), 50, u),
+    st: (w, u, t) => { hallReset(w, t); const z = -9 - (1 - u) * 6 + u * 1; place(w.actors.prof, "HALL", 0.55, 0, z - 0, 0); w.actors.prof.pose(t, { walk: 2.6, expr: "scared", armsUp: 0.6 }); dinoAt(w, -0.1, z - 4.5, 0, t, 1, 0.6); } },
   // ——— 12 Mais là, j'ai eu une idée encore meilleure …
   { w: "Mais là", set: "YARD", fr: "Le héros dans la cour, sourire en coin : l'idée", g: DAY, cam: (w, u) => faceCam(HB(w), 1.8, 0.45, 0.05, u, 0.25, 36),
     st: (w, _u, t) => { place(HB(w), "YARD", -2.5, 0, 3.5, 0.4); HB(w).pose(t, { expr: "smug", point: 0.9, headPitch: -0.1 }); w.actors.girl.root.visible = false; } },
@@ -182,7 +182,7 @@ export const SHOTS: Shot[] = [
   // ——— 15 Elle m'a regardé, et elle a souri.
   { w: "Elle m'a regardé", set: "YARD", fr: "Plan rapproché de la fille, sourire bouche fermée", g: DAY, cam: (w, u) => faceCam(w.actors.girl, 1.6, -0.85, 0.0, u, 0.15, 34),
     st: (w, _u, t) => { benchHero(w, t, "happy", false); girlAt(w, "YARD", -4.1, 1.9, -2.9, t, "smile", 1, { headPitch: 0.15 }); } },
-  { w: "et elle a souri", set: "YARD", fr: "Le héros rougit, sourire niais (plan rapproché)", g: DAY, cam: (w, u) => faceCam(HB(w), 1.45, -0.6, 0.1, u, 0.12, 34),
+  { w: "et elle a souri", set: "YARD", fr: "Le héros rougit, sourire niais (plan rapproché)", g: DAY, cam: (w, u) => sideCam(HB(w), -0.9, 1.4, 0.1, u, 0.12, 40),
     st: (w, _u, t) => { benchHero(w, t, "happy", false); girlAt(w, "YARD", -4.1, 1.9, -2.9, t, "smile"); } },
   // ——— 16 J'étais plutôt bien parti, jusqu'à ce qu'elle ouvre la bouche.
   { w: "J'étais plutôt bien parti", set: "YARD", fr: "Plan à deux de profil : il se rapproche, fier", g: DAY, cam: (_w, u) => G(at("YARD", -1.6, 1.0, 1.0), at("YARD", -1.8, 1.0, 1.2), at("YARD", -4.3, 0.9, 1.2), at("YARD", -4.3, 0.9, 1.2), 38, u),
@@ -192,7 +192,7 @@ export const SHOTS: Shot[] = [
   // ——— 17 J'avais oublié de lui dessiner des dents.
   { w: "J'avais oublié", set: "YARD", fr: "Le grand sourire sans dents (plan rapproché, légère plongée)", g: DAY, cam: (w, u) => faceCam(w.actors.girl, 1.4, -0.8, 0.12, u, 0.08, 34),
     st: (w, _u, t) => { benchHero(w, t, "scared", false); girlAt(w, "YARD", -4.1, 1.9, -2.9, t, "gummy", 1, { headYaw: Math.sin(t * 3) * 0.08 }); } },
-  { w: "des dents", set: "YARD", fr: "Réaction du héros : horreur", g: DAY, cam: (w, u) => faceCam(HB(w), 1.45, -0.55, 0.05, u, 0.18, 34),
+  { w: "des dents", set: "YARD", fr: "Réaction du héros : horreur", g: DAY, cam: (w, u) => sideCam(HB(w), -0.9, 1.4, 0.05, u, 0.18, 40),
     st: (w, _u, t) => { benchHero(w, t, "scared", false); girlAt(w, "YARD", -4.1, 1.9, -2.9, t, "gummy"); } },
   // ——— 18 J'ai essayé de corriger mon dessin, mais rien à faire …
   { w: "J'ai essayé de corriger", set: "YARD", fr: "Gros plan carnet : il ajoute des dents au dessin, vite", g: DAY, cam: (w, u) => bookCam(HB(w), w.sets.yardBook, u, -0.22),

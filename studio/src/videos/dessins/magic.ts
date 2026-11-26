@@ -15,7 +15,7 @@ const sparkTex = (() => { let t: THREE.Texture | null = null; return () => { if 
 
 /** objet dessiné : contours dorés (lignes épaisses) tracés progressivement, puis fondu de l'objet réel */
 export class Drawn {
-  root: THREE.Object3D; private lines: LineSegments2; private lm: LineMaterial; private n: number; private mats: THREE.Material[] = []; private meshes: THREE.Mesh[] = [];
+  root: THREE.Object3D; private lines: LineSegments2; private lm: LineMaterial; private n: number; private mats: THREE.Material[] = []; private tr0: boolean[] = []; private meshes: THREE.Mesh[] = [];
   private spark: THREE.Points; private segs: Float32Array; private glow?: THREE.PointLight;
   constructor(obj: THREE.Object3D, width = 5, angle = 28, light = 0) {
     this.root = obj; obj.updateMatrixWorld(true);
@@ -23,7 +23,7 @@ export class Drawn {
     obj.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh || o.userData.noEdge) return; this.meshes.push(m);
       const e = new THREE.EdgesGeometry(m.geometry, angle), a = e.attributes.position, mm = new THREE.Matrix4().multiplyMatrices(inv, m.matrixWorld), v = new THREE.Vector3();
       for (let i = 0; i < a.count; i++) { v.fromBufferAttribute(a, i).applyMatrix4(mm); pos.push(v.x, v.y, v.z); } e.dispose();
-      const cl = (x: THREE.Material) => { const c = x.clone(); c.transparent = false; this.mats.push(c); return c; };
+      const cl = (x: THREE.Material) => { const c = x.clone(); this.tr0.push(x.transparent); this.mats.push(c); return c; };
       m.material = Array.isArray(m.material) ? m.material.map(cl) : cl(m.material); });
     // ordre de tracé : de bas en haut, avec un peu de désordre (comme un crayon)
     const n = pos.length / 6, idx = [...Array(n).keys()], key = (i: number) => Math.min(pos[i * 6 + 1], pos[i * 6 + 4]) + hash(i, 7) * 0.25;
@@ -44,7 +44,7 @@ export class Drawn {
     const draw = sm(p / 0.5), solid = sm((p - 0.45) / 0.4), lineOp = p < 0.82 ? 1 : 1 - sm((p - 0.82) / 0.18);
     const cnt = Math.max(1, Math.round(this.n * draw)); (this.lines.geometry as LineSegmentsGeometry).instanceCount = cnt;
     this.lines.visible = lineOp > 0.01; this.lm.opacity = lineOp;
-    for (const m of this.mats) { const tr = solid < 0.999; if (m.transparent !== tr) { m.transparent = tr; m.needsUpdate = true; } m.opacity = solid; (m as THREE.MeshStandardMaterial).depthWrite = solid > 0.5; }
+    for (const [k, m] of this.mats.entries()) { const tr = solid < 0.999 || this.tr0[k]; if (m.transparent !== tr) { m.transparent = tr; m.needsUpdate = true; } m.opacity = solid; (m as THREE.MeshStandardMaterial).depthWrite = solid > 0.5 && !this.tr0[k]; }
     for (const m of this.meshes) { m.visible = solid > 0.005; m.castShadow = solid > 0.6; }
     // étincelles autour de la pointe du tracé
     const a = this.spark.geometry.attributes.position as THREE.BufferAttribute, live = draw < 0.999 || (p > 0.45 && p < 0.9);

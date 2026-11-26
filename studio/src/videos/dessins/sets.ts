@@ -367,10 +367,10 @@ export class Sets {
     // ---------------- bureau du meilleur ami
     { const p = this.g.FRD; sun("FRD", V(-4, 5, -5), V(0, 0, 0), 1.5, 5, "#fff2dc", "#ffffff", "#c8a888", 0.7);
       room(grp(p, 0, 0, 0.8), 6, 5.6, 2.6, new THREE.MeshStandardMaterial({ map: rep(dotsTex("#b8e0a0", "#a0d088"), 6, 2), roughness: 0.9 }), new THREE.MeshStandardMaterial({ map: rep(woodTex("#b88a5a"), 3, 3), roughness: 0.5 }));
-      windowAt(p, -0.6, 1.55, -1.99, 0, 1.2, 1.0); const d = desk(p, 0, -1.55, 0, "#f4f1ea", "#2fae7a"); d.scale.set(1.4, 1, 1.2); chair(p, 0, -0.95, Math.PI, "#f2b51c");
-      this.friendBook = grp(p, -0.05, 0.745, -1.5); bx(this.friendBook, 0.3, 0.004, 0.42, M("#fbf8ef", 0.9), 0, 0.002, 0); const pl = plane(this.friendBook, 0.29, 0.41, pageMat(this.friendPage), 0, 0.005, 0, -Math.PI / 2); pl.castShadow = false;
-      const b = mkBill(); b.position.set(0.32, 0.745, -1.42); b.rotation.y = 0.3; b.scale.setScalar(1.15); p.add(b); this.bill = new Drawn(b, 3, 20, 1.2);
-      const lamp = grp(p, 0.5, 0.745, -1.75); cyl(lamp, 0.08, 0.1, 0.03, M("#2fae7a", 0.4), 0, 0.015, 0); const arm = cyl(lamp, 0.012, 0.012, 0.45, M("#2fae7a", 0.4), 0, 0.24, 0, 8); arm.rotation.z = 0.3;
+      windowAt(p, -0.9, 1.55, -1.99, 0, 1.2, 1.0); const d = desk(p, 0, -0.75, 0, "#f4f1ea", "#2fae7a"); d.scale.set(1.4, 1, 1.2); chair(p, 0, -1.35, 0, "#f2b51c");
+      this.friendBook = grp(p, 0.0, 0.745, -0.8, Math.PI); bx(this.friendBook, 0.3, 0.004, 0.42, M("#fbf8ef", 0.9), 0, 0.002, 0); const pl = plane(this.friendBook, 0.29, 0.41, pageMat(this.friendPage), 0, 0.005, 0, -Math.PI / 2); pl.castShadow = false;
+      const b = mkBill(); b.position.set(-0.36, 0.745, -0.72); b.rotation.y = 0.3; b.scale.setScalar(1.15); p.add(b); this.bill = new Drawn(b, 3, 20, 1.2);
+      const lamp = grp(p, 0.5, 0.745, -0.95); cyl(lamp, 0.08, 0.1, 0.03, M("#2fae7a", 0.4), 0, 0.015, 0); const arm = cyl(lamp, 0.012, 0.012, 0.45, M("#2fae7a", 0.4), 0, 0.24, 0, 8); arm.rotation.z = 0.3;
       add(lamp, new THREE.ConeGeometry(0.1, 0.14, 16, 1, true), M("#2fae7a", 0.4, undefined, { side: THREE.DoubleSide }), -0.1, 0.46, 0.05); pt(lamp, -0.1, 0.4, 0.05, "#ffe0b0", 2.5, 3);
       frame(p, kidArtTex(2), 0.4, 0.5, 0.9, 1.6, -1.98); bx(p, 0.9, 0.9, 0.35, M("#ffffff", 0.6), 1.5, 0.45, -1.8);
       bx(p, 1.0, 0.4, 2.0, M("#ffffff", 0.6, rep(woodTex("#e8d8b8"), 1, 1)), 2.4, 0.2, 1.2); bx(p, 0.95, 0.18, 1.9, M("#2fae7a", 0.8, rep(dotsTex("#2fae7a", "#ffffff"), 2, 4)), 2.4, 0.48, 1.25, 0, 0.06); bx(p, 0.6, 0.14, 0.35, M("#ffffff", 0.8), 2.4, 0.62, 0.45, 0, 0.06);
