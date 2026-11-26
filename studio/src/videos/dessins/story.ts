@@ -65,7 +65,8 @@ const townCrowd = (w: World, t: number, on = true, clear = false) => { const ps:
   for (const [k, x, z, dir, ph] of ps) { const a = w.actors[k]; if (!on) { a.root.visible = false; continue; } const xx = x + dir * ((t * 1.1 + ph * 6) % 12); if (clear && Math.abs(xx - 1) < 5.5) { a.root.visible = false; continue; } place(a, "TOWN", xx, 0, z, dir > 0 ? Math.PI / 2 : -Math.PI / 2); a.pose(t, { walk: 1.2, expr: "smile" }); } };
 /** gros plan sur le carnet tenu : au-dessus de l'épaule droite du personnage */
 const bookCam = (a: Actor, book: THREE.Object3D, u: number, side = 0.22, fov = 34): Cam => { const b = book.getWorldPosition(V(0, 0, 0)), y = a.root.rotation.y, f = V(Math.sin(y), 0, Math.cos(y)), r = V(-Math.cos(y), 0, Math.sin(y));
-  return G(b.clone().addScaledVector(f, 0.15).addScaledVector(r, side * 2.6).add(V(0, 0.75, 0)), b.clone().addScaledVector(f, 0.12).addScaledVector(r, side * 2.3).add(V(0, 0.68, 0)), b.clone().add(V(0, 0.1, 0)), b.clone().add(V(0, 0.1, 0)), fov + 8, u); };
+  // au-dessus et en retrait de l'épaule (derrière le livre, côté personnage), assez loin pour voir la page ET la main
+  const h = headOf(a); const tg = b.clone().lerp(h, 0.3); return G(h.clone().addScaledVector(f, 1.1).addScaledVector(r, side * 11).add(V(0, 1.15, 0)), h.clone().addScaledVector(f, 1.05).addScaledVector(r, side * 10).add(V(0, 1.0, 0)), tg, tg, fov + 8, u); };
 const pcSet = (w: World, p: number, t: number) => w.sets.pc.set(p, t, 0.1);
 const heroDeskBed = (w: World, t: number, e: Expr = "focus", draw = true) => { place(HB(w), "BED", 1.48, SIT, -1.4, Math.PI / 2); HB(w).pose(t, draw ? drawing(t, e, { sit: true }) : { sit: true, expr: e, headYaw: -0.5 }); };
 const heroGamer = (w: World, t: number, e: Expr, type = 0) => { place(HB(w), "BED", 0.1, 0.42, 1.25, Math.PI); HB(w).pose(t, { sit: true, expr: e, armL: -1.25 + Math.sin(t * 16) * 0.06 * type, armR: -1.25 + Math.sin(t * 15 + 1) * 0.06 * type, headPitch: 0.3 }); };
