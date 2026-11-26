@@ -1,0 +1,34 @@
+# Dans cette ville — « Les Pouvoirs Nuls » (ép. 3, ~2 min, ~390 mots)
+
+Décor : village de montagne, chalets en bois sombre, volets rouges, toits pentus, sapins, rivière, automne.
+Puis tempête de nuit en forêt (pluie, lanternes).
+
+Dans cette ville, le jour de tes dix ans, tu reçois un pouvoir. Mais toujours un pouvoir nul.
+Le boulanger peut faire éternuer n'importe qui, juste en le regardant.
+Madame Rose parle aux pigeons. Mais les pigeons ne disent jamais rien d'intéressant.
+Le maire brille dans le noir. Enfin… seulement les oreilles.
+Et ma grande sœur peut faire voler une cuillère. Une seule. La petite.
+
+Moi, j'attendais mes dix ans depuis toujours. Le matin de mon anniversaire, j'ai soufflé les bougies…
+et au-dessus de ma tête, un petit nuage s'est ouvert, et un rayon de soleil est tombé.
+Un mètre carré de soleil. Rien que pour moi.
+Il me suit partout. Quand je marche, il marche. Quand je cours, il court.
+À l'école, tout le monde a ri. On m'a appelé « Lampadaire ». Le pire pouvoir de toute l'histoire de la ville.
+
+Et puis, un soir d'automne, la plus grosse tempête qu'on ait jamais vue est arrivée.
+Et la petite Lou, trois ans, la fille des voisins, avait disparu. Elle avait suivi son chat dans la forêt.
+Toute la ville est sortie la chercher. Mais il faisait noir. Il pleuvait si fort qu'on ne voyait pas à deux mètres.
+
+Alors Madame Rose a sifflé. Cent pigeons sont partis dans la nuit.
+Et pour la première fois de leur vie, ils ont dit un truc intéressant : « Le vieux chêne. Derrière la rivière. »
+Le maire est passé devant. Ses oreilles éclairaient le chemin comme deux lanternes.
+Arrivés au chêne : personne. Juste des buissons, partout.
+Alors le boulanger a fixé les buissons, très fort. Et on a entendu : « Atchoum ! »
+Lou était là, roulée en boule, trempée, gelée, avec son chat.
+
+Je me suis approché. Et au-dessus de nous, mon mètre carré de soleil s'est allumé.
+Au milieu de la tempête, il faisait chaud. C'était sec. Lou a arrêté de trembler. Son chat s'est mis à ronronner.
+On est rentrés comme ça, tous les deux sous mon soleil, derrière les oreilles du maire, jusqu'à la maison de Lou.
+
+Depuis, plus personne ne m'appelle Lampadaire.
+Et quand il pleut, dans cette ville, tout le monde marche très, très près de moi.
