@@ -39,7 +39,7 @@ const walkTo = (a: Actor, k: SetK, x0: number, z0: number, x1: number, z1: numbe
 
 export type World = { sets: Sets; actors: Record<string, Actor>; scene?: THREE.Scene; fill: THREE.PointLight; key: THREE.SpotLight; girlD?: Drawn };
 export type Grade = { sat: number; con: number; bri: number; bloom: number; bg: string; fog: string; fogD: number; env: number; snow: boolean };
-type Shot = { set: SetK; w: string; cam: (w: World, u: number, t: number) => Cam; st?: (w: World, u: number, t: number) => void; g?: Partial<Grade>; fr: string };
+type Shot = { set: SetK; w: string; cam: (w: World, u: number, t: number) => Cam; st?: (w: World, u: number, t: number) => void; g?: Partial<Grade>; fr: string; dt?: number };
 
 // ---------------- distribution
 export const buildCast = (root: THREE.Object3D) => {
@@ -55,7 +55,7 @@ const DAY: Partial<Grade> = { bg: "#8cc4f2", fog: "#a8cdf0", fogD: 0.0022, sat: 
 const IN: Partial<Grade> = { bg: "#000", fog: "#000", fogD: 0, sat: 0.55, con: 0.16, bri: -0.035, bloom: 0.95, env: 0.45 };
 const HALLG: Partial<Grade> = { ...IN, sat: 0.5, con: 0.17 };
 const EMPTY: Partial<Grade> = { bg: "#b8bcc4", fog: "#c4c8d0", fogD: 0.007, sat: -0.12, con: 0.18, bri: -0.03, bloom: 0.8, env: 0.35 };
-const OTHG: Partial<Grade> = { bg: "#d8d0c2", fog: "#d4ccbe", fogD: 0.004, sat: 0.45, con: 0.2, bri: -0.06, bloom: 0.6, env: 0.35 };
+const OTHG: Partial<Grade> = { bg: "#bfe0f4", fog: "#c4e2f2", fogD: 0.004, sat: 0.45, con: 0.2, bri: -0.06, bloom: 0.6, env: 0.35 };
 
 // ---------------- mises en place récurrentes
 const HB = (w: World) => w.actors.hero;
@@ -83,6 +83,7 @@ const eraserAt = (w: World, z: number, t: number, cover = 0, stop = 0) => { cons
   w.sets.crumbs.set(t, V(0, 0.2, back), 3.0, 1.0, 1.6); w.sets.crumbs.pts.visible = stop < 0.5; };
 const hallReset = (w: World, t: number) => { for (const d of w.sets.lockers) d.set(1, t); for (const d of w.sets.hallDesks) d.set(1, t); for (const m of w.sets.erased) m.visible = false; w.sets.eraser.root.visible = false; w.sets.crumbs.pts.visible = false; };
 const girlAt = (w: World, k: SetK, x: number, z: number, yaw: number, t: number, e: Expr, p = 1, extra: Pose = {}) => { const g = w.actors.girl; place(g, k, x, 0, z, yaw); g.pose(t, { expr: e, armL: 0.02, armR: -0.02, headYaw: 0, headPitch: 0, ...extra }); w.girlD!.set(p, t, 0.07); };
+const funKid = (w: World, k: string, x: number, z: number, yaw: number, u: number, t: number) => { const a = w.actors[k]; place(a, "TOWN", x, 0, z, yaw); a.pose(t, u < 0.4 ? drawing(t, "focus", { headPitch: 0.3 }) : { cheer: true, expr: "happy" }); };
 const benchHero = (w: World, t: number, e: Expr, draw = true) => { place(HB(w), "YARD", -4.5, 0.36, 0.55, 0.25); HB(w).pose(t, draw ? drawing(t, e, { sit: true }) : { sit: true, expr: e, headPitch: 0.05 }); if (draw) bookInHand(HB(w), w.sets.yardBook, 0.9, true); };
 const dinoAt = (w: World, x: number, z: number, yaw: number, t: number, run: number, roar: number, p = 1) => { const d = w.sets.dino; d.root.position.set(x, 0, z); d.root.rotation.y = yaw; d.set(t, run, roar); w.sets.dinoD.set(p, t, 0.1); };
 const houseState = (w: World, wins: number, roof: number, t: number) => { w.sets.home.dw!.set(wins, t, 0.12); w.sets.home.dr!.set(roof, t, 0.14); };
@@ -100,11 +101,17 @@ export const SHOTS: Shot[] = [
   // ——— 1 Et je ne parle pas d'un petit tour de magie.
   { w: "Et je ne parle pas", set: "TOWN", fr: "Le héros face caméra sur le trottoir, travelling arrière", g: DAY, cam: (w, u) => faceCam(HB(w), 2.2, -0.35, 0.05, 1 - u, -0.35, 34),
     st: (w, _u, t) => { place(HB(w), "TOWN", 0.6, 0, -2.3, 0.15); HB(w).pose(t, { expr: "smug", talk: true, headYaw: Math.sin(t * 5) * 0.25 }); townCrowd(w, t, true, true); } },
-  // ——— 2 Je veux dire : absolument n'importe quoi.
-  { w: "Je veux dire", set: "TOWN", fr: "Un garçon dessine une voiture sur le trottoir : elle se trace en or sur la rue", g: DAY, cam: (_w, u) => G(at("TOWN", -0.5, 1.5, -6.0), at("TOWN", 1.0, 1.6, -5.6), at("TOWN", 5, 0.8, -0.6), at("TOWN", 5.2, 0.8, -0.6), 40, u),
-    st: (w, u, t) => { const a = w.actors.k5; place(a, "TOWN", 2.6, 0, -2.6, 0.9); a.pose(t, drawing(t, "focus", { headPitch: 0.3 })); w.sets.townCar.set(cl(u * 1.25), t, 0.12); } },
-  { w: "absolument n'importe quoi", set: "TOWN", fr: "La voiture réelle, le garçon bondit de joie, travelling latéral", g: DAY, cam: (_w, u) => G(at("TOWN", 9.5, 1.1, 3.5), at("TOWN", 8.0, 1.2, 4.2), at("TOWN", 4.5, 0.8, -1.0), at("TOWN", 4.0, 0.9, -1.2), 42, u),
-    st: (w, _u, t) => { const a = w.actors.k5; place(a, "TOWN", 2.6, 0, -2.6, 0.9); a.pose(t, { cheer: true, expr: "happy" }); w.sets.townCar.set(1, t); } },
+  // ——— 2 Je veux dire : absolument n'importe quoi.  → montage rapide d'apparitions (0,4-0,9 s chacune)
+  { w: "tour de magie", set: "TOWN", fr: "Montage 1 : un donut géant se trace en or au milieu de la rue", g: DAY, cam: (_w, u) => G(at("TOWN", -10.4, 1.0, -6.6), at("TOWN", -10.9, 1.15, -6.0), at("TOWN", -13.8, 1.4, 1.4), at("TOWN", -13.8, 1.5, 1.4), 44, u),
+    st: (w, u, t) => { townCrowd(w, t); funKid(w, "k1", -10.9, -2.8, 0.36, u, t); w.sets.fun[0].set(cl(u * 1.5), t, 0.12); } },
+  { w: "Je veux dire", set: "TOWN", fr: "Montage 2 : une fusée apparaît, contre-plongée", g: DAY, cam: (_w, u) => G(at("TOWN", 10.2, 0.6, -5.2), at("TOWN", 10.6, 0.7, -4.8), at("TOWN", 14, 2.1, 1.8), at("TOWN", 14, 2.3, 1.8), 48, u),
+    st: (w, u, t) => { townCrowd(w, t); funKid(w, "k2", 11.6, -2.7, 0.43, u, t); w.sets.fun[1].set(cl(u * 1.7), t, 0.12); } },
+  { w: "absolument", set: "TOWN", fr: "Montage 3 : une glace géante à trois boules", g: DAY, cam: (_w, u) => G(at("TOWN", -22.6, 1.6, -5.0), at("TOWN", -23.0, 1.6, -4.6), at("TOWN", -26, 2.0, 1.8), at("TOWN", -26, 2.1, 1.8), 46, u),
+    st: (w, u, t) => { townCrowd(w, t); funKid(w, "k7", -23.9, -2.5, -0.44, u, t); w.sets.fun[2].set(cl(u * 1.7), t, 0.12); } },
+  { w: "n'importe", set: "TOWN", fr: "Montage 4 : une voiture de sport se trace sur la rue", g: DAY, cam: (_w, u) => G(at("TOWN", -0.5, 1.5, -6.0), at("TOWN", 0.2, 1.55, -5.8), at("TOWN", 5, 0.8, -0.6), at("TOWN", 5.1, 0.8, -0.6), 40, u),
+    st: (w, u, t) => { townCrowd(w, t); funKid(w, "k5", 2.6, -2.6, 0.9, u, t); w.sets.townCar.set(cl(u * 1.8), t, 0.12); } },
+  { w: "quoi", dt: 0.08, set: "TOWN", fr: "Montage 5 : un ours en peluche géant", g: DAY, cam: (_w, u) => G(at("TOWN", 22.8, 1.3, -4.6), at("TOWN", 23.2, 1.35, -4.2), at("TOWN", 26, 1.6, 2.2), at("TOWN", 26, 1.7, 2.2), 46, u),
+    st: (w, u, t) => { townCrowd(w, t); funKid(w, "k8", 24.3, -2.4, 0.34, u, t); w.sets.fun[3].set(cl(u * 1.7), t, 0.12); } },
   // ——— 3 Mon meilleur ami … billet … bureau.
   { w: "Mon meilleur ami", set: "FRD", fr: "Le meilleur ami à son bureau, plan large de trois quarts", g: IN, cam: (_w, u) => G(at("FRD", 1.4, 1.6, 2.6), at("FRD", 1.1, 1.5, 2.2), at("FRD", 0, 0.85, -1.0), at("FRD", 0, 0.85, -1.0), 48, u),
     st: (w, _u, t) => { amiDesk(w, t); w.sets.friendPage.draw(0.2); w.sets.bill.set(0, t); } },
@@ -357,7 +364,7 @@ const balloonMat = (k: number) => { if (!balloonPage) {
   balloonPage.draw(k); return balloonM!; };
 
 export const SHOT_START = (() => { let from = 0; return SHOTS.map((s) => { const i = find(s.w, from); from = i + 1; return i; }); })();
-export const START = SHOT_START.map((wi, i) => (i === 0 ? 0 : Math.round(W[wi].s * FPS) - 2));
+export const START = SHOT_START.map((wi, i) => (i === 0 ? 0 : Math.round((W[wi].s + (SHOTS[i].dt ?? 0)) * FPS) - 2));
 export const shotAt = (f: number) => { let i = 0; while (i + 1 < START.length && START[i + 1] <= f) i++; return i; };
 export const uOf = (i: number, f: number) => { const a = START[i], b = i + 1 < START.length ? START[i + 1] : TOTAL; return Math.min(1, Math.max(0, (f - a) / Math.max(1, b - a - 1))); };
 
@@ -374,7 +381,7 @@ export const applyShot = (w: World, i: number, u: number, t: number, _cam: THREE
   for (const c of S.cars) c.visible = true; S.door.set(0); S.bucket.position.set(-1.2 + 2 * 0.48, 0.525, 0);
   S.muralM.map = i >= ERI ? S.mural2 : S.mural1; S.muralM.emissiveIntensity = 0; S.muralM.needsUpdate = true;
   for (const d of [S.bill, S.pc, S.car, S.pool, S.dinoD, S.cage, S.doorD, S.townCar, ...S.balloons]) d.set(1, t);
-  S.townCar.set(1, t); S.cage.set(0, t); S.doorD.set(0, t); S.dinoD.set(0, t); for (const b of S.balloons) b.set(0, t); S.girlFix.draw(0.9);
+  S.townCar.set(1, t); for (const f of S.fun) f.set(0, t); S.cage.set(0, t); S.doorD.set(0, t); S.dinoD.set(0, t); for (const b of S.balloons) b.set(0, t); S.girlFix.draw(0.9);
   houseState(w, 1, 1, t); w.girlD!.set(0, t);
   w.fill.intensity = 0; w.key.intensity = 0;
   s.st?.(w, u, t);
