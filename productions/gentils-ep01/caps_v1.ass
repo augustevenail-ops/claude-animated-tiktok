@@ -1,0 +1,253 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 2160
+PlayResY: 3840
+WrapStyle: 2
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Cap,MonstreCaps,230,&H0000E9FF,&H0000E9FF,&H000A0A0A,&H60000000,0,0,0,0,100,100,2,0,1,22,11,5,100,100,0,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.23,0:00:00.55,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}dans cette
+Dialogue: 0,0:00:00.55,0:00:00.93,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}ville
+Dialogue: 0,0:00:00.93,0:00:01.29,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}chaque fois
+Dialogue: 0,0:00:01.29,0:00:01.65,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}que tu dis
+Dialogue: 0,0:00:01.65,0:00:01.89,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}quelque
+Dialogue: 0,0:00:01.89,0:00:02.19,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}chose de
+Dialogue: 0,0:00:02.19,0:00:02.63,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}gentil
+Dialogue: 0,0:00:02.63,0:00:03.07,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}tu grandis
+Dialogue: 0,0:00:03.07,0:00:03.92,Cap,,0,0,0,,{\pos(1080,2573)\fs150\fscx135\fscy135\t(0,180,\fscx100\fscy100)}d'un centimètre
+Dialogue: 0,0:00:04.05,0:00:04.35,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}et chaque
+Dialogue: 0,0:00:04.35,0:00:04.59,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}fois que
+Dialogue: 0,0:00:04.59,0:00:05.03,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}tu dis quelque
+Dialogue: 0,0:00:05.03,0:00:05.33,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}chose de
+Dialogue: 0,0:00:05.33,0:00:05.73,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}méchant
+Dialogue: 0,0:00:05.73,0:00:05.97,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}tu en
+Dialogue: 0,0:00:05.97,0:00:06.25,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}perds
+Dialogue: 0,0:00:06.25,0:00:06.58,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}un
+Dialogue: 0,0:00:06.75,0:00:07.23,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}ma grand-mère
+Dialogue: 0,0:00:07.23,0:00:07.61,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}fait quatre
+Dialogue: 0,0:00:07.61,0:00:09.10,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}mètres
+Dialogue: 0,0:00:09.55,0:00:09.91,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}elle doit
+Dialogue: 0,0:00:09.91,0:00:10.41,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}se baisser
+Dialogue: 0,0:00:10.41,0:00:10.75,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}pour entrer
+Dialogue: 0,0:00:10.75,0:00:10.93,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}dans la
+Dialogue: 0,0:00:10.93,0:00:11.58,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}boulangerie
+Dialogue: 0,0:00:11.71,0:00:12.21,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}mon voisin
+Dialogue: 0,0:00:12.21,0:00:12.43,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}lui
+Dialogue: 0,0:00:12.43,0:00:12.71,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}ne fait
+Dialogue: 0,0:00:12.71,0:00:13.07,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}plus que
+Dialogue: 0,0:00:13.07,0:00:13.49,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}soixante
+Dialogue: 0,0:00:13.49,0:00:14.22,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}centimètres
+Dialogue: 0,0:00:14.33,0:00:14.69,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}il râle
+Dialogue: 0,0:00:14.69,0:00:15.01,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}tellement
+Dialogue: 0,0:00:15.01,0:00:15.33,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}qu'il prend
+Dialogue: 0,0:00:15.33,0:00:15.69,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}le bus
+Dialogue: 0,0:00:15.69,0:00:16.01,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}debout
+Dialogue: 0,0:00:16.01,0:00:16.23,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}sur un
+Dialogue: 0,0:00:16.23,0:00:16.82,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}tabouret
+Dialogue: 0,0:00:17.31,0:00:17.75,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}ici
+Dialogue: 0,0:00:17.75,0:00:18.17,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}la taille
+Dialogue: 0,0:00:18.17,0:00:18.59,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}c'est tout
+Dialogue: 0,0:00:18.59,0:00:18.93,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}plus tu
+Dialogue: 0,0:00:18.93,0:00:19.27,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}es grand
+Dialogue: 0,0:00:19.27,0:00:19.55,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}plus on
+Dialogue: 0,0:00:19.55,0:00:20.14,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}t'écoute
+Dialogue: 0,0:00:20.29,0:00:20.81,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}à l'école
+Dialogue: 0,0:00:20.81,0:00:21.19,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}il y a même
+Dialogue: 0,0:00:21.19,0:00:21.51,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}des cours
+Dialogue: 0,0:00:21.51,0:00:22.24,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}de compliments
+Dialogue: 0,0:00:22.35,0:00:22.61,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}on se
+Dialogue: 0,0:00:22.61,0:00:22.85,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}lance
+Dialogue: 0,0:00:22.85,0:00:23.15,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}des t'as
+Dialogue: 0,0:00:23.15,0:00:23.39,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}de beaux
+Dialogue: 0,0:00:23.39,0:00:23.65,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}cheveux
+Dialogue: 0,0:00:23.65,0:00:24.07,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}pour gagner
+Dialogue: 0,0:00:24.07,0:00:24.67,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}un centimètre
+Dialogue: 0,0:00:24.67,0:00:24.91,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}avant la
+Dialogue: 0,0:00:24.91,0:00:25.36,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}récré
+Dialogue: 0,0:00:25.57,0:00:25.97,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}moi
+Dialogue: 0,0:00:25.97,0:00:26.23,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}je suis
+Dialogue: 0,0:00:26.23,0:00:26.54,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}le plus
+Dialogue: 0,0:00:26.54,0:00:26.77,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}petit
+Dialogue: 0,0:00:26.77,0:00:27.45,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}de ma classe
+Dialogue: 0,0:00:27.61,0:00:27.97,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}un mètre
+Dialogue: 0,0:00:27.97,0:00:28.40,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}dix
+Dialogue: 0,0:00:28.59,0:00:28.89,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}pas parce
+Dialogue: 0,0:00:28.89,0:00:29.23,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}que je suis
+Dialogue: 0,0:00:29.23,0:00:29.70,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}méchant
+Dialogue: 0,0:00:29.70,0:00:30.36,Cap,,0,0,0,,{\pos(1080,2573)\fs150\fscx135\fscy135\t(0,180,\fscx100\fscy100)}mes compliments
+Dialogue: 0,0:00:30.36,0:00:30.88,Cap,,0,0,0,,{\pos(1080,2573)\fs150\fscx135\fscy135\t(0,180,\fscx100\fscy100)}sortent toujours
+Dialogue: 0,0:00:30.88,0:00:31.54,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}de travers
+Dialogue: 0,0:00:31.71,0:00:31.96,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}j'ai dit
+Dialogue: 0,0:00:31.96,0:00:32.54,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}à ma prof
+Dialogue: 0,0:00:32.54,0:00:32.88,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}vous êtes
+Dialogue: 0,0:00:32.88,0:00:33.18,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}beaucoup
+Dialogue: 0,0:00:33.18,0:00:33.74,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}moins sévère
+Dialogue: 0,0:00:33.74,0:00:34.06,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}que ce que
+Dialogue: 0,0:00:34.06,0:00:34.42,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}tout le monde
+Dialogue: 0,0:00:34.42,0:00:35.01,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}raconte
+Dialogue: 0,0:00:35.16,0:00:35.62,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}j'ai perdu
+Dialogue: 0,0:00:35.62,0:00:36.55,Cap,,0,0,0,,{\pos(1080,2573)\fs150\fscx135\fscy135\t(0,180,\fscx100\fscy100)}deux centimètres
+Dialogue: 0,0:00:36.66,0:00:37.08,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}et puis
+Dialogue: 0,0:00:37.08,0:00:37.32,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}il y a
+Dialogue: 0,0:00:37.32,0:00:37.91,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}le maire
+Dialogue: 0,0:00:38.16,0:00:38.42,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}neuf
+Dialogue: 0,0:00:38.42,0:00:38.80,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}mètres
+Dialogue: 0,0:00:38.80,0:00:39.12,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}le plus
+Dialogue: 0,0:00:39.12,0:00:39.36,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}grand de
+Dialogue: 0,0:00:39.36,0:00:39.89,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}la ville
+Dialogue: 0,0:00:40.08,0:00:40.76,Cap,,0,0,0,,{\pos(1080,2573)\fs150\fscx135\fscy135\t(0,180,\fscx100\fscy100)}chaque dimanche
+Dialogue: 0,0:00:40.76,0:00:41.22,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}sur la grande
+Dialogue: 0,0:00:41.22,0:00:41.66,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}place
+Dialogue: 0,0:00:41.66,0:00:42.32,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}il complimente
+Dialogue: 0,0:00:42.32,0:00:42.66,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}les gens
+Dialogue: 0,0:00:42.66,0:00:42.94,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}un par
+Dialogue: 0,0:00:42.94,0:00:43.25,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}un
+Dialogue: 0,0:00:43.38,0:00:43.60,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}mais
+Dialogue: 0,0:00:43.60,0:00:43.92,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}seulement
+Dialogue: 0,0:00:43.92,0:00:44.47,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}les grands
+Dialogue: 0,0:00:44.98,0:00:45.48,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}le micro
+Dialogue: 0,0:00:45.48,0:00:46.00,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}est accroché
+Dialogue: 0,0:00:46.00,0:00:46.34,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}à trois
+Dialogue: 0,0:00:46.34,0:00:46.60,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}mètres
+Dialogue: 0,0:00:46.60,0:00:46.96,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}de haut
+Dialogue: 0,0:00:46.96,0:00:47.28,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}si tu es
+Dialogue: 0,0:00:47.28,0:00:47.88,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}trop petit
+Dialogue: 0,0:00:47.88,0:00:48.28,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}tu ne parles
+Dialogue: 0,0:00:48.28,0:00:48.65,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}pas
+Dialogue: 0,0:00:48.78,0:00:49.38,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}un dimanche
+Dialogue: 0,0:00:49.38,0:00:49.68,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}le maire
+Dialogue: 0,0:00:49.68,0:00:50.08,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}a annoncé
+Dialogue: 0,0:00:50.08,0:00:50.44,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}une nouvelle
+Dialogue: 0,0:00:50.44,0:00:50.81,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}loi
+Dialogue: 0,0:00:51.00,0:00:51.48,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}les petits
+Dialogue: 0,0:00:51.48,0:00:51.82,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}sont des gens
+Dialogue: 0,0:00:51.82,0:00:54.11,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}méchants
+Dialogue: 0,0:00:54.50,0:00:54.86,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}à partir
+Dialogue: 0,0:00:54.86,0:00:55.38,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}de demain
+Dialogue: 0,0:00:55.38,0:00:55.70,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}tous ceux
+Dialogue: 0,0:00:55.70,0:00:56.22,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}qui mesurent
+Dialogue: 0,0:00:56.22,0:00:56.56,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}moins d'un
+Dialogue: 0,0:00:56.56,0:00:56.82,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}mètre
+Dialogue: 0,0:00:56.82,0:00:57.28,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}cinquante
+Dialogue: 0,0:00:57.28,0:00:57.56,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}devront
+Dialogue: 0,0:00:57.56,0:00:57.82,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}quitter
+Dialogue: 0,0:00:57.82,0:00:58.33,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}la ville
+Dialogue: 0,0:00:58.50,0:00:58.74,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}un
+Dialogue: 0,0:00:58.74,0:00:59.10,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}énorme
+Dialogue: 0,0:00:59.10,0:00:59.73,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}silence
+Dialogue: 0,0:00:59.86,0:01:00.42,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}mon voisin
+Dialogue: 0,0:01:00.42,0:01:00.84,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}a baissé
+Dialogue: 0,0:01:00.84,0:01:02.53,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}la tête
+Dialogue: 0,0:01:02.98,0:01:03.61,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}moi aussi
+Dialogue: 0,0:01:03.80,0:01:04.22,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}et puis
+Dialogue: 0,0:01:04.22,0:01:04.94,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}sans réfléchir
+Dialogue: 0,0:01:04.94,0:01:05.46,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}j'ai commencé
+Dialogue: 0,0:01:05.46,0:01:06.07,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}à grimper
+Dialogue: 0,0:01:06.28,0:01:06.54,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}sur le
+Dialogue: 0,0:01:06.54,0:01:06.82,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}banc
+Dialogue: 0,0:01:06.82,0:01:07.16,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}puis sur
+Dialogue: 0,0:01:07.16,0:01:07.76,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}la fontaine
+Dialogue: 0,0:01:07.76,0:01:08.10,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}puis sur
+Dialogue: 0,0:01:08.10,0:01:08.54,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}les épaules
+Dialogue: 0,0:01:08.54,0:01:09.22,Cap,,0,0,0,,{\pos(1080,2573)\fs150\fscx135\fscy135\t(0,180,\fscx100\fscy100)}de ma grand-mère
+Dialogue: 0,0:01:09.22,0:01:09.56,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}jusqu'au
+Dialogue: 0,0:01:09.56,0:01:10.05,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}micro
+Dialogue: 0,0:01:10.24,0:01:10.56,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}le maire
+Dialogue: 0,0:01:10.56,0:01:10.92,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}a ri
+Dialogue: 0,0:01:10.92,0:01:11.32,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}toi
+Dialogue: 0,0:01:11.32,0:01:11.60,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}et qu'est-ce
+Dialogue: 0,0:01:11.60,0:01:11.90,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}que tu vas
+Dialogue: 0,0:01:11.90,0:01:12.47,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}leur dire
+Dialogue: 0,0:01:12.64,0:01:13.12,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}j'ai regardé
+Dialogue: 0,0:01:13.12,0:01:13.75,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}la place
+Dialogue: 0,0:01:13.92,0:01:14.16,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}des
+Dialogue: 0,0:01:14.16,0:01:14.52,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}milliers
+Dialogue: 0,0:01:14.52,0:01:15.05,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}de gens
+Dialogue: 0,0:01:15.22,0:01:15.80,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}le boulanger
+Dialogue: 0,0:01:15.80,0:01:16.04,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}qui se
+Dialogue: 0,0:01:16.04,0:01:16.30,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}lève à
+Dialogue: 0,0:01:16.30,0:01:16.56,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}quatre
+Dialogue: 0,0:01:16.56,0:01:17.03,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}heures
+Dialogue: 0,0:01:17.12,0:01:17.70,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}la factrice
+Dialogue: 0,0:01:17.70,0:01:18.06,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}qui connaît
+Dialogue: 0,0:01:18.06,0:01:18.36,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}le nom de
+Dialogue: 0,0:01:18.36,0:01:18.64,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}tous les
+Dialogue: 0,0:01:18.64,0:01:19.09,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}chiens
+Dialogue: 0,0:01:19.22,0:01:19.70,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}mon voisin
+Dialogue: 0,0:01:19.70,0:01:20.18,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}grognon
+Dialogue: 0,0:01:20.18,0:01:20.62,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}qui arrose
+Dialogue: 0,0:01:20.62,0:01:21.00,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}les fleurs
+Dialogue: 0,0:01:21.00,0:01:21.24,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}de tout
+Dialogue: 0,0:01:21.24,0:01:21.50,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}le monde
+Dialogue: 0,0:01:21.50,0:01:22.04,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}quand personne
+Dialogue: 0,0:01:22.04,0:01:22.65,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}ne le voit
+Dialogue: 0,0:01:22.82,0:01:23.16,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}alors j'ai
+Dialogue: 0,0:01:23.16,0:01:23.44,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}dit
+Dialogue: 0,0:01:23.44,0:01:23.84,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}je ne connais
+Dialogue: 0,0:01:23.84,0:01:24.19,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}pas tous
+Dialogue: 0,0:01:24.19,0:01:24.83,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}vos prénoms
+Dialogue: 0,0:01:24.97,0:01:25.47,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}mais chacun
+Dialogue: 0,0:01:25.47,0:01:25.75,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}de vous
+Dialogue: 0,0:01:25.75,0:01:26.11,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}a déjà
+Dialogue: 0,0:01:26.11,0:01:26.34,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}rendu
+Dialogue: 0,0:01:26.34,0:01:26.66,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}cette ville
+Dialogue: 0,0:01:26.66,0:01:27.16,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}plus belle
+Dialogue: 0,0:01:27.16,0:01:27.61,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}au moins
+Dialogue: 0,0:01:27.61,0:01:28.14,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}une fois
+Dialogue: 0,0:01:28.14,0:01:28.72,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}merci
+Dialogue: 0,0:01:28.94,0:01:29.28,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}une seule
+Dialogue: 0,0:01:29.28,0:01:29.81,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}phrase
+Dialogue: 0,0:01:29.97,0:01:30.27,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}mais pour
+Dialogue: 0,0:01:30.27,0:01:30.59,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}toute la
+Dialogue: 0,0:01:30.59,0:01:30.87,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}place à
+Dialogue: 0,0:01:30.87,0:01:31.40,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}la fois
+Dialogue: 0,0:01:31.57,0:01:32.17,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}un centimètre
+Dialogue: 0,0:01:32.17,0:01:32.96,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}par personne
+Dialogue: 0,0:01:33.09,0:01:33.55,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}et il y avait
+Dialogue: 0,0:01:33.55,0:01:33.83,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}trois
+Dialogue: 0,0:01:33.83,0:01:34.64,Cap,,0,0,0,,{\pos(1080,2573)\fs150\fscx135\fscy135\t(0,180,\fscx100\fscy100)}mille personnes
+Dialogue: 0,0:01:34.81,0:01:35.27,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}j'ai senti
+Dialogue: 0,0:01:35.27,0:01:35.63,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}mes pieds
+Dialogue: 0,0:01:35.63,0:01:35.93,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}quitter
+Dialogue: 0,0:01:35.93,0:01:36.33,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}les épaules
+Dialogue: 0,0:01:36.33,0:01:37.06,Cap,,0,0,0,,{\pos(1080,2573)\fs150\fscx135\fscy135\t(0,180,\fscx100\fscy100)}de ma grand-mère
+Dialogue: 0,0:01:37.27,0:01:37.91,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}dix mètres
+Dialogue: 0,0:01:37.91,0:01:38.49,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}vingt mètres
+Dialogue: 0,0:01:38.49,0:01:38.79,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}trente
+Dialogue: 0,0:01:38.79,0:01:39.32,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}mètres
+Dialogue: 0,0:01:39.41,0:01:39.81,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}plus grand
+Dialogue: 0,0:01:39.81,0:01:40.46,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}que le maire
+Dialogue: 0,0:01:40.61,0:01:40.85,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}il me
+Dialogue: 0,0:01:40.85,0:01:41.25,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}regardait
+Dialogue: 0,0:01:41.25,0:01:41.67,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}d'en bas
+Dialogue: 0,0:01:41.67,0:01:42.07,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}la bouche
+Dialogue: 0,0:01:42.07,0:01:42.64,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}ouverte
+Dialogue: 0,0:01:42.77,0:01:43.11,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}je me suis
+Dialogue: 0,0:01:43.11,0:01:43.43,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}penché
+Dialogue: 0,0:01:43.43,0:01:43.81,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}vers lui
+Dialogue: 0,0:01:43.81,0:01:44.39,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}vous aussi
+Dialogue: 0,0:01:44.39,0:01:44.75,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}vous pouvez
+Dialogue: 0,0:01:44.75,0:01:45.01,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}encore
+Dialogue: 0,0:01:45.01,0:01:45.74,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}être gentil
+Dialogue: 0,0:01:45.89,0:01:46.33,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}il a grandi
+Dialogue: 0,0:01:46.33,0:01:47.26,Cap,,0,0,0,,{\pos(1080,2573)\fs150\fscx135\fscy135\t(0,180,\fscx100\fscy100)}d'un centimètre
+Dialogue: 0,0:01:47.41,0:01:47.83,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}le premier
+Dialogue: 0,0:01:47.83,0:01:48.11,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}depuis
+Dialogue: 0,0:01:48.11,0:01:48.78,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}des années
+Dialogue: 0,0:01:48.93,0:01:49.23,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}la loi
+Dialogue: 0,0:01:49.23,0:01:49.65,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}n'a jamais
+Dialogue: 0,0:01:49.65,0:01:50.34,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}été votée
+Dialogue: 0,0:01:50.47,0:01:50.81,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}et depuis
+Dialogue: 0,0:01:50.81,0:01:51.29,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}ce jour
+Dialogue: 0,0:01:51.29,0:01:51.73,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}le micro
+Dialogue: 0,0:01:51.73,0:01:52.19,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}de la place
+Dialogue: 0,0:01:52.19,0:01:52.49,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}est posé
+Dialogue: 0,0:01:52.49,0:01:53.12,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}par terre
+Dialogue: 0,0:01:53.25,0:01:53.59,Cap,,0,0,0,,{\pos(1080,2573)\fs230\fscx135\fscy135\t(0,180,\fscx100\fscy100)}pour que
+Dialogue: 0,0:01:53.59,0:01:53.99,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}tout le monde
+Dialogue: 0,0:01:53.99,0:01:54.72,Cap,,0,0,0,,{\pos(1080,2573)\fs175\fscx135\fscy135\t(0,180,\fscx100\fscy100)}puisse parler

@@ -72,12 +72,13 @@ const onShoulder = (w: World, t: number, he: Expr, me: Expr, hp: Pose = {}, mp: 
   put(w, "hero", "PLACE", MAM[0] - 0.8, 3.31, MAM[1], 0, w.sets.heroS).pose(t, { expr: he, ...hp }); };
 // croissance finale : du haut de l'épaule (fin « mamie ») jusqu'à 10,5 fois la taille, posé devant l'estrade
 const GIANT = { x: 3.5, z: -14.2, s: 10.5 };
-let G0 = 0, G1 = 1;
-const giant = (w: World, t: number, e: Expr, p: Pose = {}, yaw = 0) => { const g = cl((t - G0) / (G1 - G0)), up = sm(g / 0.15), mv = sm((g - 0.15) / 0.25);
-  const s = 0.8 + (GIANT.s - 0.8) * sm(g), x = MAM[0] - 0.8 + (GIANT.x - MAM[0] + 0.8) * mv, z = MAM[1] + (GIANT.z - MAM[1]) * mv, y = (3.31 + 2.0 * up) * (1 - mv);
-  const a = put(w, "hero", "PLACE", x, y, z, yaw, s); a.pose(t, { expr: e, armL: -0.5 - up * (1 - mv) * 0.8, armR: -0.5 - up * (1 - mv) * 0.8, ...p });
-  const mb = sm((g - 0.1) / 0.25); put(w, "mamie", "PLACE", MAM[0] + 0.5 * mb, 0, MAM[1] + 3.1 * mb, 0).pose(t, { expr: g > 0.05 ? "happy" : "scared", headPitch: -0.6, headYaw: -0.3, walk: mb > 0 && mb < 1 ? 0.8 : 0 });
-  w.sets.pubMic.visible = g < 0.2; return g; };
+let TA = 0, TB = 1, TC = 2;
+/** croissance : phase A (TA→TB) il s'élève de l'épaule en grandissant un peu ; phase B (TB→TC) il devient géant et se pose devant l'estrade */
+const giant = (w: World, t: number, e: Expr, p: Pose = {}, yaw = 0) => { const a1 = sm((t - TA) / (TB - TA)), b = cl((t - TB) / (TC - TB)), mv = sm(b / 0.45), gb = sm(b);
+  const s = t < TB ? 0.8 + 0.8 * a1 : 1.6 + (GIANT.s - 1.6) * gb, x0 = MAM[0] - 0.8 - 0.9 * a1, y0 = 3.31 + 1.3 * a1;
+  const a = put(w, "hero", "PLACE", x0 + (GIANT.x - x0) * mv, y0 * (1 - mv), MAM[1] + (GIANT.z - MAM[1]) * mv, yaw, s);
+  const fl = a1 * (1 - mv); a.pose(t, { expr: e, armL: -0.4 - fl * 1.2, armR: -0.4 - fl * 1.2, ...p });
+  const mb = sm(b / 0.5); put(w, "mamie", "PLACE", MAM[0] + 0.5 * mb, 0, MAM[1] + 3.1 * mb, 0).pose(t, { expr: t > TA + 0.4 ? "happy" : "scared", headPitch: -0.6, headYaw: -0.3, walk: mb > 0 && mb < 1 ? 0.8 : 0 }); };
 
 export const SHOTS: Shot[] = [
   // ——— Dans cette ville, chaque fois que tu dis quelque chose de gentil, tu grandis d'un centimètre.
@@ -113,44 +114,44 @@ export const SHOTS: Shot[] = [
   // ——— On se lance des « t'as de beaux cheveux » pour gagner un centimètre avant la récré.
   { w: "On se lance des", set: "CLS", fr: "Deux élèves face à face : compliment, l'une grandit (« +1 cm »)", g: IN, cam: (_w, u) => C("CLS", [-1.4, 1.5, 1.0], [-1.4, 1.45, 0.5], [-1.4, 1.05, -2.0], null, 46, u),
     st: (w, u, t) => { seated(w, t, ["k6", "k2"]); profBoard(w, t); put(w, "k6", "CLS", -2.05, 0, -2.0, Math.PI / 2, SZ.k6 + 0.04 * sm(u * 1.6)).pose(t, { expr: "happy", talk: u < 0.5, armR: -1.0 }); put(w, "k2", "CLS", -0.75, 0, -2.0, -Math.PI / 2).pose(t, { expr: "happy" }); tag(w, "p1", w.actors.k6, cl(u * 1.3)); } },
-  { w: "pour gagner un centimètre", set: "CLS", fr: "Un élève se mesure contre la toise du fond de classe", g: IN, cam: (_w, u) => C("CLS", [0.95, 1.25, 0.6], [0.95, 1.2, 1.0], [0.95, 1.0, 3.35], null, 44, u),
+  { w: "pour gagner un centimètre", set: "CLS", fr: "Un élève se mesure contre la toise du fond de classe", g: IN, cam: (_w, u) => C("CLS", [1.3, 1.6, -0.9], [1.25, 1.55, -0.5], [0.95, 1.0, 3.35], null, 50, u),
     st: (w, u, t) => { seated(w, t, ["k1", "hero", "k7"]); put(w, "k1", "CLS", 0.95, 0, 3.3, Math.PI, SZ.k1 + 0.03 * sm(u * 1.5)).pose(t, { expr: "happy", headPitch: -0.1 }); } },
   // ——— Moi, je suis le plus petit de ma classe. Un mètre dix.
-  { w: "Moi, je suis le plus petit", set: "CLS", fr: "Rang d'élèves contre le mur du fond : le héros, le plus petit", g: IN, cam: (_w, u) => C("CLS", [0.3, 1.35, 0.4], [0.4, 1.3, 0.8], [0, 1.0, 3.0], null, 52, u),
+  { w: "Moi, je suis le plus petit", set: "CLS", fr: "Rang d'élèves contre le mur du fond : le héros, le plus petit", g: IN, cam: (_w, u) => C("CLS", [3.6, 1.7, -1.5], [3.5, 1.65, -1.1], [-0.5, 1.0, 3.0], null, 58, u),
     st: (w, _u, t) => { for (const [k, x] of [["k4", -3.0], ["k6", -1.65], ["k3", -0.3], ["hero", 0.95], ["k7", 2.25]] as [string, number][]) put(w, k, "CLS", x, 0, 3.0, Math.PI).pose(t, { expr: k === "hero" ? "sad" : "smug", headYaw: k === "hero" ? 0 : 0.3 * Math.sign(0.95 - x) }); } },
-  { w: "Un mètre dix", set: "CLS", fr: "Profil : le héros contre la toise, « 1,10 m »", g: IN, cam: (_w, u) => C("CLS", [2.4, 1.05, 1.8], [2.15, 1.05, 2.05], [0.95, 0.95, 3.35], null, 44, u),
+  { w: "Un mètre dix", set: "CLS", fr: "Profil : le héros contre la toise, « 1,10 m »", g: IN, cam: (_w, u) => C("CLS", [3.4, 1.35, 0.0], [3.25, 1.3, 0.3], [0.95, 1.0, 3.3], null, 48, u),
     st: (w, u, t) => { put(w, "hero", "CLS", 0.95, 0, 3.32, Math.PI).pose(t, { expr: "sad", headPitch: 0.1 }); put(w, "k7", "CLS", 2.25, 0, 3.0, Math.PI + 0.4).pose(t, { expr: "smug", headYaw: -0.4 }); const s = w.sets.tags.h110; s.visible = true; s.position.copy(at("CLS", 0.95, 1.75 + u * 0.1, 3.2)); s.scale.set(0.8, 0.3, 1); (s.material as THREE.SpriteMaterial).opacity = cl(u * 5); } },
   // ——— Pas parce que je suis méchant : mes compliments sortent toujours de travers.
   { w: "Pas parce que je suis méchant", set: "CLS", fr: "Le héros, mains ouvertes, devant le tableau (plan moyen)", g: IN, cam: (w, u) => CH("CLS", HB(w), [2.7, 1.45, -0.4], [2.5, 1.42, -0.7], 44, u),
     st: (w, _u, t) => { seated(w, t, ["hero"]); put(w, "hero", "CLS", -0.9, 0, -1.9, Math.PI / 2 + 0.3).pose(t, { expr: "worried", armL: -0.7, armR: -0.7 }); } },
-  { w: "mes compliments sortent", set: "CLS", fr: "Il parle à une camarade qui fronce les sourcils", g: IN, cam: (_w, u) => C("CLS", [1.6, 1.25, 0.7], [1.4, 1.25, 0.4], [-0.2, 1.0, -1.9], null, 46, u),
-    st: (w, _u, t) => { seated(w, t, ["hero", "k3"]); put(w, "hero", "CLS", -0.9, 0, -1.9, Math.PI / 2).pose(t, { expr: "happy", talk: true }); put(w, "k3", "CLS", 0.5, 0, -1.9, -Math.PI / 2).pose(t, { expr: "angry" }); } },
+  { w: "mes compliments sortent", set: "CLS", fr: "Il parle à une camarade qui fronce les sourcils", g: IN, cam: (_w, u) => C("CLS", [2.3, 1.55, 1.2], [2.1, 1.5, 0.9], [-0.3, 1.0, -1.9], null, 52, u),
+    st: (w, _u, t) => { seated(w, t, ["hero", "k3"]); put(w, "hero", "CLS", -1.3, 0, -1.9, Math.PI / 2 + 0.35).pose(t, { expr: "happy", talk: true }); put(w, "k3", "CLS", 0.6, 0, -1.9, -Math.PI / 2 + 0.45).pose(t, { expr: "angry" }); } },
   // ——— J'ai dit à ma prof : « Vous êtes beaucoup moins sévère que ce que tout le monde raconte. »
-  { w: "J'ai dit à ma prof", set: "CLS", fr: "Le héros devant le bureau de la prof (profil)", g: IN, cam: (_w, u) => C("CLS", [-0.4, 1.5, -1.05], [-0.2, 1.5, -1.25], [2.1, 1.3, -2.3], null, 44, u),
-    st: (w, _u, t) => { seated(w, t, ["hero"]); put(w, "prof", "CLS", 2.2, 0, -3.15, 0).pose(t, { expr: "smile" }); put(w, "hero", "CLS", 2.0, 0, -1.5, Math.PI).pose(t, { expr: "happy", talk: true }); } },
-  { w: "Vous êtes beaucoup moins", set: "CLS", fr: "Par-dessus l'épaule du héros : le sourire de la prof se fige", g: IN, cam: (w, u) => CH("CLS", w.actors.prof, [1.55, 1.6, -0.55], [1.6, 1.55, -0.8], 40, u),
+  { w: "J'ai dit à ma prof", set: "CLS", fr: "Le héros devant le bureau de la prof (profil)", g: IN, cam: (_w, u) => C("CLS", [-1.7, 1.7, -2.1], [-1.5, 1.68, -2.1], [2.1, 1.3, -2.3], null, 58, u),
+    st: (w, _u, t) => { seated(w, t, ["hero", "k1", "k4"]); put(w, "prof", "CLS", 2.2, 0, -3.15, -0.3).pose(t, { expr: "smile" }); put(w, "hero", "CLS", 2.0, 0, -1.4, Math.PI - 0.5).pose(t, { expr: "happy", talk: true }); } },
+  { w: "Vous êtes beaucoup moins", set: "CLS", fr: "Par-dessus l'épaule du héros : le sourire de la prof se fige", g: IN, cam: (w, u) => CH("CLS", w.actors.prof, [0.5, 1.8, 0.6], [0.6, 1.75, 0.3], 44, u),
     st: (w, u, t) => { seated(w, t, ["hero"]); put(w, "prof", "CLS", 2.2, 0, -3.15, 0).pose(t, { expr: u < 0.55 ? "smile" : "angry" }); put(w, "hero", "CLS", 2.0, 0, -1.5, Math.PI).pose(t, { expr: "happy", talk: true }); } },
   // ——— J'ai perdu deux centimètres.
-  { w: "J'ai perdu deux centimètres", set: "CLS", fr: "Le héros rapetisse un peu, « −2 cm », la prof bras croisés", g: IN, cam: (_w, u) => C("CLS", [3.4, 1.5, 0.6], [3.3, 1.45, 0.3], [2.0, 1.0, -1.7], null, 46, u),
-    st: (w, u, t) => { seated(w, t, ["hero"]); put(w, "prof", "CLS", 2.2, 0, -3.15, 0).pose(t, { expr: "angry", armL: -1.1, armR: -1.1 }); w.sets.heroS = 0.82 - 0.02 * sm(u * 1.6); put(w, "hero", "CLS", 2.0, 0, -1.5, Math.PI - 0.4, w.sets.heroS).pose(t, { expr: "sad" }); tag(w, "m2", HB(w), cl(u * 1.2)); } },
+  { w: "J'ai perdu deux centimètres", set: "CLS", fr: "Le héros rapetisse un peu, « −2 cm », la prof bras croisés", g: IN, cam: (_w, u) => C("CLS", [3.5, 1.6, 1.0], [3.4, 1.55, 0.7], [2.0, 1.1, -2.0], null, 50, u),
+    st: (w, u, t) => { seated(w, t, ["hero"]); put(w, "prof", "CLS", 2.2, 0, -3.15, 0).pose(t, { expr: "angry", armL: -1.1, armR: -1.1 }); w.sets.heroS = 0.82 - 0.02 * sm(u * 1.6); put(w, "hero", "CLS", 2.0, 0, -1.4, 0.6, w.sets.heroS).pose(t, { expr: "sad", headPitch: 0.2 }); tag(w, "m2", HB(w), cl(u * 1.2)); } },
   // ——— Et puis, il y a le maire. Neuf mètres. Le plus grand de la ville.
   { w: "Et puis, il y a le maire", set: "PLACE", fr: "Contre-plongée : les jambes immenses du maire traversent la place", g: DAY, cam: (_w, u) => C("PLACE", [2, 0.6, 14], [1, 0.8, 13], [-6, 3, 5], [-6, 9, 5], 50, u),
-    st: (w, u, t) => { walk(w, "maire", "PLACE", -12, 3, 2, 6, 0.3 + u * 0.25, t, { expr: "smug" }, 0.6); walk(w, "t2", "PLACE", 0, 9, -8, 11, u * 0.5, t, { expr: "smile", headPitch: -0.5 }); walk(w, "k4", "PLACE", -3, 11, 3, 9, u * 0.5, t, { expr: "happy" }); } },
+    st: (w, u, t) => { walk(w, "maire", "PLACE", -12, 3, 2, 6, 0.3 + u * 0.25, t, { expr: "smug" }, 0.6); walk(w, "t2", "PLACE", -1, 1, -9, 2, u * 0.5, t, { expr: "smile", headPitch: -0.5 }); walk(w, "k4", "PLACE", -9, 0, -1, 1, u * 0.5, t, { expr: "happy" }); } },
   { w: "Neuf mètres", set: "PLACE", fr: "Plan large : le maire sur l'estrade, haut comme la mairie", g: DAY, cam: (_w, u) => C("PLACE", [6, 2, 8], [5, 2.2, 6.2], [0, 7, -24], null, 50, u),
     st: (w, _u, t) => { mayorStage(w, t, { headYaw: Math.sin(t) * 0.2 }); walk(w, "t1", "PLACE", 4, -4, -2, -6, 0.5, t, { expr: "smile", headPitch: -0.5 }); walk(w, "k6", "PLACE", -3, -3, 3, -5, 0.4, t, { expr: "happy" }); } },
-  { w: "Le plus grand de la ville", set: "PLACE", fr: "À hauteur de son visage : le maire satisfait", g: DAY, cam: (w, u) => CH("PLACE", w.actors.maire, [3.4, 12.6, -11.5], [3.0, 12.6, -12.3], 40, u, -0.6),
+  { w: "Le plus grand de la ville", set: "PLACE", fr: "À hauteur de son visage : le maire satisfait", g: DAY, cam: (w, u) => CH("PLACE", w.actors.maire, [7.4, 12.8, -12.6], [6.9, 12.8, -13.4], 42, u, -0.8),
     st: (w, _u, t) => { mayorStage(w, t, { headYaw: 0.15 }); } },
   // ——— Chaque dimanche, sur la grande place, il complimente les gens un par un. Mais seulement les grands.
   { w: "Chaque dimanche", set: "PLACE", fr: "Dimanche : la foule remplit la place, le maire au micro géant", g: SUN, cam: (_w, u) => C("PLACE", [12, 9, 34], [8, 8, 30], [0, 6, -20], null, 46, u),
     st: (w, _u, t) => { sunday(w, t); front(w, t, MAYOR); mayorStage(w, t, { talk: true, armR: -1.4 }); } },
-  { w: "il complimente les gens", set: "PLACE", fr: "Il désigne un grand au premier rang : « +1 cm » pour le maire", g: SUN, cam: (_w, u) => C("PLACE", [-12, 3, -9.5], [-11.5, 3.2, -10], [-1, 6, -17], null, 52, u),
+  { w: "il complimente les gens", set: "PLACE", fr: "Il désigne un grand au premier rang : « +1 cm » pour le maire", g: SUN, cam: (_w, u) => C("PLACE", [-9.5, 4.2, -5.5], [-9.0, 4.4, -6.2], [-2.5, 5.5, -16], null, 54, u),
     st: (w, u, t) => { sunday(w, t); front(w, t, MAYOR, { t3: { expr: "happy" } }); mayorStage(w, t, { talk: u < 0.6, point: 0.4, expr: "happy" }, -0.2, SZ.maire + 0.04 * sm(u * 1.5)); tag(w, "p1", w.actors.maire, cl(u * 1.2)); } },
-  { w: "Mais seulement les grands", set: "PLACE", fr: "Au premier rang, les petits lèvent la main : ignorés", g: SUN, cam: (_w, u) => C("PLACE", [3.2, 2.4, -13.4], [3.4, 2.3, -13], [3.6, 0.8, -8.7], null, 46, u),
+  { w: "Mais seulement les grands", set: "PLACE", fr: "Au premier rang, les petits lèvent la main : ignorés", g: SUN, cam: (_w, u) => C("PLACE", [3.4, 3.0, -16.2], [3.5, 2.9, -15.7], [3.6, 0.9, -8.7], null, 50, u),
     st: (w, _u, t) => { sunday(w, t); front(w, t, MAYOR, { voisin: { expr: "sad", armR: -2.8 }, k4: { expr: "worried", armR: -2.8, armL: -2.6 }, hero: { expr: "sad", armR: -2.6 } }); } },
   // ——— Le micro est accroché à trois mètres de haut : si tu es trop petit, tu ne parles pas.
   { w: "Le micro est accroché", set: "PLACE", fr: "Panoramique vertical sur le pied du micro public jusqu'à 3 m", g: SUN, cam: (_w, u) => C("PLACE", [11, 0.8, -7.9], [10.8, 1.7, -8.2], [8.5, 0.8, -11.9], [8.5, 3.7, -12.2], 46, u),
     st: (w, _u, t) => { sunday(w, t); } },
-  { w: "si tu es trop petit", set: "PLACE", fr: "Un enfant saute sous le micro sans l'atteindre", g: SUN, cam: (_w, u) => C("PLACE", [11.2, 1.4, -8.2], [11, 1.5, -8.5], [8.6, 1.9, -11.6], null, 46, u),
+  { w: "si tu es trop petit", set: "PLACE", fr: "Un enfant saute sous le micro sans l'atteindre", g: SUN, cam: (_w, u) => C("PLACE", [13.4, 2.0, -9.2], [13.2, 2.0, -9.5], [8.6, 1.9, -11.6], null, 48, u),
     st: (w, _u, t) => { sunday(w, t); const a = put(w, "k4", "PLACE", 8.5, 0, -11.2, Math.PI); a.root.position.y += Math.abs(Math.sin(t * 6)) * 0.35; a.pose(t, { expr: "worried", armsUp: 0.95, headPitch: -0.5 }); } },
   // ——— Un dimanche, le maire a annoncé une nouvelle loi. « Les petits sont des gens méchants. »
   { w: "Un dimanche, le maire", set: "PLACE", fr: "Large : le maire, grave, au micro devant la foule", g: SUN, cam: (_w, u) => C("PLACE", [-14, 6, 6], [-12, 6.5, 4], [0, 7.5, -22], null, 46, u),
@@ -177,15 +178,15 @@ export const SHOTS: Shot[] = [
   // ——— Sur le banc, puis sur la fontaine, puis sur les épaules de ma grand-mère, jusqu'au micro.
   { w: "Sur le banc", set: "PLACE", fr: "Il grimpe sur le banc", g: SUN, cam: (_w, u) => C("PLACE", [19.6, 1.4, -13.6], [19.3, 1.5, -13.9], [16.8, 0.9, -10.2], null, 44, u),
     st: (w, u, t) => { sunday(w, t); const a = put(w, "hero", "PLACE", 16.8, 0.47 * sm(u * 2.5), -10.2, -Math.PI / 2 - 0.4, w.sets.heroS); a.pose(t, { expr: "focus", walk: u < 0.4 ? 1.5 : 0, armR: -1.2 }); } },
-  { w: "puis sur la fontaine", set: "PLACE", fr: "Il saute sur le rebord de la fontaine, mamie l'attend", g: SUN, cam: (_w, u) => C("PLACE", [15.5, 2.2, -17.6], [15.2, 2.3, -17.9], [11.2, 1.6, -13.6], null, 48, u),
+  { w: "puis sur la fontaine", set: "PLACE", fr: "Il saute sur le rebord de la fontaine, mamie l'attend", g: SUN, cam: (_w, u) => C("PLACE", [16.5, 2.6, -19.0], [16.2, 2.7, -19.3], [10.6, 2.0, -13.5], null, 50, u),
     st: (w, _u, t) => { sunday(w, t); put(w, "hero", "PLACE", 11.65, 0.84, -13.45, yawTo(11.65, -13.45, MAM[0], MAM[1]), w.sets.heroS).pose(t, { expr: "focus", armL: -1.4, armR: -1.4 }); put(w, "mamie", "PLACE", MAM[0], 0, MAM[1], 0.5).pose(t, { expr: "smile", reach: 0.7 }); } },
-  { w: "puis sur les épaules", set: "PLACE", fr: "Debout sur l'épaule de mamie, le micro devant lui", g: SUN, cam: (_w, u) => C("PLACE", [5.4, 2.6, -8.3], [5.7, 2.8, -8.6], [8.8, 3.7, -13.1], null, 46, u),
+  { w: "puis sur les épaules", set: "PLACE", fr: "Debout sur l'épaule de mamie, le micro devant lui", g: SUN, cam: (_w, u) => C("PLACE", [4.2, 3.0, -8.0], [4.5, 3.2, -8.3], [8.8, 3.6, -13.2], null, 48, u),
     st: (w, _u, t) => { sunday(w, t, V(8.5, 4, -13.3)); onShoulder(w, t, "focus", "happy"); } },
-  { w: "jusqu'au micro", set: "PLACE", fr: "Il attrape le micro", g: SUN, cam: (_w, u) => C("PLACE", [7.0, 4.4, -9.3], [7.2, 4.4, -9.7], [8.5, 4.2, -12.9], null, 44, u),
+  { w: "jusqu'au micro", set: "PLACE", fr: "Il attrape le micro", g: SUN, cam: (_w, u) => C("PLACE", [6.0, 4.6, -8.4], [6.3, 4.6, -8.8], [8.5, 4.2, -12.9], null, 46, u),
     st: (w, u, t) => { sunday(w, t, V(8.5, 4, -13.3)); onShoulder(w, t, "focus", "happy", { armR: -1.4 * sm(u * 2), armL: -0.3 }); } },
   // ——— Le maire a ri : « Toi ? Et qu'est-ce que tu vas leur dire ? »
-  { w: "Le maire a ri", set: "PLACE", fr: "Le maire éclate de rire", g: SUN, cam: (_w, u) => C("PLACE", [-4, 9, -14], [-3.6, 9.4, -14.4], [0, 11.6, -23.5], null, 44, u),
-    st: (w, _u, t) => { sunday(w, t); mayorStage(w, t, { expr: "happy", talk: true, headPitch: 0.25, headYaw: 0.5 }, 0.3); } },
+  { w: "Le maire a ri", set: "PLACE", fr: "Le maire éclate de rire", g: SUN, cam: (_w, u) => C("PLACE", [9, 10.5, -12], [8.6, 10.8, -12.6], [0, 11.8, -23.5], null, 44, u),
+    st: (w, _u, t) => { sunday(w, t); mayorStage(w, t, { expr: "happy", talk: true, headPitch: 0.25, headYaw: 0.3 }, 0.4); } },
   { w: "Toi", set: "PLACE", fr: "Contrechamp par-dessus mamie : le maire le pointe du doigt", g: SUN, cam: (_w, u) => C("PLACE", [10.4, 5.2, -15.6], [10.2, 5.1, -15.9], [0, 10, -23.5], null, 46, u),
     st: (w, _u, t) => { sunday(w, t, V(8.5, 4, -13.3)); onShoulder(w, t, "worried", "worried"); mayorStage(w, t, { expr: "smug", talk: true, point: 0.6, headPitch: 0.3 }, yawTo(0, -23.5, 8.5, -13.3)); } },
   // ——— J'ai regardé la place. Des milliers de gens.
@@ -197,7 +198,7 @@ export const SHOTS: Shot[] = [
   { w: "Le boulanger", set: "PLACE", fr: "Aube : le boulanger sort de sa boutique avec ses pains", g: DAWN, cam: (_w, u) => C("PLACE", [-19, 1.6, -12], [-19.5, 1.6, -12.5], [-24.5, 1.5, -17.4], null, 44, u),
     st: (w, u, t) => { walk(w, "boulanger", "PLACE", -25.3, -17.6, -22.2, -16.4, 0.15 + u * 0.6, t, { expr: "smile", carry: true }, 0.9); } },
   // ——— La factrice qui connaît le nom de tous les chiens.
-  { w: "La factrice", set: "TOWN", fr: "La factrice caresse un chien devant une clôture", g: DAY, cam: (_w, u) => C("TOWN", [8.4, 1.3, 3.0], [8.7, 1.25, 3.5], [8.6, 0.8, 7.3], null, 44, u),
+  { w: "La factrice", set: "TOWN", fr: "La factrice caresse un chien devant une clôture", g: DAY, cam: (_w, u) => C("TOWN", [8.0, 1.6, 0.8], [8.3, 1.55, 1.4], [8.6, 0.8, 7.3], null, 46, u),
     st: (w, _u, t) => { const d = w.sets.dog; d.visible = true; d.position.set(9.3, 0, 7.4); d.rotation.y = -Math.PI / 2; d.children[d.children.length - 2].rotation.y = Math.sin(t * 14) * 0.5;
       put(w, "factrice", "TOWN", 7.9, 0, 7.3, Math.PI / 2).pose(t, { expr: "happy", talk: true, reach: 0.55, lean: 0.25, headPitch: 0.3 }); } },
   // ——— Mon voisin grognon, qui arrose les fleurs de tout le monde quand personne ne le voit.
@@ -207,14 +208,14 @@ export const SHOTS: Shot[] = [
   // ——— Alors j'ai dit : « Je ne connais pas tous vos prénoms. »
   { w: "Alors j'ai dit", set: "PLACE", fr: "Contre-plongée : le héros parle au micro, perché sur mamie", g: SUN, cam: (_w, u) => C("PLACE", [7.0, 2.0, -8.6], [7.2, 2.2, -8.9], [8.6, 4.1, -13.1], null, 46, u),
     st: (w, _u, t) => { sunday(w, t, V(8.5, 4, -13.3)); onShoulder(w, t, "neutral", "smile", { talk: true, armR: -1.4 }); } },
-  { w: "Je ne connais pas", set: "PLACE", fr: "Le héros parle (plan moyen)", g: SUN, cam: (w, u) => CH("PLACE", HB(w), [8.1, 4.5, -10.2], [8.15, 4.5, -10.5], 42, u),
+  { w: "Je ne connais pas", set: "PLACE", fr: "Le héros parle (plan moyen)", g: SUN, cam: (w, u) => CH("PLACE", HB(w), [7.6, 4.7, -9.0], [7.7, 4.7, -9.3], 44, u),
     st: (w, _u, t) => { sunday(w, t, V(8.5, 4, -13.3)); onShoulder(w, t, "smile", "smile", { talk: true, armR: -1.4 }); } },
   // ——— « Mais chacun de vous a déjà rendu cette ville plus belle, au moins une fois. Merci. »
   { w: "Mais chacun de vous", set: "PLACE", fr: "Les visages de la foule levés vers lui", g: SUN, cam: (_w, u) => C("PLACE", [6, 3.5, -11], [5.6, 3.4, -10.8], [1, 1.3, -2], null, 48, u),
     st: (w, _u, t) => { sunday(w, t, V(8.5, 4, -13.3)); front(w, t, V(8.5, 4, -13.3), { voisin: { expr: "smile" }, boulanger: { expr: "happy" }, factrice: { expr: "happy" }, k4: { expr: "happy" } }, ["hero", "mamie"]); } },
   { w: "au moins une fois", set: "PLACE", fr: "Mamie, émue, lève les yeux vers lui", g: SUN, cam: (w, u) => CH("PLACE", w.actors.mamie, [11.8, 4.0, -8.8], [11.6, 4.1, -9.1], 44, u),
     st: (w, _u, t) => { sunday(w, t, V(8.5, 4, -13.3)); onShoulder(w, t, "smile", "happy", { talk: true, armR: -1.4 }, { headPitch: -0.5, headYaw: -0.55 }); } },
-  { w: "Merci", set: "PLACE", fr: "« Merci » : grand sourire du héros", g: SUN, cam: (w, u) => CH("PLACE", HB(w), [9.6, 4.3, -10.3], [9.5, 4.3, -10.6], 42, u),
+  { w: "Merci", set: "PLACE", fr: "« Merci » : grand sourire du héros", g: SUN, cam: (w, u) => CH("PLACE", HB(w), [10.2, 4.5, -9.2], [10.1, 4.5, -9.5], 44, u),
     st: (w, _u, t) => { sunday(w, t, V(8.5, 4, -13.3)); onShoulder(w, t, "happy", "happy", { armR: -1.4 }); } },
   // ——— Une seule phrase. Mais pour toute la place à la fois.
   { w: "Une seule phrase", set: "PLACE", fr: "De dos, au-dessus de lui : la foule silencieuse", g: SUN, cam: (_w, u) => C("PLACE", [9.6, 7, -18.5], [9.4, 7.2, -18.1], [3, 1, 10], null, 52, u),
@@ -224,32 +225,32 @@ export const SHOTS: Shot[] = [
   // ——— Un centimètre par personne. Et il y avait trois mille personnes.
   { w: "Un centimètre par personne", set: "PLACE", fr: "Les « +1 cm » convergent vers le héros", g: SUN, cam: (_w, u) => C("PLACE", [3, 4, -9.3], [3.5, 4.4, -9.8], [8.5, 4, -13.3], null, 50, u),
     st: (w, u, t) => { sunday(w, t, V(8.5, 4, -13.3)); onShoulder(w, t, "happy", "happy"); rain(w, 0.4 + u * 0.6); } },
-  { w: "Et il y avait trois mille", set: "PLACE", fr: "« +3000 cm » au-dessus de lui", g: SUN, cam: (_w, u) => C("PLACE", [14, 6, -4], [13.5, 6.3, -4.6], [8.5, 4.5, -13.3], null, 50, u),
+  { w: "Et il y avait trois mille", set: "PLACE", fr: "« +3000 cm » au-dessus de lui", g: SUN, cam: (_w, u) => C("PLACE", [14, 6, -4], [13.5, 6.3, -4.6], [8.5, 5.4, -13.3], null, 50, u),
     st: (w, u, t) => { sunday(w, t, V(8.5, 4, -13.3), 0.3); onShoulder(w, t, "happy", "happy"); rain(w, 0.8 + u * 0.4); const s = w.sets.tags.p3000; s.visible = true; s.position.copy(at("PLACE", 8.5, 6.2 + u * 0.6, -13.3)); s.scale.set(3.4, 1.27, 1); (s.material as THREE.SpriteMaterial).opacity = cl(u * 5); } },
   // ——— J'ai senti mes pieds quitter les épaules de ma grand-mère. Dix mètres. Vingt mètres. Trente mètres.
-  { w: "J'ai senti mes pieds", set: "PLACE", fr: "Ses pieds quittent les épaules de mamie : il grandit et s'élève", g: SUN, cam: (_w, u) => C("PLACE", [12.6, 3.4, -8.6], [12.8, 3.9, -8.2], [8.6, 4.2, -13.3], [8.6, 5.6, -13.3], 46, u, 52),
+  { w: "J'ai senti mes pieds", set: "PLACE", fr: "Ses pieds quittent les épaules de mamie : il grandit et s'élève", g: SUN, cam: (_w, u) => C("PLACE", [13.4, 3.4, -8.3], [13.6, 3.8, -8.1], [8.2, 4.0, -13.3], [8.0, 4.8, -13.3], 46, u, 50),
     st: (w, _u, t) => { sunday(w, t, V(8.5, 5, -13.3), 0.2); giant(w, t, "happy"); } },
-  { w: "Dix mètres", set: "PLACE", fr: "Il grandit encore, la caméra recule au-dessus de la foule", g: SUN, cam: (_w, u) => C("PLACE", [16, 6, 2], [17, 9, 6], [6, 5, -14], [5, 7, -14], 50, u),
+  { w: "Dix mètres", set: "PLACE", fr: "Il grandit encore, la caméra recule au-dessus de la foule", g: SUN, cam: (_w, u) => C("PLACE", [18, 7, -2], [19, 9, 1], [6, 5, -14], [5, 7, -14], 52, u),
     st: (w, _u, t) => { sunday(w, t, V(5, 8, -14), 0.3); giant(w, t, "happy"); mayorStage(w, t, { expr: "scared", headPitch: -0.3, headYaw: 0.4 }); } },
-  { w: "Vingt mètres", set: "PLACE", fr: "Plus large : le géant dépasse les maisons", g: SUN, cam: (_w, u) => C("PLACE", [-10, 8, 6], [-14, 12, 10], [3, 8, -14], [3, 10, -14], 52, u),
+  { w: "Vingt mètres", set: "PLACE", fr: "Plus large : le géant dépasse les maisons", g: SUN, cam: (_w, u) => C("PLACE", [-12, 9, 4], [-15, 12, 8], [3, 8, -14], [3, 10, -14], 54, u),
     st: (w, _u, t) => { sunday(w, t, V(3.5, 10, -14.2), 0.3); giant(w, t, "happy"); mayorStage(w, t, { expr: "scared", headPitch: -0.5, headYaw: 0.3 }); } },
-  { w: "Trente mètres", set: "PLACE", fr: "Contre-plongée vertigineuse depuis la foule", g: SUN, cam: (_w, u) => C("PLACE", [10, 2.4, -6.2], [10, 2.2, -5.4], [3.5, 12, -14.2], [3.5, 16, -14.2], 60, u),
+  { w: "Trente mètres", set: "PLACE", fr: "Contre-plongée vertigineuse depuis la foule", g: SUN, cam: (_w, u) => C("PLACE", [9.5, 2.3, -7.9], [9.6, 2.2, -7.7], [3.5, 11, -14.2], [3.5, 14, -14.2], 64, u),
     st: (w, _u, t) => { sunday(w, t, V(3.5, 14, -14.2), 0.4); giant(w, t, "happy"); } },
   // ——— Plus grand que le maire. Il me regardait d'en bas, la bouche ouverte.
-  { w: "Plus grand que le maire", set: "PLACE", fr: "De profil : le héros géant domine le maire", g: SUN, cam: (_w, u) => C("PLACE", [22, 9, -6], [21, 9.5, -6.6], [2, 9, -19], null, 54, u),
-    st: (w, _u, t) => { sunday(w, t, V(3.5, 14, -14.2)); giant(w, t, "smile", {}, Math.PI * 0.85); mayorStage(w, t, { expr: "scared", headPitch: -0.6, headYaw: 0.2 }, 0.35); } },
-  { w: "Il me regardait d'en bas", set: "PLACE", fr: "Plongée : le maire lève la tête, bouche bée", g: SUN, cam: (_w, u) => C("PLACE", [4, 17.5, -15], [3.6, 17, -15.6], [0, 11.6, -23.5], null, 46, u),
+  { w: "Plus grand que le maire", set: "PLACE", fr: "De profil : le héros géant domine le maire", g: SUN, cam: (_w, u) => C("PLACE", [24, 12, -17], [23, 12.5, -17.6], [2, 10, -19], null, 54, u),
+    st: (w, _u, t) => { sunday(w, t, V(3.5, 14, -14.2)); giant(w, t, "smile", {}, Math.PI); mayorStage(w, t, { expr: "scared", headPitch: -0.6, headYaw: 0.2 }, 0.35); } },
+  { w: "Il me regardait d'en bas", set: "PLACE", fr: "Plongée : le maire lève la tête, bouche bée", g: SUN, cam: (_w, u) => C("PLACE", [9.5, 18.5, -11.5], [9.2, 18.2, -12], [0, 12.4, -23.5], null, 46, u),
     st: (w, _u, t) => { sunday(w, t, V(3.5, 14, -14.2)); giant(w, t, "smile", {}, Math.PI); mayorStage(w, t, { expr: "shout", headPitch: -0.65 }, 0.3); } },
   // ——— Je me suis penché vers lui : « Vous aussi, vous pouvez encore être gentil. »
   { w: "Je me suis penché", set: "PLACE", fr: "De profil, large : le géant se penche vers le maire", g: SUN, cam: (_w, u) => C("PLACE", [24, 8, -18.5], [23, 8.5, -19], [2, 11, -19], null, 52, u),
     st: (w, u, t) => { sunday(w, t, V(3.5, 14, -14.2)); giant(w, t, "smile", { lean: 0.35 * sm(u * 1.4) }, Math.PI); mayorStage(w, t, { expr: "scared", headPitch: -0.6 }, 0.25); } },
-  { w: "Vous aussi", set: "PLACE", fr: "Par-dessus l'épaule du géant : le maire, tout petit en dessous", g: SUN, cam: (_w, u) => C("PLACE", [6.5, 19, -10.5], [6.1, 18.6, -11], [0, 11.6, -23.5], null, 44, u),
+  { w: "Vous aussi", set: "PLACE", fr: "Par-dessus l'épaule du géant : le maire, tout petit en dessous", g: SUN, cam: (_w, u) => C("PLACE", [-10, 9, -15], [-9.6, 9.3, -15.5], [1, 13, -21], null, 54, u),
     st: (w, _u, t) => { sunday(w, t, V(3.5, 14, -14.2)); giant(w, t, "smile", { lean: 0.35, talk: true }, Math.PI); mayorStage(w, t, { expr: "worried", headPitch: -0.6 }, 0.25); } },
   // ——— Il a grandi d'un centimètre. Le premier depuis des années.
-  { w: "Il a grandi d'un centimètre", set: "PLACE", fr: "Le maire grandit d'un centimètre : « +1 cm »", g: SUN, cam: (_w, u) => C("PLACE", [-6, 10, -12], [-5.6, 10.3, -12.5], [0, 11.6, -23.5], null, 46, u),
-    st: (w, u, t) => { sunday(w, t, V(3.5, 14, -14.2)); mayorStage(w, t, { expr: u < 0.4 ? "worried" : "happy", headPitch: -0.3 }, 0.25, SZ.maire + 0.03 * sm(u * 1.5)); tag(w, "p1", w.actors.maire, cl(u * 1.2)); } },
-  { w: "Le premier depuis des années", set: "PLACE", fr: "Le maire sourit doucement", g: SUN, cam: (w, u) => CH("PLACE", w.actors.maire, [2.4, 12.4, -14.6], [2.2, 12.4, -15.3], 40, u, -0.6),
-    st: (w, _u, t) => { sunday(w, t, V(3.5, 14, -14.2)); mayorStage(w, t, { expr: "smile", headPitch: -0.2 }, 0.25, SZ.maire + 0.03); } },
+  { w: "Il a grandi d'un centimètre", set: "PLACE", fr: "Le maire grandit d'un centimètre : « +1 cm »", g: SUN, cam: (_w, u) => C("PLACE", [-9, 10.5, -15], [-8.6, 10.7, -15.6], [0, 12, -23.5], null, 46, u),
+    st: (w, u, t) => { sunday(w, t, V(3.5, 14, -14.2)); giant(w, t, "smile", { lean: 0.2 }, Math.PI); mayorStage(w, t, { expr: u < 0.4 ? "worried" : "happy", headPitch: -0.3 }, 0.25, SZ.maire + 0.03 * sm(u * 1.5)); tag(w, "p1", w.actors.maire, cl(u * 1.2)); } },
+  { w: "Le premier depuis des années", set: "PLACE", fr: "Le maire sourit doucement", g: SUN, cam: (w, u) => CH("PLACE", w.actors.maire, [-7.5, 12.6, -17.5], [-7.0, 12.6, -18], 42, u, -0.6),
+    st: (w, _u, t) => { sunday(w, t, V(3.5, 14, -14.2)); giant(w, t, "smile", { lean: 0.2 }, Math.PI); mayorStage(w, t, { expr: "smile", headPitch: -0.2 }, 0.25, SZ.maire + 0.03); } },
   // ——— La loi n'a jamais été votée.
   { w: "La loi n'a jamais", set: "PLACE", fr: "La foule saute de joie, le géant salue", g: SUN, cam: (_w, u) => C("PLACE", [-14, 10, 30], [-10, 14, 26], [2, 6, -14], null, 50, u),
     st: (w, _u, t) => { sunday(w, t, V(3.5, 14, -14.2), 1); giant(w, t, "happy", { wave: "R" }, 0); mayorStage(w, t, { expr: "happy" }, 0, SZ.maire + 0.03); } },
@@ -268,7 +269,7 @@ export const SHOT_START = (() => { let from = 0; return SHOTS.map((s) => { const
 export const START = SHOT_START.map((wi, i) => (i === 0 ? 0 : Math.round((W[wi].s + (SHOTS[i].dt ?? 0)) * FPS) - 2));
 export const shotAt = (f: number) => { let i = 0; while (i + 1 < START.length && START[i + 1] <= f) i++; return i; };
 export const uOf = (i: number, f: number) => { const a = START[i], b = i + 1 < START.length ? START[i + 1] : TOTAL; return Math.min(1, Math.max(0, (f - a) / Math.max(1, b - a - 1))); };
-{ const a = SHOTS.findIndex((s) => s.w === "J'ai senti mes pieds"), b = SHOTS.findIndex((s) => s.w === "Plus grand que le maire"); G0 = START[a] / FPS; G1 = START[b] / FPS - 0.2; }
+{ const ix = (k: string) => START[SHOTS.findIndex((s) => s.w === k)] / FPS; TA = ix("J'ai senti mes pieds"); TB = ix("Dix mètres"); TC = ix("Plus grand que le maire") - 0.2; }
 
 const DEF: Grade = { sat: 0.45, con: 0.06, bri: 0, bloom: 0.9, bg: "#000", fog: "#000", fogD: 0, env: 0.5, snow: false };
 export const gradeOf = (i: number): Grade => ({ ...DEF, ...(SHOTS[i].g ?? {}) });

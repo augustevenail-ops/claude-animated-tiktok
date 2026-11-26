@@ -594,7 +594,7 @@ export class Sets {
       // micro public, accroché à trois mètres
       { const g = grp(p, 8.5, 0, -11.9); this.pubMic = g; const mm = M("#2a2e36", 0.4, undefined, { metalness: 0.7 }); cyl(g, 0.4, 0.45, 0.1, mm, 0, 0.05, 0, 20); cyl(g, 0.05, 0.05, 4.2, mm, 0, 2.1, 0, 8);
         bx(g, 0.06, 0.06, 0.55, mm, 0, 4.15, -0.25, 0, 0.02); const hd = grp(g, 0, 4.15, -0.5); hd.rotation.x = 0.5; cyl(hd, 0.05, 0.05, 0.3, mm, 0, -0.1, 0, 8); add(hd, new THREE.SphereGeometry(0.13, 14, 10), M("#5a5e68", 0.4, undefined, { metalness: 0.6 }), 0, 0.08, 0);
-        plane(g, 1.0, 0.5, M("#ffffff", 0.5, signTex("3m", "3 m", "#ffd21a", "#1a1420", 256, 128, 80)), 0, 3.0, 0.07); }
+        plane(g, 0.8, 0.4, M("#ffffff", 0.5, signTex("3m", "3 m", "#ffd21a", "#1a1420", 256, 128, 80)), 0, 1.5, 0.07); }
       // micro posé par terre (épilogue)
       { const g = grp(p, 3, 0, -9.2); this.floorMic = g; const mm = M("#2a2e36", 0.4, undefined, { metalness: 0.7 }); cyl(g, 0.3, 0.35, 0.06, mm, 0, 0.03, 0, 20); cyl(g, 0.03, 0.03, 0.36, mm, 0, 0.2, 0, 8); add(g, new THREE.SphereGeometry(0.1, 14, 10), M("#5a5e68", 0.4, undefined, { metalness: 0.6 }), 0, 0.44, 0); g.visible = false; }
       // fontaine + banc
