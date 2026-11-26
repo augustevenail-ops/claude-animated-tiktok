@@ -8,6 +8,7 @@ import { Monstre, MONSTRE_FRAMES, MW, MH } from "./videos/monstre/Monstre";
 import { AppelStill, APPEL_W, APPEL_H } from "./videos/appel/Appel";
 import { AppelVideo, APPEL_VIDEO_FRAMES } from "./videos/appel/Video";
 import { DernierAppel, DA_FRAMES, DAW, DAH } from "./videos/dernierappel/DernierAppel";
+import { Dessins, DS_FRAMES, DSW, DSH } from "./videos/dessins/Dessins";
 
 export const Root: React.FC = () => (
   <>
@@ -19,6 +20,7 @@ export const Root: React.FC = () => (
     <Composition id="Monstre" component={Monstre} durationInFrames={MONSTRE_FRAMES} fps={30} width={MW} height={MH} />
     <Composition id="AppelStill" component={AppelStill} durationInFrames={7} fps={30} width={APPEL_W} height={APPEL_H} defaultProps={{ scene: 1 }} />
     <Composition id="DernierAppel" component={DernierAppel} durationInFrames={DA_FRAMES} fps={30} width={DAW} height={DAH} />
+    <Composition id="Dessins" component={Dessins} durationInFrames={DS_FRAMES} fps={30} width={DSW} height={DSH} />
     <Composition id="AppelVideo" component={AppelVideo} durationInFrames={APPEL_VIDEO_FRAMES} fps={30} width={APPEL_W} height={APPEL_H} />
   </>
 );
