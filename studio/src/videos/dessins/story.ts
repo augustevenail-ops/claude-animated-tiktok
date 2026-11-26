@@ -103,13 +103,13 @@ export const SHOTS: Shot[] = [
     st: (w, _u, t) => { place(HB(w), "TOWN", 0.6, 0, -2.3, 0.15); HB(w).pose(t, { expr: "smug", talk: true, headYaw: Math.sin(t * 5) * 0.25 }); townCrowd(w, t, true, true); } },
   // ——— 2 Je veux dire : absolument n'importe quoi.  → montage rapide d'apparitions (0,4-0,9 s chacune)
   { w: "tour de magie", set: "TOWN", fr: "Montage 1 : un donut géant se trace en or au milieu de la rue", g: DAY, cam: (_w, u) => G(at("TOWN", -9.0, 1.6, -3.2), at("TOWN", -9.4, 1.65, -2.9), at("TOWN", -14, 1.4, 1.6), at("TOWN", -14, 1.45, 1.6), 50, u),
-    st: (w, u, t) => { townCrowd(w, t); funKid(w, "k1", -15.7, 0.2, 0.88, u, t); w.sets.fun[0].set(cl(u * 1.5), t, 0.12); } },
+    st: (w, u, t) => { townCrowd(w, t, false); w.sets.fun[0].set(cl(u * 1.5), t, 0.12); } },
   { w: "Je veux dire", set: "TOWN", fr: "Montage 2 : une fusée apparaît, contre-plongée", g: DAY, cam: (_w, u) => G(at("TOWN", 19, 0.7, -3.4), at("TOWN", 18.6, 0.8, -3.1), at("TOWN", 14, 2.1, 1.8), at("TOWN", 14, 2.3, 1.8), 52, u),
     st: (w, u, t) => { townCrowd(w, t); funKid(w, "k2", 12.3, 0.4, 0.88, u, t); w.sets.fun[1].set(cl(u * 1.7), t, 0.12); } },
   { w: "absolument", set: "TOWN", fr: "Montage 3 : une glace géante à trois boules", g: DAY, cam: (_w, u) => G(at("TOWN", -21, 1.5, -3.4), at("TOWN", -21.4, 1.55, -3.1), at("TOWN", -26, 2.0, 1.8), at("TOWN", -26, 2.1, 1.8), 50, u),
     st: (w, u, t) => { townCrowd(w, t); funKid(w, "k7", -27.7, 0.4, 0.88, u, t); w.sets.fun[2].set(cl(u * 1.7), t, 0.12); } },
-  { w: "n'importe", set: "TOWN", fr: "Montage 4 : une voiture de sport se trace sur la rue", g: DAY, cam: (_w, u) => G(at("TOWN", 9.5, 1.3, -3.6), at("TOWN", 9.1, 1.35, -3.3), at("TOWN", 5, 0.8, -0.6), at("TOWN", 5, 0.85, -0.6), 52, u),
-    st: (w, u, t) => { townCrowd(w, t); funKid(w, "k5", 3.2, -1.2, 1.25, u, t); w.sets.townCar.set(cl(u * 1.8), t, 0.12); } },
+  { w: "n'importe", set: "TOWN", fr: "Montage 4 : une voiture de sport se trace sur la rue", g: DAY, cam: (_w, u) => G(at("TOWN", 12.2, 1.7, -3.8), at("TOWN", 11.7, 1.75, -3.5), at("TOWN", 5, 0.8, -0.6), at("TOWN", 5, 0.85, -0.6), 52, u),
+    st: (w, u, t) => { townCrowd(w, t, false); w.sets.townCar.set(cl(u * 1.8), t, 0.12); } },
   { w: "quoi", dt: 0.08, set: "TOWN", fr: "Montage 5 : un ours en peluche géant", g: DAY, cam: (_w, u) => G(at("TOWN", 31, 1.4, -3.0), at("TOWN", 30.6, 1.45, -2.7), at("TOWN", 26, 1.6, 2.2), at("TOWN", 26, 1.7, 2.2), 50, u),
     st: (w, u, t) => { townCrowd(w, t); funKid(w, "k8", 24.3, 0.8, 0.88, u, t); w.sets.fun[3].set(cl(u * 1.7), t, 0.12); } },
   // ——— 3 Mon meilleur ami … billet … bureau.

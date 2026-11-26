@@ -351,8 +351,8 @@ export class Sets {
       this.townCar = new Drawn(this.cars[2], 5, 30, 4);
       // objets du montage d'ouverture (« absolument n'importe quoi »)
       { const d = grp(p, -14, 1.45, 1.6); const dn = add(d, new THREE.TorusGeometry(0.95, 0.48, 24, 48), P("#e8b070", 0.4), 0, 0, 0); dn.userData.k = 1;
-        const ic = add(d, new THREE.TorusGeometry(0.95, 0.5, 20, 48, Math.PI * 2), P("#ff6aa8", 0.2), 0, 0, 0.1); ic.scale.set(1, 1, 0.75);
-        for (let i = 0; i < 40; i++) { const a = hash(i, 1) * Math.PI * 2, r = 0.95 + (hash(i, 2) - 0.5) * 0.7; const sp = add(d, new THREE.CapsuleGeometry(0.035, 0.12, 3, 6), P(["#ffffff", "#2a9af0", "#ffd21a", "#2fae7a", "#9a5ad8"][i % 5], 0.3), Math.cos(a) * r, Math.sin(a) * r, 0.5, 0, false); sp.rotation.z = hash(i, 3) * 3; sp.userData.noEdge = true; }
+        const ic = add(d, new THREE.TorusGeometry(0.95, 0.5, 20, 48, Math.PI * 2), P("#ff6aa8", 0.2), 0, 0, -0.1); ic.scale.set(1, 1, 0.75);
+        for (let i = 0; i < 40; i++) { const a = hash(i, 1) * Math.PI * 2, r = 0.95 + (hash(i, 2) - 0.5) * 0.7; const sp = add(d, new THREE.CapsuleGeometry(0.035, 0.12, 3, 6), P(["#ffffff", "#2a9af0", "#ffd21a", "#2fae7a", "#9a5ad8"][i % 5], 0.3), Math.cos(a) * r, Math.sin(a) * r, -0.5, 0, false); sp.rotation.z = hash(i, 3) * 3; sp.userData.noEdge = true; }
         this.fun.push(new Drawn(d, 5, 30, 3)); }
       { const r = grp(p, 14, 0, 1.8); cyl(r, 0.55, 0.55, 2.6, P("#f4f4f4", 0.25), 0, 1.7, 0, 32); add(r, new THREE.ConeGeometry(0.55, 1.1, 32), P("#e8202a", 0.2), 0, 3.55, 0);
         add(r, new THREE.CylinderGeometry(0.22, 0.22, 0.06, 24).rotateX(Math.PI / 2), P("#2a9af0", 0.05), 0, 2.4, 0.54); cyl(r, 0.4, 0.5, 0.4, M("#3a3e48", 0.4, undefined, { metalness: 0.7 }), 0, 0.2, 0, 24);
