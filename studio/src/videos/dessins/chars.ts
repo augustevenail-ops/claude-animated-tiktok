@@ -38,6 +38,8 @@ export const CAST: Record<string, Spec> = {
   k4: { name: "k4", skin: "#f6d3b8", top: "#9a5ad8", topDark: "#7a40b0", sleeve: "#9a5ad8", pants: "#2a2e36", shoes: "#f4f4f4", style: "hoodie", hair: "messy", hairCol: "#2a1d16", kid: true },
   k5: { name: "k5", skin: "#f7d6bd", top: "#2ab4d8", topDark: "#1a8aac", sleeve: "#2ab4d8", pants: "#3a3f4a", shoes: "#2a2a2a", style: "tee", star: "#f4f4f4", hair: "curly", hairCol: "#5a3a22", kid: true },
   k6: { name: "k6", skin: "#f5d2b6", top: "#ff5fa4", topDark: "#d03a82", sleeve: "#ff5fa4", pants: "#33405e", shoes: "#f4f4f4", style: "hoodie", hair: "long", hairCol: "#c8a060", kid: true },
+  k7: { name: "k7", skin: "#f6d3b8", top: "#e84a3a", topDark: "#b83a2a", sleeve: "#e84a3a", pants: "#2a3a6a", shoes: "#f4f4f4", style: "tee", star: "#ffffff", hair: "short", hairCol: "#c8a060", kid: true },
+  k8: { name: "k8", skin: "#f5d0b0", top: "#40c8a0", topDark: "#2a9a78", sleeve: "#40c8a0", pants: "#33405e", shoes: "#2a2a2a", style: "cardigan", inner: "#f4f1ea", hair: "bun", hairCol: "#2a1d16", kid: true },
   prof: { name: "prof", skin: "#f6d3b8", top: "#2a8a8a", topDark: "#1c6666", sleeve: "#2a8a8a", pants: "#3a3f4a", shoes: "#5a2a24", style: "cardigan", inner: "#f4ecdc", hair: "bun", hairCol: "#8a5a32", glasses: true },
   girl: { name: "girl", skin: "#f8dcc6", top: "#ff8ec2", topDark: "#e46aa4", sleeve: "#ff8ec2", pants: "#ff8ec2", shoes: "#f4f4f4", style: "dress", hair: "long", hairCol: "#b8562a", kid: true },
   dir: { name: "dir", skin: "#f0c8a8", top: "#4a4f5c", topDark: "#363a44", sleeve: "#4a4f5c", pants: "#363a44", shoes: "#1a1a1a", style: "suit", hair: "bald", hairCol: "#8a8680", mustache: "#6a6660", glasses: true },

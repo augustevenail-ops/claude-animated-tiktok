@@ -238,6 +238,27 @@ export class HouseD { root = new THREE.Group(); wins = new THREE.Group(); roof =
     const mb = grp(r, 1.6, 0, D / 2 + 2.9); cyl(mb, 0.04, 0.04, 1.0, M("#ffffff", 0.6), 0, 0.5, 0, 8); bx(mb, 0.25, 0.25, 0.45, P("#2a5cb8", 0.3), 0, 1.1, 0, 0, 0.1); }
   initFx() { this.dw = new Drawn(this.wins, 4, 28, 4); this.dr = new Drawn(this.roof, 4, 28, 6); } }
 
+
+// ------------------------------------------------------------ quartier lointain (maisons simplifiées, arbres, immeubles, collines)
+const HCOL: [string, string][] = [["#f4d35e", "#a8423a"], ["#f2a6b4", "#5a4a8a"], ["#9ad0e8", "#3a5a8a"], ["#b8e0a0", "#8a3a3a"], ["#f8c890", "#4a5a7a"], ["#e8e0ff", "#a8423a"], ["#ffb0a0", "#3a6a5a"], ["#fff0c8", "#2a6a8a"]];
+const farHouse = (p: THREE.Object3D, x: number, z: number, ry: number, seed: number) => { const g = grp(p, x, 0, z, ry), c = HCOL[seed % HCOL.length], W = 7 + hash(seed, 1) * 2, H = 2.8 + (seed % 3 === 0 ? 2.6 : 0), D = 6.5;
+  bx(g, W, H, D, M("#ffffff", 0.85, rep(sidingTex(c[0]), 3, 1.5)), 0, H / 2, 0, 0, 0.03).castShadow = false;
+  const roof = add(g, new THREE.CylinderGeometry(0.01, W * 0.62, 2.2, 4, 1).rotateY(Math.PI / 4), M(c[1], 0.85), 0, H + 1.1, 0, 0, false); roof.scale.set(1, 1, D / W);
+  const wm = M("#9ad0f0", 0.15, undefined, { emissive: "#2a5a7a", emissiveIntensity: 0.3 });
+  for (const [wx, wy] of [[-W * 0.28, 1.5], [W * 0.28, 1.5], ...(H > 4 ? [[-W * 0.28, 4.0], [W * 0.28, 4.0]] : [])] as [number, number][]) { plane(g, 1.2, 1.0, wm, wx, wy, D / 2 + 0.02); bx(g, 1.36, 0.1, 0.1, M("#ffffff", 0.5), wx, wy - 0.55, D / 2 + 0.04); }
+  bx(g, 1.0, 2.0, 0.06, M(["#e8343a", "#2a5cb8", "#2fae7a", "#f2b51c"][seed % 4], 0.4), 0, 1.0, D / 2 + 0.03);
+  if (hash(seed, 3) < 0.5) bx(g, 0.6, 1.4, 0.6, M("#b8584a", 0.8), W * 0.25, H + 1.6, -1).castShadow = false; return g; };
+const simpleTree = (p: THREE.Object3D, x: number, z: number, s: number, seed: number) => { const g = grp(p, x, 0, z); g.scale.setScalar(s); cyl(g, 0.15, 0.22, 2.2, M("#7a5232", 0.9), 0, 1.1, 0, 7).castShadow = false;
+  const m = M(["#4aa848", "#5cb848", "#3e9a42", "#6ac058"][seed % 4], 0.8); add(g, new THREE.IcosahedronGeometry(1.4, 1), m, 0, 3.0, 0, 0, false); add(g, new THREE.IcosahedronGeometry(1.0, 1), m, 0.5, 3.8, 0.2, 0, false); return g; };
+const street = (p: THREE.Object3D, zr: number, x0: number, x1: number, seed: number, skipNorth = false) => {
+  plane(p, x1 - x0 + 20, 7, M("#ffffff", 0.85, rep(asphaltTex(), 30, 2)), (x0 + x1) / 2, 0.01, zr, -Math.PI / 2);
+  for (let x = x0; x <= x1; x += 4) plane(p, 1.6, 0.14, M("#f4f4f4", 0.6), x, 0.015, zr, -Math.PI / 2);
+  for (const dz of [-4.4, 4.4]) bx(p, x1 - x0 + 20, 0.16, 1.8, M("#d8d4cc", 0.85), (x0 + x1) / 2, 0.08, zr + dz, 0, 0.01).castShadow = false;
+  let k = seed; for (let x = x0; x <= x1; x += 11) { if (!skipNorth) farHouse(p, x + hash(k, 5) * 1.5, zr - 12, 0, k++); farHouse(p, x + hash(k, 6) * 1.5, zr + 12, Math.PI, k++); simpleTree(p, x + 5.5, zr - 6.5, 0.9 + hash(k, 2) * 0.3, k); simpleTree(p, x + 5.5, zr + 6.5, 0.9 + hash(k, 4) * 0.3, k + 1); } };
+const building = (p: THREE.Object3D, x: number, z: number, w: number, h: number, seed: number) => { const g = grp(p, x, 0, z, Math.atan2(-x, -z));
+  const tex = ctex("bld" + (seed % 5), 128, 256, (q) => { q.fillStyle = ["#e8d8c0", "#c8d8e8", "#f0c8a8", "#d8e8d0", "#e8c8d8"][seed % 5]; q.fillRect(0, 0, 128, 256); q.fillStyle = "#7aa8d0"; for (let r = 0; r < 16; r++) for (let c = 0; c < 6; c++) q.fillRect(8 + c * 20, 8 + r * 15, 12, 9); });
+  bx(g, w, h, w * 0.8, M("#ffffff", 0.8, rep(tex, 1, h / 16)), 0, h / 2, 0, 0, 0.1).castShadow = false; bx(g, w + 0.4, 0.5, w * 0.8 + 0.4, M("#a8a49c", 0.8), 0, h + 0.25, 0).castShadow = false; return g; };
+
 // ------------------------------------------------------------ foule de l'autre monde (instanciée)
 const crowd = (p: THREE.Object3D, n: number) => {
   const dummy = new THREE.Object3D(), parts: [THREE.BufferGeometry, string, (i: number) => string][] = [
@@ -312,6 +333,13 @@ export class Sets {
       const cols: [string, string][] = [["#f4d35e", "#a8423a"], ["#f2a6b4", "#5a4a8a"], ["#9ad0e8", "#3a5a8a"], ["#b8e0a0", "#8a3a3a"], ["#f8c890", "#4a5a7a"], ["#e8e0ff", "#a8423a"], ["#ffb0a0", "#3a6a5a"]];
       for (let i = -3; i <= 3; i++) for (const side of [-1, 1]) { const c = cols[(i + 3 + (side > 0 ? 3 : 0)) % 7], h = new HouseD(c[0], c[1], i + 10 + side * 3); h.root.position.set(i * 13, 0, side < 0 ? -10 : 14.5); h.root.rotation.y = side < 0 ? 0 : Math.PI; p.add(h.root); this.houses.push(h); if (i === 0 && side < 0) this.home = h; }
       for (let i = -4; i <= 4; i++) { tree(p, i * 13 + 6.5, -5.2, 1.0, i + 4); tree(p, i * 13 + 6.5, 9.4, 0.95, i + 7); }
+      for (const i of [-6, -5, -4, 4, 5, 6]) { farHouse(p, i * 13, -10, 0, 40 + i); farHouse(p, i * 13, 14.5, Math.PI, 60 + i); }
+      for (const i of [-6, -5, 5, 6]) { simpleTree(p, i * 13 + 6.5, -5.2, 1.0, i + 9); simpleTree(p, i * 13 + 6.5, 9.4, 1.0, i + 3); }
+      street(p, -34, -80, 80, 3); street(p, 38, -80, 80, 31); street(p, -64, -90, 90, 57); street(p, 68, -90, 90, 83);
+      for (let x = -100; x <= 100; x += 9) for (const z of [-18.5, 23.5, -49, 53]) { bx(p, 0.08, 1.0, 0.08, M("#ffffff", 0.6), x, 0.5, z).castShadow = false; if (hash(x, z) < 0.45) simpleTree(p, x + 3, z, 0.8 + hash(x, 3) * 0.4, Math.abs(x)); }
+      for (let i = 0; i < 26; i++) { const a = -Math.PI * 0.9 + i * 0.075 * Math.PI; building(p, Math.sin(a) * (125 + hash(i, 1) * 25), Math.cos(a) * -(125 + hash(i, 1) * 25) * -1, 10 + hash(i, 2) * 8, 18 + hash(i, 3) * 40, i); }
+      for (let i = 0; i < 14; i++) { const a = i / 14 * Math.PI * 2, r = 175 + hash(i, 7) * 30; const hl = add(p, new THREE.SphereGeometry(40 + hash(i, 8) * 30, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2), M(["#7ac060", "#6ab858", "#8ac868"][i % 3], 0.95), Math.cos(a) * r, -6, Math.sin(a) * r, 0, false); hl.scale.y = 0.35 + hash(i, 9) * 0.25; }
+      { const ch = grp(p, -38, 0, -92); bx(ch, 8, 10, 12, M("#f0e6d8", 0.8), 0, 5, 0).castShadow = false; bx(ch, 4, 22, 4, M("#f0e6d8", 0.8), 0, 11, 7).castShadow = false; add(ch, new THREE.ConeGeometry(3.2, 8, 4), M("#5a6a8a", 0.7), 0, 26, 7, Math.PI / 4, false); }
       for (let i = -4; i <= 4; i++) { const l = grp(p, i * 13 + 3, 0, -3.1); cyl(l, 0.06, 0.08, 4.2, M("#2a2e36", 0.5, undefined, { metalness: 0.6 }), 0, 2.1, 0, 8); bx(l, 0.5, 0.1, 0.2, M("#2a2e36", 0.5), 0.2, 4.2, 0); }
       const carCols = ["#2a7ae8", "#f2b51c", "#2fae7a", "#e8503a"]; for (let i = 0; i < 4; i++) { const c = mkCar(); c.scale.setScalar(0.92); c.position.set(-20 + i * 12.5, 0, i % 2 ? 4.6 : -0.6); c.rotation.y = i % 2 ? Math.PI : 0;
         c.traverse((o) => { const m = o as THREE.Mesh; if (m.isMesh && (m.material as THREE.MeshPhysicalMaterial).color?.getHexString() === "e8202a") m.material = P(carCols[i], 0.25); }); p.add(c); this.cars.push(c); }
@@ -338,13 +366,19 @@ export class Sets {
 
     // ---------------- bureau du meilleur ami
     { const p = this.g.FRD; sun("FRD", V(-4, 5, -5), V(0, 0, 0), 1.5, 5, "#fff2dc", "#ffffff", "#c8a888", 0.7);
-      room(p, 4, 4, 2.6, new THREE.MeshStandardMaterial({ map: rep(dotsTex("#b8e0a0", "#a0d088"), 4, 2), roughness: 0.9 }), new THREE.MeshStandardMaterial({ map: rep(woodTex("#b88a5a"), 3, 3), roughness: 0.5 }));
+      room(grp(p, 0, 0, 0.8), 6, 5.6, 2.6, new THREE.MeshStandardMaterial({ map: rep(dotsTex("#b8e0a0", "#a0d088"), 6, 2), roughness: 0.9 }), new THREE.MeshStandardMaterial({ map: rep(woodTex("#b88a5a"), 3, 3), roughness: 0.5 }));
       windowAt(p, -0.6, 1.55, -1.99, 0, 1.2, 1.0); const d = desk(p, 0, -1.55, 0, "#f4f1ea", "#2fae7a"); d.scale.set(1.4, 1, 1.2); chair(p, 0, -0.95, Math.PI, "#f2b51c");
       this.friendBook = grp(p, -0.05, 0.745, -1.5); bx(this.friendBook, 0.3, 0.004, 0.42, M("#fbf8ef", 0.9), 0, 0.002, 0); const pl = plane(this.friendBook, 0.29, 0.41, pageMat(this.friendPage), 0, 0.005, 0, -Math.PI / 2); pl.castShadow = false;
       const b = mkBill(); b.position.set(0.32, 0.745, -1.42); b.rotation.y = 0.3; b.scale.setScalar(1.15); p.add(b); this.bill = new Drawn(b, 3, 20, 1.2);
       const lamp = grp(p, 0.5, 0.745, -1.75); cyl(lamp, 0.08, 0.1, 0.03, M("#2fae7a", 0.4), 0, 0.015, 0); const arm = cyl(lamp, 0.012, 0.012, 0.45, M("#2fae7a", 0.4), 0, 0.24, 0, 8); arm.rotation.z = 0.3;
       add(lamp, new THREE.ConeGeometry(0.1, 0.14, 16, 1, true), M("#2fae7a", 0.4, undefined, { side: THREE.DoubleSide }), -0.1, 0.46, 0.05); pt(lamp, -0.1, 0.4, 0.05, "#ffe0b0", 2.5, 3);
-      frame(p, kidArtTex(2), 0.4, 0.5, 0.9, 1.6, -1.98); bx(p, 0.9, 0.9, 0.35, M("#ffffff", 0.6), 1.5, 0.45, -1.8); pt("FRD", 0, 2.4, 0, "#fff2dc", 3, 7); }
+      frame(p, kidArtTex(2), 0.4, 0.5, 0.9, 1.6, -1.98); bx(p, 0.9, 0.9, 0.35, M("#ffffff", 0.6), 1.5, 0.45, -1.8);
+      bx(p, 1.0, 0.4, 2.0, M("#ffffff", 0.6, rep(woodTex("#e8d8b8"), 1, 1)), 2.4, 0.2, 1.2); bx(p, 0.95, 0.18, 1.9, M("#2fae7a", 0.8, rep(dotsTex("#2fae7a", "#ffffff"), 2, 4)), 2.4, 0.48, 1.25, 0, 0.06); bx(p, 0.6, 0.14, 0.35, M("#ffffff", 0.8), 2.4, 0.62, 0.45, 0, 0.06);
+      frame(p, posterTex(1), 0.6, 0.85, 2.98, 1.6, -0.6, -Math.PI / 2); frame(p, posterTex(2), 0.6, 0.85, -2.98, 1.6, 0.4, Math.PI / 2);
+      { const sh = grp(p, -2.6, 0, -1.2, Math.PI / 2); for (let r = 0; r < 4; r++) { bx(sh, 1.2, 0.04, 0.35, M("#ffffff", 0.6), 0, 0.3 + r * 0.45, 0); for (let i = 0; i < 9; i++) bx(sh, 0.09, 0.26 + hash(i, r) * 0.08, 0.24, M(["#e84a3a", "#2a7ae8", "#f2b51c", "#9a5ad8"][(i + r) % 4], 0.6), -0.5 + i * 0.125, 0.46 + r * 0.45, 0).castShadow = false; } }
+      add(p, new THREE.PlaneGeometry(2.0, 1.4).rotateX(-Math.PI / 2), M("#ffffff", 0.95, dotsTex("#40b8f0", "#ffffff")), 0.6, 0.005, 0.6, 0, false);
+      add(p, new THREE.SphereGeometry(0.2, 20, 14), M("#ffffff", 0.5, ctex("ball", 128, 64, (q) => { q.fillStyle = "#ffffff"; q.fillRect(0, 0, 128, 64); q.fillStyle = "#222"; for (let i = 0; i < 6; i++) { q.beginPath(); q.arc(i * 24, 20 + (i % 2) * 24, 9, 0, 7); q.fill(); } })), 1.3, 0.2, 1.4);
+      pt("FRD", 0, 2.4, 0, "#fff2dc", 3, 7); }
 
     // ---------------- salle de classe
     { const p = this.g.CLS; sun("CLS", V(8, 6, 2), V(0, 0, 0), 2.6, 7, "#fff2dc", "#ffffff", "#c8b498", 0.75);
@@ -358,6 +392,22 @@ export class Sets {
       const doorC = grp(p, -4.18, 0, 2.2, Math.PI / 2); bx(doorC, 1.0, 2.2, 0.06, P("#2a5cb8", 0.4), 0, 1.1, 0);
       this.clsBook = notebook(p, this.poolPage, -1.1, 0.745, 0.75, 0, 1.0);
       const pool = mkPool(); pool.position.set(2.4, 0, 1.0); p.add(pool); this.pool = new Drawn(pool, 5, 30, 4); pool.traverse((o) => { if (o.userData.water) this.poolWater = o as THREE.Mesh; });
+      // détails de classe : frise alphabet, horloge, carte, étagères, casiers à sacs, plantes, guirlande, plafonniers, affaires sur les tables
+      for (let i = 0; i < 13; i++) { const L = "ABCDEFGHIJKLM"[i]; plane(p, 0.3, 0.34, M("#ffffff", 0.7, ctex("abc" + L, 64, 72, (q) => { q.fillStyle = ["#ff5a7a", "#ffd21a", "#40b8f0", "#2fae7a", "#ff8a3a"][i % 5]; q.fillRect(0, 0, 64, 72); q.fillStyle = "#fff"; q.font = "bold 50px sans-serif"; q.textAlign = "center"; q.fillText(L, 32, 55); })), -2.2 + i * 0.34, 2.75, -3.67).castShadow = false; }
+      { const ck = grp(p, 2.3, 2.3, -3.66); add(ck, new THREE.CylinderGeometry(0.22, 0.22, 0.05, 32).rotateX(Math.PI / 2), M("#ffffff", 0.4), 0, 0, 0); add(ck, new THREE.TorusGeometry(0.22, 0.025, 8, 32), P("#e8343a", 0.3), 0, 0, 0.02); bx(ck, 0.015, 0.12, 0.01, M("#222", 0.5), 0, 0.05, 0.035); const mh = bx(ck, 0.012, 0.17, 0.01, M("#222", 0.5), 0.05, 0.03, 0.04); mh.rotation.z = -1.2; }
+      frame(p, ctex("map", 512, 320, (q) => { q.fillStyle = "#7ac8f0"; q.fillRect(0, 0, 512, 320); q.fillStyle = "#8ad068"; for (let i = 0; i < 9; i++) { q.beginPath(); q.ellipse(60 + hash(i, 1) * 400, 50 + hash(i, 2) * 220, 30 + hash(i, 3) * 60, 20 + hash(i, 4) * 40, hash(i, 5) * 3, 0, 7); q.fill(); } q.strokeStyle = "rgba(255,255,255,0.5)"; for (let i = 1; i < 6; i++) { q.beginPath(); q.moveTo(0, i * 53); q.lineTo(512, i * 53); q.stroke(); } }), 1.8, 1.1, -4.17, 1.7, 0.4, Math.PI / 2, "#b8956a");
+      frame(p, kidArtTex(20), 0.5, 0.65, -4.17, 1.8, -2.2, Math.PI / 2); frame(p, posterTex(2), 0.5, 0.7, -4.17, 1.8, 2.6, Math.PI / 2);
+      { const sh = grp(p, -1.6, 0, 3.45); for (let r = 0; r < 3; r++) bx(sh, 3.4, 0.04, 0.4, M("#ffffff", 0.6), 0, 0.35 + r * 0.45, 0); for (const x of [-1.7, -0.56, 0.56, 1.7]) bx(sh, 0.04, 1.3, 0.4, M("#ffffff", 0.6), x, 0.65, 0);
+        for (let r = 0; r < 3; r++) for (let c = 0; c < 3; c++) { const bg = bx(sh, 0.5, 0.36, 0.3, M(["#e8503a", "#2a7ae8", "#2fae7a", "#f2b51c", "#9a5ad8", "#ff5fa4"][(r * 3 + c) % 6], 0.6), -1.13 + c * 1.13, 0.55 + r * 0.45, 0.02, 0, 0.08); bg.castShadow = false; } }
+      { const bk = grp(p, 2.6, 0, 3.45); for (let r = 0; r < 4; r++) { bx(bk, 1.6, 0.04, 0.35, M("#e8d0a8", 0.6), 0, 0.3 + r * 0.45, 0); for (let i = 0; i < 12; i++) bx(bk, 0.08, 0.28 + hash(i, r) * 0.08, 0.24, M(["#e84a3a", "#2a7ae8", "#f2b51c", "#2fae7a", "#9a5ad8", "#ff8a3a"][(i + r) % 6], 0.6), -0.7 + i * 0.125, 0.47 + r * 0.45, 0).castShadow = false; } }
+      for (let i = 0; i < 3; i++) { const pl = grp(p, 4.0, 0.96, -2.2 + i * 2.2 + 0.6); cyl(pl, 0.1, 0.08, 0.18, M("#d86a3a", 0.7), 0, 0.09, 0, 12); add(pl, new THREE.IcosahedronGeometry(0.17, 1), M("#3e9a42", 0.8), 0, 0.3, 0); }
+      for (let i = 0; i < 16; i++) { const tri = add(p, new THREE.ConeGeometry(0.1, 0.2, 3).rotateX(Math.PI), M(["#ff5a7a", "#ffd21a", "#40b8f0", "#2fae7a"][i % 4], 0.7), -3.8 + i * 0.5, 2.78 - Math.sin(i / 15 * Math.PI) * 0.15, 0.8, 0, false); tri.rotation.y = 0.3; }
+      for (const [x, z] of [[-1.5, -1.5], [1.5, -1.5], [-1.5, 1.5], [1.5, 1.5]]) plane(p, 1.2, 0.5, E("#fffaf0", 1.4), x, 2.99, z, Math.PI / 2);
+      this.clsDesks.forEach((d, i) => { bx(d, 0.24, 0.03, 0.3, M(["#e8503a", "#2a7ae8", "#2fae7a", "#f2b51c"][i % 4], 0.6), -0.25, 0.75, -0.08, 0.2, 0.01); bx(d, 0.2, 0.05, 0.06, M(["#9a5ad8", "#ff5fa4", "#40b8f0"][i % 3], 0.5), 0.3, 0.765, -0.15, -0.3, 0.02);
+        if (i % 2 === 0) bx(d, 0.32, 0.36, 0.16, M(["#2a5cb8", "#e8343a", "#2fae7a"][i % 3], 0.6), 0.5, 0.18, 0.35, 0, 0.06); });
+      { const td = grp(p, 2.2, 0.76, -2.6); add(td, new THREE.SphereGeometry(0.16, 24, 16), M("#ffffff", 0.5, ctex("globe", 256, 128, (q) => { q.fillStyle = "#3a8ad8"; q.fillRect(0, 0, 256, 128); q.fillStyle = "#6ac058"; for (let i = 0; i < 8; i++) { q.beginPath(); q.ellipse(hash(i, 1) * 256, 20 + hash(i, 2) * 90, 20 + hash(i, 3) * 25, 12 + hash(i, 4) * 18, 0, 0, 7); q.fill(); } })), -0.45, 0.3, 0); cyl(td, 0.08, 0.1, 0.12, M("#b8956a", 0.6), -0.45, 0.06, 0, 12);
+        add(td, new THREE.SphereGeometry(0.06, 16, 12), P("#e8202a", 0.25), 0.4, 0.06, 0.1); for (let i = 0; i < 3; i++) bx(td, 0.3, 0.05, 0.22, M(["#2a5cb8", "#2fae7a", "#f2b51c"][i], 0.6), 0.05, 0.03 + i * 0.05, -0.05, i * 0.2, 0.01); }
+      { const bin = grp(p, 3.6, 0, -3.2); add(bin, new THREE.CylinderGeometry(0.18, 0.15, 0.4, 16, 1, true), M("#2a7ae8", 0.5, undefined, { side: THREE.DoubleSide }), 0, 0.2, 0); }
       pt("CLS", -1, 2.8, 0, "#fff6e8", 6, 10); pt("CLS", 2, 2.8, 1, "#fff6e8", 4, 10); }
 
     // ---------------- cour + façade de l'école
