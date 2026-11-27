@@ -45,6 +45,7 @@ zones sombres désaturées + accents saturés (lumières pratiques chaudes, roug
 5. Tout est calé sur `words.json` : chaque réaction visuelle tombe 0-3 images avant son mot.
    Verrouiller les timings image **avant** de produire le son.
 6. Mix : voix la plus forte > bruitages > musique (réglages dans `docs/audio.md`, modèle `tools/mur_mix.py`). Mux avec `-map 0:v:0 -map 1:a:0`.
+6 bis. **Voix : contrôle anti-charabia obligatoire** avant de verrouiller l'image : `python3 tools/verif_charabia.py <voix.wav> <words.json>` doit répondre « OK » (Fish Audio invente parfois des syllabes entre deux phrases ; cause et réparation dans `docs/audio.md`).
 7. Les paramètres en pixels du post-traitement s'échelonnent avec la hauteur de sortie / 1920.
 8. Après chaque modification de code : `npx tsc --noEmit` ; pas de fichiers `.ts` temporaires dans `out/`.
 9. Rendus : définir `REMOTION_TMP` / `TEMP` / `TMP` sur un disque spacieux (chaque bundle copie ~1,3 Go).

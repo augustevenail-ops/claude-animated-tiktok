@@ -26,3 +26,19 @@ Seule voix utilisée : plus d'ElevenLabs (ancienne doc retirée le 2026-11-14).
   - Final : stinger + « clic » + sting au passage épisode n → n+1.
 - Banque d'échantillons : `productions/sfx_lib/*.mp3` ; synthèses : `tools/sound_kit.py` (Kit) et fonctions de `mur_mix.py`.
 - Le son suit les timings image : verrouiller l'image (CUTS) avant le mix. Son seul modifié → remux sans re-rendu (`serie.md`).
+
+## Charabia TTS : contrôle obligatoire (incident du 2026-11-27)
+- **Symptôme** : dans *Les Mots Gentils*, *Le Nom qui rapporte* et *Les Pouvoirs Nuls* (ép. 1), 0,3 à 2 s de mots inventés
+  (« tu manges et rendes des mampars », « chcon chcon », « Pré-Nantin »…) ou un bruit de bouche entre deux phrases.
+- **Cause 1 — Fish Audio** (`s2.1-pro-free`, `temperature 0.9`, passages de 3 phrases + phrase factice « Voilà ») : le modèle improvise
+  parfois une suite de syllabes dans la pause entre deux phrases, surtout après un mot final tenu (« mètres. », « tête. », « court. »).
+- **Cause 2 — notre filtre ne pouvait pas le voir** : le choix de prise se fait par alignement forcé CTC (MMS_FA) sur le texte attendu.
+  L'aligneur ne connaît que les mots du script : il **étire le dernier mot de la phrase** sur tout le charabia (ex. « tête. » 1,34 s,
+  « méchants. » 2,04 s) et le score moyen reste bon. La coupe de fin de phrase (`en[w1]` + silence) garde donc le charabia.
+- **Règle désormais** (avant de verrouiller l'image) : `python3 tools/verif_charabia.py voix/voix_off_vN.wav voix/words_vN.json`
+  doit répondre « OK ». Il croise trois signaux : mots entendus par faster-whisper absents du script, mot aligné trop long,
+  son dans une pause. Chaque passage signalé : écouter, puis **régénérer la phrase** (autre prise) ou la couper.
+  Dans les scripts `gen_v*.py`, écarter aussi toute prise dont le dernier mot d'une phrase dure plus de 0,9 s.
+- **Réparation sans re-rendu** (vidéo déjà rendue) : `tools/coupe_charabia.py` retire le passage de la voix et la même durée d'image
+  juste avant le plan suivant (coupure invisible), puis `sound_v2.py` (musique remise à neuf en boucle, bruitages recalés sur
+  `words_v2.json` réaligné), `caps_v2.py` et `tools/assemble_v2.sh` (réassemblage des morceaux déjà rendus).

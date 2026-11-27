@@ -71,7 +71,7 @@ def analyse(f, a, b):
         e0 = st_(max(st[w1], en[w1] - 0.3)); tail = pf[e0:i1][ok[e0:i1]]
         drop = float(12 * np.log2(np.median(tail) / np.median(ps))) if len(tail) >= 2 and m.sum() > 5 else 0.0
         scs = sc[w0:w1 + 1]
-        res.append(dict(seg=(s0, cut), mean=float(np.mean(scs)), min=float(min(scs)), hole=best * 0.01, sd=sdq, drop=drop))
+        res.append(dict(seg=(s0, cut), last=en[w1] - st[w1], mean=float(np.mean(scs)), min=float(min(scs)), hole=best * 0.01, sd=sdq, drop=drop))
     return x, res
 SEL = []
 FORCE = {}
@@ -83,7 +83,7 @@ for p, (a, b) in enumerate(PASS):
     for q in range(b - a + 1):
         txt = S[a + q].rstrip(" »"); question = txt.endswith("?")
         cs = [(f, x, R[q]) for f, x, R in cand]
-        good = [c for c in cs if c[2]["min"] >= 0.3 and c[2]["mean"] >= 0.88 and c[2]["hole"] <= 0.5] or cs
+        good = [c for c in cs if c[2]["min"] >= 0.3 and c[2]["mean"] >= 0.88 and c[2]["hole"] <= 0.5 and c[2]["last"] <= 0.9]   # dernier mot étiré = charabia absorbé (docs/audio.md) or cs
         if a + q in FORCE: good = [c for c in cs if c[0].name == FORCE[a + q]]
         key = (lambda c: 0.5 * c[2]["sd"] + 5 * c[2]["mean"]) if question else (lambda c: -c[2]["drop"] + 0.3 * c[2]["sd"] + 5 * c[2]["mean"])
         f, x, A = max(good, key=key)
