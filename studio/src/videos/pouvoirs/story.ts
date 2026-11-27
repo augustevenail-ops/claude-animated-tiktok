@@ -81,7 +81,7 @@ const searchers = (w: World, set: SetK, x0: number, z0: number, x1: number, z1: 
 
 export const SHOTS: Shot[] = [
   // ——— Dans cette ville, le jour de tes dix ans, tu reçois un pouvoir. Mais toujours un pouvoir nul.
-  { w: "Dans cette ville", set: "VILLE", fr: "Plongée sur le village : chalets sombres, volets rouges, mélèzes dorés, montagnes", g: DAY, cam: (_w, u) => C("VILLE", [-30, 24, 22], [-22, 18, 18], [0, 1.5, 0], [4, 1.5, 0], 46, u),
+  { w: "Dans cette ville", set: "VILLE", fr: "Plongée sur le village : chalets sombres, volets rouges, mélèzes dorés, montagnes", g: DAY, cam: (_w, u) => C("VILLE", [-38, 15, 0.6], [-28, 11, 0.4], [0, 1, 0], [4, 1.5, 0], 46, u),
     st: (w, u, t) => { walk(w, "t1", "VILLE", -8 + u * 2, -1.2, 10, -1.2, 0.4, t, { expr: "smile" }); walk(w, "t2", "VILLE", 6 - u * 2, 1.4, -10, 1.4, 0.4, t, { expr: "smile" }); walk(w, "k3", "VILLE", -14, 0.4, 4, 0.4, 0.4 + u * 0.3, t, { expr: "happy" }, 1.8); } },
   { w: "le jour de tes dix ans", set: "VILLE", fr: "Une enfant devant chez elle : des étincelles dorées tourbillonnent, « 10 ans »", g: DAY, cam: (_w, u) => C("VILLE", [-10.4, 1.4, -0.2], [-10.7, 1.4, -0.7], [-12.8, 1.0, -4.4], null, 46, u),
     st: (w, u, t) => { const k = put(w, "k3", "VILLE", -12.8, 0, -4.6, 0.5); k.pose(t, { expr: "happy", armsUp: 0.5 + 0.3 * sm(u * 2) }); MED(w).setSparks(t, at("VILLE", -12.8, 0.1, -4.6), cl(u * 3)); lab(w, "dix", k, cl(u * 1.6), 0.5, 0.6); } },
@@ -132,10 +132,10 @@ export const SHOTS: Shot[] = [
   { w: "Quand je cours", set: "VILLE", fr: "Il court : le soleil court avec lui", g: GREY, ...GS, cam: (_w, u) => C("VILLE", [3, 1.4, 4.6], [15, 1.6, 4.6], [2, 0.9, -0.4], [14, 0.9, -0.4], 50, u),
     st: (w, u, t) => { const x = 2 + 12 * u; walk(w, "lumi", "VILLE", 2, -0.4, 14, -0.4, u, t, { expr: "happy" }, 2.6); sun(w, "VILLE", x - 0.15, -0.4, 1, t); } },
   // ——— À l'école, tout le monde a ri. On m'a appelé « Lampadaire ».
-  { w: "À l'école", set: "CL2", fr: "En classe, toute la classe éclate de rire devant le héros sous son rayon", g: IN, cam: (_w, u) => C("CL2", [1.9, 1.6, -3.3], [1.8, 1.6, -3.1], [-1.2, 0.95, 0.8], null, 56, u),
-    st: (w, _u, t) => { seated(w, t, "happy", true); put(w, "lumi", "CL2", 1.4, 0, -2.2, 0.6).pose(t, { expr: "sad" }); sun(w, "CL2", 1.4, -2.2, 1, t, 2.6); put(w, "prof", "CL2", -2.4, 0, -3.0, 0.6).pose(t, { expr: "smile", cover: 0.4 }); } },
-  { w: "On m'a appelé", set: "CL2", fr: "« LAMPADAIRE » au-dessus de sa tête", g: IN, cam: (w, u) => CH("CL2", H(w), [0.9, 1.5, 0.6], [0.95, 1.48, 0.35], 46, u, 0.1),
-    st: (w, u, t) => { seated(w, t, "happy", true); const h = put(w, "lumi", "CL2", 1.4, 0, -2.2, -0.2); h.pose(t, { expr: "sad", headPitch: 0.2 }); sun(w, "CL2", 1.4, -2.2, 1, t, 2.6); lab(w, "lampa", h, cl(u * 1.6), 0.55, 0.55); } },
+  { w: "À l'école", set: "CL2", fr: "En classe, toute la classe éclate de rire devant le héros sous son rayon", g: IN, cam: (_w, u) => C("CL2", [-3.4, 2.4, 3.2], [-3.2, 2.35, 3.0], [0.5, 1.1, -2.2], null, 54, u),
+    st: (w, _u, t) => { seated(w, t, "happy", true); put(w, "lumi", "CL2", 0.6, 0, -2.6, -0.2).pose(t, { expr: "sad" }); sun(w, "CL2", 0.6, -2.6, 1, t, 2.6); put(w, "prof", "CL2", -2.4, 0, -3.0, 0.6).pose(t, { expr: "smile", cover: 0.4 }); } },
+  { w: "On m'a appelé", set: "CL2", fr: "« LAMPADAIRE » au-dessus de sa tête", g: IN, cam: (w, u) => CH("CL2", H(w), [0.3, 1.5, 0.2], [0.35, 1.48, -0.05], 46, u, 0.1),
+    st: (w, u, t) => { seated(w, t, "happy", true); const h = put(w, "lumi", "CL2", 0.6, 0, -2.6, -0.1); h.pose(t, { expr: "sad", headPitch: 0.2 }); sun(w, "CL2", 0.6, -2.6, 1, t, 2.6); lab(w, "lampa", h, cl(u * 1.6), 0.55, 0.55); } },
   // ——— Le pire pouvoir de toute l'histoire de la ville.
   { w: "Le pire pouvoir", set: "VILLE", fr: "Seul sur le banc, sous son petit soleil, dans la rue grise", g: GREY, ...GS, cam: (_w, u) => C("VILLE", [-5.2, 1.6, 0.6], [-5.6, 1.55, 1.1], [-8, 1.0, 4.9], null, 46, u),
     st: (w, _u, t) => { put(w, "lumi", "VILLE", -8, 0.4, 5.2, Math.PI).pose(t, { sit: true, expr: "sad", headPitch: 0.3 }); sun(w, "VILLE", -8, 5.0, 1, t, 3.6); walk(w, "k1", "VILLE", -14, 1.6, 0, 1.6, 0.4, t, { expr: "happy" }, 1.4); walk(w, "k2", "VILLE", -15, 2.4, 0, 2.4, 0.4, t, { expr: "happy", talk: true }, 1.4); } },
@@ -145,9 +145,9 @@ export const SHOTS: Shot[] = [
   // ——— Et la petite Lou, trois ans, la fille des voisins, avait disparu. Elle avait suivi son chat dans la forêt.
   { w: "Et la petite Lou", set: "VILLE", fr: "La petite Lou, en ciré jaune, et son chat roux sur le perron", g: STORM, ...GT, cam: (_w, u) => C("VILLE", [11.8, 0.95, -2.4], [11.6, 0.95, -2.7], [10.3, 0.65, -4.7], null, 44, u),
     st: (w, _u, t) => { put(w, "lou", "VILLE", 10.3, 0, -4.8, 0.4).pose(t, { expr: "smile", hold: 0.1 }); const c = MED(w).cat; c.visible = true; c.position.copy(at("VILLE", 11.0, 0, -4.4)); c.rotation.y = 1.2; MED(w).catTail.rotation.z = Math.sin(t * 2) * 0.4; } },
-  { w: "la fille des voisins", set: "VILLE", fr: "La porte ouverte, sa mère crie son prénom sous la pluie", g: STORM, ...GT, cam: (_w, u) => C("VILLE", [8.2, 1.6, -1.2], [8.5, 1.6, -1.6], [10.5, 1.5, -5.2], null, 46, u),
-    st: (w, _u, t) => { put(w, "maman", "VILLE", 10.5, 0, -5.0, 0.3).pose(t, { expr: "scared", talk: true, armR: -1.3, headYaw: 0.4 }); } },
-  { w: "Elle avait suivi son chat", set: "PL", fr: "Lisière : la petite silhouette jaune suit le chat vers la forêt noire", g: STORM, ...GT, cam: (_w, u) => C("PL", [1.6, 1.1, 39.8], [1.4, 1.1, 39.2], [0, 0.7, 30], null, 46, u),
+  { w: "la fille des voisins", set: "VILLE", fr: "La porte ouverte, sa mère crie son prénom sous la pluie", g: STORM, ...GT, cam: (_w, u) => C("VILLE", [8.0, 1.7, -0.6], [8.3, 1.7, -1.0], [10.5, 1.4, -5.0], null, 46, u),
+    st: (w, _u, t) => { put(w, "maman", "VILLE", 10.5, 0, -5.0, -0.45).pose(t, { expr: "scared", talk: true, armR: -1.3 }); } },
+  { w: "Elle avait suivi son chat", set: "PL", fr: "Lisière : la petite silhouette jaune suit le chat vers la forêt noire", g: STORM, ...GT, cam: (_w, u) => C("PL", [0.8, 1.3, 40.5], [0.7, 1.3, 39.8], [0.2, 0.6, 33], null, 46, u),
     st: (w, u, t) => { walk(w, "lou", "PL", 0.5, 37.5, 0.2, 34.6, u, t, { expr: "smile" }, 1.0); const c = MED(w).cat; c.visible = true; c.position.copy(at("PL", 0.2, 0, 33.6 - u * 2.2)); c.rotation.y = Math.PI; MED(w).catTail.rotation.z = Math.sin(t * 2) * 0.4; } },
   // ——— Toute la ville est sortie la chercher. Mais il faisait noir. Il pleuvait si fort qu'on ne voyait pas à deux mètres.
   { w: "Toute la ville est sortie", set: "VILLE", fr: "Sous l'orage, les habitants sortent avec des lanternes", g: STORM, ...GT, cam: (_w, u) => C("VILLE", [24, 2.2, 3.0], [25.5, 2.3, 2.6], [14, 1.4, -0.2], null, 48, u),
@@ -159,10 +159,10 @@ export const SHOTS: Shot[] = [
   // ——— Alors Madame Rose a sifflé. Cent pigeons sont partis dans la nuit.
   { w: "Alors Madame Rose", set: "PL", fr: "Madame Rose, deux doigts dans la bouche, siffle", g: STORM, ...GT, cam: (w, u) => CH("PL", w.actors.rose, [0.2, 1.75, 2.6], [0.25, 1.75, 2.8], 42, u, -0.2),
     st: (w, _u, t) => { const r = put(w, "rose", "PL", 0.6, 0, 5.0, Math.PI - 0.15); r.pose(t, { expr: "focus", armR: -2.5, headPitch: -0.1 }); lant(w, 0, put(w, "boulanger", "PL", -0.6, 0, 5.8, Math.PI).pose(t, { expr: "worried", ...LP })); MED(w).pigs.set(t, pigsGround(0.6, 4.2, "PL", 18, 1.0)); } },
-  { w: "Cent pigeons sont partis", set: "PL", fr: "Une nuée de pigeons s'envole dans l'orage", g: STORM, ...GT, cam: (_w, u) => C("PL", [2.6, 0.9, 7.6], [2.8, 1.1, 8.0], [0, 3.2, 1], null, 52, u),
-    st: (w, u, t) => { put(w, "rose", "PL", 0.6, 0, 5.0, Math.PI - 0.15).pose(t, { expr: "smile", armsUp: 0.5 }); lant(w, 0, put(w, "boulanger", "PL", -0.6, 0, 5.8, Math.PI).pose(t, { expr: "worried", ...LP })); MED(w).pigs.set(t, flock(0.6, 0.4 + u * 4, 4.2 - u * 4, "PL", 100, t, 1.2 + u * 5, V(0, 2, -8), u)); } },
+  { w: "Cent pigeons sont partis", set: "PL", fr: "Une nuée de pigeons s'envole dans l'orage", g: STORM, ...GT, cam: (_w, u) => C("PL", [3.6, 1.4, 4.4], [3.8, 1.6, 4.6], [0.6, 2.5, 3.0], null, 52, u),
+    st: (w, u, t) => { put(w, "rose", "PL", 0.6, 0, 5.0, Math.PI - 0.15).pose(t, { expr: "smile", armsUp: 0.5 }); lant(w, 0, put(w, "boulanger", "PL", -0.6, 0, 5.8, Math.PI).pose(t, { expr: "worried", ...LP })); MED(w).pigs.set(t, flock(0.6, 0.4 + u * 4, 4.2 - u * 4, "PL", 100, t, 1.2 + u * 5, V(0, 3, -4), u)); } },
   // ——— Et pour la première fois de leur vie, ils ont dit un truc intéressant : « Le vieux chêne. Derrière la rivière. »
-  { w: "Et pour la première fois", set: "PL", fr: "Les pigeons reviennent et se posent autour de Rose", g: STORM, ...GT, cam: (_w, u) => C("PL", [2.2, 1.5, 2.3], [2.0, 1.45, 2.5], [0.6, 0.9, 4.6], null, 46, u),
+  { w: "Et pour la première fois", set: "PL", fr: "Les pigeons reviennent et se posent autour de Rose", g: STORM, ...GT, cam: (_w, u) => C("PL", [2.6, 1.6, 1.8], [2.4, 1.55, 2.0], [0.6, 0.9, 4.6], null, 46, u),
     st: (w, u, t) => { put(w, "rose", "PL", 0.6, 0, 5.0, Math.PI - 0.15).pose(t, { expr: "happy", armR: -1.0 }); lant(w, 0, put(w, "boulanger", "PL", -0.6, 0, 5.8, Math.PI).pose(t, { expr: "neutral", ...LP }));
       const g = pigsGround(0.6, 4.0, "PL", 18, 1.1); const k = sm(u * 1.6); MED(w).pigs.set(t, g.map((p, i) => ({ p: p.p.clone().add(V(0, (1 - k) * (2 + (i % 4)), 0)), yaw: p.yaw, fly: k < 0.98 ? 1 : 0 }))); } },
   { w: "Le vieux chêne", set: "PL", fr: "Un pigeon, la tête levée : « Le vieux chêne. »", g: STORM, ...GT, cam: (_w, u) => C("PL", [2.0, 0.85, 2.3], [1.9, 0.85, 2.5], [0.6, 0.4, 4.0], null, 42, u),
@@ -176,16 +176,16 @@ export const SHOTS: Shot[] = [
   { w: "Ses oreilles éclairaient", set: "PL", fr: "De face : les oreilles du maire éclairent le sentier comme deux lanternes", g: STORM, ...GT, cam: (w, u) => CH("PL", w.actors.maire, [1.8, 1.7, -9.4], [1.7, 1.7, -9.1], 44, u, -0.2),
     st: (w, u, t) => { walk(w, "maire", "PL", 0, -5.4, 0, -7.6, u, t, { expr: "focus" }, 1.0); ears(w, 1.1); walk(w, "rose", "PL", 0.6, -3.6, 0.6, -5.8, u, t, { expr: "worried" }, 1.0); } },
   // ——— Arrivés au chêne : personne. Juste des buissons, partout.
-  { w: "Arrivés au chêne", set: "PL", fr: "Le groupe arrive au pied du chêne : personne", g: STORM, ...GT, cam: (_w, u) => C("PL", [-2.6, 3.0, -4.6], [-2.2, 3.2, -5.2], [0.4, 1.5, -14], null, 50, u),
+  { w: "Arrivés au chêne", set: "PL", fr: "Le groupe arrive au pied du chêne : personne", g: STORM, ...GT, cam: (_w, u) => C("PL", [-4, 4.5, -3], [-3.6, 4.6, -3.6], [0.4, 1.2, -14], null, 50, u),
     st: (w, _u, t) => { put(w, "maire", "PL", -0.4, 0, -10.0, Math.PI - 0.2).pose(t, { expr: "worried", headYaw: 0.4 }); ears(w, 1); let i = 0;
       for (const [k, x, z] of [["rose", 0.6, -9.4], ["boulanger", -1.5, -9.0], ["lumi", 0.2, -8.4], ["t1", 1.4, -8.6], ["maman", -0.8, -8.2]] as [string, number, number][]) { const a = put(w, k, "PL", x, 0, z, Math.PI + x * 0.1); a.pose(t, { expr: "worried", ...LP }); if (k !== "rose") lant(w, i++, a); } } },
-  { w: "Juste des buissons", set: "PL", fr: "Panoramique sur les buissons trempés autour du chêne", g: STORM, ...GT, cam: (_w, u) => C("PL", [-3.0, 1.3, -10.2], [3.0, 1.3, -10.2], [-3.0, 0.6, -13.6], [3.0, 0.6, -13.6], 46, u),
-    st: (w, _u, t) => { const b = put(w, "boulanger", "PL", 0.4, 0, -8.4, Math.PI); b.pose(t, { expr: "worried", ...LP }); lant(w, 0, b); ears(w, 1); put(w, "maire", "PL", -1.4, 0, -8.6, Math.PI + 0.3).pose(t, { expr: "worried" }); } },
+  { w: "Juste des buissons", set: "PL", fr: "Panoramique sur les buissons trempés autour du chêne", g: STORM, ...GT, cam: (_w, u) => C("PL", [-3.0, 1.4, -9.4], [3.0, 1.4, -9.4], [-3.0, 0.6, -13.6], [3.0, 0.6, -13.6], 46, u),
+    st: (w, _u, t) => { const b = put(w, "boulanger", "PL", 0.4, 0, -7.6, Math.PI); b.pose(t, { expr: "worried", ...LP }); lant(w, 0, b); ears(w, 1); put(w, "maire", "PL", -1.4, 0, -7.8, Math.PI + 0.3).pose(t, { expr: "worried" }); } },
   // ——— Alors le boulanger a fixé les buissons, très fort. Et on a entendu : « Atchoum ! »
-  { w: "Alors le boulanger a fixé", set: "PL", fr: "Le boulanger plisse les yeux et fixe les buissons", g: STORM, ...GT, cam: (w, u) => CH("PL", w.actors.boulanger, [1.7, 2.0, -12.9], [1.6, 1.98, -12.7], 40, u, -0.15),
+  { w: "Alors le boulanger a fixé", set: "PL", fr: "Le boulanger plisse les yeux et fixe les buissons", g: STORM, ...GT, cam: (w, u) => CH("PL", w.actors.boulanger, [1.7, 2.3, -12.9], [1.6, 2.28, -12.7], 40, u, -0.25),
     st: (w, _u, t) => { const b = put(w, "boulanger", "PL", 0.9, 0, -10.2, yawTo(0.9, -10.2, 2.4, -12.6)); b.pose(t, { expr: "angry", lean: 0.15, ...LP }); lant(w, 0, b); ears(w, 0.8); put(w, "maire", "PL", -0.2, 0, -9.8, yawTo(-0.2, -9.8, 2.4, -12.6)).pose(t, { expr: "worried" }); } },
   { w: "Et on a entendu", set: "PL", fr: "Un buisson tremble : « ATCHOUM ! »", g: STORM, ...GT, cam: (_w, u) => C("PL", [3.3, 1.1, -10.0], [3.15, 1.05, -10.4], [2.4, 0.6, -12.6], null, 44, u),
-    st: (w, u, t) => { const s = cl((u - 0.45) * 4); const b = MED(w).bushLou; b.rotation.z = Math.sin(t * 40) * 0.06 * Math.sin(s * Math.PI); b.scale.setScalar(1 + 0.05 * Math.sin(s * Math.PI)); lab(w, "atch2", at("PL", 2.4, 1.0, -12.6), cl((u - 0.4) * 2), 0.5, 0.2); ears(w, 0.8); } },
+    st: (w, u, t) => { const s = cl((u - 0.45) * 4); const b = MED(w).bushLou; b.rotation.z = Math.sin(t * 40) * 0.06 * Math.sin(s * Math.PI); b.scale.setScalar(1 + 0.05 * Math.sin(s * Math.PI)); lab(w, "atch2", at("PL", 2.4, 1.0, -12.6), cl((u - 0.4) * 2), 0.5, 0.2); ears(w, 0.8); const bk = put(w, "boulanger", "PL", 1.3, 0, -10.9, yawTo(1.3, -10.9, 2.4, -12.6)); bk.pose(t, { expr: "focus", ...LP }); lant(w, 0, bk); } },
   // ——— Lou était là, roulée en boule, trempée, gelée, avec son chat.
   { w: "Lou était là", set: "PL", fr: "Lou recroquevillée dans le buisson, trempée, son chat contre elle", g: STORM, ...GT, cam: (_w, u) => C("PL", [3.4, 0.9, -10.8], [3.3, 0.88, -11.0], [2.4, 0.42, -12.6], null, 40, u),
     st: (w, _u, t) => { const l = put(w, "lou", "PL", 2.4, 0.04, -12.5, 0.4); l.root.position.x += Math.sin(t * 30) * 0.006; l.pose(t, { sit: true, expr: "sad", cover: 0.45, headPitch: 0.25 }); const c = MED(w).cat; c.visible = true; c.position.copy(at("PL", 2.05, 0, -12.3)); c.rotation.y = 0.9; MED(w).catTail.rotation.z = 0; ears(w, 0.6); } },
@@ -198,12 +198,12 @@ export const SHOTS: Shot[] = [
   // ——— Au milieu de la tempête, il faisait chaud. C'était sec. Lou a arrêté de trembler. Son chat s'est mis à ronronner.
   { w: "Au milieu de la tempête", set: "PL", fr: "Il pleut partout… sauf dans le carré de soleil", g: STORM, ...GT, cam: (_w, u) => C("PL", [6.4, 1.8, -9.4], [6.0, 1.8, -9.8], [2.6, 1.0, -12.2], null, 46, u),
     st: (w, _u, t) => { put(w, "lumi", "PL", 2.85, 0, -11.6, Math.PI + 0.3).pose(t, { expr: "smile", reach: 0.4 }); put(w, "lou", "PL", 2.4, 0.04, -12.5, 0.4).pose(t, { sit: true, expr: "smile", headPitch: -0.2 }); const c = MED(w).cat; c.visible = true; c.position.copy(at("PL", 2.05, 0, -12.3)); c.rotation.y = 0.9; sun(w, "PL", 2.65, -12.05, 1, t); } },
-  { w: "Lou a arrêté de trembler", set: "PL", fr: "Lou, réchauffée, sourit dans la lumière dorée", g: STORM, ...GT, cam: (w, u) => CH("PL", w.actors.lou, [3.5, 0.9, -10.9], [3.4, 0.88, -11.1], 40, u, -0.1),
+  { w: "Lou a arrêté de trembler", set: "PL", fr: "Lou, réchauffée, sourit dans la lumière dorée", g: STORM, ...GT, cam: (w, u) => CH("PL", w.actors.lou, [1.5, 0.85, -11.3], [1.55, 0.84, -11.4], 40, u, -0.1),
     st: (w, _u, t) => { put(w, "lumi", "PL", 2.85, 0, -11.6, Math.PI + 0.3).pose(t, { expr: "smile" }); put(w, "lou", "PL", 2.4, 0.04, -12.5, 0.5).pose(t, { sit: true, expr: "happy", headPitch: -0.15 }); const c = MED(w).cat; c.visible = true; c.position.copy(at("PL", 2.05, 0, -12.3)); c.rotation.y = 0.9; sun(w, "PL", 2.65, -12.05, 1, t); } },
   { w: "Son chat s'est mis", set: "PL", fr: "Le chat roux ferme les yeux et ronronne", g: STORM, ...GT, cam: (_w, u) => C("PL", [2.65, 0.6, -11.3], [2.6, 0.58, -11.45], [2.05, 0.3, -12.3], null, 40, u),
     st: (w, u, t) => { put(w, "lou", "PL", 2.4, 0.04, -12.5, 0.5).pose(t, { sit: true, expr: "happy" }); const c = MED(w).cat; c.visible = true; c.position.copy(at("PL", 2.05, 0, -12.3)); c.rotation.y = 0.9; MED(w).catTail.rotation.z = Math.sin(t * 1.5) * 0.5; sun(w, "PL", 2.65, -12.05, 1, t); lab(w, "ronron", at("PL", 2.05, 0.5, -12.3), cl((u - 0.2) * 2), 0.4, 0.1); } },
   // ——— On est rentrés comme ça, tous les deux sous mon soleil, derrière les oreilles du maire, jusqu'à la maison de Lou.
-  { w: "On est rentrés comme ça", set: "PL", fr: "Retour sur le pont : les deux enfants sous le soleil, le maire devant", g: STORM, ...GT, cam: (_w, u) => C("PL", [2.6, 1.6, 1.6], [2.4, 1.6, 2.2], [0, 1.0, -0.6], null, 46, u),
+  { w: "On est rentrés comme ça", set: "PL", fr: "Retour sur le pont : les deux enfants sous le soleil, le maire devant", g: STORM, ...GT, cam: (_w, u) => C("PL", [2.6, 2.0, 1.6], [2.4, 2.0, 2.2], [0, 1.0, -0.6], null, 46, u),
     st: (w, u, t) => { const z = -3.2 + 4 * u, y = Math.abs(z) < 3.4 ? 0.56 : 0; walk(w, "lumi", "PL", 0.3, -3.2, 0.3, 0.8, u, t, { expr: "smile", armL: -0.4 }, 0.9, y); walk(w, "lou", "PL", -0.25, -3.2, -0.25, 0.8, u, t, { expr: "happy", armR: -0.5 }, 1.2, y); sun(w, "PL", 0.02, z, 1, t, 3.4 + y);
       const mz = z + 2.6; walk(w, "maire", "PL", 0, -0.6, 0, 3.4, u, t, { expr: "smile" }, 1.0, Math.abs(mz) < 3.4 ? 0.56 : 0); ears(w, 1); } },
   { w: "jusqu'à la maison de Lou", set: "VILLE", fr: "Devant chez Lou, sa mère la serre dans ses bras, sous le petit soleil", g: STORM, ...GT, cam: (_w, u) => C("VILLE", [13.2, 1.6, -0.6], [13.0, 1.6, -0.9], [10.4, 1.0, -4.4], null, 46, u),
@@ -216,7 +216,7 @@ export const SHOTS: Shot[] = [
   { w: "Et quand il pleut", set: "VILLE", fr: "Il pleut : les habitants courent vers le carré de soleil", g: GREY, ...GS, rain: 0.8, cam: (_w, u) => C("VILLE", [9, 2.4, 3.4], [8.4, 2.6, 3.0], [0, 1.0, -0.4], null, 48, u),
     st: (w, u, t) => { put(w, "lumi", "VILLE", 0, 0, -0.4, 0.4).pose(t, { expr: "smile" }); sun(w, "VILLE", 0, -0.4, 1, t);
       for (const [k, x0, z0] of [["boulanger", -5, 2.6], ["rose", 5, 2.2], ["t1", -4, -2.8], ["t2", 6, -2.4], ["k1", -6, 0.8], ["maire", 4.6, 0.6]] as [string, number, number][]) { const dx = x0 * 0.12, dz = (z0 + 0.4) * 0.12; walk(w, k, "VILLE", x0, z0, dx, -0.4 + dz, sm(u * 1.4) * 0.9, t, { expr: "happy" }, 1.6); } ears(w, 0.5) } },
-  { w: "tout le monde marche très", set: "VILLE", fr: "Tout le village serré sous son mètre carré de soleil ; la caméra s'élève", g: GREY, ...GS, rain: 0.8, cam: (_w, u) => C("VILLE", [2.6, 1.7, 3.2], [2.0, 12, 3.4], [0, 1.1, -0.4], [0, 0, -0.4], 46, u, 50),
+  { w: "tout le monde marche très", set: "VILLE", fr: "Tout le village serré sous son mètre carré de soleil ; la caméra s'élève", g: GREY, ...GS, rain: 0.8, cam: (_w, u) => C("VILLE", [3.0, 1.6, 3.6], [6.5, 4.8, 4.4], [0, 1.0, -0.4], [0, 0.6, -0.4], 46, u, 50),
     st: (w, _u, t) => { put(w, "lumi", "VILLE", 0, 0, -0.4, 0.5).pose(t, { expr: "happy" }); sun(w, "VILLE", 0, -0.4, 1, t, 3.8); let i = 0;
       for (const k of ["boulanger", "rose", "t1", "t2", "k1", "maire", "soeur", "maman", "lou"]) { const a = i * 0.7 + 0.3, r = 0.55 + (i % 2) * 0.12; const ac = put(w, k, "VILLE", Math.cos(a) * r, 0, -0.4 + Math.sin(a) * r, Math.atan2(-Math.cos(a), -Math.sin(a)) + Math.PI); ac.pose(t, { expr: "happy", cheer: k === "lou" }); i++; } ears(w, 0.5); } },
 ];
@@ -238,13 +238,13 @@ export const applyShot = (w: World, i: number, u: number, t: number, cam: THREE.
   for (const x of Object.values(S.tags)) x.visible = false; for (const x of S.rain) x.visible = false; for (const x of Object.values(m.labels)) x.visible = false;
   for (const l of m.lanterns) l.visible = false; m.cat.visible = false; m.beam.set(V(0, -50, 0), 0, t, 3, 0); m.pigs.set(t, []); m.setSparks(t, null);
   m.bushLou.rotation.set(0, 0, 0); m.bushLou.scale.setScalar(1); for (const f of m.flames) f.visible = true; m.cakeL.intensity = 2.5; m.spoon.position.set(-0.55, 0.88, -0.5); m.spoon.rotation.set(0, 0, 0);
-  const fl = s.storm ? Math.max(flash(t), s.bolt ? Math.max(0, 1 - Math.abs(u - 0.3) * 8) : 0) : 0;
+  const fl = s.storm ? Math.max(flash(t), s.bolt && u > 0.15 && u < 0.75 ? 0.6 + 0.4 * Math.sin(t * 37) : 0) : 0;
   m.winM.emissiveIntensity = s.win ?? (s.set === "VILLE" || s.set === "PL" ? 0.25 : 0.6);
   for (const k of m.skies) { k.color.set(s.sky ?? "#ffffff"); if (fl > 0) k.color.lerp(new THREE.Color("#a8b8f0"), fl * 0.8); }
   for (const [l, base] of m.suns) { l.intensity = base * (s.sunK ?? 1) * (1 + fl * 6); l.color.copy(s.moon ? MOONC : s.cool ? COOLC : SUNC); }
   for (const [h, base] of m.hemis) h.intensity = base * (s.moon ? 0.6 : s.sunK !== undefined ? Math.max(0.5, s.sunK) : 1) * (1 + fl * 2);
   w.fill.intensity = 0; w.key.intensity = 0; ears(w, 0);
-  if (s.storm || s.moon) { w.fill.color.set("#9ab0e0"); w.fill.distance = 12; w.fill.intensity = 3; w.fill.position.copy(cam.position).add(V(0, 1.2, 0)); } else w.fill.color.set("#ffc890");
+  if (s.storm || s.moon) { w.fill.color.set("#9ab0e0"); w.fill.distance = 12; w.fill.intensity = 5; w.fill.position.copy(cam.position).add(V(0, 1.2, 0)); } else w.fill.color.set("#ffc890");
   s.st?.(w, u, t);
   // pluie autour de la caméra (zone sèche sous le soleil personnel)
   if (s.rain) { const f = new THREE.Vector3(); cam.getWorldDirection(f); f.y = 0; f.normalize(); const c = cam.position.clone().add(f.multiplyScalar(5)); c.y = O[s.set].y;
