@@ -21,9 +21,11 @@ const L = (a: THREE.Vector3, b: THREE.Vector3, u: number) => a.clone().lerp(b, u
 type Cam = { P: THREE.Vector3; T: THREE.Vector3; fov: number };
 const G = (P0: THREE.Vector3, P1: THREE.Vector3, T0: THREE.Vector3, T1: THREE.Vector3, fov: number, u: number, f1 = fov): Cam => { const e = gl(u); return { P: L(P0, P1, e), T: L(T0, T1, e), fov: fov + (f1 - fov) * e }; };
 const at = (k: SetK, x: number, y: number, z: number) => O[k].clone().add(V(x, y, z));
-const C = (k: SetK, p0: number[], p1: number[], t0: number[], t1: number[] | null, fov: number, u: number, f1 = fov) => G(at(k, p0[0], p0[1], p0[2]), at(k, p1[0], p1[1], p1[2]), at(k, t0[0], t0[1], t0[2]), at(k, ...((t1 ?? t0) as [number, number, number])), fov, u, f1);
+/** plans « C » proches (< 5 u de la cible) : recul automatique ×1,7 (retour utilisateur : trop de plans trop serrés) */
+const back = (P: THREE.Vector3, T: THREE.Vector3) => { const d = P.distanceTo(T); return d < 5 ? T.clone().add(P.clone().sub(T).multiplyScalar(Math.min(1.7, 6.5 / Math.max(d, 0.5)))) : P; };
+const C = (k: SetK, p0: number[], p1: number[], t0: number[], t1: number[] | null, fov: number, u: number, f1 = fov) => { const T0 = at(k, t0[0], t0[1], t0[2]), T1 = at(k, ...((t1 ?? t0) as [number, number, number])); return G(back(at(k, p0[0], p0[1], p0[2]), T0), back(at(k, p1[0], p1[1], p1[2]), T1), T0, T1, fov, u, f1); };
 const headOf = (a: Actor) => { a.root.updateMatrixWorld(true); return a.neck.localToWorld(V(0, 0.7, 0)); };
-const CHK = 1.85;   // recul des plans rapprochés (les visages remplissaient l'écran)
+const CHK = 2.7;   // recul des plans rapprochés (les visages remplissaient l'écran)
 const CH = (k: SetK, a: Actor, p0: number[], p1: number[], fov: number, u: number, dy = -0.1) => { const h = headOf(a).add(V(0, dy, 0)), far = (p: number[]) => h.clone().add(at(k, p[0], p[1], p[2]).sub(h).multiplyScalar(CHK)); return G(far(p0), far(p1), h, h, fov, u); };
 
 export type World = { sets: Sets; actors: Record<string, Actor>; scene?: THREE.Scene; fill: THREE.PointLight; key: THREE.SpotLight };
