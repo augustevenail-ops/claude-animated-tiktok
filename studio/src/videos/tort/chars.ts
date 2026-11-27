@@ -64,7 +64,7 @@ export const CAST: Record<string, Spec> = {
   // « Tu as tort » : Joël (d'après l'avatar fourni : chemise blanche, barbe de trois jours, sourcils froncés), sa mère,
   // Madame Contraire (championne), présentateur météo, facteur
   joel: { name: "joel", skin: "#ecc19c", top: "#f6f6f4", topDark: "#d4d4d2", sleeve: "#f6f6f4", pants: "#17171b", shoes: "#111114", style: "shirt", hair: "joel", hairCol: "#1e140e", stubble: "#3a2a1e", grumpy: true },
-  hutt: { name: "hutt", skin: "#ecc19c", top: "#f6f6f4", topDark: "#d4d4d2", sleeve: "#f6f6f4", pants: "#17171b", shoes: "#111114", style: "shirt", hair: "joel", hairCol: "#1e140e", stubble: "#3a2a1e", grumpy: true, belly: 0.75 },
+  hutt: { name: "hutt", skin: "#ecc19c", top: "#f6f6f4", topDark: "#d4d4d2", sleeve: "#f6f6f4", pants: "#17171b", shoes: "#111114", style: "shirt", hair: "joel", hairCol: "#1e140e", stubble: "#3a2a1e", grumpy: true },
   mere: { name: "mere", skin: "#f2c8a4", top: "#2ab4a0", topDark: "#1a8a7a", sleeve: "#2ab4a0", pants: "#3a3f5a", shoes: "#f4f4f4", style: "cardigan", inner: "#fff4e0", hair: "bun", hairCol: "#9a948c" },
   contraire: { name: "contraire", skin: "#f4d0b4", top: "#6a2a98", topDark: "#4a1a70", sleeve: "#6a2a98", pants: "#2a1a3a", shoes: "#c4283a", style: "cardigan", inner: "#f4ecdc", hair: "bun", hairCol: "#ecebe8", glasses: true, scarf: "#c4283a" },
   meteo: { name: "meteo", skin: "#f2cbaa", top: "#2a5cb8", topDark: "#1c4490", sleeve: "#2a5cb8", pants: "#1c2440", shoes: "#111111", style: "suit", hair: "slick", hairCol: "#c89a50" },
