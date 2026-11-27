@@ -70,8 +70,8 @@ export class Beam { root = new THREE.Group(); cloud = new THREE.Group(); col: TH
     this.cloud.position.set(Math.sin(t * 0.8) * 0.04, H + 0.15, 0); this.cloud.scale.setScalar(Math.max(0.001, cloudK)); this.cloud.rotation.y = t * 0.1;
     const kk = Math.max(0.001, k); this.col.position.y = H; this.col.scale.set(1, H * kk, 1); this.col.visible = k > 0.01; this.colM.opacity = 0.5 * Math.min(1, k * 1.5) * power;
     this.floor.position.y = 0.02; this.floor.visible = k > 0.5; this.floorM.opacity = Math.min(1, (k - 0.5) * 2) * 0.8 * power;
-    this.spot.position.set(0, H, 0); this.spot.target.position.set(0, 0, 0); this.spot.intensity = 70 * Math.min(1, k * 1.2) * power; this.spot.distance = H + 3;
-    this.pt.position.set(0, 1.0, 0); this.pt.intensity = 3.5 * k * power; } }
+    this.spot.position.set(0, H, 0); this.spot.target.position.set(0, 0, 0); this.spot.intensity = 38 * Math.min(1, k * 1.2) * power; this.spot.distance = H + 3;
+    this.pt.position.set(0, 1.0, 0); this.pt.intensity = 1.8 * k * power; } }
 
 /** pluie : traits instanciés autour d'un centre, avec une zone sèche (le carré de soleil) */
 export class Rain { im: THREE.InstancedMesh; private d = new THREE.Object3D(); n: number;
