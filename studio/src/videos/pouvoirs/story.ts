@@ -27,7 +27,7 @@ const CH = (k: SetK, a: Actor, p0: number[], p1: number[], fov: number, u: numbe
 
 export type World = { sets: Sets; actors: Record<string, Actor>; scene?: THREE.Scene; fill: THREE.PointLight; key: THREE.SpotLight; ears?: { m: THREE.MeshStandardMaterial; l: THREE.PointLight } };
 export type Grade = { sat: number; con: number; bri: number; bloom: number; bg: string; fog: string; fogD: number; env: number; snow: boolean };
-type Shot = { set: SetK; w: string; cam: (w: World, u: number, t: number) => Cam; st?: (w: World, u: number, t: number) => void; g?: Partial<Grade>; fr: string; dt?: number; sky?: string; sunK?: number; moon?: boolean; win?: number; storm?: boolean; rain?: number };
+type Shot = { set: SetK; w: string; cam: (w: World, u: number, t: number) => Cam; st?: (w: World, u: number, t: number) => void; g?: Partial<Grade>; fr: string; dt?: number; sky?: string; sunK?: number; moon?: boolean; win?: number; storm?: boolean; rain?: number; cool?: boolean };
 
 const KS = ["lumi", "soeur", "rose", "lou", "maire", "boulanger", "maman", "prof", "t1", "t2", "t3", "k1", "k2", "k3", "k4", "k6", "k7"];
 const SZ: Record<string, number> = { lumi: 0.9, lou: 0.62, soeur: 1.02, rose: 0.95, t3: 1.05 };
@@ -46,11 +46,11 @@ const DAY: Partial<Grade> = { bg: "#86b0d8", fog: "#e8d0b0", fogD: 0.004, sat: 0
 const GREY: Partial<Grade> = { bg: "#a8acb4", fog: "#9a9a98", fogD: 0.012, sat: 0.3, con: 0.18, bri: -0.08, bloom: 1.05, env: 0.3 };
 const IN: Partial<Grade> = { bg: "#000", fog: "#000", fogD: 0, sat: 0.5, con: 0.16, bri: -0.04, bloom: 0.95, env: 0.4 };
 const EVE: Partial<Grade> = { ...DAY, fog: "#c87a5a", fogD: 0.01, sat: 0.55, bri: -0.1, bloom: 1.15 };
-const NIGHT: Partial<Grade> = { bg: "#0c1220", fog: "#141c30", fogD: 0.012, sat: 0.5, con: 0.22, bri: -0.12, bloom: 1.4, env: 0.1 };
+const NIGHT: Partial<Grade> = { bg: "#0c1220", fog: "#141c30", fogD: 0.012, sat: 0.5, con: 0.2, bri: -0.07, bloom: 1.4, env: 0.15 };
 const STORM: Partial<Grade> = { ...NIGHT, fog: "#101828", fogD: 0.03, bri: -0.1, bloom: 1.45, env: 0.08 };
-const GS = { sky: "#b0b0b0", sunK: 0.3, win: 0.7 };
+const GS = { sky: "#9aa4b0", sunK: 0.35, win: 0.7, cool: true };
 const GN = { sky: "#1a2440", sunK: 0.35, moon: true, win: 2.2 };
-const GT = { sky: "#141c30", sunK: 0.3, moon: true, win: 2.2, storm: true, rain: 1 };
+const GT = { sky: "#141c30", sunK: 0.6, moon: true, win: 2.2, storm: true, rain: 1 };
 
 const put = (w: World, k: string, set: SetK, x: number, y: number, z: number, yaw: number, s = SZ[k] ?? 1) => { const a = w.actors[k]; a.root.visible = true; a.root.position.copy(at(set, x, y, z)); a.root.rotation.set(0, yaw, 0); a.root.scale.setScalar(s); return a; };
 const walk = (w: World, k: string, set: SetK, x0: number, z0: number, x1: number, z1: number, u: number, t: number, extra: Pose = {}, sp = 1.3, y = 0) => { const a = put(w, k, set, x0 + (x1 - x0) * u, y, z0 + (z1 - z0) * u, Math.atan2(x1 - x0, z1 - z0)); a.pose(t, { walk: sp, ...extra }); return a; };
@@ -104,8 +104,8 @@ export const SHOTS: Shot[] = [
   { w: "Enfin seulement les oreilles", set: "VILLE", fr: "Gros plan : ses deux oreilles brillent comme des ampoules", g: NIGHT, ...GN, cam: (w, u) => CH("VILLE", w.actors.maire, [18.6, 2.15, 3.4], [18.7, 2.12, 3.6], 40, u, -0.15),
     st: (w, _u, t) => { put(w, "maire", "VILLE", 19.25, 0, 4.9, Math.PI + 0.3).pose(t, { expr: "neutral", headYaw: -0.2 }); ears(w, 1); } },
   // ——— Et ma grande sœur peut faire voler une cuillère. Une seule. La petite.
-  { w: "Et ma grande sœur", set: "MAI", fr: "Cuisine : la grande sœur, concentrée, fait léviter une cuillère", g: IN, cam: (_w, u) => C("MAI", [1.6, 1.6, 1.8], [1.4, 1.55, 1.5], [-0.8, 1.15, -1.0], null, 52, u),
-    st: (w, u, t) => { put(w, "soeur", "MAI", -1.1, 0, -1.7, 0.45).pose(t, { expr: "focus", point: 0.2 }); MED(w).spoon.position.set(-0.55, 0.95 + 0.25 * sm(u * 2) + Math.sin(t * 3) * 0.03, -0.5); MED(w).spoon.rotation.set(0, t * 0.6, Math.sin(t * 2) * 0.2); } },
+  { w: "Et ma grande sœur", set: "MAI", fr: "Cuisine : la grande sœur, concentrée, fait léviter une cuillère", g: IN, cam: (_w, u) => C("MAI", [-0.1, 1.55, 1.3], [-0.25, 1.5, 1.05], [-0.9, 1.2, -1.2], null, 50, u),
+    st: (w, u, t) => { put(w, "soeur", "MAI", -1.1, 0, -1.7, 0.45).pose(t, { expr: "focus", point: 0.2 }); MED(w).spoon.position.set(-0.55, 1.0 + 0.35 * sm(u * 2) + Math.sin(t * 3) * 0.03, -0.5); MED(w).spoon.rotation.set(0, t * 0.6, Math.sin(t * 2) * 0.2); } },
   { w: "Une seule", set: "MAI", fr: "Gros plan : une toute petite cuillère qui flotte", g: IN, cam: (_w, u) => C("MAI", [-0.15, 1.3, 0.5], [-0.25, 1.28, 0.3], [-0.55, 1.2, -0.5], null, 38, u),
     st: (w, _u, t) => { put(w, "soeur", "MAI", -1.1, 0, -1.7, 0.45).pose(t, { expr: "smug", point: 0.2 }); MED(w).spoon.position.set(-0.55, 1.2 + Math.sin(t * 3) * 0.03, -0.5); MED(w).spoon.rotation.set(0, t * 0.6, Math.sin(t * 2) * 0.2); } },
   // ——— Moi, j'attendais mes dix ans depuis toujours.
@@ -114,28 +114,28 @@ export const SHOTS: Shot[] = [
   // ——— Le matin de mon anniversaire, j'ai soufflé les bougies…
   { w: "Le matin de mon anniversaire", set: "MAI", fr: "Le gâteau aux dix bougies, la famille autour du héros", g: IN, cam: (_w, u) => C("MAI", [0.1, 1.75, 2.4], [0.05, 1.65, 2.0], [0, 1.1, -1.0], null, 50, u),
     st: (w, _u, t) => { put(w, "lumi", "MAI", 0, 0, -1.6, 0).pose(t, { expr: "happy" }); put(w, "soeur", "MAI", -1.1, 0, -1.7, 0.35).pose(t, { expr: "happy", cheer: true }); put(w, "maman", "MAI", 1.25, 0, -1.8, -0.35).pose(t, { expr: "happy", wave: "R" }); } },
-  { w: "j'ai soufflé les bougies", set: "MAI", fr: "Il souffle : les flammes s'éteignent", g: IN, cam: (_w, u) => C("MAI", [0.45, 1.25, 0.6], [0.35, 1.22, 0.4], [0, 1.15, -1.2], null, 44, u),
+  { w: "j'ai soufflé les bougies", set: "MAI", fr: "Il souffle : les flammes s'éteignent", g: IN, cam: (_w, u) => C("MAI", [0.6, 1.4, 1.3], [0.5, 1.38, 1.05], [0, 1.2, -1.3], null, 46, u),
     st: (w, u, t) => { put(w, "lumi", "MAI", 0, 0, -1.6, 0).pose(t, { expr: "focus", lean: 0.2 * sm(u * 3) }); put(w, "soeur", "MAI", -1.1, 0, -1.7, 0.35).pose(t, { expr: "happy" }); const on = u < 0.45; for (const f of MED(w).flames) f.visible = on; MED(w).cakeL.intensity = on ? 2.5 : 0; } },
   // ——— et au-dessus de ma tête, un petit nuage s'est ouvert, et un rayon de soleil est tombé.
-  { w: "et au-dessus de ma tête", set: "MAI", fr: "Contre-plongée : un petit nuage se forme sous le plafond, au-dessus de lui", g: IN, cam: (_w, u) => C("MAI", [0.7, 0.95, 1.1], [0.6, 0.95, 0.9], [0, 2.0, -1.6], null, 52, u),
+  { w: "et au-dessus de ma tête", set: "MAI", fr: "Contre-plongée : un petit nuage se forme sous le plafond, au-dessus de lui", g: IN, cam: (_w, u) => C("MAI", [0.9, 1.1, 1.7], [0.8, 1.1, 1.5], [0, 1.6, -1.6], null, 52, u),
     st: (w, u, t) => { for (const f of MED(w).flames) f.visible = false; MED(w).cakeL.intensity = 0; put(w, "lumi", "MAI", 0, 0, -1.6, 0).pose(t, { expr: "worried", headPitch: -0.45 }); put(w, "soeur", "MAI", -1.1, 0, -1.7, 0.35).pose(t, { expr: "scared", headPitch: -0.3 }); sun(w, "MAI", 0, -1.6, 0, t, 2.5, sm(u * 1.6)); } },
   { w: "et un rayon de soleil", set: "MAI", fr: "Un rayon de soleil tombe du nuage sur lui", g: IN, cam: (_w, u) => C("MAI", [1.6, 1.6, 1.9], [1.4, 1.6, 1.6], [0, 1.4, -1.6], null, 52, u),
     st: (w, u, t) => { for (const f of MED(w).flames) f.visible = false; MED(w).cakeL.intensity = 0; put(w, "lumi", "MAI", 0, 0, -1.6, 0).pose(t, { expr: u > 0.5 ? "happy" : "worried", headPitch: -0.4 }); put(w, "soeur", "MAI", -1.1, 0, -1.7, 0.35).pose(t, { expr: "happy" }); put(w, "maman", "MAI", 1.25, 0, -1.8, -0.35).pose(t, { expr: "smile", cover: 0.3 }); sun(w, "MAI", 0, -1.6, sm(u * 2), t, 2.5); } },
   // ——— Un mètre carré de soleil. Rien que pour moi.
   { w: "Un mètre carré de soleil", set: "VILLE", fr: "Dehors, sous un ciel gris : lui seul est au soleil", g: GREY, ...GS, cam: (_w, u) => C("VILLE", [4.6, 1.7, 3.2], [4.2, 1.7, 2.8], [2, 1.3, -0.4], null, 46, u),
     st: (w, _u, t) => { put(w, "lumi", "VILLE", 2, 0, -0.4, 0.4).pose(t, { expr: "happy", armsUp: 0.3 }); sun(w, "VILLE", 2, -0.4, 1, t); walk(w, "t2", "VILLE", -4, 1.8, 8, 1.8, 0.3, t, { expr: "neutral" }, 1.1); } },
-  { w: "Rien que pour moi", set: "VILLE", fr: "Il lève la tête vers son petit nuage, ébloui", g: GREY, ...GS, cam: (w, u) => CH("VILLE", H(w), [3.0, 1.15, 0.6], [2.9, 1.15, 0.45], 44, u, -0.05),
+  { w: "Rien que pour moi", set: "VILLE", fr: "Il lève la tête vers son petit nuage, ébloui", g: GREY, ...GS, cam: (w, u) => CH("VILLE", H(w), [3.6, 1.25, 1.3], [3.5, 1.25, 1.1], 44, u, -0.15),
     st: (w, _u, t) => { put(w, "lumi", "VILLE", 2, 0, -0.4, 0.5).pose(t, { expr: "happy", headPitch: -0.35 }); sun(w, "VILLE", 2, -0.4, 1, t); } },
   // ——— Il me suit partout. Quand je marche, il marche. Quand je cours, il court.
-  { w: "Il me suit partout", set: "VILLE", fr: "Il marche dans la rue : le carré de soleil le suit", g: GREY, ...GS, cam: (_w, u) => C("VILLE", [-7, 1.7, 3.4], [1, 1.7, 3.4], [-5, 1.0, -0.4], [3, 1.0, -0.4], 48, u),
+  { w: "Il me suit partout", set: "VILLE", fr: "Il marche dans la rue : le carré de soleil le suit", g: GREY, ...GS, cam: (_w, u) => C("VILLE", [-5, 1.6, 4.6], [3, 1.6, 4.6], [-6, 1.0, -0.4], [2, 1.0, -0.4], 48, u),
     st: (w, u, t) => { const x = -6 + 8 * u; walk(w, "lumi", "VILLE", -6, -0.4, 2, -0.4, u, t, { expr: "smile" }, 1.2); sun(w, "VILLE", x, -0.4, 1, t); } },
-  { w: "Quand je cours", set: "VILLE", fr: "Il court : le soleil court avec lui", g: GREY, ...GS, cam: (_w, u) => C("VILLE", [3, 1.4, 3.0], [11, 1.6, 3.0], [4, 0.9, -0.4], [14, 0.9, -0.4], 50, u),
+  { w: "Quand je cours", set: "VILLE", fr: "Il court : le soleil court avec lui", g: GREY, ...GS, cam: (_w, u) => C("VILLE", [3, 1.4, 4.6], [15, 1.6, 4.6], [2, 0.9, -0.4], [14, 0.9, -0.4], 50, u),
     st: (w, u, t) => { const x = 2 + 12 * u; walk(w, "lumi", "VILLE", 2, -0.4, 14, -0.4, u, t, { expr: "happy" }, 2.6); sun(w, "VILLE", x - 0.15, -0.4, 1, t); } },
   // ——— À l'école, tout le monde a ri. On m'a appelé « Lampadaire ».
-  { w: "À l'école", set: "CL2", fr: "En classe, toute la classe éclate de rire devant le héros sous son rayon", g: IN, cam: (_w, u) => C("CL2", [3.4, 2.3, -2.0], [3.2, 2.25, -1.7], [-1.0, 1.0, 0.4], null, 56, u),
-    st: (w, _u, t) => { seated(w, t, "happy", true); put(w, "lumi", "CL2", 0.9, 0, -2.6, -0.3).pose(t, { expr: "sad" }); sun(w, "CL2", 0.9, -2.6, 1, t, 2.6); put(w, "prof", "CL2", 2.6, 0, -3.0, -0.6).pose(t, { expr: "smile", cover: 0.4 }); } },
-  { w: "On m'a appelé", set: "CL2", fr: "« LAMPADAIRE » au-dessus de sa tête", g: IN, cam: (w, u) => CH("CL2", H(w), [0.2, 1.55, 0.2], [0.25, 1.5, -0.05], 46, u, 0.1),
-    st: (w, u, t) => { seated(w, t, "happy", true); const h = put(w, "lumi", "CL2", 0.9, 0, -2.6, -0.3); h.pose(t, { expr: "sad", headPitch: 0.2 }); sun(w, "CL2", 0.9, -2.6, 1, t, 2.6); lab(w, "lampa", h, cl(u * 1.6), 0.75, 0.55); } },
+  { w: "À l'école", set: "CL2", fr: "En classe, toute la classe éclate de rire devant le héros sous son rayon", g: IN, cam: (_w, u) => C("CL2", [1.9, 1.6, -3.3], [1.8, 1.6, -3.1], [-1.2, 0.95, 0.8], null, 56, u),
+    st: (w, _u, t) => { seated(w, t, "happy", true); put(w, "lumi", "CL2", 1.4, 0, -2.2, 0.6).pose(t, { expr: "sad" }); sun(w, "CL2", 1.4, -2.2, 1, t, 2.6); put(w, "prof", "CL2", -2.4, 0, -3.0, 0.6).pose(t, { expr: "smile", cover: 0.4 }); } },
+  { w: "On m'a appelé", set: "CL2", fr: "« LAMPADAIRE » au-dessus de sa tête", g: IN, cam: (w, u) => CH("CL2", H(w), [0.9, 1.5, 0.6], [0.95, 1.48, 0.35], 46, u, 0.1),
+    st: (w, u, t) => { seated(w, t, "happy", true); const h = put(w, "lumi", "CL2", 1.4, 0, -2.2, -0.2); h.pose(t, { expr: "sad", headPitch: 0.2 }); sun(w, "CL2", 1.4, -2.2, 1, t, 2.6); lab(w, "lampa", h, cl(u * 1.6), 0.55, 0.55); } },
   // ——— Le pire pouvoir de toute l'histoire de la ville.
   { w: "Le pire pouvoir", set: "VILLE", fr: "Seul sur le banc, sous son petit soleil, dans la rue grise", g: GREY, ...GS, cam: (_w, u) => C("VILLE", [-5.2, 1.6, 0.6], [-5.6, 1.55, 1.1], [-8, 1.0, 4.9], null, 46, u),
     st: (w, _u, t) => { put(w, "lumi", "VILLE", -8, 0.4, 5.2, Math.PI).pose(t, { sit: true, expr: "sad", headPitch: 0.3 }); sun(w, "VILLE", -8, 5.0, 1, t, 3.6); walk(w, "k1", "VILLE", -14, 1.6, 0, 1.6, 0.4, t, { expr: "happy" }, 1.4); walk(w, "k2", "VILLE", -15, 2.4, 0, 2.4, 0.4, t, { expr: "happy", talk: true }, 1.4); } },
@@ -152,12 +152,12 @@ export const SHOTS: Shot[] = [
   // ——— Toute la ville est sortie la chercher. Mais il faisait noir. Il pleuvait si fort qu'on ne voyait pas à deux mètres.
   { w: "Toute la ville est sortie", set: "VILLE", fr: "Sous l'orage, les habitants sortent avec des lanternes", g: STORM, ...GT, cam: (_w, u) => C("VILLE", [24, 2.2, 3.0], [25.5, 2.3, 2.6], [14, 1.4, -0.2], null, 48, u),
     st: (w, u, t) => { searchers(w, "VILLE", 12, -0.6, 22, -0.6, u * 0.6, t); for (let i = 0; i < 6; i++) { const a = SEARCH[i]; const ac = w.actors[a[0]]; ac.root.rotation.y = Math.PI / 2; } } },
-  { w: "Mais il faisait noir", set: "PL", fr: "Dans la forêt, les lanternes ne sont que de petits points", g: STORM, ...GT, cam: (_w, u) => C("PL", [-5.5, 2.6, 4.6], [-4.8, 2.6, 5.4], [0, 1.2, 13], null, 48, u),
+  { w: "Mais il faisait noir", set: "PL", fr: "Dans la forêt, les lanternes ne sont que de petits points", g: STORM, ...GT, cam: (_w, u) => C("PL", [0.8, 2.4, 4.0], [0.6, 2.4, 4.8], [0, 1.2, 13], null, 48, u),
     st: (w, u, t) => { searchers(w, "PL", 0, 17, 0, 11, u, t); } },
   { w: "Il pleuvait si fort", set: "PL", fr: "Gros plan sous la pluie battante : le héros et le boulanger, trempés", g: STORM, ...GT, rain: 1.6, cam: (_w, u) => C("PL", [1.4, 1.5, 7.6], [1.2, 1.5, 7.9], [-0.2, 1.3, 10.6], null, 44, u),
     st: (w, u, t) => { searchers(w, "PL", 0, 10.6, 0, 10.0, u, t, ["t2", "k1", "maman", "t3"]); } },
   // ——— Alors Madame Rose a sifflé. Cent pigeons sont partis dans la nuit.
-  { w: "Alors Madame Rose", set: "PL", fr: "Madame Rose, deux doigts dans la bouche, siffle", g: STORM, ...GT, cam: (w, u) => CH("PL", w.actors.rose, [0.35, 1.75, 3.4], [0.4, 1.75, 3.6], 42, u, -0.1),
+  { w: "Alors Madame Rose", set: "PL", fr: "Madame Rose, deux doigts dans la bouche, siffle", g: STORM, ...GT, cam: (w, u) => CH("PL", w.actors.rose, [0.2, 1.75, 2.6], [0.25, 1.75, 2.8], 42, u, -0.2),
     st: (w, _u, t) => { const r = put(w, "rose", "PL", 0.6, 0, 5.0, Math.PI - 0.15); r.pose(t, { expr: "focus", armR: -2.5, headPitch: -0.1 }); lant(w, 0, put(w, "boulanger", "PL", -0.6, 0, 5.8, Math.PI).pose(t, { expr: "worried", ...LP })); MED(w).pigs.set(t, pigsGround(0.6, 4.2, "PL", 18, 1.0)); } },
   { w: "Cent pigeons sont partis", set: "PL", fr: "Une nuée de pigeons s'envole dans l'orage", g: STORM, ...GT, cam: (_w, u) => C("PL", [2.6, 0.9, 7.6], [2.8, 1.1, 8.0], [0, 3.2, 1], null, 52, u),
     st: (w, u, t) => { put(w, "rose", "PL", 0.6, 0, 5.0, Math.PI - 0.15).pose(t, { expr: "smile", armsUp: 0.5 }); lant(w, 0, put(w, "boulanger", "PL", -0.6, 0, 5.8, Math.PI).pose(t, { expr: "worried", ...LP })); MED(w).pigs.set(t, flock(0.6, 0.4 + u * 4, 4.2 - u * 4, "PL", 100, t, 1.2 + u * 5, V(0, 2, -8), u)); } },
@@ -231,7 +231,7 @@ export const gradeOf = (i: number): Grade => ({ ...DEF, ...(SHOTS[i].g ?? {}) })
 /** éclairs : impulsions brèves et irrégulières */
 export const flash = (t: number) => { let f = 0; for (const [p, o] of [[4.3, 0.3], [6.7, 2.1], [9.1, 5.0]] as [number, number][]) { const x = ((t + o) % p); f = Math.max(f, Math.max(0, 1 - x * 9), x > 0.18 && x < 0.3 ? 0.6 : 0); } return f; };
 
-const SUNC = new THREE.Color("#ffe4c0"), MOONC = new THREE.Color("#7a90c8");
+const SUNC = new THREE.Color("#ffe4c0"), MOONC = new THREE.Color("#7a90c8"), COOLC = new THREE.Color("#c8d0dc");
 export const applyShot = (w: World, i: number, u: number, t: number, cam: THREE.Camera) => {
   const s = SHOTS[i], S = w.sets, m = S.med; S.show(s.set);
   for (const a of Object.values(w.actors)) { a.root.visible = false; a.root.position.y = 0; }
@@ -241,9 +241,10 @@ export const applyShot = (w: World, i: number, u: number, t: number, cam: THREE.
   const fl = s.storm ? flash(t) : 0;
   m.winM.emissiveIntensity = s.win ?? (s.set === "VILLE" || s.set === "PL" ? 0.25 : 0.6);
   for (const k of m.skies) { k.color.set(s.sky ?? "#ffffff"); if (fl > 0) k.color.lerp(new THREE.Color("#a8b8f0"), fl * 0.8); }
-  for (const [l, base] of m.suns) { l.intensity = base * (s.sunK ?? 1) * (1 + fl * 6); l.color.copy(s.moon ? MOONC : SUNC); }
-  for (const [h, base] of m.hemis) h.intensity = base * (s.moon ? 0.35 : s.sunK !== undefined ? Math.max(0.5, s.sunK) : 1) * (1 + fl * 2);
+  for (const [l, base] of m.suns) { l.intensity = base * (s.sunK ?? 1) * (1 + fl * 6); l.color.copy(s.moon ? MOONC : s.cool ? COOLC : SUNC); }
+  for (const [h, base] of m.hemis) h.intensity = base * (s.moon ? 0.6 : s.sunK !== undefined ? Math.max(0.5, s.sunK) : 1) * (1 + fl * 2);
   w.fill.intensity = 0; w.key.intensity = 0; ears(w, 0);
+  if (s.storm || s.moon) { w.fill.color.set("#9ab0e0"); w.fill.distance = 12; w.fill.intensity = 3; w.fill.position.copy(cam.position).add(V(0, 1.2, 0)); } else w.fill.color.set("#ffc890");
   s.st?.(w, u, t);
   // pluie autour de la caméra (zone sèche sous le soleil personnel)
   if (s.rain) { const f = new THREE.Vector3(); cam.getWorldDirection(f); f.y = 0; f.normalize(); const c = cam.position.clone().add(f.multiplyScalar(5)); c.y = O[s.set].y;

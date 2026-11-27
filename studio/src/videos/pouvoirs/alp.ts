@@ -75,7 +75,7 @@ export class Beam { root = new THREE.Group(); cloud = new THREE.Group(); col: TH
 
 /** pluie : traits instanciés autour d'un centre, avec une zone sèche (le carré de soleil) */
 export class Rain { im: THREE.InstancedMesh; private d = new THREE.Object3D(); n: number;
-  constructor(parent: THREE.Object3D, n = 3200) { this.n = n; this.im = new THREE.InstancedMesh(new THREE.BoxGeometry(0.012, 0.55, 0.012), new THREE.MeshBasicMaterial({ color: "#b8cce8", transparent: true, opacity: 0.55, depthWrite: false }), n);
+  constructor(parent: THREE.Object3D, n = 3200) { this.n = n; this.im = new THREE.InstancedMesh(new THREE.BoxGeometry(0.012, 0.55, 0.012), new THREE.MeshBasicMaterial({ color: "#b8cce8", transparent: true, opacity: 0.4, depthWrite: false }), n);
     this.im.frustumCulled = false; this.im.userData.noEdge = true; this.im.castShadow = false; this.im.count = 0; parent.add(this.im); }
   set(t: number, c: THREE.Vector3 | null, size = 14, dry?: { p: THREE.Vector3; r: number }, dens = 1) { if (!c) { this.im.count = 0; return; } const d = this.d, H = 9; let k = 0;
     for (let i = 0; i < this.n * dens; i++) { const x = c.x + (hash(i, 1) - 0.5) * size * 2, z = c.z + (hash(i, 2) - 0.5) * size * 2, y = c.y - 2 + ((H - ((t * 13 + hash(i, 3) * H) % H)) );
@@ -140,7 +140,7 @@ export class Med {
       { const b = grp(p, -8, 0, 5.2, Math.PI); const wd = M("#7a4a2a", 0.8); bx(b, 2.0, 0.08, 0.5, wd, 0, 0.48, 0); bx(b, 2.0, 0.45, 0.06, wd, 0, 0.78, -0.24); for (const x of [-0.85, 0.85]) bx(b, 0.08, 0.48, 0.45, M("#2a2a30", 0.5), x, 0.24, 0); }
       { const f = grp(p, -1, 0, 4.8); bx(f, 2.2, 0.7, 1.0, M("#6a4428", 0.85, rep(plankTex("#6a4428"), 1, 0.4)), 0, 0.35, 0, 0, 0.04); plane(f, 2.0, 0.85, new THREE.MeshPhysicalMaterial({ color: "#5a9ac8", roughness: 0.05, clearcoat: 1 }), 0, 0.68, 0, -Math.PI / 2); cyl(f, 0.08, 0.1, 1.4, M("#5a3a24", 0.8), 0.9, 1.0, 0, 8); }
       // arbres : mélèzes dorés et érables le long de la rue, sapins derrière les chalets
-      for (let x = -52; x <= 26; x += 11) { autumnTree(p, x + 2, 4.9, 0.95, x + 100); autumnTree(p, x + 7.5, -4.9, 0.9, x + 200); }
+      for (let x = -52; x <= 26; x += 11) { autumnTree(p, x + 2, 4.9, 0.95, x + 100); if (Math.abs(x + 7.5 - 10.5) > 2 && Math.abs(x + 7.5 + 4.75) > 2) autumnTree(p, x + 7.5, -4.9, 0.9, x + 200); }
       for (let i = 0; i < 70; i++) { const x = -70 + hash(i, 1) * 110, zs = hash(i, 2) > 0.5 ? 1 : -1, z = zs * (15 + hash(i, 3) * 30); fir(p, x, z, 1.6 + hash(i, 4) * 1.4, i); }
       // rivière + pont de bois, forêt au-delà
       plane(p, 7, 300, new THREE.MeshPhysicalMaterial({ color: "#3a6a98", roughness: 0.08, clearcoat: 1, emissive: "#0a1a2a", emissiveIntensity: 0.3 }), 38, 0.02, 0, -Math.PI / 2);
