@@ -56,3 +56,4 @@ productions/nom-ep01/audio/v*_music.wav
 productions/nom-ep01/render/chunks/
 productions/nom-ep01/render/*.log
 productions/nom-ep01/final/
+productions/*/voix/gen.log
