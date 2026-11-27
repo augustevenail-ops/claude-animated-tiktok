@@ -78,7 +78,7 @@ export const chicHouse = (p: THREE.Object3D, x: number, z: number, ry: number, w
   return g; };
 /** réverbère noir */
 const lampPost = (p: THREE.Object3D, x: number, z: number) => { const l = grp(p, x, 0, z), iron = M("#16181c", 0.4, undefined, { metalness: 0.6 }); cyl(l, 0.12, 0.16, 0.5, iron, 0, 0.25, 0, 10); cyl(l, 0.05, 0.07, 3.6, iron, 0, 2.0, 0, 8);
-  add(l, new THREE.CylinderGeometry(0.22, 0.12, 0.5, 6), M("#fff4d0", 0.4, undefined, { emissive: "#ffe0a0", emissiveIntensity: 0.6 }), 0, 4.0, 0); add(l, new THREE.ConeGeometry(0.3, 0.22, 6), iron, 0, 4.35, 0); return l; };
+  add(l, new THREE.CylinderGeometry(0.22, 0.12, 0.5, 6), M("#fff4d0", 0.4, undefined, { emissive: "#ffe0a0", emissiveIntensity: 0.25 }), 0, 4.0, 0); add(l, new THREE.ConeGeometry(0.3, 0.22, 6), iron, 0, 4.35, 0); return l; };
 /** platane dans sa grille */
 const plane2 = (p: THREE.Object3D, x: number, z: number, s: number, seed: number) => { const g = grp(p, x, 0, z); g.scale.setScalar(s); bx(g, 1.0, 0.04, 1.0, M("#2a2e36", 0.5), 0, 0.02, 0); cyl(g, 0.14, 0.2, 3.2, M("#b8a888", 0.8), 0, 1.6, 0, 8);
   const lm = M("#5a8a3a", 0.85); for (let i = 0; i < 5; i++) add(g, new THREE.IcosahedronGeometry(0.9 + hash(seed, i) * 0.4, 1), lm, (hash(seed, i + 5) - 0.5) * 1.6, 3.8 + hash(seed, i + 9) * 0.9, (hash(seed, i + 13) - 0.5) * 1.6); return g; };
@@ -88,7 +88,7 @@ export const label = (text: string, col: string, w = 2.4) => { const t = ctex("l
   const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, transparent: true, depthTest: false, fog: false, toneMapped: false })); s.scale.set(w, w * 0.1875, 1); s.renderOrder = 20; s.visible = false; return s; };
 
 const skyDay = () => ctex("skyJT", 64, 512, (g) => { const gr = g.createLinearGradient(0, 0, 0, 512); gr.addColorStop(0, "#2f86e8"); gr.addColorStop(0.55, "#86c6f4"); gr.addColorStop(1, "#e8f6ff"); g.fillStyle = gr; g.fillRect(0, 0, 64, 512); });
-const skyDusk = () => ctex("skyJTd", 64, 512, (g) => { const gr = g.createLinearGradient(0, 0, 0, 512); gr.addColorStop(0, "#26346a"); gr.addColorStop(0.45, "#a8566a"); gr.addColorStop(0.72, "#f0864a"); gr.addColorStop(1, "#ffc870"); g.fillStyle = gr; g.fillRect(0, 0, 64, 512); });
+const skyDusk = () => ctex("skyJTd", 64, 512, (g) => { const gr = g.createLinearGradient(0, 0, 0, 512); gr.addColorStop(0, "#34487e"); gr.addColorStop(0.45, "#c87a6a"); gr.addColorStop(0.72, "#f29a5a"); gr.addColorStop(1, "#ffd494"); g.fillStyle = gr; g.fillRect(0, 0, 64, 512); });
 const seaTex = () => ctex("seaJT", 256, 256, (q) => { q.fillStyle = "#1f8ad0"; q.fillRect(0, 0, 256, 256); for (let i = 0; i < 260; i++) { q.strokeStyle = `rgba(255,255,255,${0.15 + hash(i, 1) * 0.3})`; q.lineWidth = 2; const x = hash(i, 2) * 256, y = hash(i, 3) * 256; q.beginPath(); q.moveTo(x, y); q.quadraticCurveTo(x + 6, y - 3, x + 14, y); q.stroke(); } }, true);
 const hstripe = () => ctex("phareS", 64, 512, (q) => { for (let i = 0; i < 6; i++) { q.fillStyle = i % 2 ? "#f6f2ec" : "#e2262e"; q.fillRect(0, i * 512 / 6, 64, 512 / 6); } });
 const BOARD = (lines: string[], key: string) => ctex("board_" + key, 1024, 400, (q) => { q.fillStyle = "#24463a"; q.fillRect(0, 0, 1024, 400); for (let i = 0; i < 900; i++) { q.fillStyle = `rgba(255,255,255,${hash(i, 9) * 0.04})`; q.fillRect(hash(i, 1) * 1024, hash(i, 2) * 400, 4, 4); }

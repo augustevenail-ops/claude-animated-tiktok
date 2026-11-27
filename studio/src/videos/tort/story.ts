@@ -44,7 +44,7 @@ export const buildCast = (root: THREE.Object3D) => {
 const DAY: Partial<Grade> = { bg: "#86b0d8", fog: "#dfe8f0", fogD: 0.0035, sat: 0.4, con: 0.14, bri: -0.02, bloom: 0.85, env: 0.45 };
 const IN: Partial<Grade> = { bg: "#000", fog: "#000", fogD: 0, sat: 0.38, con: 0.14, bri: -0.02, bloom: 0.9, env: 0.45 };
 const LATE: Partial<Grade> = { ...DAY, fog: "#f0b890", fogD: 0.006, sat: 0.5, bri: -0.05, bloom: 1.05 };
-const DUSK: Partial<Grade> = { bg: "#2a1a3a", fog: "#c8705a", fogD: 0.007, sat: 0.55, con: 0.2, bri: -0.07, bloom: 1.35, env: 0.22 };
+const DUSK: Partial<Grade> = { bg: "#2a1a3a", fog: "#d88a5a", fogD: 0.006, sat: 0.38, con: 0.18, bri: -0.06, bloom: 1.0, env: 0.25 };
 
 const put = (w: World, k: string, set: SetK, x: number, y: number, z: number, yaw: number, s = SZ[k] ?? 1) => { const a = w.actors[k]; a.root.visible = true; a.root.position.copy(at(set, x, y, z)); a.root.rotation.set(0, yaw, 0); a.root.scale.setScalar(s); return a; };
 const walk = (w: World, k: string, set: SetK, x0: number, z0: number, x1: number, z1: number, u: number, t: number, extra: Pose = {}, sp = 1.3, y = 0) => { const a = put(w, k, set, x0 + (x1 - x0) * u, y, z0 + (z1 - z0) * u, Math.atan2(x1 - x0, z1 - z0)); a.pose(t, { walk: sp, ...extra }); return a; };
@@ -68,7 +68,7 @@ const duel = (w: World, t: number, pj: Pose = {}, pc: Pose = {}) => { put(w, "jo
 const SEATS: [string, number, number][] = [["k1", -2.6, -0.6], ["k3", -2.6, 0.75], ["k4", 0.4, -0.6], ["k2", 0.4, 0.75], ["k7", -2.6, 2.1], ["k6", 0.4, 2.1]];
 const seated = (w: World, t: number, e: Expr = "smile", laugh = false, look?: [number, number]) => { for (const [k, x, z] of SEATS) { const a = put(w, k, "CL2", x, 0.4, z + 0.5, Math.PI);
   a.pose(t, { sit: true, expr: e, talk: laugh && Math.sin(t * 3 + x * 2) > 0, headYaw: look ? yawTo(x, z + 0.5, look[0], look[1]) - Math.PI : Math.sin(t * 0.7 + x) * 0.15, point: laugh && z > 0 ? 0.1 : undefined }); } };
-const joelDesk = (w: World, t: number, p: Pose = {}) => put(w, "joel", "CL2", -1.1, 0.4, 1.25, Math.PI).pose(t, { sit: true, expr: "neutral", ...p });
+const joelDesk = (w: World, t: number, p: Pose = {}) => put(w, "joel", "CL2", -1.1, 0.12, 1.42, Math.PI).pose(t, { sit: true, expr: "neutral", ...p });
 // cuisine
 const kitchen = (w: World, t: number, pj: Pose = {}, pm: Pose = {}, momYaw = Math.PI) => { put(w, "joel", "MAI", -2.55, 0.4, -0.4, -Math.PI / 2).pose(t, { sit: true, expr: "neutral", ...pj }); put(w, "mere", "MAI", -4.3, 0, -2.0, momYaw).pose(t, { expr: "neutral", ...pm }); };
 // boulangerie
@@ -76,8 +76,8 @@ const bakery = (w: World, t: number, pb: Pose = {}, pc: Pose = {}) => { const b 
 // studio météo
 const studio = (w: World, t: number, pm: Pose = {}, pc: Pose = {}) => { put(w, "meteo", "VILLE", 1.6, 0, -2.3, -0.25).pose(t, { expr: "happy", ...pm }); put(w, "t3", "VILLE", 2.1, 0, 4.0, Math.PI + 0.3).pose(t, { expr: "neutral", ...pc }); };
 // salon final : Joël the Hutt allongé sur le canapé, la tête sur l'accoudoir droit, le ventre vers le plafond
-const lying = (w: World, t: number) => { const a = put(w, "hutt", "MAI", 2.95, 0.8, 1.32, 0); a.pose(t, { expr: "neutral", armR: -0.2, armL: -0.15, headPitch: -0.25 });
-  a.root.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(V(0, 0.64, 0.77), V(1, 0, 0), V(0, 0.77, -0.64))); a.lArm.rotation.z -= 0.25; a.rArm.rotation.set(-1.1, 0, 0.9); return a; };
+const lying = (w: World, t: number) => { const a = put(w, "hutt", "MAI", 2.95, 0.8, 1.32, 0); a.pose(t, { expr: "neutral", armR: 0.05, armL: 0.05, headPitch: -0.25 });
+  a.root.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(V(0, 0.89, 0.45), V(1, 0, 0), V(0, 0.45, -0.89))); a.lArm.rotation.z = -0.15; a.rArm.rotation.z = 0.15; return a; };
 
 export const SHOTS: Shot[] = [
   // ——— Dans cette ville, tout le monde joue à « Tu as tort ».
@@ -113,11 +113,11 @@ export const SHOTS: Shot[] = [
   // ——— Le boulanger te tend ta baguette : « Votre pain, monsieur. » — « Tu as tort. Tant que je n'ai pas payé, c'est encore le vôtre. »
   { w: "Le boulanger te tend", set: "VILLE", fr: "Boulangerie : le boulanger tend une baguette au client", g: IN, cam: (_w, u) => C("VILLE", [32.4, 1.8, 2.6], [32.0, 1.75, 2.2], [30, 1.3, -0.8], null, 46, u),
     st: (w, _u, t) => { bakery(w, t); } },
-  { w: "Votre pain, monsieur", set: "VILLE", fr: "Gros plan boulanger souriant", g: IN, cam: (w, u) => CH("VILLE", w.actors.boulanger, [29.6, 1.85, 0.6], [29.65, 1.85, 0.4], 38, u, -0.2),
+  { w: "Votre pain, monsieur", set: "VILLE", fr: "Gros plan boulanger souriant", g: IN, cam: (w, u) => CH("VILLE", w.actors.boulanger, [28.9, 1.85, -0.2], [28.95, 1.85, -0.3], 38, u, -0.2),
     st: (w, _u, t) => { bakery(w, t, { talk: true }); } },
-  { w: "Tu as tort. Tant que", set: "VILLE", fr: "Le client, malin, garde les mains dans le dos : « Tu as tort. »", g: IN, cam: (w, u) => CH("VILLE", w.actors.t1, [30.0, 1.75, -0.6], [29.9, 1.75, -0.4], 40, u, -0.2),
+  { w: "Tu as tort. Tant que", set: "VILLE", fr: "Le client, malin, garde les mains dans le dos : « Tu as tort. »", g: IN, cam: (w, u) => CH("VILLE", w.actors.t1, [31.2, 1.8, -0.3], [31.15, 1.8, -0.2], 40, u, -0.2),
     st: (w, _u, t) => { bakery(w, t, { expr: "worried" }, { expr: "smug", talk: true, point: 0.3 }); } },
-  { w: "c'est encore le vôtre", set: "VILLE", fr: "Le boulanger reste avec sa baguette tendue, vexé", g: IN, cam: (w, u) => CH("VILLE", w.actors.boulanger, [30.6, 1.7, 0.9], [30.5, 1.7, 0.6], 40, u, -0.25),
+  { w: "c'est encore le vôtre", set: "VILLE", fr: "Le boulanger reste avec sa baguette tendue, vexé", g: IN, cam: (w, u) => CH("VILLE", w.actors.boulanger, [29.0, 1.75, -0.1], [29.05, 1.75, -0.2], 40, u, -0.25),
     st: (w, _u, t) => { bakery(w, t, { expr: "angry" }, { expr: "smug" }); } },
   // ——— Et le présentateur météo n'a jamais réussi à finir une phrase. « Demain, il fera beau… » — « Tu as tort ! Quand demain arrivera, ce sera aujourd'hui. »
   { w: "Et le présentateur météo", set: "VILLE", fr: "Studio météo : derrière la caméra, le présentateur devant la carte", g: IN, cam: (_w, u) => C("VILLE", [3.4, 2.0, 5.6], [3.0, 1.9, 4.9], [0.4, 1.6, -2.6], null, 48, u),
@@ -126,7 +126,7 @@ export const SHOTS: Shot[] = [
     st: (w, _u, t) => { studio(w, t, { talk: true, armL: -2.0 }); } },
   { w: "Tu as tort ! Quand", set: "VILLE", fr: "Le cadreur surgit de derrière sa caméra, doigt pointé", g: IN, cam: (w, u) => CH("VILLE", w.actors.t3, [0.9, 1.9, 2.6], [1.0, 1.9, 2.8], 42, u, -0.2),
     st: (w, _u, t) => { studio(w, t, { expr: "worried" }, { expr: "angry", point: 0.4, talk: true, yaw: Math.PI + 0.1 }); } },
-  { w: "ce sera aujourd'hui", set: "VILLE", fr: "Le présentateur, dépité, phrase coupée", g: IN, cam: (w, u) => CH("VILLE", w.actors.meteo, [1.9, 1.85, 0.6], [1.85, 1.85, 0.3], 40, u, -0.2),
+  { w: "ce sera aujourd'hui", set: "VILLE", fr: "Le présentateur, dépité, phrase coupée", g: IN, cam: (w, u) => CH("VILLE", w.actors.meteo, [0.9, 1.9, -1.2], [0.95, 1.9, -1.3], 40, u, -0.2),
     st: (w, _u, t) => { studio(w, t, { expr: "sad", headPitch: 0.2 }); } },
   // ——— Moi, c'est Joël. Et je suis le pire joueur de toute l'histoire de la ville. Je n'ai jamais gagné. Pas une seule fois.
   { w: "Moi, c'est Joël", set: "RUE", fr: "Joël face caméra sur le trottoir, travelling avant", g: DAY, cam: (w, u) => CH("RUE", J(w), [4.0, 1.75, -0.6], [4.0, 1.7, -2.4], 40, u, -0.2),
@@ -136,10 +136,10 @@ export const SHOTS: Shot[] = [
   { w: "Je n'ai jamais gagné", set: "RUE", fr: "Joël seul en terrasse de café, la tête basse : « 0 victoire »", g: DAY, cam: (w, u) => CH("RUE", J(w), [7.4, 1.4, -3.2], [7.2, 1.38, -3.6], 40, u, -0.1),
     st: (w, u, t) => { const a = put(w, "joel", "RUE", 6.0, 0.4, -5.6, 0.6); a.pose(t, { sit: true, expr: "sad", headPitch: 0.35, armL: -1.2, armR: -1.2 }); lab(w, "zero", "0 VICTOIRE", "#ff5a5a", a, cl((u - 0.3) * 2), 0.8, 0.55); } },
   // ——— J'ai dit : « Je m'appelle Joël. » — « Tu as tort. Sur ton cahier, tu as oublié les deux points sur le e. »
-  { w: "J'ai dit : Je m'appelle Joël", set: "CL2", fr: "En classe, Joël (adulte au milieu des enfants) se présente", g: IN, cam: (w, u) => CH("CL2", J(w), [-0.9, 1.5, -1.4], [-1.0, 1.48, -1.0], 42, u, -0.15),
+  { w: "J'ai dit : Je m'appelle Joël", set: "CL2", fr: "En classe, Joël (adulte au milieu des enfants) se présente", g: IN, cam: (w, u) => CH("CL2", J(w), [-0.7, 1.7, 0.2], [-0.75, 1.7, 0.3], 42, u, -0.15),
     st: (w, _u, t) => { MED(w).boardM.map = MED(w).boards.nom; seated(w, t, "neutral", false, [-1.1, 1.25]); joelDesk(w, t, { expr: "smile", talk: true }); prop(w, "cahier", "CL2", -1.1, 0.785, 0.75, 0, Math.PI, 0); } },
-  { w: "Tu as tort. Sur ton cahier", set: "CL2", fr: "Plongée sur le cahier : « Joel », sans tréma, un doigt accusateur", g: IN, cam: (_w, u) => C("CL2", [-0.55, 1.55, 0.15], [-0.6, 1.45, 0.25], [-1.1, 0.8, 0.75], null, 40, u),
-    st: (w, u, t) => { seated(w, t, "smug", false, [-1.1, 0.75]); joelDesk(w, t, { expr: "worried" }); prop(w, "cahier", "CL2", -1.1, 0.785, 0.75, 0, Math.PI, 0); lab(w, "trema", "ë ?", "#ff4a4a", at("CL2", -1.0, 0.85, 0.72), cl((u - 0.3) * 2), 0.4, 0.1); } },
+  { w: "Tu as tort. Sur ton cahier", set: "CL2", fr: "Plongée sur le cahier : « Joel », sans tréma, un doigt accusateur", g: IN, cam: (_w, u) => G(at("CL2", -0.75, 1.85, 0.35), at("CL2", -0.8, 1.7, 0.42), at("CL2", -1.1, 0.79, 0.75), at("CL2", -1.1, 0.79, 0.75), 40, u),
+    st: (w, u, t) => { seated(w, t, "smug", false, [-1.1, 0.75]); joelDesk(w, t, { expr: "worried" }); prop(w, "cahier", "CL2", -1.1, 0.785, 0.75, 0, Math.PI, 0); lab(w, "trema", "ë ?", "#ff4a4a", at("CL2", -1.25, 0.95, 0.55), cl((u - 0.3) * 2), 0.3, 0.1); } },
   // ——— J'ai dit : « J'ai dix ans. » — « Tu as tort. Tu as dix ans, trois mois et quatre jours. »
   { w: "J'ai dit : J'ai dix ans", set: "CL2", fr: "Joël se lève, sûr de lui, au milieu des petits", g: IN, cam: (_w, u) => C("CL2", [1.6, 1.6, -2.2], [1.4, 1.6, -1.9], [-1.0, 1.4, 1.3], null, 46, u),
     st: (w, _u, t) => { MED(w).boardM.map = MED(w).boards.nom; seated(w, t, "neutral", false, [-0.5, 1.4]); put(w, "joel", "CL2", -0.5, 0, 1.45, Math.PI - 0.3).pose(t, { expr: "smile", talk: true, armR: -0.8 }); } },
@@ -148,13 +148,13 @@ export const SHOTS: Shot[] = [
   // ——— J'ai dit : « Mon cœur bat. » — « Tu as tort. Là, il était entre deux battements. »
   { w: "J'ai dit : Mon cœur bat", set: "CL2", fr: "Joël, la main sur le cœur", g: IN, cam: (w, u) => CH("CL2", J(w), [-0.4, 1.6, -0.2], [-0.45, 1.58, 0.1], 40, u, -0.3),
     st: (w, _u, t) => { MED(w).boardM.map = MED(w).boards.age; put(w, "joel", "CL2", -0.5, 0, 1.45, Math.PI - 0.1).pose(t, { expr: "smile", armL: -1.4, talk: true }); w.actors.joel.lArm.rotation.z = 0.9; } },
-  { w: "Là, il était entre deux battements", set: "CL2", fr: "Un enfant ausculte Joël au stéthoscope : « BOUM … … BOUM »", g: IN, cam: (_w, u) => C("CL2", [0.6, 1.4, 0.0], [0.5, 1.4, 0.3], [-0.5, 1.3, 1.4], null, 42, u),
+  { w: "Là, il était entre deux battements", set: "CL2", fr: "Un enfant ausculte Joël au stéthoscope : « BOUM … … BOUM »", g: IN, cam: (_w, u) => C("CL2", [-2.0, 1.6, 0.3], [-1.9, 1.6, 0.4], [-0.5, 1.3, 1.3], null, 42, u),
     st: (w, u, t) => { put(w, "joel", "CL2", -0.5, 0, 1.45, Math.PI - 0.1).pose(t, { expr: "worried" }); const k = put(w, "k1", "CL2", -0.25, 0, 0.75, -0.3); k.pose(t, { expr: "focus", armR: -1.5 }); inHand(w, "steth", k, true, 0, 0, 0, V(0, 0.25, 0.25)); lab(w, "boum", "BOUM …… BOUM", "#ff5a7a", at("CL2", -0.4, 1.7, 1.3), cl(u * 2), 0.8, 0.2); } },
   // ——— À l'école, on m'appelle « Joël-tu-as-tort ».
   { w: "À l'école, on m'appelle", set: "CL2", fr: "Toute la classe rit ; au tableau : « Joël-tu-as-tort »", g: IN, cam: (_w, u) => C("CL2", [2.8, 2.0, 3.0], [2.5, 2.0, 2.6], [-0.8, 1.3, -1.4], null, 50, u),
     st: (w, _u, t) => { MED(w).boardM.map = MED(w).boards.tort; seated(w, t, "happy", true, [-1.1, 1.25]); joelDesk(w, t, { expr: "sad", headPitch: 0.3 }); } },
   // ——— Et puis, il y a Madame Contraire. Championne de la ville depuis quarante ans.
-  { w: "Et puis, il y a Madame Contraire", set: "RUE", fr: "Contre-plongée : Madame Contraire sort de chez elle", g: DAY, cam: (w, u) => CH("RUE", w.actors.contraire, [-19.2, 0.9, -1.8], [-19.4, 1.0, -2.8], 40, u, -0.1),
+  { w: "Et puis, il y a Madame Contraire", set: "RUE", fr: "Contre-plongée : Madame Contraire sort de chez elle", g: DAY, cam: (w, u) => CH("RUE", w.actors.contraire, [-19.4, 1.6, -3.4], [-19.6, 1.65, -3.8], 40, u, -0.1),
     st: (w, u, t) => { walk(w, "contraire", "RUE", -20, -6.4, -20, -5.4, u, t, { expr: "smug" }, 0.8); } },
   { w: "Championne de la ville", set: "RUE", fr: "Gros plan, sourire en coin : « CHAMPIONNE DEPUIS 40 ANS »", g: DAY, cam: (w, u) => CH("RUE", w.actors.contraire, [-19.6, 1.85, -3.6], [-19.7, 1.82, -3.9], 36, u, -0.15),
     st: (w, u, t) => { const a = put(w, "contraire", "RUE", -20, 0, -5.4, 0.15); a.pose(t, { expr: "smug" }); lab(w, "champ", "CHAMPIONNE DEPUIS 40 ANS", "#ffd21a", a, cl((u - 0.15) * 2), 0.9, 0.5); } },
@@ -172,7 +172,7 @@ export const SHOTS: Shot[] = [
   { w: "Et cette année", set: "PL", fr: "Sur scène, Joël tire un papier : « CONTRAIRE »", g: DAY, cam: (w, u) => CH("PL", J(w), [0.6, 2.6, -9.6], [0.5, 2.6, -10.0], 42, u, -0.3),
     st: (w, u, t) => { crowd(w, t, 0); const a = put(w, "joel", "PL", 0, 1.0, -12.0, 0); a.pose(t, { expr: u > 0.5 ? "scared" : "neutral", armR: -1.9 }); lab(w, "tirage", "CONTRAIRE", "#c88aff", handOf(a), cl((u - 0.45) * 2.5), 0.7, 0.25); } },
   // ——— Le pire joueur de la ville contre la meilleure. Toute la ville est venue voir.
-  { w: "Le pire joueur de la ville", set: "PL", fr: "Face à face aux pupitres : JOËL contre CONTRAIRE", g: DAY, cam: (_w, u) => C("PL", [0, 3.4, 7], [0, 3.2, 5], [0, 2.4, -13.2], null, 38, u),
+  { w: "Le pire joueur de la ville", set: "PL", fr: "Face à face aux pupitres : JOËL contre CONTRAIRE", g: DAY, cam: (_w, u) => C("PL", [0, 5.2, 5], [0, 4.8, 3.5], [0, 2.2, -13.2], null, 36, u),
     st: (w, u, t) => { crowd(w, t, 0); duel(w, t, { expr: "worried" }); lab(w, "nj", "JOËL", "#5ac8ff", w.actors.joel, cl(u * 2), 0.6, 0.55); lab(w, "nc", "CONTRAIRE", "#c88aff", w.actors.contraire, cl(u * 2), 0.8, 0.55); } },
   { w: "Toute la ville est venue voir", set: "PL", fr: "Contrechamp depuis la scène : toute la ville sur la place", g: DAY, cam: (_w, u) => C("PL", [-1.5, 3.4, -10.5], [1.5, 3.8, -10.5], [0, 1.2, 10], null, 52, u),
     st: (w, _u, t) => { crowd(w, t, 0.5); duel(w, t); } },
@@ -182,8 +182,8 @@ export const SHOTS: Shot[] = [
   { w: "Elle a tout gagné", set: "PL", fr: "Le tableau des scores défile : 4 – 0", g: DAY, cam: (_w, u) => C("PL", [6.4, 4.4, -8.4], [6.8, 4.6, -8.9], [10.8, 5.2, -14.0], null, 40, u),
     st: (w, u, t) => { crowd(w, t, 0.2); duel(w, t); score(w, Math.min(4, 1 + Math.floor(u * 4))); } },
   // ——— Mes chaussures, mon nom, ma date de naissance, même la couleur du ciel.
-  { w: "Mes chaussures", set: "PL", fr: "Plan serré sur les chaussures de Joël : « TORT ! »", g: DAY, cam: (_w, u) => C("PL", [JX - 0.6, 1.6, LZ + 2.6], [JX - 0.55, 1.55, LZ + 2.4], [JX, 1.2, LZ], null, 40, u),
-    st: (w, u, t) => { crowd(w, t, 0); duel(w, t, { expr: "worried", headPitch: 0.5 }); lab(w, "t_ch", "TORT !", "#ff4a4a", at("PL", JX + 0.3, 1.3, LZ), cl(u * 3), 0.6, 0.1); } },
+  { w: "Mes chaussures", set: "PL", fr: "Plan serré sur les chaussures de Joël : « TORT ! »", g: DAY, cam: (_w, u) => G(at("PL", JX - 0.6, 2.1, LZ + 3.0), at("PL", JX - 0.5, 2.05, LZ + 2.8), at("PL", JX, 1.8, LZ), at("PL", JX, 1.7, LZ), 50, u),
+    st: (w, u, t) => { crowd(w, t, 0); duel(w, t, { expr: "worried", headPitch: 0.5 }); lab(w, "t_ch", "TORT !", "#ff4a4a", at("PL", JX - 0.2, 1.25, LZ + 0.3), cl(u * 3), 0.5, 0.1); } },
   { w: "mon nom", set: "PL", fr: "Joël : « TORT ! » (le tréma, encore)", g: DAY, cam: (w, u) => CH("PL", J(w), [JX + 0.6, 2.9, LZ + 2.0], [JX + 0.5, 2.9, LZ + 1.8], 38, u, -0.2),
     st: (w, u, t) => { crowd(w, t, 0); duel(w, t, { expr: "sad" }); lab(w, "t_nom", "JOEL ? TORT !", "#ff4a4a", w.actors.joel, cl(u * 3), 0.7, 0.5); } },
   { w: "ma date de naissance", set: "PL", fr: "Contraire, implacable, compte sur ses doigts", g: DAY, cam: (w, u) => CH("PL", w.actors.contraire, [CX - 0.6, 2.9, LZ + 2.0], [CX - 0.5, 2.9, LZ + 1.8], 38, u, -0.2),
@@ -227,7 +227,7 @@ export const SHOTS: Shot[] = [
   { w: "Les mouettes se sont envolées", set: "PL", fr: "Les mouettes s'envolent devant le phare allumé", g: DUSK, dusk: 1, cam: (_w, u) => C("PL", [-2, 3, 4], [-2, 4, 2], [4, 9, -32], [5, 14, -36], 46, u),
     st: (w, u, t) => { crowd(w, t, 0.6); gulls(w, t, 0.15 + u * 0.85); duel(w, t, { expr: "happy", cheer: true }); } },
   // ——— Depuis, on m'appelle Joël the Hutt. Et on me laisse tranquille, affalé sur mon canapé.
-  { w: "Depuis, on m'appelle", set: "MAI", fr: "Joël, énorme, allongé sur son canapé de cuir : « JOËL THE HUTT »", g: IN, cam: (_w, u) => C("MAI", [3.4, 1.9, -2.3], [3.4, 1.8, -1.9], [3.5, 0.95, 1.35], null, 50, u),
+  { w: "Depuis, on m'appelle", set: "MAI", fr: "Joël, énorme, allongé sur son canapé de cuir : « JOËL THE HUTT »", g: IN, cam: (_w, u) => G(at("MAI", 3.7, 1.55, -2.6), at("MAI", 3.7, 1.5, -2.3), at("MAI", 3.9, 0.95, 1.3), at("MAI", 3.9, 0.95, 1.3), 50, u),
     st: (w, u, t) => { const a = lying(w, t); inHand(w, "baguette", a, true, 0, 0, 0.3).visible = false; lab(w, "hutt", "JOËL THE HUTT", "#ffd21a", at("MAI", 3.1, 1.9, 1.4), cl((u - 0.35) * 2), 1.0, 0); } },
   { w: "Et on me laisse tranquille", set: "MAI", fr: "Le salon aux murs blancs, la télé allumée ; la caméra recule", g: IN, cam: (_w, u) => C("MAI", [2.6, 1.7, -2.0], [0.2, 2.1, -2.9], [3.4, 0.9, 1.3], [3.4, 1.0, 1.0], 50, u),
     st: (w, _u, t) => { lying(w, t); } },
@@ -250,7 +250,7 @@ export const applyShot = (w: World, i: number, u: number, t: number, _cam: THREE
   const d = s.dusk ?? 0, sun0 = m.suns[0][0];
   for (const k of m.skies) { k.color.set(s.sky ?? "#ffffff"); k.map = d >= 1 ? m.dusk : m.day; }
   for (const [l, base] of m.suns) l.intensity = base * (s.sunK ?? 1);
-  sun0.position.set(-30 + d * 36, 44 - d * 38, 26 - d * 90); sun0.color.set(d >= 1 ? "#ff9050" : d > 0 ? "#ffc890" : "#fff0d8"); if (d >= 1) sun0.intensity = 2.4;
+  sun0.position.set(-30 + d * 36, 44 - d * 38, 26 - d * 90); sun0.color.set(d >= 1 ? "#ff9050" : d > 0 ? "#ffc890" : "#fff0d8"); if (d >= 1) sun0.intensity = 1.5;
   m.lamp.emissiveIntensity = 1.2 + d * 4; m.lampL.intensity = d >= 1 ? 40 : 0;
   w.fill.intensity = 0; w.key.intensity = 0;
   s.st?.(w, u, t);
