@@ -64,3 +64,9 @@ productions/pouvoirs-ep01/render/chunks/
 productions/pouvoirs-ep01/render/*.log
 productions/pouvoirs-ep01/render/list.txt
 productions/*/render/list_v2.txt
+productions/tort-ep01/voix/raw/
+productions/tort-ep01/voix/gen.log
+productions/tort-ep01/final/
+productions/tort-ep01/render/chunks/
+productions/tort-ep01/render/*.log
+productions/tort-ep01/render/list_v2.txt
