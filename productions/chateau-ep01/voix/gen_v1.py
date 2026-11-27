@@ -74,7 +74,7 @@ def analyse(f, a, b):
         res.append(dict(seg=(s0, cut), last=en[w1] - st[w1], mean=float(np.mean(scs)), min=float(min(scs)), hole=best * 0.01, sd=sdq, drop=drop))
     return x, res
 SEL = []
-FORCE = {9: "p3_1.wav"}   # p3_2 : « Et … des » mal aligné (verif_charabia)
+FORCE = {8: "p2_2.wav", 9: "p3_1.wav"}   # prises propres (whisper) : charabia en fin de p2_1, « Et … des » mal aligné dans p3_2
 EXTRA = {7: 0.45, 13: 0.35, 20: 0.25}   # silences dramatiques avant ces phrases
 out, rep = [np.zeros(int(0.2 * SR))], []
 for p, (a, b) in enumerate(PASS):
