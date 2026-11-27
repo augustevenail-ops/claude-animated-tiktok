@@ -70,3 +70,8 @@ productions/tort-ep01/final/
 productions/tort-ep01/render/chunks/
 productions/tort-ep01/render/*.log
 productions/tort-ep01/render/list_v2.txt
+productions/chateau-ep01/voix/raw/
+productions/chateau-ep01/voix/gen.log
+productions/chateau-ep01/final/
+productions/chateau-ep01/render/chunks/
+productions/chateau-ep01/render/*.log
