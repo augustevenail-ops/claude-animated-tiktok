@@ -56,6 +56,7 @@ productions/nom-ep01/audio/v*_music.wav
 productions/nom-ep01/render/chunks/
 productions/nom-ep01/render/*.log
 productions/nom-ep01/final/
+productions/pouvoirs-ep01/final/
 productions/*/voix/gen.log
 productions/pouvoirs-ep01/voix/raw/
 productions/nom-ep01/render/list.txt
