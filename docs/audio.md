@@ -42,3 +42,10 @@ Seule voix utilisée : plus d'ElevenLabs (ancienne doc retirée le 2026-11-14).
 - **Réparation sans re-rendu** (vidéo déjà rendue) : `tools/coupe_charabia.py` retire le passage de la voix et la même durée d'image
   juste avant le plan suivant (coupure invisible), puis `sound_v2.py` (musique remise à neuf en boucle, bruitages recalés sur
   `words_v2.json` réaligné), `caps_v2.py` et `tools/assemble_v2.sh` (réassemblage des morceaux déjà rendus).
+
+### Complément (Tu as tort, 2026-11-27)
+Le charabia se loge presque toujours **à la fin de la dernière phrase d'un passage**, juste avant la phrase factice
+« Voilà » (ex. « Par tous les moyens. *Ça me bat.* Voilà », « cinq minutes, *cinq minutes* »). Si `verif_charabia.py`
+signale un passage : transcrire les 6 prises du passage avec faster-whisper, repérer les prises propres, puis les
+imposer dans `gen_v1.py` via `FORCE = {phrase: "pX_k.wav"}` et relancer la sélection (pas de nouvelle génération).
+Génération : lancer les prises 4 par 4 en parallèle (`gen_par.py`), puis `gen_v1.py` pour le choix et le montage.
