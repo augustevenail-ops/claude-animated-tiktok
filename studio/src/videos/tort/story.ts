@@ -8,7 +8,7 @@ import { Sets, O, V, SetK } from "./sets";
 export const FPS = 30;
 const W = WORDS as { w: string; s: number; e: number }[];
 const LAST = W.filter((w) => /[a-zà-ÿ]/i.test(w.w)).pop()!;
-export const TOTAL = Math.round((LAST.e + 0.2) * FPS);   // pas de blanc final : la vidéo boucle dès la dernière syllabe (décision du 2026-11-27)
+export const TOTAL = Math.round((LAST.e + 0.2) * FPS);   // pas de blanc final : la vidéo s’arrête net après la dernière syllabe (l’application la relance) (décision du 2026-11-27)
 const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9' ]/g, "").replace(/’/g, "'").trim();
 const WN = W.map((w) => norm(w.w));
 const find = (frag: string, from: number) => { const f = norm(frag).split(/\s+/); for (let i = from; i < WN.length; i++) if (f.every((x, k) => WN[i + k] === x)) return i; throw new Error("fragment introuvable : " + frag); };
