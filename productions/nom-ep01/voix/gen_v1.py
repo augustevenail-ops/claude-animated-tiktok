@@ -77,7 +77,9 @@ SEL = []
 FORCE = {}
 out, rep = [np.zeros(int(0.2 * SR))], []
 for p, (a, b) in enumerate(PASS):
-    cand = [(f, *analyse(f, a, b)) for f in sorted(RAW.glob(f"p{p}_*.wav"))]
+    fs = sorted(RAW.glob(f"p{p}_*.wav")); du = {f: len(load(f, 8000)) for f in fs}; md = float(np.median(list(du.values())))
+    fs = [f for f in fs if du[f] <= 1.4 * md]              # écarte les prises anormalement longues (répétitions, bruit)
+    cand = [(f, *analyse(f, a, b)) for f in fs]
     for q in range(b - a + 1):
         txt = S[a + q].rstrip(" »"); question = txt.endswith("?")
         cs = [(f, x, R[q]) for f, x, R in cand]
