@@ -81,8 +81,8 @@ L'analyse complète du dépôt est faite (2026-11-11) : **ne pas la refaire**.
 2. Vidéo Apokalyps (`docs/REFERENCE_APOKALYPS.md`) : **modèle de narration vocale** (voix grave proche, ~4,5 syll/s,
    micro-pauses avant les révélations), structure à retournements, lumière motivée de nuit, drone + basse pulsée.
    **Référence principale** depuis le 2026-11-11 pour la langue, les sous-titres, le ton, la structure et les couleurs.
-   Décisions complètes (2026-11-11) : **toujours** finir par une question binaire A/B + « dis-le en commentaire »
-   (étiquettes A/B à l'écran) ; narration à la **2ᵉ personne** (« tu », caméra subjective) ; personnages en
+   Décisions complètes (2026-11-11) : ~~question binaire A/B finale~~ **plus de dilemme final** (décision du 2026-11-27) ;
+   une vidéo peut finir sur un appel à l'abonnement mis en scène ; narration à la **2ᵉ personne** (« tu », caméra subjective) ; personnages en
    **cartes 2D** du style bridge ; voix off par **synthèse vocale (TTS)** choisie par l'utilisateur, réglée selon la
    consigne voix du §7 (voix grave, ~4,5 syll/s, micro-pauses avant les révélations).
 Ouvrir un rapport `references/reports/*.md` ou un fichier de `templates/` seulement pour le détail d'implémentation.
