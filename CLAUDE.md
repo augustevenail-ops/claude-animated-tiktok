@@ -17,6 +17,7 @@ tout en gardant de la **saturation** et la construction du style bridge (personn
 zones sombres désaturées + accents saturés (lumières pratiques chaudes, rouge, cyan…), jamais une image grise et terne.
 
 - Format : 1080x1920, 30 fps ; export final 2K 1440x2560 (`--scale 1.3333`).
+- **Fin sans blanc** : la vidéo s’arrête 0,2 s après la dernière syllabe, pour boucler aussitôt (décision du 2026-11-27).
 - Durée : 60-90 s (français à ~4,5 syllabes/s ≈ 3 mots/s, soit ~180-270 mots). Cette fourchette prime sur
   les « 55-70 s » mentionnés dans `SKILL.md`.
 - Exemple de référence : *The Bridge That Fell for a Song* (pont de Broughton, 1831), source dans `templates/bridge/`.
