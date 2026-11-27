@@ -5,7 +5,7 @@ glissé entre deux phrases par Fish Audio, que l'alignement forcé (CTC) ne voit
 Trois signaux (cf. docs/audio.md, « Charabia TTS ») :
   1. INSERT : faster-whisper (medium) entend des mots absents du script ;
   2. LONG   : mot aligné anormalement long (> 0,9 s, ou > 0,35 s + 0,09 s/lettre) = du son absorbé derrière lui ;
-  3. BRUIT  : son > -42 dB entre la fin réelle d'un mot (whisper) et le mot suivant, sur plus de 0,3 s (respirations et fins de mots : < 0,2 s).
+  3. BRUIT  : son > -42 dB entre deux mots alignés du script, sur plus de 0,3 s (respirations et fins de mots : < 0,2 s).
 Écouter chaque passage signalé, puis le couper avec tools/coupe_charabia.py (ou régénérer la phrase)."""
 import json, re, subprocess, sys, unicodedata, difflib
 import numpy as np
@@ -32,9 +32,9 @@ for op, i1, i2, j1, j2 in difflib.SequenceMatcher(None, Rs, As, autojunk=False).
 for i, w in enumerate(W):
     L = len(n(w["w"])); d = w["e"] - w["s"]
     if L and d > min(0.9, 0.35 + 0.09 * L): flags.append((w["s"], w["e"], "LONG", f"« {w['w']} » dure {d:.2f} s"))
-# 3. son entre la fin réelle (whisper) d'un mot et le mot suivant
+# 3. son entre deux mots alignés du script (les horodatages whisper sont trop imprécis : faux positifs)
 db = 20 * np.log10(np.sqrt(np.add.reduceat(x.astype(np.float64) ** 2, np.arange(0, len(x), 160)) / 160) + 1e-9)
-for a, b in zip(A, A[1:]):
+for a, b in zip(W, W[1:]):
     if b["s"] - a["e"] < 0.25: continue
     on = db[int(a["e"] * 100) + 4:int(b["s"] * 100) - 2] > -42; run = best = 0
     for o in on: run = run + 1 if o else 0; best = max(best, run)
