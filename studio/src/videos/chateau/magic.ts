@@ -15,7 +15,7 @@ const sparkTex = (() => { let t: THREE.Texture | null = null; return () => { if 
 
 /** objet dessiné : contours dorés (lignes épaisses) tracés progressivement, puis fondu de l'objet réel */
 export class Drawn {
-  root: THREE.Object3D; private lines: LineSegments2; private lm: LineMaterial; private n: number; private mats: THREE.Material[] = []; private tr0: boolean[] = []; private meshes: THREE.Mesh[] = [];
+  root: THREE.Object3D; lines: LineSegments2; lm: LineMaterial; private n: number; private mats: THREE.Material[] = []; private tr0: boolean[] = []; private meshes: THREE.Mesh[] = [];
   private spark: THREE.Points; private segs: Float32Array; private glow?: THREE.PointLight;
   constructor(obj: THREE.Object3D, width = 5, angle = 28, light = 0, order?: (x: number, y: number, z: number) => number) {
     this.root = obj; obj.updateMatrixWorld(true);

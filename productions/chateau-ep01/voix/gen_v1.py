@@ -75,7 +75,7 @@ def analyse(f, a, b):
     return x, res
 SEL = []
 FORCE = {9: "p3_1.wav"}   # p3_2 : « Et … des » mal aligné (verif_charabia)
-EXTRA = {7: 0.45, 13: 0.35, 17: 0.25}   # silences dramatiques avant ces phrases
+EXTRA = {7: 0.45, 13: 0.35, 20: 0.25}   # silences dramatiques avant ces phrases
 out, rep = [np.zeros(int(0.2 * SR))], []
 for p, (a, b) in enumerate(PASS):
     fs = sorted(RAW.glob(f"p{p}_*.wav")); du = {f: len(load(f, 8000)) for f in fs}; md = float(np.median(list(du.values())))

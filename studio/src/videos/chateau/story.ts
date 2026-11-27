@@ -69,8 +69,8 @@ const DEF: Grade = { sat: 0.42, con: 0.12, bri: 0, bloom: 0.9, bg: "#000", fog: 
 // ---------------- repères temporels
 const T_CH = TW("Chaque abonné"), T_HAB = TW("habitant"), T_ET = TW("Et chaque habitant"), T_GR = TW("grandir"), T_AUJ = TW("Aujourd'hui"), T_400 = TE("quatre cents");
 /** étape du château (0 → 5,2) en fonction du temps : 4 transformations pendant la première phrase-clé */
-const KEYS: [number, number][] = [[0, 0], [T_CH - 0.35, 0], [T_CH + 0.55, 1.9], [T_HAB - 0.1, 1.9], [T_HAB + 0.8, 2.9], [T_ET, 2.9], [T_ET + 0.8, 3.9], [T_GR - 0.25, 3.9], [T_GR + 0.9, 5.2]];
-const stageAt = (t: number) => { if (t <= KEYS[0][0]) return 0; for (let i = 1; i < KEYS.length; i++) if (t <= KEYS[i][0]) { const [a, sa] = KEYS[i - 1], [b, sb] = KEYS[i]; return sa + (sb - sa) * sm((t - a) / Math.max(1e-3, b - a)); } return 5.2; };
+const KEYS: [number, number][] = [[0, 0.75], [T_CH - 0.35, 0.75], [T_CH + 0.55, 1.9], [T_HAB - 0.1, 1.9], [T_HAB + 0.8, 2.9], [T_ET, 2.9], [T_ET + 0.8, 3.9], [T_GR - 0.25, 3.9], [T_GR + 0.9, 5.2]];
+const stageAt = (t: number) => { if (t <= KEYS[0][0]) return KEYS[0][1]; for (let i = 1; i < KEYS.length; i++) if (t <= KEYS[i][0]) { const [a, sa] = KEYS[i - 1], [b, sb] = KEYS[i]; return sa + (sb - sa) * sm((t - a) / Math.max(1e-3, b - a)); } return 5.2; };
 const COUNT: [number, number][] = [[0, 100], [1.9, 1000], [2.9, 3000], [3.9, 6000], [5.2, 9800]];
 const countAt = (s: number) => { for (let i = 1; i < COUNT.length; i++) if (s <= COUNT[i][0]) { const [a, na] = COUNT[i - 1], [b, nb] = COUNT[i]; return na + (nb - na) * (s - a) / (b - a); } return 9800; };
 const T_MANQ = TW("Il nous manque");
@@ -95,7 +95,9 @@ const chef = (w: World, t: number, extra = {}) => { const p = chefAt(t); const a
 const villagers = (w: World, t: number, P: THREE.Vector3, yaw: number, pose: (i: number) => object) => { for (let i = 0; i < 4; i++) { const dx = (i - 1.5) * 1.9, x = P.x + Math.cos(yaw) * dx, z = P.z - Math.sin(yaw) * dx;
   put(w, "v" + (i + 1), g(x, 0, z + (i % 2) * 0.7), yaw).pose(t + i, pose(i)); } };
 
-type Shot = { w: string; dt?: number; g?: Partial<Grade>; fr: string; cam: (w: World, u: number, t: number) => Cam; st?: (w: World, u: number, t: number) => void; holo?: [number, number]; sunAt?: THREE.Vector3 };
+type HK = "wall" | "cats" | "gate" | "fire" | "cell";
+const ALL: Partial<Record<HK, number>> = { wall: 1, cats: 1, gate: 1, fire: 1 };
+type Shot = { w: string; dt?: number; g?: Partial<Grade>; fr: string; cam: (w: World, u: number, t: number) => Cam; st?: (w: World, u: number, t: number) => void; holo?: Partial<Record<HK, number>>; sunAt?: THREE.Vector3 };
 const C0 = V(0, PH, 0), TOP = () => V(-14, PH + 44.9, -36);
 const orbit = (t: number): Cam => { const s = stageAt(t), e = sm(s / 5.2), a = 0.55 + t * 0.3, R = 46 + 150 * e, y = PH + 16 + 62 * e;
   return { P: V(Math.sin(a) * R, y, Math.cos(a) * R), T: V(0, PH + 5 + 7 * e, 0), fov: 40 }; };
@@ -108,7 +110,7 @@ const SHOTS: Shot[] = [
   { w: "Aujourd'hui", fr: "Grue au-dessus du bourg vivant, rues pleines ; compteur 11 400", g: MORN, cam: (_w, u) => G(V(95, PH + 92, 150), V(52, PH + 46, 88), V(0, PH + 4, 0), V(-4, PH + 8, -6), 42, u), st: (w, _u, t) => w.castle.set(5.2, t) },
   // ——— Mais ce matin, le guetteur de la plus haute tour a sonné la cloche.
   { w: "Mais ce matin", fr: "Contre-plongée le long de la plus haute tour, soleil du matin", g: MORN, cam: (_w, u) => G(V(-2, PH + 3, -14), V(-3, PH + 6, -17), V(-14, PH + 30, -36), V(-14, PH + 50, -36), 52, u), st: (w, _u, t) => { w.castle.set(5.2, t); guet(w, t, 0); } },
-  { w: "a sonné la cloche", fr: "Le guetteur sonne la cloche, la ville en contrebas", g: MORN, cam: (_w, u) => { const T = TOP(); return G(T.clone().add(V(10, 4.5, 9)), T.clone().add(V(8, 3.6, 7.5)), T.clone().add(V(0.6, 2.6, 0)), T.clone().add(V(0.6, 2.4, 0)), 40, u); },
+  { w: "a sonné la cloche", fr: "Le guetteur sonne la cloche, la ville en contrebas", g: MORN, cam: (_w, u) => { const T = TOP(); return G(T.clone().add(V(19, 3.0, 17)), T.clone().add(V(16, 2.6, 14.5)), T.clone().add(V(0.6, 2.4, 0)), T.clone().add(V(0.6, 2.2, 0)), 30, u); },
     st: (w, _u, t) => { w.castle.set(5.2, t); guet(w, t, 1); } },
   // ——— À l'horizon, derrière les collines, il y avait une ligne noire. Et elle avançait.
   { w: "À l'horizon", fr: "Guetteur de dos, les collines du nord", g: MORN, cam: (_w, u) => { const T = TOP(); return G(T.clone().add(V(3.4, 3.4, 6.5)), T.clone().add(V(3.0, 3.3, 5.6)), V(-30, 26, -330), V(-24, 22, -360), 40, u); },
@@ -143,17 +145,21 @@ const SHOTS: Shot[] = [
   { w: "Nos murs ne tiendront pas", fr: "La palissade de bois, penchée et trouée", g: MORN, cam: (_w, u) => G(g(-34, 3.0, -86), g(-14, 3.2, -88), g(-24, 2.2, -74), g(-6, 2.4, -74), 44, u),
     st: (w, _u, t) => { w.castle.set(5.2, t); villagers(w, t, V(-12, 0, -68), Math.PI, () => ({ expr: "worried" })); } },
   // ——— À douze mille habitants, on pourra construire une grande muraille de pierre, avec des catapultes sur chaque tour.
-  { w: "À douze mille habitants", fr: "Travelling autour du château : la muraille se dessine en hologramme doré", g: MORN, cam: (_w, u) => holoOrbit(2.5, 3.5, 175, PH + 62, u), holo: [0, -1], st: (w, _u, t) => w.castle.set(5.2, t) },
-  { w: "avec des catapultes", fr: "Plus près d'une tour : les catapultes apparaissent", g: MORN, cam: (_w, u) => holoOrbit(3.6, 4.1, 128, PH + 46, u, PH + 22), holo: [1, 0], st: (w, _u, t) => w.castle.set(5.2, t) },
+  { w: "À douze mille habitants", fr: "Travelling autour du château : la muraille se dessine en hologramme doré", g: MORN, cam: (_w, u) => holoOrbit(2.5, 3.5, 175, PH + 62, u), holo: { wall: -1 }, st: (w, _u, t) => w.castle.set(5.2, t) },
+  { w: "avec des catapultes", fr: "Plus près d'une tour : les catapultes apparaissent", g: MORN, cam: (_w, u) => holoOrbit(3.6, 4.1, 128, PH + 46, u, PH + 22), holo: { wall: 1, cats: -1 }, st: (w, _u, t) => w.castle.set(5.2, t) },
+  // ——— Les forgerons couleront des portes en fer… Au sommet de chaque tour, on allumera un grand feu… Et sous le château, on creusera des réserves…
+  { w: "Les forgerons couleront", fr: "Face à la porte sud : les grandes portes de fer se dessinent", g: MORN, cam: (_w, u) => G(V(-6, PH + 7, 158), V(4, PH + 9, 132), V(0, PH + 10, 86), V(0, PH + 12, 86), 44, u), holo: { wall: 1, cats: 1, gate: -1 }, st: (w, _u, t) => w.castle.set(5.2, t) },
+  { w: "Au sommet de chaque tour", fr: "Nuit : un grand feu s'allume au sommet de chaque tour", g: NIGHT, cam: (_w, u) => holoOrbit(4.3, 4.95, 150, PH + 46, u, PH + 22), holo: { wall: 1, cats: 1, gate: 1, fire: -1 }, st: (w, _u, t) => { w.castle.set(5.2, t); } },
+  { w: "Et sous le château", fr: "Vue à travers le sol : réserves voûtées pleines de blé", g: MORN, cam: (_w, u) => G(V(78, PH + 34, 96), V(60, PH + 24, 74), V(0, PH - 10, 0), V(0, PH - 13, 0), 44, u), holo: { wall: 1, cats: 1, gate: 1, fire: 1, cell: -1 }, st: (w, _u, t) => w.castle.set(5.2, t) },
   // ——— Aucune armée ne pourra entrer.
-  { w: "Aucune armée ne pourra entrer", fr: "Plan large : la muraille complète, l'armée au loin", g: MORN, cam: (_w, u) => G(V(-170, PH + 150, 230), V(-150, PH + 132, 200), V(0, PH, -60), V(0, PH, -80), 42, u), holo: [1, 1], st: (w, _u, t) => w.castle.set(5.2, t) },
+  { w: "Aucune armée ne pourra entrer", fr: "Plan large : la muraille complète, l'armée au loin", g: MORN, cam: (_w, u) => G(V(-170, PH + 150, 230), V(-150, PH + 132, 200), V(0, PH, -60), V(0, PH, -80), 42, u), holo: ALL, st: (w, _u, t) => w.castle.set(5.2, t) },
   // ——— Il nous manque six cents habitants. Abonne-toi. Viens défendre le château. Avant demain.
-  { w: "Il nous manque", fr: "Le château et sa muraille fantôme ; compteur 11 400 / 12 000", g: MORN, cam: (_w, u) => G(V(0, PH + 20, 175), V(0, PH + 16, 150), V(0, PH + 12, 0), V(0, PH + 12, 0), 42, u), holo: [1, 1], st: (w, _u, t) => w.castle.set(5.2, t) },
-  { w: "Abonne-toi", fr: "À la porte, les habitants font signe d'entrer", g: MORN, cam: (_w, u) => G(V(0, PH + 2.6, 94), V(0, PH + 2.4, 89), V(0, PH + 2.2, 76), V(0, PH + 2.2, 76), 44, u), holo: [1, 1],
+  { w: "Il nous manque", fr: "Le château et sa muraille fantôme ; compteur 11 400 / 12 000", g: MORN, cam: (_w, u) => G(V(0, PH + 20, 175), V(0, PH + 16, 150), V(0, PH + 12, 0), V(0, PH + 12, 0), 42, u), holo: ALL, st: (w, _u, t) => w.castle.set(5.2, t) },
+  { w: "Abonne-toi", fr: "À la porte, les habitants font signe d'entrer", g: MORN, cam: (_w, u) => G(V(0, PH + 2.6, 94), V(0, PH + 2.4, 89), V(0, PH + 2.2, 76), V(0, PH + 2.2, 76), 44, u), holo: ALL,
     st: (w, _u, t) => { w.castle.set(5.2, t); villagers(w, t, V(0, 0, 79.5), 0, (i) => ({ expr: "happy", wave: i % 2 ? "R" : "L" })); } },
-  { w: "Viens défendre le château", fr: "La caméra entre par la porte, vers le donjon", g: MORN, cam: (_w, u) => G(V(0, PH + 2.4, 88), V(0, PH + 5, 62), V(0, PH + 2.4, 76), V(0, PH + 14, 0), 46, u), holo: [1, 1],
+  { w: "Viens défendre le château", fr: "La caméra entre par la porte, vers le donjon", g: MORN, cam: (_w, u) => G(V(0, PH + 2.4, 88), V(0, PH + 5, 62), V(0, PH + 2.4, 76), V(0, PH + 14, 0), 46, u), holo: ALL,
     st: (w, _u, t) => { w.castle.set(5.2, t); villagers(w, t, V(0, 0, 79.5), 0, () => ({ expr: "happy", cheer: true })); } },
-  { w: "Avant demain", fr: "Crépuscule : le château, et la ligne de torches à l'horizon", g: DUSK, cam: (_w, u) => G(V(60, PH + 70, 190), V(48, PH + 64, 168), V(0, PH + 10, -200), V(0, PH + 8, -220), 40, u), holo: [1, 1],
+  { w: "Avant demain", fr: "Crépuscule : le château, et la ligne de torches à l'horizon", g: DUSK, cam: (_w, u) => G(V(60, PH + 70, 190), V(48, PH + 64, 168), V(0, PH + 10, -200), V(0, PH + 8, -220), 40, u), holo: ALL,
     st: (w, _u, t) => { w.castle.set(5.2, t); w.army.torches.visible = true; } },
 ];
 
@@ -171,8 +177,9 @@ export const applyShot = (w: World, i: number, u: number, t: number, _f: number)
   w.castle.set(5.2, t); w.army.set(t, marchAt(t)); w.ruins.set(t);
   (w.sky.material as THREE.MeshBasicMaterial).map = w.skies[gr.sky]; w.sun.intensity = gr.sun; w.sun.color.set(gr.sunCol); w.hemi.intensity = gr.hemi;
   // hologramme : [muraille, catapultes] : 0 = rien, -1 = se dessine pendant le plan, 1 = déjà là
-  const hp = (k: number) => (k === -1 ? 0.62 * cl(u * 1.25) : k === 0 ? 0 : 0.62);
-  const H0 = s.holo ?? [0, 0]; w.holo.wall.set(hp(H0[0]), t); w.holo.cats.set(s.holo ? (H0[1] === 0 ? 0.62 * cl(u * 1.6) : hp(H0[1])) : 0, t);
+  const hp = (k = 0) => (k === -1 ? 0.62 * cl(u * 1.3) : k === 0 ? 0 : 0.62), ho = s.holo ?? {};
+  (["wall", "cats", "gate", "fire", "cell"] as HK[]).forEach((k) => w.holo[k === "cell" ? "cell" : k].set(hp(ho[k]), t));
+  const fp = hp(ho.fire); w.holo.flames.forEach((fl, i) => { fl.visible = fp > 0.4; const k = cl((fp - 0.4) / 0.2) * (0.85 + 0.15 * Math.sin(t * 13 + i * 2)); fl.scale.set(4 * k, 6 * k, 1); });
   s.st?.(w, u, t);
   return { cam: (ww: World, uu: number, tt: number) => { const c = s.cam(ww, uu, tt); const foc = c.T.clone().lerp(c.P, 0.35); foc.y = H(foc.x, foc.z);
     ww.sun.target.position.copy(foc); ww.sun.position.copy(foc).addScaledVector(SUN_DIR, 700); ww.sun.target.updateMatrixWorld(); return c; } };

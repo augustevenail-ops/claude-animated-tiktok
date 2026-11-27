@@ -9,6 +9,7 @@ import { Drawn } from "./magic";
 import { Actor, Spec } from "./chars";
 
 export const V = (x: number, y: number, z: number) => new THREE.Vector3(x, y, z);
+const mg = (gs: THREE.BufferGeometry[]) => mergeGeometries(gs.map((q) => (q.index ? q.toNonIndexed() : q)))!;
 const sm = (x: number) => { const t = Math.min(1, Math.max(0, x)); return t * t * (3 - 2 * t); };
 const cl = (x: number) => Math.min(1, Math.max(0, x));
 const back = (x: number) => { const t = cl(x), c = 1.9; return 1 + (c + 1) * Math.pow(t - 1, 3) + c * Math.pow(t - 1, 2); };
@@ -52,7 +53,7 @@ const terrain = () => {
     const n = 0.5 + 0.5 * Math.sin(x * 0.021 + Math.cos(z * 0.017) * 2) * Math.cos(z * 0.019 - x * 0.006);
     c.set("#5a9636").lerp(c2.set("#9cc452"), n);
     const fd = forestD(x, z); if (fd > 0.3) c.lerp(c2.set("#3a6a2a"), 0.6);                                        // sous-bois
-    if (r < 79) c.set("#b49a6e").lerp(c2.set("#9a8460"), hash(i, 2) * 0.5);                                      // bourg : terre battue
+    if (r < 79) { const dirt = Math.abs(x) < 4 || Math.abs(z - 2) < 4 || r < 16 ? 0.9 : 0.25 + 0.35 * (0.5 + 0.5 * Math.sin(x * 0.3) * Math.cos(z * 0.27)); c.set("#7aa84a").lerp(c2.set("#b49a6e"), dirt); }   // bourg : herbe, terre battue, rues
     else if (r > 150 && r < 560 && z > 120 && x > -120 && x < 200 && hash(Math.floor(x / 90) * 13 + Math.floor(z / 90), 9) > 0.2) c.lerp(c2.set(fieldCol(x, z)), 0.8);   // champs au sud
     if (z < -420 && Math.abs(x) < 420) c.lerp(c2.set("#7a8a4a"), 0.5);                                           // plaine du nord
     if (Math.abs(x) < 3.5 && z > 76 && z < 700) c.set("#c8b088");                                                // chemin vers le sud
@@ -73,8 +74,8 @@ export const terrainMesh = () => terrain();
 /** nature : forêts (pins + feuillus instanciés), bosquets, rochers, eau (lac + rivière), nuages */
 export class Nature { root = new THREE.Group(); clouds: THREE.Sprite[] = [];
   constructor() {
-    const pine = mergeGeometries([new THREE.CylinderGeometry(0.35, 0.5, 3, 5).translate(0, 1.5, 0), new THREE.ConeGeometry(3.2, 6.5, 7).translate(0, 5.5, 0), new THREE.ConeGeometry(2.4, 5, 7).translate(0, 8.6, 0)]);
-    const oak = mergeGeometries([new THREE.CylinderGeometry(0.4, 0.6, 3.4, 5).translate(0, 1.7, 0), new THREE.IcosahedronGeometry(3.6, 1).translate(0, 6.2, 0), new THREE.IcosahedronGeometry(2.6, 1).translate(1.8, 5.2, 1.2)]);
+    const pine = mg([new THREE.CylinderGeometry(0.35, 0.5, 3, 5).translate(0, 1.5, 0), new THREE.ConeGeometry(3.2, 6.5, 7).translate(0, 5.5, 0), new THREE.ConeGeometry(2.4, 5, 7).translate(0, 8.6, 0)]);
+    const oak = mg([new THREE.CylinderGeometry(0.4, 0.6, 3.4, 5).translate(0, 1.7, 0), new THREE.IcosahedronGeometry(3.6, 1).translate(0, 6.2, 0), new THREE.IcosahedronGeometry(2.6, 1).translate(1.8, 5.2, 1.2)]);
     // couleur par sommet : tronc brun, feuillage vert (la couleur d'instance module)
     for (const g of [pine, oak]) { const a = g.attributes.position as THREE.BufferAttribute, cc = new Float32Array(a.count * 3); for (let i = 0; i < a.count; i++) { const tr = a.getY(i) < 3.1; cc.set(tr ? [0.35, 0.22, 0.12] : [1, 1, 1], i * 3); } g.setAttribute("color", new THREE.BufferAttribute(cc, 3)); }
     const T: { x: number; z: number; s: number; k: number }[][] = [[], []], d = new THREE.Object3D();
@@ -158,7 +159,7 @@ const tower = (p: THREE.Object3D, r: number, h: number, roof: THREE.Material, fl
 const merlons = (w: number, d: number, y: number, s = 1.1) => { const gs: THREE.BufferGeometry[] = [];
   for (let x = -w / 2; x <= w / 2 + 0.01; x += s * 2) { gs.push(box(s, 1.2, 0.8, x, y, d / 2 - 0.4), box(s, 1.2, 0.8, x, y, -d / 2 + 0.4)); }
   for (let z = -d / 2 + s * 2; z <= d / 2 - s * 2 + 0.01; z += s * 2) { gs.push(box(0.8, 1.2, s, w / 2 - 0.4, y, z), box(0.8, 1.2, s, -w / 2 + 0.4, y, z)); }
-  return mergeGeometries(gs); };
+  return mg(gs); };
 const keep = (p: THREE.Object3D, w: number, h: number, flags: Flag[], ft: THREE.Texture, turrets = true) => {
   const g = new THREE.Group(); p.add(g);
   mesh(g, box(w, h, w), STONE()); mesh(g, box(w + 0.8, 0.6, w + 0.8, 0, h, 0), STONED()); mesh(g, merlons(w + 0.6, w + 0.6, h + 0.6), STONE());
@@ -246,7 +247,7 @@ export class Castle {
     this.houses.forEach((h, i) => { this.hw.setColorAt(i, h.c); this.hr.setColorAt(i, h.rc); });
     for (const m of [this.hw, this.hr]) { m.castShadow = m.receiveShadow = true; R.add(m); }
     // habitants (silhouettes minuscules, instanciées) dans les rues
-    const pg = mergeGeometries([box(0.55, 1.1, 0.4), box(0.45, 0.45, 0.45, 0, 1.1, 0)]);
+    const pg = mg([box(0.55, 1.1, 0.4), box(0.45, 0.45, 0.45, 0, 1.1, 0)]);
     for (let i = 0; i < 700; i++) { const along = (hash(i, 21) - 0.5) * 140, side = (hash(i, 22) - 0.5) * 5.5, ax = hash(i, 23) < 0.5;
       const x = ax ? side : along, z = ax ? along : side + 2; if (Math.hypot(x, z) > 72 || (Math.abs(x) < 9 && Math.abs(z) < 9)) continue; this.ppl.push({ x, z, a: ax ? 0 : Math.PI / 2, sp: (hash(i, 24) - 0.5) * 2.4 }); }
     this.people = new THREE.InstancedMesh(pg, M("#ffffff", 0.8), this.ppl.length); const pc = ["#c4383a", "#2a5cb8", "#e8b030", "#2fae7a", "#f4f0e8", "#8a5ad8", "#6a4428"];
@@ -262,8 +263,8 @@ export class Castle {
     for (const p of this.parts) { const a = back((s - p.born - p.k) / SPAN), b = p.died < 99 ? sm((s - p.died) / 0.35) : 0, k = Math.max(0, a * (1 - b));
       p.o.visible = k > 0.002; p.o.scale.set(0.75 + 0.25 * Math.min(1, k), k, 0.75 + 0.25 * Math.min(1, k)); }
     if (s !== this.last) { this.last = s; const d = this.d;
-      this.houses.forEach((h, i) => { const k = Math.max(0, back((s - h.born) / SPAN)); d.position.set(h.x, 0, h.z); d.rotation.set(0, h.ry, 0); d.scale.set(h.w * (0.7 + 0.3 * Math.min(1, k)), h.h * k + 1e-4, h.d * (0.7 + 0.3 * Math.min(1, k))); d.updateMatrix(); this.hw.setMatrixAt(i, d.matrix);
-        d.position.y = h.h * k; d.scale.set(h.w + 0.6, 2.4 * k + 1e-4, h.d + 0.6); d.updateMatrix(); this.hr.setMatrixAt(i, d.matrix); });
+      this.houses.forEach((h, i) => { const k = Math.max(0, back((s - h.born) / SPAN)); d.position.set(h.x, 0, h.z); d.rotation.set(0, h.ry, 0); const z0 = k > 0.002 ? 1 : 0; d.scale.set(z0 * h.w * (0.7 + 0.3 * Math.min(1, k)), z0 * (h.h * k + 1e-4), z0 * h.d * (0.7 + 0.3 * Math.min(1, k))); d.updateMatrix(); this.hw.setMatrixAt(i, d.matrix);
+        d.position.y = h.h * k; d.scale.set(z0 * (h.w + 0.6), z0 * (2.4 * k + 1e-4), z0 * (h.d + 0.6)); d.updateMatrix(); this.hr.setMatrixAt(i, d.matrix); });
       this.hw.instanceMatrix.needsUpdate = true; this.hr.instanceMatrix.needsUpdate = true; }
     const vis = s >= 3.9; this.people.visible = vis;
     if (vis) { const d = this.d; this.ppl.forEach((p, i) => { const off = ((t * p.sp) % 20); d.position.set(p.a === 0 ? p.x : p.x + off, Math.abs(Math.sin(t * 8 + i)) * 0.12, p.a === 0 ? p.z + off : p.z); d.rotation.set(0, p.a + (p.sp < 0 ? Math.PI : 0), 0); d.scale.setScalar(1); d.updateMatrix(); this.people.setMatrixAt(i, d.matrix); }); this.people.instanceMatrix.needsUpdate = true; }
@@ -289,10 +290,10 @@ export class Army {
       for (const fx of [x0 + 2, x0 + RW * SP - 4]) { const g = grp(this.root, fx, H(fx, z0 + 1), z0 + 1); this.flagPoles.push(g); mesh(g, new THREE.CylinderGeometry(0.1, 0.12, 9, 6).translate(0, 4.5, 0), M("#2a2420", 0.7));
         this.flags.push(new Flag(g, 4.2, 3, ft, 0.1, 7.3, 0, -Math.PI / 2, hash(this.flags.length, 2) * 6)); } }
     const n = this.pos.length, armor = M("#25272e", 0.45, undefined, { metalness: 0.6 });
-    const body = mergeGeometries([box(0.38, 0.9, 0.42, -0.24), box(0.38, 0.9, 0.42, 0.24), box(1.0, 1.0, 0.6, 0, 0.9), box(0.3, 0.9, 0.34, -0.66, 1.0), box(0.3, 0.9, 0.34, 0.66, 1.0)]);
-    const helm = mergeGeometries([box(0.72, 0.7, 0.72, 0, 1.9), box(0.12, 0.42, 0.7, 0, 2.6)]);
+    const body = mg([box(0.38, 0.9, 0.42, -0.24), box(0.38, 0.9, 0.42, 0.24), box(1.0, 1.0, 0.6, 0, 0.9), box(0.3, 0.9, 0.34, -0.66, 1.0), box(0.3, 0.9, 0.34, 0.66, 1.0)]);
+    const helm = mg([box(0.72, 0.7, 0.72, 0, 1.9), box(0.12, 0.42, 0.7, 0, 2.6)]);
     const shield = box(0.12, 1.0, 0.8, -0.86, 0.85);
-    const spear = mergeGeometries([new THREE.CylinderGeometry(0.05, 0.05, 4.2, 5).translate(0.72, 2.0, 0.1), new THREE.ConeGeometry(0.12, 0.5, 5).translate(0.72, 4.35, 0.1)]);
+    const spear = mg([new THREE.CylinderGeometry(0.05, 0.05, 4.2, 5).translate(0.72, 2.0, 0.1), new THREE.ConeGeometry(0.12, 0.5, 5).translate(0.72, 4.35, 0.1)]);
     for (const [g, m] of [[body, armor], [helm, M("#1a1b20", 0.3, undefined, { metalness: 0.8 })], [shield, M("#8a1018", 0.6)], [spear, M("#4a3a2a", 0.6)]] as [THREE.BufferGeometry, THREE.Material][]) {
       const im = new THREE.InstancedMesh(g, m, n); im.castShadow = true; im.frustumCulled = false; this.ims.push(im); this.root.add(im); }
     // tours de siège (plus hautes que nos remparts)
@@ -339,7 +340,8 @@ export class Ruins { root = new THREE.Group(); smoke: THREE.Points[] = []; priva
 
 // ------------------------------------------------------------ muraille + catapultes (hologramme doré)
 export const WALL_R = 86;
-export class Holo { wall: Drawn; cats: Drawn; wallG = new THREE.Group(); catG = new THREE.Group();
+const flameT = () => ctex("flame", 64, 128, (q) => { const gr = q.createRadialGradient(32, 92, 2, 32, 80, 50); gr.addColorStop(0, "rgba(255,255,220,1)"); gr.addColorStop(0.35, "rgba(255,170,60,0.8)"); gr.addColorStop(1, "rgba(255,80,0,0)"); q.fillStyle = gr; q.beginPath(); q.moveTo(32, 4); q.quadraticCurveTo(62, 80, 32, 124); q.quadraticCurveTo(2, 80, 32, 4); q.fill(); });
+export class Holo { wall: Drawn; cats: Drawn; gate: Drawn; fire: Drawn; cell: Drawn; wallG = new THREE.Group(); catG = new THREE.Group(); gateG = new THREE.Group(); fireG = new THREE.Group(); cellG = new THREE.Group(); flames: THREE.Sprite[] = [];
   constructor(root: THREE.Object3D) {
     const m = M("#f4e4c0", 0.6, undefined, { emissive: "#ffb040", emissiveIntensity: 0.35 }), N = 10;
     root.add(this.wallG, this.catG);
@@ -353,7 +355,24 @@ export class Holo { wall: Drawn; cats: Drawn; wallG = new THREE.Group(); catG = 
       const c = grp(this.catG, x, y + 26, z, -a + Math.PI / 2); mesh(c, box(4.2, 0.6, 2.6), m); for (const sz of [-1.1, 1.1]) { mesh(c, box(0.4, 2.8, 0.4, 0.4, 0.6, sz), m); }
       const arm = mesh(c, box(6.4, 0.35, 0.35, 0, 0, 0), m); arm.position.set(0.4, 3.0, 0); arm.rotation.z = 0.55; mesh(c, new THREE.SphereGeometry(0.7, 10, 8).translate(-3.0, 0, 0), m).position.copy(arm.position).add(V(-2.6, -1.4, 0));
     }
+    // porte en fer (au sud, dans la muraille)
+    root.add(this.gateG); const gz = WALL_R, gy = H(0, gz) - 1, gp = grp(this.gateG, 0, gy, gz); mesh(gp, box(22, 22, 9), m); mesh(gp, box(24, 1.4, 10, 0, 22, 0), m);
+    for (const sx of [-1, 1]) { mesh(gp, new THREE.CylinderGeometry(4.2, 4.6, 27, 12).translate(sx * 12, 13.5, 0), m); const lf = grp(gp, sx * 3.1, 0, 4.7); mesh(lf, box(6, 14, 0.8, 0, 0, 0), m);
+      for (let i = 0; i < 4; i++) mesh(lf, box(6.2, 0.5, 1.1, 0, 2 + i * 3.4, 0), m); for (let i = 0; i < 3; i++) mesh(lf, box(0.4, 14, 1.1, -2 + i * 2, 0, 0), m); }
+    // grands feux au sommet des tours (braseros)
+    root.add(this.fireG); for (let k = 0; k < N; k++) { const a = k / N * Math.PI * 2 + Math.PI / 2, x = Math.cos(a) * WALL_R, z = Math.sin(a) * WALL_R, y = H(x, z) - 1 + 26.2;
+      const b = grp(this.fireG, x + Math.cos(a + 1.2) * 3.6, y, z + Math.sin(a + 1.2) * 3.6); mesh(b, new THREE.CylinderGeometry(1.6, 0.9, 1.6, 10).translate(0, 0.8, 0), m); mesh(b, new THREE.CylinderGeometry(0.35, 0.35, 1.4, 6).translate(0, -0.5, 0), m);
+      const fl = new THREE.Sprite(new THREE.SpriteMaterial({ map: flameT(), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, color: new THREE.Color(3, 1.6, 0.6) })); fl.position.set(x + Math.cos(a + 1.2) * 3.6, y + 3.6, z + Math.sin(a + 1.2) * 3.6); fl.scale.set(4, 6, 1); this.flames.push(fl); root.add(fl); }
+    // réserves sous le château : salles voûtées, sacs de blé, tonneaux (vues à travers le sol)
+    root.add(this.cellG); const cy = PH - 16, ce = grp(this.cellG, 0, cy, 0);
+    for (let k = 0; k < 5; k++) { const z = -26 + k * 13; mesh(ce, box(46, 0.8, 12, 0, 0, z), m); for (const sx of [-1, 1]) mesh(ce, box(0.8, 7, 12, sx * 23, 0, z), m);
+      const v = new THREE.Mesh(new THREE.CylinderGeometry(6, 6, 46, 16, 1, true, 0, Math.PI).rotateZ(Math.PI / 2).rotateX(Math.PI / 2).rotateY(Math.PI / 2), m); v.position.set(0, 7, z); ce.add(v);
+      for (let i = 0; i < 9; i++) { const sk = new THREE.Mesh(new THREE.SphereGeometry(1.1, 8, 6).scale(1, 1.25, 1), m); sk.position.set(-19 + i * 4.6 + (k % 2) * 1.5, 1.9, z - 3); ce.add(sk);
+        if (i % 3 === 0) { const ba = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.2, 2.6, 12), m); ba.position.set(-18 + i * 4.6, 2.1, z + 3); ce.add(ba); } } }
+    mesh(ce, box(4, 16, 4, 0, 0, 30), m);   // escalier vers la surface
     this.wall = new Drawn(this.wallG, 3.2, 28, 0, (x, _y, z) => (Math.atan2(z, x) - Math.PI / 2 + Math.PI * 4) % (Math.PI * 2)); this.cats = new Drawn(this.catG, 3.2, 28, 0);
+    this.gate = new Drawn(this.gateG, 3.2, 28, 0); this.fire = new Drawn(this.fireG, 3.2, 28, 0); this.cell = new Drawn(this.cellG, 2.6, 28, 0);
+    this.cellG.traverse((o) => { const mm = (o as THREE.Mesh).material as THREE.Material | undefined; if (mm) { mm.depthTest = false; } }); this.cellG.renderOrder = 10; this.cell.lm.depthTest = false; this.cell.lines.renderOrder = 11;
   }
 }
 
