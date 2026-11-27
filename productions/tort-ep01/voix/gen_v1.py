@@ -74,7 +74,7 @@ def analyse(f, a, b):
         res.append(dict(seg=(s0, cut), last=en[w1] - st[w1], mean=float(np.mean(scs)), min=float(min(scs)), hole=best * 0.01, sd=sdq, drop=drop))
     return x, res
 SEL = []
-FORCE = {}
+FORCE = {2: "p0_3.wav", 38: "p12_5.wav"}   # prises sans charabia final (vérifiées à whisper)
 out, rep = [np.zeros(int(0.2 * SR))], []
 for p, (a, b) in enumerate(PASS):
     fs = sorted(RAW.glob(f"p{p}_*.wav")); du = {f: len(load(f, 8000)) for f in fs}; md = float(np.median(list(du.values())))
@@ -84,6 +84,7 @@ for p, (a, b) in enumerate(PASS):
         txt = S[a + q].rstrip(" »"); question = txt.endswith("?")
         cs = [(f, x, R[q]) for f, x, R in cand]
         good = [c for c in cs if c[2]["min"] >= 0.3 and c[2]["mean"] >= 0.88 and c[2]["hole"] <= 0.5 and c[2]["last"] <= 0.9]   # dernier mot étiré = charabia absorbé (docs/audio.md) or cs
+        if not good: good = sorted(cs, key=lambda c: -(c[2]["mean"] - (c[2]["last"] > 0.9) - (c[2]["hole"] > 0.5)))[:2]; print("  phrase", a + q, "repli :", [(c[0].name, round(c[2]["mean"], 3), round(c[2]["min"], 3), round(c[2]["last"], 2)) for c in cs], flush=True)
         if a + q in FORCE: good = [c for c in cs if c[0].name == FORCE[a + q]]
         key = (lambda c: 0.5 * c[2]["sd"] + 5 * c[2]["mean"]) if question else (lambda c: -c[2]["drop"] + 0.3 * c[2]["sd"] + 5 * c[2]["mean"])
         f, x, A = max(good, key=key)
