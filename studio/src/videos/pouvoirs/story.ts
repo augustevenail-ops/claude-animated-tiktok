@@ -37,7 +37,7 @@ export const buildCast = (root: THREE.Object3D) => {
   // oreilles lumineuses du maire
   const m = new THREE.MeshStandardMaterial({ color: "#f4cfb0", emissive: "#ffd070", emissiveIntensity: 0, roughness: 0.4 }), n = actors.maire.neck;
   for (const x of [-0.74, 0.74]) { const e = new THREE.Mesh(new THREE.SphereGeometry(0.24, 14, 10), m); e.scale.set(0.5, 1, 0.8); e.position.set(x, 0.66, 0); n.add(e); }
-  const l = new THREE.PointLight("#ffc860", 0, 9, 1.4); l.position.set(0, 0.66, 1.2); n.add(l);
+  const l = new THREE.PointLight("#ffc860", 0, 9, 1.4); l.position.set(0, 1.6, -0.6); n.add(l);
   return { actors, ears: { m, l } };
 };
 
@@ -65,7 +65,7 @@ const sun = (w: World, set: SetK, x: number, z: number, k: number, t: number, Hc
 /** lanterne dans la main droite */
 const lant = (w: World, i: number, a: Actor) => { const l = MED(w).lanterns[i], kid = a.s.kid, tH = kid ? 2 * 0.72 + 0.3 : 2; a.root.updateMatrixWorld(true); l.visible = true; l.position.copy(a.rArm.localToWorld(V(0, -tH * 0.85 + 0.3, 0.2))).add(V(0, -0.2, 0)); l.rotation.set(0, a.root.rotation.y, 0); };
 const LP: Pose = { armR: -0.35 };
-const ears = (w: World, k: number) => { if (!w.ears) return; w.ears.m.emissiveIntensity = 4 * k; w.ears.l.intensity = 14 * k; };
+const ears = (w: World, k: number) => { if (!w.ears) return; w.ears.m.emissiveIntensity = 1.6 * k; w.ears.l.intensity = 4 * k; };
 const pigsGround = (cx: number, cz: number, set: SetK, n: number, r: number, seed = 0): Pig[] => Array.from({ length: n }, (_, i) => { const a = i * 2.4 + seed, rr = r * Math.sqrt(((i * 0.618 + seed) % 1)); return { p: at(set, cx + Math.cos(a) * rr, 0, cz + Math.sin(a) * rr), yaw: a * 1.7, fly: 0 }; });
 const flock = (cx: number, cy: number, cz: number, set: SetK, n: number, t: number, spread: number, dir: THREE.Vector3, k: number): Pig[] => Array.from({ length: n }, (_, i) => { const h = (j: number) => Math.sin(i * 12.9898 + j * 78.233) * 43758.5453 % 1;
   const o = V(h(1) * spread, Math.abs(h(2)) * spread * 0.5, h(3) * spread), p = at(set, cx, cy, cz).add(o).add(dir.clone().multiplyScalar(k * (0.7 + 0.3 * Math.abs(h(4))))).add(V(0, Math.sin(t * 3 + i) * 0.15, 0));
@@ -81,20 +81,20 @@ const searchers = (w: World, set: SetK, x0: number, z0: number, x1: number, z1: 
 
 export const SHOTS: Shot[] = [
   // ——— Dans cette ville, le jour de tes dix ans, tu reçois un pouvoir. Mais toujours un pouvoir nul.
-  { w: "Dans cette ville", set: "VILLE", fr: "Plongée sur le village : chalets sombres, volets rouges, mélèzes dorés, montagnes", g: DAY, cam: (_w, u) => C("VILLE", [-34, 14, 12], [-24, 9, 9], [0, 1.5, 0], [4, 1.5, 0], 46, u),
+  { w: "Dans cette ville", set: "VILLE", fr: "Plongée sur le village : chalets sombres, volets rouges, mélèzes dorés, montagnes", g: DAY, cam: (_w, u) => C("VILLE", [-30, 24, 22], [-22, 18, 18], [0, 1.5, 0], [4, 1.5, 0], 46, u),
     st: (w, u, t) => { walk(w, "t1", "VILLE", -8 + u * 2, -1.2, 10, -1.2, 0.4, t, { expr: "smile" }); walk(w, "t2", "VILLE", 6 - u * 2, 1.4, -10, 1.4, 0.4, t, { expr: "smile" }); walk(w, "k3", "VILLE", -14, 0.4, 4, 0.4, 0.4 + u * 0.3, t, { expr: "happy" }, 1.8); } },
-  { w: "le jour de tes dix ans", set: "VILLE", fr: "Une enfant devant chez elle : des étincelles dorées tourbillonnent, « 10 ans »", g: DAY, cam: (_w, u) => C("VILLE", [-11.2, 1.3, -1.4], [-11.5, 1.3, -1.9], [-12.8, 1.0, -4.3], null, 46, u),
+  { w: "le jour de tes dix ans", set: "VILLE", fr: "Une enfant devant chez elle : des étincelles dorées tourbillonnent, « 10 ans »", g: DAY, cam: (_w, u) => C("VILLE", [-10.4, 1.4, -0.2], [-10.7, 1.4, -0.7], [-12.8, 1.0, -4.4], null, 46, u),
     st: (w, u, t) => { const k = put(w, "k3", "VILLE", -12.8, 0, -4.6, 0.5); k.pose(t, { expr: "happy", armsUp: 0.5 + 0.3 * sm(u * 2) }); MED(w).setSparks(t, at("VILLE", -12.8, 0.1, -4.6), cl(u * 3)); lab(w, "dix", k, cl(u * 1.6), 0.5, 0.6); } },
-  { w: "Mais toujours un pouvoir nul", set: "VILLE", fr: "Les étincelles retombent : elle fait juste pousser… un radis. « pouvoir : NUL »", g: DAY, cam: (_w, u) => C("VILLE", [-11.4, 1.2, -2.2], [-11.6, 1.15, -2.6], [-12.8, 0.9, -4.5], null, 44, u),
+  { w: "Mais toujours un pouvoir nul", set: "VILLE", fr: "Les étincelles retombent : elle fait juste pousser… un radis. « pouvoir : NUL »", g: DAY, cam: (_w, u) => C("VILLE", [-10.6, 1.3, -0.8], [-10.8, 1.25, -1.2], [-12.8, 0.95, -4.5], null, 44, u),
     st: (w, u, t) => { const k = put(w, "k3", "VILLE", -12.8, 0, -4.6, 0.5); k.pose(t, { expr: u > 0.3 ? "sad" : "worried", armL: -0.3, armR: -0.3, headPitch: 0.25 }); MED(w).setSparks(t, at("VILLE", -12.8, 0.1, -4.6), cl(1 - u * 3) * 0.6); lab(w, "nul", k, cl((u - 0.25) * 2), 0.7, 0.55); } },
   // ——— Le boulanger peut faire éternuer n'importe qui, juste en le regardant.
   { w: "Le boulanger peut faire", set: "VILLE", fr: "Le boulanger, sur le pas de sa boutique, fixe un passant", g: DAY, cam: (_w, u) => C("VILLE", [-9.4, 1.8, 0.4], [-9.8, 1.75, 0.9], [-12.5, 1.6, 4.8], null, 46, u),
     st: (w, u, t) => { put(w, "boulanger", "VILLE", -12.5, 0, 5.1, Math.PI + 0.5).pose(t, { expr: "focus", headYaw: 0.25 }); walk(w, "t1", "VILLE", -15, 2.4, -11.4, 2.6, 0.2 + u * 0.4, t, { expr: "smile" }, 1.1); } },
-  { w: "juste en le regardant", set: "VILLE", fr: "Le passant éternue d'un coup : « ATCHOUM ! »", g: DAY, cam: (w, u) => CH("VILLE", w.actors.t1, [-11.0, 1.9, 0.2], [-11.2, 1.9, 0.5], 46, u, -0.2),
-    st: (w, u, t) => { const s = cl((u - 0.35) * 5), j = Math.sin(s * Math.PI); put(w, "boulanger", "VILLE", -12.5, 0, 5.1, Math.PI + 0.5).pose(t, { expr: "focus" }); const a = put(w, "t1", "VILLE", -13.0, 0, 2.6, -2.3);
+  { w: "juste en le regardant", set: "VILLE", fr: "Le passant éternue d'un coup : « ATCHOUM ! »", g: DAY, cam: (w, u) => CH("VILLE", w.actors.t1, [-10.4, 1.9, -0.4], [-10.6, 1.9, -0.1], 46, u, -0.25),
+    st: (w, u, t) => { const s = cl((u - 0.35) * 5), j = Math.sin(s * Math.PI); put(w, "boulanger", "VILLE", -12.5, 0, 5.1, Math.PI + 0.5).pose(t, { expr: "focus" }); const a = put(w, "t1", "VILLE", -13.0, 0, 2.6, 2.3);
       a.pose(t, { expr: s > 0.05 && s < 0.9 ? "shout" : "worried", headPitch: -0.4 + j * 0.8, lean: j * 0.35, cover: s < 0.05 ? 0.5 : undefined }); lab(w, "atch", a, cl((u - 0.4) * 2), 0.65, 0.6); } },
   // ——— Madame Rose parle aux pigeons. Mais les pigeons ne disent jamais rien d'intéressant.
-  { w: "Madame Rose parle", set: "VILLE", fr: "Madame Rose sur son banc, entourée de pigeons, leur parle", g: DAY, cam: (_w, u) => C("VILLE", [-6.0, 1.3, 1.6], [-6.4, 1.25, 2.0], [-8, 0.9, 4.6], null, 46, u),
+  { w: "Madame Rose parle", set: "VILLE", fr: "Madame Rose sur son banc, entourée de pigeons, leur parle", g: DAY, cam: (_w, u) => C("VILLE", [-5.2, 1.4, 0.6], [-5.6, 1.35, 1.0], [-8, 0.9, 4.6], null, 46, u),
     st: (w, _u, t) => { put(w, "rose", "VILLE", -8, 0.4, 5.2, Math.PI).pose(t, { sit: true, expr: "happy", talk: true, armR: -1.0 }); MED(w).pigs.set(t, pigsGround(-8, 3.9, "VILLE", 14, 1.3)); } },
   { w: "Mais les pigeons ne disent", set: "VILLE", fr: "Au ras du sol : les pigeons picorent. « Rrrou. »", g: DAY, cam: (_w, u) => C("VILLE", [-7.2, 0.45, 2.2], [-7.4, 0.45, 2.5], [-8.1, 0.3, 3.9], null, 42, u),
     st: (w, u, t) => { put(w, "rose", "VILLE", -8, 0.4, 5.2, Math.PI).pose(t, { sit: true, expr: "smile" }); const ps = pigsGround(-8, 3.9, "VILLE", 14, 1.3); MED(w).pigs.set(t, ps); lab(w, "rrou", ps[0].p.clone().add(V(0, 0.1, 0)), cl((u - 0.3) * 2), 0.45, 0.25); } },

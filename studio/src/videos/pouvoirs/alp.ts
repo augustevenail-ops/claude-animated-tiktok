@@ -92,7 +92,7 @@ export class Pigeons { meshes: THREE.InstancedMesh[] = []; private d = new THREE
     for (const [g, m] of [[body, grey], [head, dark], [beak, M("#e8a83a", 0.5)], [wL, dark], [wR, dark]] as [THREE.BufferGeometry, THREE.Material][]) { const im = new THREE.InstancedMesh(g, m, n); im.frustumCulled = false; im.userData.noEdge = true; im.castShadow = true; im.count = 0; parent.add(im); this.meshes.push(im); } }
   set(t: number, arr: Pig[]) { const d = this.d, n = Math.min(arr.length, this.n);
     for (let i = 0; i < n; i++) { const a = arr[i], fl = a.fly, flap = fl > 0 ? Math.sin(t * 26 + i) * 0.9 * fl : 0, hop = fl > 0 ? 0 : Math.max(0, Math.sin(t * 3 + i * 1.7)) * 0.03, peck = fl > 0 ? 0 : Math.max(0, Math.sin(t * 2.3 + i)) * 0.4;
-      for (let m = 0; m < 5; m++) { d.position.set(a.p.x, a.p.y + 0.09 + hop, a.p.z); d.rotation.set(m === 1 || m === 2 ? peck : 0, a.yaw, m === 3 ? -flap - (fl > 0 ? 0 : 1.2) : m === 4 ? flap + (fl > 0 ? 0 : 1.2) : 0, "YXZ"); d.updateMatrix(); this.meshes[m].setMatrixAt(i, d.matrix); } }
+      for (let m = 0; m < 5; m++) { d.position.set(a.p.x, a.p.y + 0.09 + hop, a.p.z); const fold = fl > 0 ? 0 : 1.5; d.rotation.set(m === 1 || m === 2 ? peck : 0, a.yaw + (m === 3 ? -fold : m === 4 ? fold : 0), m === 3 ? -flap : m === 4 ? flap : 0, "YXZ"); d.scale.setScalar(0.8); d.updateMatrix(); this.meshes[m].setMatrixAt(i, d.matrix); } }
     for (const m of this.meshes) { m.count = n; m.instanceMatrix.needsUpdate = true; } } }
 
 /** étiquette flottante (police adaptée à la longueur) */
