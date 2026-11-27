@@ -65,7 +65,7 @@ const seated = (w: World, t: number, e: Expr = "smile", skip: string[] = [], sta
 
 export const SHOTS: Shot[] = [
   // ——— Dans cette ville, chaque fois que quelqu'un dit ton nom, tu gagnes un euro.
-  { w: "Dans cette ville", set: "VILLE", fr: "Plongée aérienne : toits en tuiles et terrasses, façades pastel, palmiers", g: DAY, cam: (_w, u) => C("VILLE", [-30, 24, 30], [-13, 9, 16], [0, 1, -3], [2, 2.2, 0], 46, u),
+  { w: "Dans cette ville", set: "VILLE", fr: "Plongée aérienne : toits en tuiles et terrasses, façades pastel, palmiers", g: DAY, cam: (_w, u) => C("VILLE", [-34, 15, 0.4], [-20, 8.5, 0.6], [0, 1, 0], [2, 1.6, 0], 46, u),
     st: (w, u, t) => { walk(w, "t1", "VILLE", -6 + u * 2, -1.2, 10, -1.2, 0.5, t, { expr: "smile" }); walk(w, "t2", "VILLE", 8 - u * 2, 1.4, -8, 1.4, 0.5, t, { expr: "happy" }); walk(w, "k3", "VILLE", -12, 0.6, 2, 0.6, 0.4 + u * 0.3, t, { expr: "happy" }, 1.8); walk(w, "maman", "VILLE", 16, -1.0, 4, -1.0, 0.3 + u * 0.3, t, { expr: "smile" });
       coins(w, "V", t, [{ p: at("VILLE", -6.8, 0.9, 0.6), n: 6, t0: t - 0.5, r: 0.3, dur: 2 }, { p: at("VILLE", 1.6, 1.0, -1.2), n: 6, t0: t - 0.8, r: 0.3, dur: 2 }]); } },
   { w: "tu gagnes un euro", set: "VILLE", fr: "Une passante appelle une enfant : une pièce lui tombe dans les mains, « +1 € »", g: DAY, cam: (_w, u) => C("VILLE", [-5.0, 1.6, 7.3], [-5.3, 1.55, 6.6], [-6.4, 1.1, 0.4], null, 46, u),
@@ -110,9 +110,9 @@ export const SHOTS: Shot[] = [
   { w: "L'homme le plus riche", set: "PL", fr: "Lamonnaie, chaîne en or, satisfait sur son perron", g: DAY, cam: (w, u) => CH("PL", w.actors.lamonnaie, [-17.2, 3.2, 1.8], [-17.6, 3.2, 1.4], 44, u),
     st: (w, _u, t) => { choirManor(w, t); lamoSteps(w, t, { headYaw: 0.25 }); lab(w, "lamo", w.actors.lamonnaie, 0.6, 0.6, 0.6); } },
   // ——— Il paie une chorale de deux cents personnes pour chanter son nom, jour et nuit, devant son manoir.
-  { w: "Il paie une chorale", set: "PL", fr: "Travelling le long de la chorale en robes violettes", g: DAY, cam: (_w, u) => C("PL", [-2, 3.2, 12], [-3, 3.0, 9], [-10, 1.8, 2], [-10, 1.8, -6], 50, u),
+  { w: "Il paie une chorale", set: "PL", fr: "Travelling le long de la chorale en robes violettes", g: DAY, cam: (_w, u) => C("PL", [-19, 3.2, 10], [-19.5, 3.3, 7.5], [-12, 2.4, -2], [-12, 2.4, -5], 50, u),
     st: (w, _u, t) => { choirManor(w, t); lamoSteps(w, t); } },
-  { w: "Lamonnaie Lamonnaie Lamonnaie", set: "PL", fr: "Les choristes chantent à pleine voix", g: DAY, cam: (_w, u) => C("PL", [-4.5, 3.6, -10], [-4.8, 3.8, -9.4], [-9, 2.4, -1], null, 50, u),
+  { w: "Lamonnaie Lamonnaie Lamonnaie", set: "PL", fr: "Les choristes chantent à pleine voix", g: DAY, cam: (_w, u) => C("PL", [-18.5, 2.6, -9], [-18.8, 2.7, -8.4], [-12, 2.6, -1], null, 46, u),
     st: (w, _u, t) => { choirManor(w, t); } },
   // ——— Plus personne ne dort dans le quartier.
   { w: "Plus personne ne dort", set: "VILLE", fr: "Nuit : les voisins en pyjama aux portes, épuisés", g: NIGHT, sky: "#2a3a6a", sunK: 0.25, cam: (_w, u) => C("VILLE", [-6, 1.8, 3.0], [-6.5, 1.75, 2.4], [-9, 1.4, -4], null, 48, u),
@@ -123,8 +123,8 @@ export const SHOTS: Shot[] = [
   // ——— Je suis allé à la mairie, et j'ai changé de nom. Officiellement.
   { w: "Je suis allé à la mairie", set: "PL", fr: "Il monte les marches de la mairie à arcades", g: DAY, cam: (_w, u) => C("PL", [10, 2.2, -12], [9, 2.4, -13], [3, 2.0, -24.5], null, 50, u),
     st: (w, u, t) => { walk(w, "bart", "PL", 3.5, -16, 3.2, -23.8, u, t, { expr: "focus" }, 1.5); const b = B(w); b.root.position.y += cl((u - 0.75) * 4) * 0.6; } },
-  { w: "et j'ai changé de nom", set: "MAI", fr: "Au guichet de l'état civil : l'employée tamponne le formulaire", g: IN, cam: (_w, u) => C("MAI", [2.6, 1.8, 1.8], [2.4, 1.75, 1.5], [0, 1.2, -0.6], null, 50, u),
-    st: (w, u, t) => { put(w, "bart", "MAI", -0.3, 0, 0.55, Math.PI).pose(t, { expr: "focus", headPitch: 0.15 }); put(w, "employe", "MAI", 0.2, 0, -1.6, 0).pose(t, { expr: "neutral", armR: -1.2 - Math.max(0, Math.sin(u * 9)) * 0.4, headPitch: 0.3 });
+  { w: "et j'ai changé de nom", set: "MAI", fr: "Au guichet de l'état civil : l'employée tamponne le formulaire", g: IN, cam: (_w, u) => C("MAI", [3.2, 2.4, 2.8], [3.0, 2.35, 2.6], [0, 1.3, -0.5], null, 60, u),
+    st: (w, u, t) => { put(w, "bart", "MAI", -0.3, 0, 0.35, Math.PI).pose(t, { expr: "focus", headPitch: 0.15 }); put(w, "employe", "MAI", 0.2, 0, -1.6, 0).pose(t, { expr: "neutral", armR: -1.2 - Math.max(0, Math.sin(u * 9)) * 0.4, headPitch: 0.3 });
       const s = MED(w).stamp; s.position.set(0.55, 1.3 - Math.max(0, Math.sin(u * 9)) * 0.1, -0.55); } },
   { w: "Officiellement", set: "MAI", fr: "Insert : « Nouveau nom : BONJOUR », tampon « validé »", g: IN, cam: (_w, u) => C("MAI", [0.3, 2.1, 0.35], [0.3, 2.0, 0.2], [0.3, 1.18, -0.5], null, 44, u),
     st: (w, _u, t) => { put(w, "employe", "MAI", 0.2, 0, -1.6, 0).pose(t, { expr: "smile", headPitch: 0.3 }); MED(w).stamp.position.set(0.8, 1.3, -0.75); } },
@@ -138,15 +138,15 @@ export const SHOTS: Shot[] = [
   { w: "Bonjour a dit le boulanger", set: "VILLE", fr: "Le boulanger le salue depuis sa porte : une pièce tombe", g: DAY, cam: (_w, u) => C("VILLE", [-8.2, 1.7, -2.2], [-8.6, 1.65, -1.6], [-10.2, 1.2, 4.0], null, 46, u),
     st: (w, u, t) => { put(w, "boulanger", "VILLE", -10.75, 0, 4.25, Math.PI + 0.4).pose(t, { expr: "happy", wave: "R", talk: u < 0.6 }); const b = put(w, "bart", "VILLE", -9.2, 0, 2.8, -0.8); b.pose(t, { expr: "happy", hold: 0.3 });
       coins(w, "V", t, [{ p: handOf(b, 0.85), n: 1, t0: t - u * 1.6 + 0.5, r: 0.01, dur: 0.01, stay: true, h: 2.6 }]); } },
-  { w: "Un euro", set: "VILLE", fr: "La pièce dans sa main, « +1 € »", g: DAY, cam: (w, u) => CH("VILLE", B(w), [-7.8, 1.5, 0.6], [-8.0, 1.45, 0.9], 42, u, -0.4),
+  { w: "Un euro", set: "VILLE", fr: "La pièce dans sa main, « +1 € »", g: DAY, cam: (w, u) => CH("VILLE", B(w), [-6.6, 1.6, -0.4], [-6.9, 1.55, -0.1], 46, u, -0.4),
     st: (w, u, t) => { const b = put(w, "bart", "VILLE", -9.2, 0, 2.8, -0.8); b.pose(t, { expr: "happy", hold: 0.4, headPitch: 0.3 }); coins(w, "V", t, [{ p: handOf(b, 0.85), n: 1, t0: 0, r: 0.01, dur: 0.01, stay: true }]); lab(w, "e1", b, cl(u * 1.6), 0.6, 0.6); } },
   // ——— « Bonjour ! » a dit le chauffeur du bus. Un euro.
-  { w: "Bonjour a dit le chauffeur", set: "VILLE", fr: "À l'arrêt, le chauffeur se penche par la porte du bus turquoise", g: DAY, cam: (_w, u) => C("VILLE", [18.6, 1.7, 4.4], [18.2, 1.65, 4.2], [14.2, 1.4, 2.8], null, 48, u),
+  { w: "Bonjour a dit le chauffeur", set: "VILLE", fr: "À l'arrêt, le chauffeur se penche par la porte du bus turquoise", g: DAY, cam: (_w, u) => C("VILLE", [7.5, 2.0, 4.4], [7.9, 1.95, 4.3], [14, 1.4, 3.4], null, 50, u),
     st: (w, u, t) => { const bs = MED(w).bus; bs.visible = true; bs.position.x = 17.6; put(w, "chauffeur", "VILLE", 14.0, 0.25, 3.05, 0).pose(t, { expr: "happy", wave: "R", talk: u < 0.6 }); const b = put(w, "bart", "VILLE", 14.0, 0, 3.95, Math.PI); b.pose(t, { expr: "happy", hold: 0.3 });
       coins(w, "V", t, [{ p: handOf(b, 0.85), n: 1, t0: t - u * 2.2 + 0.7, r: 0.01, dur: 0.01, stay: true, h: 2.6 }]); lab(w, "e1b", b, cl((u - 0.5) * 2), 0.6, 0.6); } },
   // ——— « Bonjour, bonjour, bonjour ! » a dit toute ma classe.
-  { w: "Bonjour bonjour bonjour", set: "CL2", fr: "Toute la classe se lève pour le saluer : pluie de pièces", g: IN, cam: (_w, u) => C("CL2", [3.4, 2.3, 3.0], [3.2, 2.2, 2.7], [-0.6, 1.1, -1.8], null, 56, u),
-    st: (w, u, t) => { seated(w, t, "happy", [], true); const b = put(w, "bart", "CL2", -0.6, 0, -2.0, 0.4); b.pose(t, { expr: "happy", armsUp: 0.6 }); put(w, "prof", "CL2", 1.6, 0, -3.0, -0.3).pose(t, { expr: "happy", wave: "R" });
+  { w: "Bonjour bonjour bonjour", set: "CL2", fr: "Toute la classe se lève pour le saluer : pluie de pièces", g: IN, cam: (_w, u) => C("CL2", [3.6, 2.85, 3.2], [3.4, 2.8, 2.9], [-0.6, 1.0, -1.8], null, 56, u),
+    st: (w, u, t) => { seated(w, t, "happy", ["k7", "k6"], true); const b = put(w, "bart", "CL2", -0.6, 0, -2.0, 0.4); b.pose(t, { expr: "happy", armsUp: 0.6 }); put(w, "prof", "CL2", 1.6, 0, -3.0, -0.3).pose(t, { expr: "happy", wave: "R" });
       coins(w, "C", t, [{ p: at("CL2", -0.6, 0.02, -2.0), n: 70, t0: t - u * 2.6, r: 0.6, dur: 2.6, stay: true, h: 2.6 }]); } },
   // ——— À midi, mes poches débordaient.
   { w: "À midi", set: "VILLE", fr: "Il marche, les pièces débordent de ses poches et roulent derrière lui", g: DAY, cam: (_w, u) => C("VILLE", [-4, 1.5, 3.4], [-3, 1.5, 3.0], [-1, 0.8, 0.2], [1, 0.8, 0.2], 48, u),
@@ -160,15 +160,15 @@ export const SHOTS: Shot[] = [
   // ——— Il a payé le maire, et le lendemain, une affiche était collée sur tous les murs.
   { w: "Il a payé le maire", set: "PL", fr: "Devant la mairie, Lamonnaie verse des pièces dans les mains du maire", g: EVE, sky: "#ffc8a0", sunK: 0.8, cam: (_w, u) => C("PL", [-1, 1.8, -17.5], [-0.6, 1.8, -18], [1.8, 1.3, -23.2], null, 46, u),
     st: (w, u, t) => { put(w, "lamonnaie", "PL", 1.0, 0, -22.4, 0.9).pose(t, { expr: "smug", reach: 0.7 }); const m = put(w, "maire2", "PL", 2.7, 0.3, -23.0, -1.9); m.pose(t, { expr: "smile", hold: 0.5 }); coins(w, "P", t, [{ p: handOf(m, 0.8), n: 25, t0: t - u * 1.5, r: 0.15, dur: 1.5, h: 0.5 }]); } },
-  { w: "et le lendemain, une affiche", set: "VILLE", fr: "Travelling le long des façades : la même affiche rouge partout", g: DAY, cam: (_w, u) => C("VILLE", [-10, 1.9, 0.6], [6, 1.9, 0.6], [-6, 1.9, -5], [10, 1.9, -5], 48, u),
+  { w: "et le lendemain, une affiche", set: "VILLE", fr: "Travelling le long des façades : la même affiche rouge partout", g: DAY, cam: (_w, u) => C("VILLE", [-8, 2.0, -2.5], [8, 2.0, -2.5], [-4, 2.0, 5], [12, 2.0, 5], 50, u),
     st: (w) => { for (const p of MED(w).posters) p.visible = true; } },
   // ——— « Il est interdit de dire bonjour. »
-  { w: "Il est interdit", set: "VILLE", fr: "L'affiche : « Il est interdit de dire bonjour — Le Maire »", g: DAY, cam: (_w, u) => C("VILLE", [5, 1.85, 1.6], [5, 1.88, 2.1], [5, 1.9, 5.0], null, 44, u),
+  { w: "Il est interdit", set: "VILLE", fr: "L'affiche : « Il est interdit de dire bonjour — Le Maire »", g: DAY, cam: (_w, u) => C("VILLE", [5, 1.85, 0.6], [5, 1.88, 1.2], [5, 1.9, 4.96], null, 44, u),
     st: (w) => { for (const p of MED(w).posters) p.visible = true; } },
   // ——— Alors les gens ont arrêté de se saluer. Plus personne ne se regardait. La ville est devenue froide et silencieuse.
   { w: "Alors les gens ont arrêté", set: "VILLE", fr: "La rue devient grise : les passants se croisent tête basse", g: COLD, cam: (_w, u) => C("VILLE", [-12, 2.2, 3.4], [-10, 2.2, 3.0], [-2, 1.2, -1], null, 48, u),
     st: (w, u, t) => { for (const p of MED(w).posters) p.visible = true; walk(w, "t1", "VILLE", -9, -1.4, 2, -1.2, u * 0.6, t, { expr: "sad", headPitch: 0.4 }); walk(w, "t3", "VILLE", 1, 1.2, -9, 1.4, u * 0.6, t, { expr: "sad", headPitch: 0.4 }); walk(w, "bart", "VILLE", -5, 0.2, -1, 0.0, u * 0.5, t, { expr: "sad", headPitch: 0.3 }, 0.9); } },
-  { w: "Plus personne ne se regardait", set: "VILLE", fr: "Deux voisins se croisent en détournant le regard", g: COLD, cam: (_w, u) => C("VILLE", [7.2, 1.7, 3.6], [6.8, 1.65, 3.2], [9.8, 1.2, -1.6], null, 46, u),
+  { w: "Plus personne ne se regardait", set: "VILLE", fr: "Deux voisins se croisent en détournant le regard", g: COLD, cam: (_w, u) => C("VILLE", [10.2, 1.8, 3.9], [9.8, 1.75, 3.6], [10, 1.2, -1.8], null, 46, u),
     st: (w, u, t) => { for (const p of MED(w).posters) p.visible = true; walk(w, "maman", "VILLE", 7.6, -1.2, 12, -1.2, 0.2 + u * 0.4, t, { expr: "sad", headYaw: 0.7 }); walk(w, "boulanger", "VILLE", 12.4, -2.4, 8, -2.4, 0.2 + u * 0.4, t, { expr: "neutral", headYaw: -0.7 }); } },
   { w: "La ville est devenue froide", set: "VILLE", fr: "Plan large : la rue vide et grise, les affiches", g: COLD, cam: (_w, u) => C("VILLE", [-20, 6, 4], [-22, 7, 4.5], [8, 1.5, -1], null, 48, u),
     st: (w) => { for (const p of MED(w).posters) p.visible = true; } },
@@ -206,24 +206,24 @@ export const SHOTS: Shot[] = [
   { w: "Toute la journée", set: "PL", fr: "Grue : pluie de pièces sur toute la place en fête", g: DAY, cam: (_w, u) => C("PL", [-8, 6, 30], [-4, 14, 36], [2, 2, 2], [2, 0, -2], 50, u),
     st: (w, _u, t) => { choirSquare(w, t); MED(w).crowd.root.visible = true; MED(w).crowd.jump(t, 0.8); const srcs: CoinSrc[] = []; for (let i = 0; i < 24; i++) srcs.push({ p: at("PL", -10 + (i * 5.3) % 33, 1.6, -5 + (i * 7.7) % 38), n: 14, t0: t - 1.6 + (i % 5) * 0.2, r: 0.6, dur: 2.4, h: 5 }); coins(w, "P", t, srcs); } },
   // ——— Les gens sont sortis, ils se sont regardés, et ils ont souri.
-  { w: "Les gens sont sortis", set: "VILLE", fr: "Dans la rue redevenue colorée, les voisins se saluent en souriant", g: DAY, cam: (_w, u) => C("VILLE", [7.0, 2.0, 3.6], [6.4, 1.95, 3.0], [9.0, 1.2, -2.0], null, 48, u),
+  { w: "Les gens sont sortis", set: "VILLE", fr: "Dans la rue redevenue colorée, les voisins se saluent en souriant", g: DAY, cam: (_w, u) => C("VILLE", [4.5, 2.0, 3.8], [4.8, 2.0, 3.6], [10, 1.2, -1.6], null, 50, u),
     st: (w, u, t) => { for (const p of MED(w).posters) p.visible = true; put(w, "maman", "VILLE", 8.0, 0, -2.4, 1.2).pose(t, { expr: "happy", wave: "R" }); put(w, "boulanger", "VILLE", 10.2, 0, -2.0, -1.9).pose(t, { expr: "happy", wave: "L", talk: u < 0.5 }); put(w, "t1", "VILLE", 12.0, 0, -0.6, -2.4).pose(t, { expr: "smile" }); } },
   // ——— Et l'affiche a été arrachée.
-  { w: "Et l'affiche a été arrachée", set: "VILLE", fr: "Le héros arrache l'affiche, qui tombe", g: DAY, cam: (_w, u) => C("VILLE", [7.6, 1.8, 1.0], [7.3, 1.8, 1.3], [5.0, 1.6, 4.6], null, 46, u),
-    st: (w, u, t) => { const ps = MED(w).posters; for (const p of ps) p.visible = true; const pp = ps[1], k = sm(cl((u - 0.3) * 2.5)); pp.position.set(5 + k * 0.3, 1.9 - k * 1.85, 5.02 - k * 0.6); pp.rotation.set(-k * 1.5, Math.PI, k * 0.6);
-      put(w, "bart", "VILLE", 5.4, 0, 4.0, 0.2).pose(t, { expr: "happy", armR: -2.2 + k * 1.6, reach: k < 0.2 ? 0.9 : undefined }); } },
+  { w: "Et l'affiche a été arrachée", set: "VILLE", fr: "Le héros arrache l'affiche, qui tombe", g: DAY, cam: (_w, u) => C("VILLE", [2.4, 1.9, 1.6], [2.6, 1.9, 1.9], [5.4, 1.5, 4.4], null, 46, u),
+    st: (w, u, t) => { const ps = MED(w).posters; for (const p of ps) p.visible = true; const pp = ps[1], k = sm(cl((u - 0.3) * 2.5)); pp.position.set(5 + k * 0.3, 1.9 - k * 1.85, 4.96 - k * 0.6); pp.rotation.set(-k * 1.5, Math.PI, k * 0.6);
+      put(w, "bart", "VILLE", 6.0, 0, 4.0, -0.5).pose(t, { expr: "happy", armR: -2.2 + k * 1.6, reach: k < 0.2 ? 0.9 : undefined }); } },
   // ——— Monsieur Lamonnaie, lui, plus personne ne chantait son nom.
   { w: "Monsieur Lamonnaie, lui", set: "PL", fr: "Seul sur son perron vide, Lamonnaie a perdu sa chorale", g: DAY, cam: (_w, u) => C("PL", [-8, 3, 8], [-9, 3.2, 6], [-22, 2.6, -2], null, 46, u),
     st: (w, _u, t) => { choirSquare(w, t); MED(w).choirSteps[0].visible = true; lamoSteps(w, t, { expr: "sad", headPitch: 0.3 }); } },
   // ——— Alors il est allé à la mairie, lui aussi, et il a changé de nom.
-  { w: "Alors il est allé à la mairie", set: "MAI", fr: "Lamonnaie au guichet, l'employée tamponne", g: IN, cam: (_w, u) => C("MAI", [-2.6, 1.8, 1.8], [-2.4, 1.75, 1.5], [0, 1.3, -0.6], null, 50, u),
-    st: (w, u, t) => { put(w, "lamonnaie", "MAI", 0.2, 0, 0.6, Math.PI).pose(t, { expr: "worried", headPitch: 0.1 }); put(w, "employe", "MAI", 0.2, 0, -1.6, 0).pose(t, { expr: "smile", armR: -1.2 - Math.max(0, Math.sin(u * 9)) * 0.4, headPitch: 0.25 }); MED(w).stamp.position.set(0.55, 1.3 - Math.max(0, Math.sin(u * 9)) * 0.1, -0.55); } },
+  { w: "Alors il est allé à la mairie", set: "MAI", fr: "Lamonnaie au guichet, l'employée tamponne", g: IN, cam: (_w, u) => C("MAI", [-3.2, 2.4, 2.8], [-3.0, 2.35, 2.6], [0, 1.3, -0.5], null, 60, u),
+    st: (w, u, t) => { put(w, "lamonnaie", "MAI", 0.2, 0, 0.4, Math.PI).pose(t, { expr: "worried", headPitch: 0.1 }); put(w, "employe", "MAI", 0.2, 0, -1.6, 0).pose(t, { expr: "smile", armR: -1.2 - Math.max(0, Math.sin(u * 9)) * 0.4, headPitch: 0.25 }); MED(w).stamp.position.set(0.55, 1.3 - Math.max(0, Math.sin(u * 9)) * 0.1, -0.55); } },
   // ——— Maintenant, il s'appelle Merci.
   { w: "Maintenant, il s'appelle Merci", set: "PL", fr: "Sur les marches de la mairie : « MERCI » au-dessus de Lamonnaie", g: DAY, cam: (_w, u) => C("PL", [7.0, 2.2, -17.0], [6.6, 2.2, -17.6], [3.4, 2.1, -23.6], null, 48, u),
     st: (w, u, t) => { const a = put(w, "lamonnaie", "PL", 3.4, 0.6, -24.1, 0.15); a.pose(t, { expr: "smug", armR: -1.0 }); lab(w, "merci", a, cl(u * 1.6), 0.8, 0.8); } },
   // ——— Et c'est de nouveau l'homme le plus riche de la ville.
   { w: "Et c'est de nouveau", set: "VILLE", fr: "Dans la rue, tout le monde se dit merci : les pièces pleuvent sur Lamonnaie", g: DAY, cam: (_w, u) => C("VILLE", [-6, 2.0, 3.4], [-5.4, 2.0, 2.9], [-9.5, 1.3, -1.0], null, 48, u),
-    st: (w, u, t) => { const a = put(w, "lamonnaie", "VILLE", -9.5, 0, -1.0, 0.5); a.pose(t, { expr: "happy", hold: 0.5 }); put(w, "t2", "VILLE", -12.0, 0, 0.4, 2.0).pose(t, { expr: "happy", talk: true }); put(w, "t1", "VILLE", -7.4, 0, 0.8, -2.2).pose(t, { expr: "happy", talk: true });
+    st: (w, u, t) => { const a = put(w, "lamonnaie", "VILLE", -9.5, 0, -1.0, 0.5); a.pose(t, { expr: "happy", hold: 0.5 }); put(w, "t2", "VILLE", -12.0, 0, 0.4, 2.0).pose(t, { expr: "happy", talk: true }); put(w, "t1", "VILLE", -7.4, 0, -2.4, -1.2).pose(t, { expr: "happy", talk: true });
       coins(w, "V", t, [{ p: at("VILLE", -9.5, 0.02, -1.0), n: 120, t0: t - u * 2.4, r: 0.8, dur: 2.4, stay: true, h: 3.5 }]); } },
   // ——— Mais au moins, tout le monde est devenu poli.
   { w: "Mais au moins", set: "PL", fr: "Final : la place en fête, tout le monde se salue ; la caméra s'élève", g: DAY, cam: (_w, u) => C("PL", [6, 2.4, 2], [10, 16, 24], [2, 1.5, -6], [0, 0, -4], 48, u, 52),
@@ -242,7 +242,7 @@ export const applyShot = (w: World, i: number, u: number, t: number, _cam: THREE
   const s = SHOTS[i], S = w.sets, m = S.med; S.show(s.set);
   for (const a of Object.values(w.actors)) { a.root.visible = false; a.root.position.y = 0; }
   for (const x of Object.values(S.tags)) x.visible = false; for (const x of S.rain) x.visible = false; for (const x of Object.values(m.labels)) x.visible = false;
-  for (const p of m.posters) p.visible = false; m.posters[1].position.set(5, 1.9, 5.02); m.posters[1].rotation.set(0, Math.PI, 0);
+  for (const p of m.posters) p.visible = false; m.posters[1].position.set(5, 1.9, 4.96); m.posters[1].rotation.set(0, Math.PI, 0);
   m.choir.root.visible = false; m.choirSteps[0].visible = true; m.choirSteps[1].visible = false; m.crowd.root.visible = false; m.pony.visible = false; m.bus.visible = false;
   m.coinsV.set(t, []); m.coinsP.set(t, []); m.coinsC.set(t, []); m.stamp.position.set(0.7, 1.3, -0.6);
   for (const k of m.skies) k.color.set(s.sky ?? "#ffffff"); for (const [l, base] of m.suns) l.intensity = base * (s.sunK ?? 1);

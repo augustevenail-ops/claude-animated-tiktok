@@ -109,7 +109,7 @@ export class Med {
       for (const [x, z] of [[-1.15, 3.2], [1.15, 3.2], [-1.15, -3.2], [1.15, -3.2]]) add(b, new THREE.CylinderGeometry(0.5, 0.5, 0.35, 20).rotateZ(Math.PI / 2), M("#1a1a1e", 0.8), x, 0.5, z);
       for (const x of [-0.8, 0.8]) add(b, new THREE.SphereGeometry(0.13, 12, 8), E("#fff6d0", 2), x, 1.0, 5.02); plane(b, 1.6, 0.36, M("#ffffff", 0.5, signTex("bus7", "7  PORT", "#16202c", "#ffd21a", 512, 128, 70)), 0, 2.78, 5.04);
       // affiches « interdit de dire bonjour »
-      for (const [x, s] of [[-3, -1], [5, 1], [-15, 1], [12, -1], [19, 1], [-8, -1]] as [number, number][]) poster(p, x, 1.9, s * 5.02, s < 0 ? 0 : Math.PI);
+      for (const [x, s] of [[-3, -1], [5, 1], [-15, 1], [12, -1], [19, 1], [-8, -1]] as [number, number][]) poster(p, x, 1.9, s * 4.96, s < 0 ? 0 : Math.PI);
       // poney de Pardon
       { const pn = grp(p, 0, 0, 0); this.pony = pn; const fur = M("#f4e8d8", 0.75), mane = M("#ff7ab0", 0.7); bx(pn, 0.55, 0.55, 1.2, fur, 0, 0.85, 0, 0, 0.15); bx(pn, 0.36, 0.7, 0.36, fur, 0, 1.35, 0.6, 0, 0.1); bx(pn, 0.34, 0.32, 0.55, fur, 0, 1.65, 0.85, 0, 0.1);
         for (const [x, zz] of [[-0.18, 0.42], [0.18, 0.42], [-0.18, -0.42], [0.18, -0.42]]) bx(pn, 0.14, 0.6, 0.14, fur, x, 0.3, zz, 0, 0.04); bx(pn, 0.12, 0.7, 0.5, mane, 0, 1.55, 0.45, 0, 0.05); bx(pn, 0.12, 0.5, 0.12, mane, 0, 0.85, -0.65, 0, 0.04);
