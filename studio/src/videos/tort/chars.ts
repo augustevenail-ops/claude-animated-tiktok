@@ -121,7 +121,8 @@ export const faceTex = (s: Spec, e: Expr) => ctex(`face_${s.name}_${e}`, 256, 25
   else if (e === "shout") open(40, 44);
   else if (e === "gummy") { g.fillStyle = "#5a1a1a"; g.beginPath(); g.ellipse(128, mouthY - 4, 40, 34, 0, 0, Math.PI); g.fill(); g.fillStyle = "#f08a9a"; g.beginPath(); g.ellipse(128, mouthY - 2, 40, 9, 0, 0, Math.PI); g.fill(); g.fillStyle = "#e2707a"; g.beginPath(); g.ellipse(128, mouthY + 20, 22, 9, 0, 0, 7); g.fill(); g.fillStyle = ink; }
   if (s.mustache) { g.fillStyle = s.mustache; g.beginPath(); g.ellipse(108, mouthY - 16, 22, 9, -0.2, 0, 7); g.ellipse(148, mouthY - 16, 22, 9, 0.2, 0, 7); g.fill(); }
-  if (s.glasses) { g.fillStyle = "#121212"; g.beginPath(); g.roundRect(46, ey - 22, 70, 42, 10); g.roundRect(140, ey - 22, 70, 42, 10); g.fill(); g.fillRect(110, ey - 14, 36, 8);
+  if (s.glasses && s.name === "contraire") { g.strokeStyle = "#8a1a2a"; g.lineWidth = 7; g.beginPath(); g.roundRect(48, ey - 24, 68, 46, 12); g.roundRect(140, ey - 24, 68, 46, 12); g.moveTo(116, ey - 6); g.lineTo(140, ey - 6); g.stroke(); g.strokeStyle = ink; }
+  else if (s.glasses) { g.fillStyle = "#121212"; g.beginPath(); g.roundRect(46, ey - 22, 70, 42, 10); g.roundRect(140, ey - 22, 70, 42, 10); g.fill(); g.fillRect(110, ey - 14, 36, 8);
     g.fillStyle = "rgba(255,255,255,0.35)"; g.fillRect(58, ey - 14, 16, 8); g.fillRect(152, ey - 14, 16, 8); }
   if (e === "smile" || e === "happy" || e === "gummy") { g.fillStyle = "rgba(240,110,110,0.28)"; g.beginPath(); g.arc(56, 150, 16, 0, 7); g.arc(200, 150, 16, 0, 7); g.fill(); }
 });

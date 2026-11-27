@@ -88,7 +88,7 @@ export const label = (text: string, col: string, w = 2.4) => { const t = ctex("l
   const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, transparent: true, depthTest: false, fog: false, toneMapped: false })); s.scale.set(w, w * 0.1875, 1); s.renderOrder = 20; s.visible = false; return s; };
 
 const skyDay = () => ctex("skyJT", 64, 512, (g) => { const gr = g.createLinearGradient(0, 0, 0, 512); gr.addColorStop(0, "#2f86e8"); gr.addColorStop(0.55, "#86c6f4"); gr.addColorStop(1, "#e8f6ff"); g.fillStyle = gr; g.fillRect(0, 0, 64, 512); });
-const skyDusk = () => ctex("skyJTd", 64, 512, (g) => { const gr = g.createLinearGradient(0, 0, 0, 512); gr.addColorStop(0, "#3a2a7a"); gr.addColorStop(0.4, "#c84a7a"); gr.addColorStop(0.7, "#ff8a3a"); gr.addColorStop(1, "#ffd27a"); g.fillStyle = gr; g.fillRect(0, 0, 64, 512); });
+const skyDusk = () => ctex("skyJTd", 64, 512, (g) => { const gr = g.createLinearGradient(0, 0, 0, 512); gr.addColorStop(0, "#26346a"); gr.addColorStop(0.45, "#a8566a"); gr.addColorStop(0.72, "#f0864a"); gr.addColorStop(1, "#ffc870"); g.fillStyle = gr; g.fillRect(0, 0, 64, 512); });
 const seaTex = () => ctex("seaJT", 256, 256, (q) => { q.fillStyle = "#1f8ad0"; q.fillRect(0, 0, 256, 256); for (let i = 0; i < 260; i++) { q.strokeStyle = `rgba(255,255,255,${0.15 + hash(i, 1) * 0.3})`; q.lineWidth = 2; const x = hash(i, 2) * 256, y = hash(i, 3) * 256; q.beginPath(); q.moveTo(x, y); q.quadraticCurveTo(x + 6, y - 3, x + 14, y); q.stroke(); } }, true);
 const hstripe = () => ctex("phareS", 64, 512, (q) => { for (let i = 0; i < 6; i++) { q.fillStyle = i % 2 ? "#f6f2ec" : "#e2262e"; q.fillRect(0, i * 512 / 6, 64, 512 / 6); } });
 const BOARD = (lines: string[], key: string) => ctex("board_" + key, 1024, 400, (q) => { q.fillStyle = "#24463a"; q.fillRect(0, 0, 1024, 400); for (let i = 0; i < 900; i++) { q.fillStyle = `rgba(255,255,255,${hash(i, 9) * 0.04})`; q.fillRect(hash(i, 1) * 1024, hash(i, 2) * 400, 4, 4); }
@@ -140,7 +140,7 @@ export class Med {
 
     // ================= place du phare (championnat), au bord de la mer
     { const p = g.PL; sun(p, V(-30, 44, 26), 3.3, 48); sky(p);
-      plane(p, 400, 400, M("#e8d8b8", 0.95), 0, -0.02, 0, -Math.PI / 2);
+      plane(p, 400, 220, M("#e8d8b8", 0.95), 0, -0.02, 84, -Math.PI / 2);
       plane(p, 80, 64, M("#ffffff", 0.8, rep(cobbleTex(), 26, 20)), 0, 0, 8, -Math.PI / 2);
       // quai + mer + phare sur sa jetée
       bx(p, 120, 1.2, 2.2, M("#c8bca8", 0.85, rep(stoneTex(), 30, 1)), 0, -0.45, -25, 0, 0.05); for (let x = -50; x <= 50; x += 6) cyl(p, 0.25, 0.3, 0.7, M("#2a2e36", 0.5), x, 0.35, -24.4, 10);
@@ -178,7 +178,7 @@ export class Med {
 
     // ================= rue stylée (axe x) : pierre claire, auvents, réverbères, platanes ; la mer et le phare au bout (x > 62)
     { const p = g.RUE; sun(p, V(30, 40, 24), 3.2, 46); sky(p);
-      plane(p, 400, 400, M("#d8ccb8", 0.95), 0, -0.02, 0, -Math.PI / 2); plane(p, 140, 7, M("#ffffff", 0.85, rep(cobbleTex(), 46, 2.4)), -8, 0.005, 0, -Math.PI / 2);
+      plane(p, 404, 400, M("#d8ccb8", 0.95), -150, -0.02, 0, -Math.PI / 2); plane(p, 140, 7, M("#ffffff", 0.85, rep(cobbleTex(), 46, 2.4)), -8, 0.005, 0, -Math.PI / 2);
       for (const s of [-1, 1]) { bx(p, 140, 0.16, 3.2, M("#e2d8c6", 0.85, rep(stoneTex(), 40, 1)), -8, 0.08, s * 5.1, 0, 0.02); bx(p, 140, 0.18, 0.2, M("#c8bca8", 0.8), -8, 0.09, s * 3.55, 0, 0.01); }
       const ws = [9.4, 8.6, 10, 9, 8.8];
       for (const side of [-1, 1]) { let x = -72, k = side > 0 ? 2 : 0; while (x < 54) { const w = ws[k % ws.length], h = [12.8, 16, 9.6, 12.8, 16, 12.8][(k * 3 + (side > 0 ? 1 : 0)) % 6];
@@ -249,7 +249,7 @@ export class Med {
       for (const x of [-4.5, 4.5]) { const l = grp(p, x, 0, 2.2); cyl(l, 0.04, 0.04, 2.8, M("#2a2e36", 0.4), 0, 1.4, 0, 8); bx(l, 0.6, 0.5, 0.4, M("#2a2e36", 0.4), 0, 2.9, 0); add(l, new THREE.CircleGeometry(0.2, 16), E("#fff6e0", 3), 0, 2.9, 0.21); const sl = new THREE.PointLight("#fff4e0", 5, 9, 1.5); sl.position.set(0, 2.8, -0.5); l.add(sl); }
       // boulangerie
       const b = grp(p, 30, 0, 0); room(b, 7, 5.4, 3.1, new THREE.MeshStandardMaterial({ map: rep(stripesTex("#fff0d0", "#ffe4b8", 14), 3, 1), roughness: 0.9 }), new THREE.MeshStandardMaterial({ map: rep(tileTex("#f4e4c8", "#c8462e", 6), 4, 3), roughness: 0.5 }), M("#fff6e8", 0.9));
-      bx(b, 4.6, 1.05, 0.8, M("#a8784a", 0.6, rep(woodTex("#a8784a"), 2, 1)), 0, 0.52, -0.6, 0, 0.04); bx(b, 4.6, 0.55, 0.8, new THREE.MeshPhysicalMaterial({ color: "#dff2ff", roughness: 0.05, transparent: true, opacity: 0.35 }), 0, 1.33, -0.6, 0, 0.02);
+      bx(b, 4.6, 1.05, 0.8, M("#a8784a", 0.6, rep(woodTex("#a8784a"), 2, 1)), 0, 0.52, -0.6, 0, 0.04); bx(b, 4.6, 0.3, 0.8, new THREE.MeshPhysicalMaterial({ color: "#dff2ff", roughness: 0.05, transparent: true, opacity: 0.18 }), 0, 1.2, -0.6, 0, 0.02);
       for (let i = 0; i < 14; i++) add(b, new THREE.SphereGeometry(0.1, 12, 10), M(["#e8a050", "#ff8ab8", "#7a4a2a", "#ffd27a", "#f4f0e8"][i % 5], 0.5), -2.0 + i * 0.3, 1.16, -0.6 + (i % 2) * 0.18).scale.y = 0.6;
       for (let r = 0; r < 3; r++) { bx(b, 4.4, 0.06, 0.45, M("#a8784a", 0.6), 0, 1.0 + r * 0.6, -2.45); for (let k = 0; k < 8; k++) { const bg = mkBaguette(); bg.position.set(-1.9 + k * 0.54, 1.1 + r * 0.6, -2.45); bg.rotation.set(0, Math.PI / 2, 0.4); bg.scale.setScalar(1.0); b.add(bg); } }
       plane(b, 3.6, 0.7, M("#ffffff", 0.5, signTex("boul", "BOULANGERIE", "#c4283a", "#fff6e0", 1024, 200, 120)), 0, 2.75, -2.68);

@@ -23,7 +23,8 @@ const G = (P0: THREE.Vector3, P1: THREE.Vector3, T0: THREE.Vector3, T1: THREE.Ve
 const at = (k: SetK, x: number, y: number, z: number) => O[k].clone().add(V(x, y, z));
 const C = (k: SetK, p0: number[], p1: number[], t0: number[], t1: number[] | null, fov: number, u: number, f1 = fov) => G(at(k, p0[0], p0[1], p0[2]), at(k, p1[0], p1[1], p1[2]), at(k, t0[0], t0[1], t0[2]), at(k, ...((t1 ?? t0) as [number, number, number])), fov, u, f1);
 const headOf = (a: Actor) => { a.root.updateMatrixWorld(true); return a.neck.localToWorld(V(0, 0.7, 0)); };
-const CH = (k: SetK, a: Actor, p0: number[], p1: number[], fov: number, u: number, dy = -0.1) => { const h = headOf(a).add(V(0, dy, 0)); return G(at(k, p0[0], p0[1], p0[2]), at(k, p1[0], p1[1], p1[2]), h, h, fov, u); };
+const CHK = 1.85;   // recul des plans rapprochés (les visages remplissaient l'écran)
+const CH = (k: SetK, a: Actor, p0: number[], p1: number[], fov: number, u: number, dy = -0.1) => { const h = headOf(a).add(V(0, dy, 0)), far = (p: number[]) => h.clone().add(at(k, p[0], p[1], p[2]).sub(h).multiplyScalar(CHK)); return G(far(p0), far(p1), h, h, fov, u); };
 
 export type World = { sets: Sets; actors: Record<string, Actor>; scene?: THREE.Scene; fill: THREE.PointLight; key: THREE.SpotLight };
 export type Grade = { sat: number; con: number; bri: number; bloom: number; bg: string; fog: string; fogD: number; env: number; snow: boolean };
@@ -73,13 +74,13 @@ const bakery = (w: World, t: number, pb: Pose = {}, pc: Pose = {}) => { const b 
 // studio météo
 const studio = (w: World, t: number, pm: Pose = {}, pc: Pose = {}) => { put(w, "meteo", "VILLE", 1.6, 0, -2.3, -0.25).pose(t, { expr: "happy", ...pm }); put(w, "t3", "VILLE", 2.1, 0, 4.0, Math.PI + 0.3).pose(t, { expr: "neutral", ...pc }); };
 // salon final : Joël the Hutt allongé sur le canapé, la tête sur l'accoudoir droit, le ventre vers le plafond
-const lying = (w: World, t: number) => { const a = put(w, "hutt", "MAI", 1.55, 0.78, 1.32, 0); a.pose(t, { expr: "neutral", armR: -0.2, armL: -0.15, headPitch: -0.25 });
+const lying = (w: World, t: number) => { const a = put(w, "hutt", "MAI", 2.95, 0.8, 1.32, 0); a.pose(t, { expr: "neutral", armR: -0.2, armL: -0.15, headPitch: -0.25 });
   a.root.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(V(0, 0.64, 0.77), V(1, 0, 0), V(0, 0.77, -0.64))); a.lArm.rotation.z -= 0.25; a.rArm.rotation.set(-1.1, 0, 0.9); return a; };
 
 export const SHOTS: Shot[] = [
   // ——— Dans cette ville, tout le monde joue à « Tu as tort ».
-  { w: "Dans cette ville", set: "PL", fr: "Grue au-dessus de la place : immeubles de pierre, la mer, le phare rouge et blanc", g: DAY, cam: (_w, u) => C("PL", [-34, 28, 46], [-20, 15, 30], [4, 3, -20], [6, 7, -32], 46, u),
-    st: (w, _u, t) => { crowd(w, t, 0); MED(w).crowd.root.scale.setScalar(1); gulls(w, t, 0); } },
+  { w: "Dans cette ville", set: "PL", fr: "Grue au-dessus de la place : immeubles de pierre, la mer, le phare rouge et blanc", g: DAY, cam: (_w, u) => C("PL", [-30, 30, 50], [-18, 18, 34], [4, 2, -26], [6, 6, -40], 46, u),
+    st: (w, _u, t) => { gulls(w, t, 0); } },
   { w: "tout le monde joue", set: "RUE", fr: "Sur le trottoir, deux voisins se pointent du doigt : « TU AS TORT ! »", g: DAY, cam: (_w, u) => C("RUE", [-9.6, 1.7, -0.6], [-9.4, 1.65, -1.4], [-9.3, 1.5, -5.2], null, 46, u),
     st: (w, u, t) => { put(w, "t1", "RUE", -10.2, 0, -5.2, Math.PI / 2 + 0.3).pose(t, { expr: "smug", talk: u < 0.4 }); const b = put(w, "t2", "RUE", -8.4, 0, -5.2, -Math.PI / 2 - 0.3); b.pose(t, { expr: "angry", point: 0.3, talk: u > 0.4 }); lab(w, "tat1", "TU AS TORT !", "#ffd21a", b, cl((u - 0.35) * 2), 0.9, 0.6); } },
   // ——— La règle est simple : quelqu'un dit une phrase, et toi, tu dois lui prouver qu'elle est fausse. Par tous les moyens.
@@ -98,9 +99,9 @@ export const SHOTS: Shot[] = [
   { w: "moyens", dt: 0.3, set: "RUE", fr: "Montage : un dictionnaire claqué sous le nez", g: DAY, cam: (w, u) => CH("RUE", w.actors.mere, [8.2, 1.7, -2.9], [8.1, 1.7, -3.2], 38, u, -0.25),
     st: (w, u, t) => { const a = put(w, "mere", "RUE", 8.0, 0, -5.3, 0.1); a.pose(t, { expr: "angry", hold: 0.4 }); inHand(w, "dico", a, true, -0.3, 0, 0, V(-0.25, 0.1, 0.2)); } },
   // ——— Le matin, j'ai dit à ma mère : « Tu es en train de respirer. »
-  { w: "Le matin, j'ai dit à ma mère", set: "MAI", fr: "Cuisine au matin : Joël attablé, sa mère au plan de travail", g: IN, cam: (_w, u) => C("MAI", [-0.6, 1.8, 2.4], [-0.9, 1.75, 2.0], [-3.4, 1.0, -1.2], null, 50, u),
+  { w: "Le matin, j'ai dit à ma mère", set: "MAI", fr: "Cuisine au matin : Joël attablé, sa mère au plan de travail", g: IN, cam: (_w, u) => C("MAI", [-5.4, 1.9, 2.4], [-5.2, 1.85, 2.1], [-3.0, 1.1, -0.8], null, 52, u),
     st: (w, _u, t) => { kitchen(w, t, { expr: "neutral", armL: -1.3 }, { expr: "neutral", armR: -0.6 }); } },
-  { w: "Tu es en train de respirer", set: "MAI", fr: "Gros plan Joël, fier, qui pointe sa mère", g: IN, cam: (w, u) => CH("MAI", J(w), [-3.3, 1.55, 0.7], [-3.2, 1.55, 0.5], 40, u, -0.15),
+  { w: "Tu es en train de respirer", set: "MAI", fr: "Gros plan Joël, fier, qui pointe sa mère", g: IN, cam: (w, u) => CH("MAI", J(w), [-3.5, 1.6, 0.4], [-3.4, 1.6, 0.25], 40, u, -0.15),
     st: (w, _u, t) => { kitchen(w, t, { expr: "smug", point: 0.2, talk: true }); } },
   // ——— Elle a répondu : « Tu as tort. Quand tu as dit ça, j'étais entre deux respirations. »
   { w: "Elle a répondu", set: "MAI", fr: "La mère se retourne, index levé : « Tu as tort. »", g: IN, cam: (w, u) => CH("MAI", w.actors.mere, [-3.4, 1.7, -0.6], [-3.55, 1.7, -0.8], 40, u, -0.2),
@@ -121,7 +122,7 @@ export const SHOTS: Shot[] = [
     st: (w, _u, t) => { studio(w, t); } },
   { w: "Demain, il fera beau", set: "VILLE", fr: "Il désigne la carte pleine de soleils", g: IN, cam: (w, u) => CH("VILLE", w.actors.meteo, [2.1, 1.9, 0.4], [2.0, 1.88, 0.0], 44, u, -0.3),
     st: (w, _u, t) => { studio(w, t, { talk: true, armL: -2.0 }); } },
-  { w: "Tu as tort ! Quand", set: "VILLE", fr: "Le cadreur surgit de derrière sa caméra, doigt pointé", g: IN, cam: (w, u) => CH("VILLE", w.actors.t3, [1.4, 1.8, 2.4], [1.5, 1.8, 2.7], 40, u, -0.2),
+  { w: "Tu as tort ! Quand", set: "VILLE", fr: "Le cadreur surgit de derrière sa caméra, doigt pointé", g: IN, cam: (w, u) => CH("VILLE", w.actors.t3, [0.9, 1.9, 2.6], [1.0, 1.9, 2.8], 42, u, -0.2),
     st: (w, _u, t) => { studio(w, t, { expr: "worried" }, { expr: "angry", point: 0.4, talk: true, yaw: Math.PI + 0.1 }); } },
   { w: "ce sera aujourd'hui", set: "VILLE", fr: "Le présentateur, dépité, phrase coupée", g: IN, cam: (w, u) => CH("VILLE", w.actors.meteo, [1.9, 1.85, 0.6], [1.85, 1.85, 0.3], 40, u, -0.2),
     st: (w, _u, t) => { studio(w, t, { expr: "sad", headPitch: 0.2 }); } },
@@ -135,7 +136,7 @@ export const SHOTS: Shot[] = [
   // ——— J'ai dit : « Je m'appelle Joël. » — « Tu as tort. Sur ton cahier, tu as oublié les deux points sur le e. »
   { w: "J'ai dit : Je m'appelle Joël", set: "CL2", fr: "En classe, Joël (adulte au milieu des enfants) se présente", g: IN, cam: (w, u) => CH("CL2", J(w), [-0.9, 1.5, -1.4], [-1.0, 1.48, -1.0], 42, u, -0.15),
     st: (w, _u, t) => { MED(w).boardM.map = MED(w).boards.nom; seated(w, t, "neutral", false, [-1.1, 1.25]); joelDesk(w, t, { expr: "smile", talk: true }); prop(w, "cahier", "CL2", -1.1, 0.785, 0.75, 0, Math.PI, 0); } },
-  { w: "Tu as tort. Sur ton cahier", set: "CL2", fr: "Plongée sur le cahier : « Joel », sans tréma, un doigt accusateur", g: IN, cam: (_w, u) => C("CL2", [-1.1, 1.75, 0.55], [-1.1, 1.62, 0.6], [-1.1, 0.78, 0.76], null, 40, u),
+  { w: "Tu as tort. Sur ton cahier", set: "CL2", fr: "Plongée sur le cahier : « Joel », sans tréma, un doigt accusateur", g: IN, cam: (_w, u) => C("CL2", [-0.55, 1.55, 0.15], [-0.6, 1.45, 0.25], [-1.1, 0.8, 0.75], null, 40, u),
     st: (w, u, t) => { seated(w, t, "smug", false, [-1.1, 0.75]); joelDesk(w, t, { expr: "worried" }); prop(w, "cahier", "CL2", -1.1, 0.785, 0.75, 0, Math.PI, 0); lab(w, "trema", "ë ?", "#ff4a4a", at("CL2", -1.0, 0.85, 0.72), cl((u - 0.3) * 2), 0.4, 0.1); } },
   // ——— J'ai dit : « J'ai dix ans. » — « Tu as tort. Tu as dix ans, trois mois et quatre jours. »
   { w: "J'ai dit : J'ai dix ans", set: "CL2", fr: "Joël se lève, sûr de lui, au milieu des petits", g: IN, cam: (_w, u) => C("CL2", [1.6, 1.6, -2.2], [1.4, 1.6, -1.9], [-1.0, 1.4, 1.3], null, 46, u),
@@ -166,46 +167,46 @@ export const SHOTS: Shot[] = [
   { w: "Chaque année, sous le phare", set: "PL", fr: "Grue arrière : la foule, la scène, la banderole, le phare", g: DAY, cam: (_w, u) => C("PL", [-10, 4, 34], [-6, 10, 38], [2, 4, -16], [3, 6, -20], 48, u),
     st: (w, _u, t) => { crowd(w, t, 0.15); gulls(w, t, 0); duel(w, t); } },
   // ——— Et cette année, au tirage au sort, j'ai pioché son nom.
-  { w: "Et cette année", set: "PL", fr: "Sur scène, Joël tire un papier : « CONTRAIRE »", g: DAY, cam: (w, u) => CH("PL", J(w), [0.8, 2.6, -8.2], [0.6, 2.6, -8.8], 42, u, -0.3),
+  { w: "Et cette année", set: "PL", fr: "Sur scène, Joël tire un papier : « CONTRAIRE »", g: DAY, cam: (w, u) => CH("PL", J(w), [0.6, 2.6, -9.6], [0.5, 2.6, -10.0], 42, u, -0.3),
     st: (w, u, t) => { crowd(w, t, 0); const a = put(w, "joel", "PL", 0, 1.0, -12.0, 0); a.pose(t, { expr: u > 0.5 ? "scared" : "neutral", armR: -1.9 }); lab(w, "tirage", "CONTRAIRE", "#c88aff", handOf(a), cl((u - 0.45) * 2.5), 0.7, 0.25); } },
   // ——— Le pire joueur de la ville contre la meilleure. Toute la ville est venue voir.
-  { w: "Le pire joueur de la ville", set: "PL", fr: "Face à face aux pupitres : JOËL contre CONTRAIRE", g: DAY, cam: (_w, u) => C("PL", [0, 2.6, -3.4], [0, 2.5, -4.4], [0, 2.3, -13.4], null, 44, u),
+  { w: "Le pire joueur de la ville", set: "PL", fr: "Face à face aux pupitres : JOËL contre CONTRAIRE", g: DAY, cam: (_w, u) => C("PL", [0, 3.4, 7], [0, 3.2, 5], [0, 2.4, -13.2], null, 38, u),
     st: (w, u, t) => { crowd(w, t, 0); duel(w, t, { expr: "worried" }); lab(w, "nj", "JOËL", "#5ac8ff", w.actors.joel, cl(u * 2), 0.6, 0.55); lab(w, "nc", "CONTRAIRE", "#c88aff", w.actors.contraire, cl(u * 2), 0.8, 0.55); } },
   { w: "Toute la ville est venue voir", set: "PL", fr: "Contrechamp depuis la scène : toute la ville sur la place", g: DAY, cam: (_w, u) => C("PL", [-1.5, 3.4, -10.5], [1.5, 3.8, -10.5], [0, 1.2, 10], null, 52, u),
     st: (w, _u, t) => { crowd(w, t, 0.5); duel(w, t); } },
   // ——— Elle a commencé. Elle a tout gagné.
-  { w: "Elle a commencé", set: "PL", fr: "Madame Contraire au micro, sûre d'elle", g: DAY, cam: (w, u) => CH("PL", w.actors.contraire, [1.6, 2.9, -10.6], [1.8, 2.9, -11.0], 38, u, -0.25),
+  { w: "Elle a commencé", set: "PL", fr: "Madame Contraire au micro, sûre d'elle", g: DAY, cam: (w, u) => CH("PL", w.actors.contraire, [CX - 0.6, 2.9, LZ + 2.0], [CX - 0.5, 2.9, LZ + 1.8], 38, u, -0.25),
     st: (w, _u, t) => { crowd(w, t, 0); duel(w, t, {}, { expr: "smug", talk: true, point: 0.2 }); } },
   { w: "Elle a tout gagné", set: "PL", fr: "Le tableau des scores défile : 4 – 0", g: DAY, cam: (_w, u) => C("PL", [6.4, 4.4, -8.4], [6.8, 4.6, -8.9], [10.8, 5.2, -14.0], null, 40, u),
     st: (w, u, t) => { crowd(w, t, 0.2); duel(w, t); score(w, Math.min(4, 1 + Math.floor(u * 4))); } },
   // ——— Mes chaussures, mon nom, ma date de naissance, même la couleur du ciel.
-  { w: "Mes chaussures", set: "PL", fr: "Plan serré sur les chaussures de Joël : « TORT ! »", g: DAY, cam: (_w, u) => C("PL", [JX + 1.2, 1.5, LZ + 0.6], [JX + 1.1, 1.45, LZ + 0.5], [JX, 1.15, LZ], null, 40, u),
+  { w: "Mes chaussures", set: "PL", fr: "Plan serré sur les chaussures de Joël : « TORT ! »", g: DAY, cam: (_w, u) => C("PL", [JX - 0.6, 1.6, LZ + 2.6], [JX - 0.55, 1.55, LZ + 2.4], [JX, 1.2, LZ], null, 40, u),
     st: (w, u, t) => { crowd(w, t, 0); duel(w, t, { expr: "worried", headPitch: 0.5 }); lab(w, "t_ch", "TORT !", "#ff4a4a", at("PL", JX + 0.3, 1.3, LZ), cl(u * 3), 0.6, 0.1); } },
-  { w: "mon nom", set: "PL", fr: "Joël : « TORT ! » (le tréma, encore)", g: DAY, cam: (w, u) => CH("PL", J(w), [JX + 1.8, 2.9, LZ + 1.0], [JX + 1.7, 2.9, LZ + 0.9], 38, u, -0.2),
+  { w: "mon nom", set: "PL", fr: "Joël : « TORT ! » (le tréma, encore)", g: DAY, cam: (w, u) => CH("PL", J(w), [JX + 0.6, 2.9, LZ + 2.0], [JX + 0.5, 2.9, LZ + 1.8], 38, u, -0.2),
     st: (w, u, t) => { crowd(w, t, 0); duel(w, t, { expr: "sad" }); lab(w, "t_nom", "JOEL ? TORT !", "#ff4a4a", w.actors.joel, cl(u * 3), 0.7, 0.5); } },
-  { w: "ma date de naissance", set: "PL", fr: "Contraire, implacable, compte sur ses doigts", g: DAY, cam: (w, u) => CH("PL", w.actors.contraire, [CX - 1.8, 2.9, LZ + 1.0], [CX - 1.7, 2.9, LZ + 0.9], 38, u, -0.2),
+  { w: "ma date de naissance", set: "PL", fr: "Contraire, implacable, compte sur ses doigts", g: DAY, cam: (w, u) => CH("PL", w.actors.contraire, [CX - 0.6, 2.9, LZ + 2.0], [CX - 0.5, 2.9, LZ + 1.8], 38, u, -0.2),
     st: (w, u, t) => { crowd(w, t, 0); duel(w, t, {}, { expr: "smug", talk: true, armR: -1.8 }); score(w, 4); lab(w, "t_dn", "TORT !", "#ff4a4a", w.actors.contraire, cl(u * 3), 0.6, 0.5); } },
-  { w: "même la couleur du ciel", set: "PL", fr: "Contre-plongée vers le ciel bleu et le phare : « BLEU ? TORT ! »", g: DAY, cam: (_w, u) => C("PL", [2, 1.8, -9], [2, 1.9, -9.4], [5, 12, -36], [5, 15, -36], 44, u),
+  { w: "même la couleur du ciel", set: "PL", fr: "Contre-plongée vers le ciel bleu et le phare : « BLEU ? TORT ! »", g: DAY, cam: (_w, u) => C("PL", [-4, 1.8, 2], [-4, 1.9, 1.4], [5, 11, -36], [5, 14, -36], 46, u),
     st: (w, u, t) => { gulls(w, t, 0); duel(w, t); score(w, 4); lab(w, "t_ciel", "BLEU ? TORT !", "#ff4a4a", at("PL", 4, 13.5, -30), cl((u - 0.2) * 2.5), 3.4, 0); } },
   // ——— Il me restait une phrase. Une seule. J'ai pris une grande respiration. Et j'ai dit : « Tu vas me dire que j'ai tort. »
-  { w: "Il me restait une phrase", set: "PL", fr: "Gros plan Joël, inquiet, la caméra se rapproche", g: LATE, cam: (w, u) => CH("PL", J(w), [JX + 2.2, 3.0, LZ + 1.4], [JX + 1.4, 2.95, LZ + 0.8], 38, u, -0.2), sky: "#fff0e0",
+  { w: "Il me restait une phrase", set: "PL", fr: "Gros plan Joël, inquiet, la caméra se rapproche", g: LATE, cam: (w, u) => CH("PL", J(w), [JX + 1.0, 3.0, LZ + 2.4], [JX + 0.6, 2.95, LZ + 1.8], 38, u, -0.2), sky: "#fff0e0",
     st: (w, _u, t) => { crowd(w, t, 0); duel(w, t, { expr: "worried" }); score(w, 4); } },
-  { w: "J'ai pris une grande respiration", set: "PL", fr: "Joël gonfle sa poitrine, les yeux fermés", g: LATE, cam: (w, u) => CH("PL", J(w), [JX + 1.3, 2.9, LZ + 0.8], [JX + 1.2, 2.88, LZ + 0.7], 36, u, -0.25), sky: "#fff0e0",
+  { w: "J'ai pris une grande respiration", set: "PL", fr: "Joël gonfle sa poitrine, les yeux fermés", g: LATE, cam: (w, u) => CH("PL", J(w), [JX + 0.6, 2.9, LZ + 1.8], [JX + 0.55, 2.88, LZ + 1.7], 36, u, -0.25), sky: "#fff0e0",
     st: (w, u, t) => { crowd(w, t, 0); duel(w, t, { expr: "focus", headPitch: -0.15 * sm(u * 2) }); const k = 1 + 0.08 * Math.sin(Math.min(1, u * 1.4) * Math.PI); w.actors.joel.torso.scale.set(k, k, k * 1.1); } },
-  { w: "Et j'ai dit : Tu vas me dire", set: "PL", fr: "Contre-plongée héroïque : Joël au micro", g: LATE, cam: (w, u) => CH("PL", J(w), [JX + 1.2, 1.8, LZ + 1.2], [JX + 1.0, 1.85, LZ + 0.9], 44, u, -0.2), sky: "#fff0e0",
+  { w: "Et j'ai dit : Tu vas me dire", set: "PL", fr: "Contre-plongée héroïque : Joël au micro", g: LATE, cam: (w, u) => CH("PL", J(w), [JX + 0.4, 1.9, LZ + 2.0], [JX + 0.35, 1.95, LZ + 1.8], 44, u, -0.2), sky: "#fff0e0",
     st: (w, _u, t) => { crowd(w, t, 0); duel(w, t, { expr: "focus", talk: true }); } },
   // ——— Madame Contraire a ouvert la bouche. Puis elle l'a refermée.
-  { w: "Madame Contraire a ouvert la bouche", set: "PL", fr: "Gros plan Contraire, bouche ouverte", g: LATE, cam: (w, u) => CH("PL", w.actors.contraire, [CX - 1.1, 2.95, LZ + 0.7], [CX - 1.0, 2.95, LZ + 0.65], 34, u, -0.2), sky: "#fff0e0",
+  { w: "Madame Contraire a ouvert la bouche", set: "PL", fr: "Gros plan Contraire, bouche ouverte", g: LATE, cam: (w, u) => CH("PL", w.actors.contraire, [CX - 0.5, 2.95, LZ + 1.8], [CX - 0.45, 2.95, LZ + 1.7], 34, u, -0.2), sky: "#fff0e0",
     st: (w, _u, t) => { crowd(w, t, 0); duel(w, t, {}, { expr: "shout" }); } },
-  { w: "Puis elle l'a refermée", set: "PL", fr: "Elle referme la bouche, déstabilisée", g: LATE, cam: (w, u) => CH("PL", w.actors.contraire, [CX - 1.0, 2.95, LZ + 0.65], [CX - 0.95, 2.95, LZ + 0.6], 34, u, -0.2), sky: "#fff0e0",
+  { w: "Puis elle l'a refermée", set: "PL", fr: "Elle referme la bouche, déstabilisée", g: LATE, cam: (w, u) => CH("PL", w.actors.contraire, [CX - 0.45, 2.95, LZ + 1.7], [CX - 0.42, 2.95, LZ + 1.65], 34, u, -0.2), sky: "#fff0e0",
     st: (w, _u, t) => { crowd(w, t, 0); duel(w, t, {}, { expr: "worried" }); } },
   // ——— Si elle disait « Tu as tort »… alors j'avais raison. Et si elle ne disait rien… j'avais raison aussi.
-  { w: "Si elle disait", set: "PL", fr: "Contraire réfléchit : « TU AS TORT » → Joël a RAISON", g: LATE, cam: (_w, u) => C("PL", [CX - 2.6, 2.8, LZ + 3.2], [CX - 2.4, 2.8, LZ + 2.8], [CX, 2.5, LZ], null, 42, u), sky: "#ffe8d0",
+  { w: "Si elle disait", set: "PL", fr: "Contraire réfléchit : « TU AS TORT » → Joël a RAISON", g: LATE, cam: (_w, u) => C("PL", [CX - 1.6, 3.0, LZ + 5.4], [CX - 1.4, 3.0, LZ + 5.0], [CX, 2.5, LZ], null, 42, u), sky: "#ffe8d0",
     st: (w, u, t) => { crowd(w, t, 0); duel(w, t, {}, { expr: "worried", armR: -1.6, headPitch: 0.15 }); lab(w, "si1", "« TU AS TORT » = RAISON", "#ffd21a", w.actors.contraire, cl((u - 0.2) * 2), 1.0, 0.55); } },
-  { w: "Et si elle ne disait rien", set: "PL", fr: "« … » → RAISON AUSSI ; elle transpire", g: LATE, cam: (_w, u) => C("PL", [CX - 2.4, 2.8, LZ + 2.8], [CX - 2.2, 2.8, LZ + 2.5], [CX, 2.5, LZ], null, 40, u), sky: "#ffe8d0",
+  { w: "Et si elle ne disait rien", set: "PL", fr: "« … » → RAISON AUSSI ; elle transpire", g: LATE, cam: (_w, u) => C("PL", [CX - 1.4, 3.0, LZ + 5.0], [CX - 1.2, 3.0, LZ + 4.6], [CX, 2.5, LZ], null, 40, u), sky: "#ffe8d0",
     st: (w, u, t) => { crowd(w, t, 0); duel(w, t, {}, { expr: "scared", armR: -1.6 }); lab(w, "si2", "« … » = RAISON AUSSI", "#ffd21a", w.actors.contraire, cl((u - 0.2) * 2), 1.0, 0.55); } },
   // ——— Elle a cherché. Une minute. Cinq minutes. Le soleil s'est couché derrière le phare.
-  { w: "Elle a cherché", set: "PL", fr: "Elle se gratte la tête", g: LATE, cam: (w, u) => CH("PL", w.actors.contraire, [CX - 1.6, 2.9, LZ + 1.2], [CX - 1.5, 2.9, LZ + 1.1], 38, u, -0.2), sky: "#ffe0c0",
+  { w: "Elle a cherché", set: "PL", fr: "Elle se gratte la tête", g: LATE, cam: (w, u) => CH("PL", w.actors.contraire, [CX - 0.6, 2.9, LZ + 2.0], [CX - 0.55, 2.9, LZ + 1.9], 38, u, -0.2), sky: "#ffe0c0",
     st: (w, _u, t) => { crowd(w, t, 0); duel(w, t, {}, { expr: "worried", armR: -2.8 }); } },
   { w: "Une minute", set: "PL", fr: "La foule attend, silencieuse : « 1 MIN »", g: LATE, cam: (_w, u) => C("PL", [-8, 3.0, 14], [-7, 3.0, 13], [0, 2.4, -13], null, 46, u), sky: "#ffd8b0",
     st: (w, u, t) => { crowd(w, t, 0); duel(w, t, {}, { expr: "worried", armR: -2.8 }); lab(w, "m1", "1 MIN", "#ffffff", at("PL", 0, 6.0, -13), cl(u * 2.5), 1.4, 0); } },
@@ -214,19 +215,19 @@ export const SHOTS: Shot[] = [
   { w: "Le soleil s'est couché", set: "PL", fr: "Coucher de soleil derrière le phare, qui s'allume", g: DUSK, dusk: 1, cam: (_w, u) => C("PL", [-2, 5, 6], [-1, 6, 4], [6, 12, -38], [6, 14, -38], 42, u),
     st: (w, _u, t) => { crowd(w, t, 0); duel(w, t, {}, { expr: "worried" }); gulls(w, t, 0); } },
   // ——— Et pour la première fois en quarante ans, Madame Contraire a dit : « Tu as raison. »
-  { w: "Et pour la première fois", set: "PL", fr: "Contraire dans la lumière orange, vaincue", g: DUSK, dusk: 1, cam: (w, u) => CH("PL", w.actors.contraire, [CX - 1.8, 2.9, LZ + 1.6], [CX - 1.3, 2.9, LZ + 1.1], 38, u, -0.2),
+  { w: "Et pour la première fois", set: "PL", fr: "Contraire dans la lumière orange, vaincue", g: DUSK, dusk: 1, cam: (w, u) => CH("PL", w.actors.contraire, [CX - 0.9, 2.9, LZ + 2.4], [CX - 0.6, 2.9, LZ + 1.9], 38, u, -0.2),
     st: (w, _u, t) => { crowd(w, t, 0); duel(w, t, {}, { expr: "sad", headPitch: 0.2 }); } },
-  { w: "Madame Contraire a dit", set: "PL", fr: "« Tu as raison. »", g: DUSK, dusk: 1, cam: (w, u) => CH("PL", w.actors.contraire, [CX - 1.2, 2.95, LZ + 0.9], [CX - 1.1, 2.95, LZ + 0.8], 34, u, -0.2),
+  { w: "Madame Contraire a dit", set: "PL", fr: "« Tu as raison. »", g: DUSK, dusk: 1, cam: (w, u) => CH("PL", w.actors.contraire, [CX - 0.5, 2.95, LZ + 1.8], [CX - 0.45, 2.95, LZ + 1.7], 34, u, -0.2),
     st: (w, u, t) => { crowd(w, t, 0); duel(w, t, {}, { expr: "sad", talk: u > 0.4 }); lab(w, "raison", "TU AS RAISON.", "#ffd21a", w.actors.contraire, cl((u - 0.45) * 2.5), 0.8, 0.5); } },
   // ——— Toute la place a hurlé. Les mouettes se sont envolées.
-  { w: "Toute la place a hurlé", set: "PL", fr: "Explosion de joie : la foule saute, Joël lève les bras", g: DUSK, dusk: 1, cam: (_w, u) => C("PL", [-6, 2.6, -6], [-5, 3.4, -4], [JX, 2.4, LZ], null, 46, u),
+  { w: "Toute la place a hurlé", set: "PL", fr: "Explosion de joie : la foule saute, Joël lève les bras", g: DUSK, dusk: 1, cam: (_w, u) => C("PL", [-7, 2.8, -2], [-6, 3.6, 0], [JX, 2.4, LZ], null, 46, u),
     st: (w, _u, t) => { crowd(w, t, 1.0); duel(w, t, { expr: "happy", cheer: true }, { expr: "sad" }); score(w, 5); } },
-  { w: "Les mouettes se sont envolées", set: "PL", fr: "Les mouettes s'envolent devant le phare allumé", g: DUSK, dusk: 1, cam: (_w, u) => C("PL", [0, 3, -4], [0, 4, -5], [3, 9, -30], [4, 13, -34], 46, u),
+  { w: "Les mouettes se sont envolées", set: "PL", fr: "Les mouettes s'envolent devant le phare allumé", g: DUSK, dusk: 1, cam: (_w, u) => C("PL", [-2, 3, 4], [-2, 4, 2], [4, 9, -32], [5, 14, -36], 46, u),
     st: (w, u, t) => { crowd(w, t, 0.6); gulls(w, t, 0.15 + u * 0.85); duel(w, t, { expr: "happy", cheer: true }); } },
   // ——— Depuis, on m'appelle Joël the Hutt. Et on me laisse tranquille, affalé sur mon canapé.
-  { w: "Depuis, on m'appelle", set: "MAI", fr: "Joël, énorme, allongé sur son canapé de cuir : « JOËL THE HUTT »", g: IN, cam: (_w, u) => C("MAI", [3.0, 1.5, -0.9], [3.0, 1.45, -0.6], [3.1, 0.95, 1.35], null, 46, u),
+  { w: "Depuis, on m'appelle", set: "MAI", fr: "Joël, énorme, allongé sur son canapé de cuir : « JOËL THE HUTT »", g: IN, cam: (_w, u) => C("MAI", [3.4, 1.9, -2.3], [3.4, 1.8, -1.9], [3.5, 0.95, 1.35], null, 50, u),
     st: (w, u, t) => { const a = lying(w, t); inHand(w, "baguette", a, true, 0, 0, 0.3).visible = false; lab(w, "hutt", "JOËL THE HUTT", "#ffd21a", at("MAI", 3.1, 1.9, 1.4), cl((u - 0.35) * 2), 1.0, 0); } },
-  { w: "Et on me laisse tranquille", set: "MAI", fr: "Le salon aux murs blancs, la télé allumée ; la caméra recule", g: IN, cam: (_w, u) => C("MAI", [2.0, 1.6, -1.4], [0.4, 1.9, -2.4], [3.2, 0.9, 1.3], [3.2, 1.0, 1.0], 44, u),
+  { w: "Et on me laisse tranquille", set: "MAI", fr: "Le salon aux murs blancs, la télé allumée ; la caméra recule", g: IN, cam: (_w, u) => C("MAI", [2.6, 1.7, -2.0], [0.2, 2.1, -2.9], [3.4, 0.9, 1.3], [3.4, 1.0, 1.0], 50, u),
     st: (w, _u, t) => { lying(w, t); } },
 ];
 
