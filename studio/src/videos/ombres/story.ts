@@ -50,7 +50,7 @@ export const buildCast = (root: THREE.Object3D) => {
 };
 
 // ---------------- ambiances : soleil bas (vif, saturé), intérieur, nuit, temps gris
-const DAY: Partial<Grade> = { bg: "#86b0d8", fog: "#f0dcc0", fogD: 0.003, sat: 0.62, con: 0.2, bri: -0.03, bloom: 0.9, env: 0.4 };
+const DAY: Partial<Grade> = { bg: "#86b0d8", fog: "#f0dcc0", fogD: 0.003, sat: 0.62, con: 0.2, bri: -0.03, bloom: 0.9, env: 0.22 };
 const IN: Partial<Grade> = { bg: "#000", fog: "#000", fogD: 0, sat: 0.56, con: 0.18, bri: -0.03, bloom: 0.9, env: 0.4 };
 const NIGHT: Partial<Grade> = { bg: "#060a18", fog: "#0c1428", fogD: 0.02, sat: 0.55, con: 0.22, bri: -0.05, bloom: 1.4, env: 0.08 };
 const GRAY: Partial<Grade> = { bg: "#9aa2ac", fog: "#a8b0b8", fogD: 0.012, sat: 0.3, con: 0.08, bri: 0.0, bloom: 0.6, env: 0.55 };
@@ -68,46 +68,50 @@ const shade = (w: World, k: string, t: number, p: Pose, o: { dp?: THREE.Vector3;
   g.root.visible = true; g.root.position.copy(a.root.position).add(o.dp ?? V(0, 0, 0)); g.root.rotation.set(0, o.yaw ?? a.root.rotation.y, 0); const s = a.root.scale.x; g.root.scale.set(s, s * (o.sy ?? 1), s); g.pose(t, p); return g; };
 /** projecteur (spot) qui découpe une ombre nette sur un mur */
 const spot = (w: World, set: SetK, p: number[], tg: number[], i: number, col = "#fff2dc", ang = 0.75) => { const l = w.sl; l.position.copy(at(set, p[0], p[1], p[2])); l.target.position.copy(at(set, tg[0], tg[1], tg[2])); l.target.updateMatrixWorld(); l.intensity = i; l.color.set(col); l.angle = ang; };
+/** zone dégagée (le chemin d'une ombre qu'on doit voir) */
+let CLEAR: ((x: number, z: number) => boolean) | null = null;
+const SHADOWLANE = (x: number, z: number) => x < JX + 1.2 && x > JX - 9 && Math.abs(z - JZ) < 2.4;
+const SIDELANE = (x: number, z: number) => x < -6 && x > -34 && z > 0.2 && z < 3.8;
 /** passants dans la rue (cachés près des personnages principaux et devant la caméra basse) */
 const walkers = (w: World, t: number) => { const acts = Object.entries(w.actors).filter(([, a]) => a.root.visible).map(([k, a]) => [a.root.position.clone().sub(O.RUE), k === "joel" ? 1.7 : 1.3] as [THREE.Vector3, number]); const c = w.cam ? w.cam.position.clone().sub(O.RUE) : null, f = w.cam ? w.cam.getWorldDirection(V(0, 0, 0)).setY(0).normalize() : V(0, 0, 1);
   const front = (x: number, z: number) => { if (!c || c.y > 6) return false; const vx = x - c.x, vz = z - c.z, al = vx * f.x + vz * f.z, la = Math.abs(vx * f.z - vz * f.x); return Math.hypot(vx, vz) < 2.5 || (al > 0 && al < 9 && la < 1.2 + al * 0.12); };
-  const skip = (x: number, z: number) => acts.some(([p, r]) => Math.hypot(p.x - x, p.z - z) < r) || front(x, z); MED(w).walk.set(t, skip); return skip; };
+  const skip = (x: number, z: number) => acts.some(([p, r]) => Math.hypot(p.x - x, p.z - z) < r) || front(x, z) || (CLEAR?.(x, z) ?? false); MED(w).walk.set(t, skip); return skip; };
 // ombres au sol des passants (décalques) : direction du soleil, puis elles se figent et se tournent vers Joël
-const SUNYAW = Math.PI - 0.2754, SLEN = 6.2, JX = -6, JZ = 1.6;
+const SUNYAW = Math.PI + 0.108, SLEN = 6.2, JX = -6, JZ = 0;
 const decals = (w: World, t: number, tFreeze: number, turn: number) => { const m = MED(w); m.walk.shadows(false); const P0 = m.walk.pos(tFreeze); void t;
   m.decals.set(P0.map((q, i) => { if (q.hide) return null as never; const d = Math.hypot(JX - q.x, JZ - q.z); if (d < 2.2 || d > 60) return null as never;
     const k = cl(turn * 1.6 - (hash01(i) * 0.6 + d / 100)) , ty = Math.atan2(-(JZ - q.z), JX - q.x); let dy = ty - SUNYAW; while (dy > Math.PI) dy -= 2 * Math.PI; while (dy < -Math.PI) dy += 2 * Math.PI;
-    return { x: q.x, z: q.z, yaw: SUNYAW + dy * sm(k), len: SLEN * (1 + 0.25 * sm(k)), wid: 1.0 }; }).filter(Boolean)); };
+    return { x: q.x, z: q.z, yaw: SUNYAW + dy * sm(k), len: Math.min(SLEN, Math.max(1.5, d - 2.2 * sm(k) - 0.6)), wid: 1.0 }; }).filter(Boolean)); };
 const hash01 = (i: number) => { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
 // classe
 const SEATS: [string, number, number][] = [["k1", -2.6, -0.6], ["k3", -2.6, 0.75], ["k4", 0.4, -0.6], ["k2", 0.4, 0.75], ["k7", -2.6, 2.1], ["k6", 0.4, 2.1]];
 const seated = (w: World, t: number) => { for (const [k, x, z] of SEATS) put(w, k, "CL2", x, 0.4, z + 0.5, Math.PI).pose(t, { sit: true, expr: "neutral", headPitch: 0.25 + 0.1 * Math.sin(t + x), headYaw: Math.sin(t * 0.5 + x) * 0.2 }); };
 const prof = (w: World, t: number) => put(w, "prof", "CL2", -0.6, 0, -2.5, 0.35).pose(t, { expr: "happy", talk: true, wave: "R" });
-const profShadow = (w: World, t: number) => { shade(w, "prof", t, { sit: true, lean: 0.95, reach: 0.55, headPitch: 0.6, expr: "neutral" }, { dp: at("CL2", 2.2, 0.12, -3.05).sub(w.actors.prof.root.position), yaw: 0 }); spot(w, "CL2", [0.6, 1.5, 1.6], [2.3, 1.1, -3.6], 60, "#fff0d8", 0.6); };
+const profShadow = (w: World, t: number) => { shade(w, "prof", t, { sit: true, lean: 0.95, reach: 0.55, headPitch: 0.6, expr: "neutral" }, { dp: at("CL2", 2.2, 0.12, -3.05).sub(w.actors.prof.root.position), yaw: 0 }); spot(w, "CL2", [0.6, 1.5, 1.6], [2.3, 1.1, -3.6], 18, "#fff0d8", 0.6); };
 // place de la fête : le maire sur l'estrade
 const maire = (w: World, t: number) => put(w, "maire", "PL", 0, 1.0, -12.3, 0).pose(t, { expr: "happy", wave: "R", talk: Math.sin(t * 1.3) > 0 });
-const maireShadow = (w: World, t: number) => { shade(w, "maire", t, { expr: "angry", bang: true, lean: 0.12 }); spot(w, "PL", [1.2, 2.2, -6.5], [0, 3.2, -16], 90, "#ffe8c8", 0.55); };
+const maireShadow = (w: World, t: number) => { shade(w, "maire", t, { expr: "angry", bang: true, lean: 0.12 }); spot(w, "PL", [1.2, 2.2, -6.5], [0, 3.2, -16], 45, "#ffe8c8", 0.55); };
 // cuisine
 const kitchen = (w: World, t: number, pm: Pose = {}) => { put(w, "joel", "MAI", -2.55, 0.4, -0.4, -Math.PI / 2).pose(t, { sit: true, expr: "neutral", headYaw: 0.5 }); const m = put(w, "mere", "MAI", -4.2, 0, 1.3, Math.PI / 2 + 0.3); m.pose(t, { expr: "happy", hold: 0.35, ...pm }); inHand(w, "dessin", m, true, -0.3, 0, 0, V(-0.05, 0.1, 0.1)); return m; };
-const mereShadow = (w: World, t: number, u: number) => { const thr = u > 0.5; shade(w, "mere", t, thr ? { armR: -2.6 + 3.2 * sm((u - 0.5) * 4), armL: -0.3, lean: 0.15 * sm((u - 0.5) * 4), expr: "angry" } : { armL: -1.25 + 0.18 * Math.sin(t * 23), armR: -1.25 - 0.18 * Math.sin(t * 23 + 1), expr: "angry" }); spot(w, "MAI", [-1.4, 1.5, 1.3], [-6, 1.5, 1.4], 70, "#fff0dc", 0.7); };
+const mereShadow = (w: World, t: number, u: number) => { const thr = u > 0.5; shade(w, "mere", t, thr ? { armR: -2.6 + 3.2 * sm((u - 0.5) * 4), armL: -0.3, lean: 0.15 * sm((u - 0.5) * 4), expr: "angry" } : { armL: -1.25 + 0.18 * Math.sin(t * 23), armR: -1.25 - 0.18 * Math.sin(t * 23 + 1), expr: "angry" }); spot(w, "MAI", [-1.4, 1.5, 1.3], [-6, 1.5, 1.4], 22, "#fff0dc", 0.7); };
 // bus
 const bus = (w: World, t: number) => { put(w, "joel", "BUS", 0, 0.45, 1.12, Math.PI / 2).pose(t, { sit: true, expr: "neutral", headYaw: -0.4 });
-  for (const [k, x, z, yaw] of [["t1", 0.6, 0.15, -Math.PI / 2], ["t2", -0.7, 0.05, Math.PI / 2], ["t3", 1.7, -0.1, Math.PI], ["boulanger", -1.7, 0.1, 0.4], ["facteur", 2.8, 0.1, -2.2], ["meteo", -2.9, 0.0, 1.2]] as [string, number, number, number][])
+  for (const [k, x, z, yaw] of [["t1", 0.9, 0.15, -Math.PI / 2], ["t2", 1.8, 0.05, Math.PI / 2], ["t3", 2.8, -0.1, Math.PI], ["boulanger", 3.6, 0.1, 0.4], ["facteur", 4.4, 0.1, -2.2], ["meteo", 1.3, -0.4, 1.2]] as [string, number, number, number][])
     put(w, k, "BUS", x, 0, z, yaw).pose(t, { expr: "neutral", armR: -2.7, headYaw: Math.sin(t * 0.6 + x) * 0.25 });
-  for (const [k, x, z] of [["k6", -2.3, 1.12], ["k7", 2.3, -1.12], ["k4", -3.45, -0.62], ["contraire", 3.45, 1.12]] as [string, number, number][]) put(w, k, "BUS", x, 0.45, z, Math.PI / 2).pose(t, { sit: true, expr: "neutral" }); };
+  for (const [k, x, z] of [["k6", -2.3, 1.12], ["k7", 2.3, -1.12], ["k4", -3.45, 1.12], ["contraire", 3.45, 1.12]] as [string, number, number][]) put(w, k, "BUS", x, 0.45, z, Math.PI / 2).pose(t, { sit: true, expr: "neutral" }); };
 // cabinet médical
-const doc = (w: World, t: number, p: Pose = {}) => { put(w, "joel", "DOC", -0.7, 0, -2.0, 0.25).pose(t, { expr: "neutral" }); put(w, "doc", "DOC", 0.9, 0, -0.9, yawTo(0.9, -0.9, -0.7, -2.0)).pose(t, { expr: "smile", ...p }); spot(w, "DOC", [1.7, 1.75, 1.4], [-1.5, 1.3, -2.9], 70, "#ffffff", 0.7); };
+const doc = (w: World, t: number, p: Pose = {}) => { put(w, "joel", "DOC", -0.7, 0, -2.0, 0.25).pose(t, { expr: "neutral" }); put(w, "doc", "DOC", 0.9, 0, -0.9, yawTo(0.9, -0.9, -0.7, -2.0)).pose(t, { expr: "smile", ...p }); spot(w, "DOC", [1.7, 1.75, 1.4], [-1.5, 1.3, -2.9], 10, "#ffffff", 0.7); };
 // matin : Joël sort de chez lui (porte côté z < 0), le soleil bas dans le dos de la rue
-const JOUT = (w: World, t: number, u: number, p: Pose = {}) => put(w, "joel", "RUE", JX, 0, JZ, 0).pose(t, { expr: "neutral", ...p });
+const JOUT = (w: World, t: number, u: number, p: Pose = {}) => { CLEAR = SHADOWLANE; void u; return put(w, "joel", "RUE", JX, 0, JZ, 0).pose(t, { expr: "neutral", ...p }); };
 
 export const SHOTS: Shot[] = [
   // ——— Dans cette ville, ton ombre fait ce que tu as vraiment envie de faire.
-  { w: "Dans cette ville", set: "RUE", g: DAY, fr: "Grue qui descend sur la rue bondée au soleil bas : des centaines d'ombres longues", cam: (_w, u) => G(at("RUE", 6, 42, 26), at("RUE", -4, 10, 12), at("RUE", -14, 0, -4), at("RUE", -20, 1, -3), 46, u),
-    st: (w, u, t) => { walk(w, "t3", "RUE", -10, -4.8, -16, -4.8, u, t, { expr: "neutral" }); shade(w, "t3", t, { cheer: true }); } },
-  { w: "ton ombre fait", set: "RUE", g: DAY, fr: "Un homme en costume marche, raide ; sur la façade, son ombre danse", cam: (w, u) => { const a = w.actors.t3.root.position; return { P: a.clone().add(V(1.5 - 1.2 * u, 1.6, 6.2)), T: a.clone().add(V(-1.8, 1.4, -1.6)), fov: 44 }; },
-    st: (w, u, t) => { walk(w, "t3", "RUE", -16, -4.8, -20.5, -4.8, u, t, { expr: "neutral" }); shade(w, "t3", t, { cheer: true, headPitch: -0.3 }); } },
-  { w: "vraiment envie", set: "RUE", g: DAY, fr: "Plus près de l'ombre qui danse sur le mur", cam: (w, u) => { const a = w.actors.t3.root.position; return { P: a.clone().add(V(-0.4 - 0.6 * u, 1.5, 3.4)), T: a.clone().add(V(-2.6, 1.6, -1.9)), fov: 40 }; },
-    st: (w, u, t) => { walk(w, "t3", "RUE", -20.5, -4.8, -22, -4.8, u, t, { expr: "neutral" }); shade(w, "t3", t, { cheer: true }); } },
+  { w: "Dans cette ville", set: "RUE", g: DAY, fr: "Grue qui descend sur la rue bondée au soleil bas : des centaines d'ombres longues", cam: (_w, u) => G(at("RUE", 6, 26, 1), at("RUE", -5, 8, 0.5), at("RUE", -16, 0, 0), at("RUE", -19, 1, 0), 46, u),
+    st: (w, u, t) => { CLEAR = SIDELANE; walk(w, "t3", "RUE", -10, 2.0, -16, 2.0, u, t, { expr: "neutral" }); shade(w, "t3", t, { cheer: true }); } },
+  { w: "ton ombre fait", set: "RUE", g: DAY, fr: "Un homme en costume marche, raide ; sur la façade, son ombre danse", cam: (w, u) => { const a = w.actors.t3.root.position; return { P: a.clone().add(V(3.6 - 0.8 * u, 3.8, -0.9)), T: a.clone().add(V(-3.6, 0, 0.35)), fov: 46 }; },
+    st: (w, u, t) => { CLEAR = SIDELANE; walk(w, "t3", "RUE", -16, 2.0, -20.5, 2.0, u, t, { expr: "neutral" }); shade(w, "t3", t, { cheer: true, headPitch: -0.3 }); } },
+  { w: "vraiment envie", set: "RUE", g: DAY, fr: "Plus près de l'ombre qui danse sur le mur", cam: (w, u) => { const a = w.actors.t3.root.position; return { P: a.clone().add(V(0.6 - 0.8 * u, 4.6, -1.0)), T: a.clone().add(V(-4.6, 0, 0.45)), fov: 44 }; },
+    st: (w, u, t) => { CLEAR = SIDELANE; walk(w, "t3", "RUE", -20.5, 2.0, -22, 2.0, u, t, { expr: "neutral" }); shade(w, "t3", t, { cheer: true }); } },
   // ——— Pas ce que tu fais. Ce que tu veux.
   { w: "Pas ce que tu fais", set: "RUE", g: DAY, fr: "Une mère et son fils marchent sagement, main dans la main", cam: (w, u) => { const a = w.actors.t2.root.position; return { P: a.clone().add(V(2.5 - 1.5 * u, 1.1, 4.2)), T: a.clone().add(V(-0.5, 1.0, 0)), fov: 42 }; },
     st: (w, u, t) => { walk(w, "t2", "RUE", -2, 0.6, -4, 0.6, u, t, { expr: "neutral", armL: -0.25 }, 1.0); walk(w, "k3", "RUE", -2, 1.25, -4, 1.25, u, t, { expr: "neutral", armR: -0.25 }, 1.0); } },
@@ -117,12 +121,12 @@ export const SHOTS: Shot[] = [
   // ——— Mon prof de maths parle des fractions avec passion. Son ombre, elle, dort sur le bureau.
   { w: "Mon prof de maths", set: "CL2", g: IN, fr: "Classe : la prof s'enflamme au tableau, les élèves s'ennuient", cam: (_w, u) => G(at("CL2", -1.6, 1.9, 3.3), at("CL2", -0.8, 1.7, 2.4), at("CL2", -0.3, 1.4, -2.8), at("CL2", 0.4, 1.4, -2.9), 48, u),
     st: (w, _u, t) => { seated(w, t); prof(w, t); MED(w).boardM.map = MED(w).boards.frac; profShadow(w, t); w.sl.intensity = 0; } },
-  { w: "Son ombre, elle", set: "CL2", g: IN, fr: "Sur le mur derrière le bureau, l'ombre de la prof dort, affalée", cam: (_w, u) => G(at("CL2", -0.2, 1.6, 1.4), at("CL2", 0.5, 1.5, 0.6), at("CL2", 1.6, 1.3, -3.4), at("CL2", 1.9, 1.25, -3.5), 44, u),
+  { w: "Son ombre, elle", set: "CL2", g: IN, fr: "Sur le mur derrière le bureau, l'ombre de la prof dort, affalée", cam: (_w, u) => G(at("CL2", 3.5, 1.8, 0.4), at("CL2", 3.3, 1.7, -0.3), at("CL2", 1.4, 1.2, -3.5), at("CL2", 1.6, 1.2, -3.6), 46, u),
     st: (w, _u, t) => { seated(w, t); prof(w, t); MED(w).boardM.map = MED(w).boards.frac; profShadow(w, t); } },
   // ——— Le maire sourit à tout le monde sur la place. Son ombre serre les poings.
   { w: "Le maire sourit", set: "PL", g: DAY, fr: "Fête de la ville : le maire salue la foule depuis l'estrade", cam: (_w, u) => G(at("PL", -6, 3.2, 4), at("PL", -3.5, 3.0, 0.5), at("PL", 0, 3.0, -12.3), at("PL", 0, 3.0, -12.3), 40, u),
     st: (w, _u, t) => { maire(w, t); MED(w).crowd.root.visible = true; MED(w).crowd.jump(t, 0.25, at("PL", 0, 2, -13)); maireShadow(w, t); w.sl.intensity = 0; } },
-  { w: "Son ombre serre", set: "PL", g: DAY, fr: "Derrière lui, sur la toile, son ombre géante frappe du poing", cam: (_w, u) => G(at("PL", 2.4, 2.4, -7.6), at("PL", 1.6, 2.6, -8.6), at("PL", -0.4, 3.0, -14.5), at("PL", -0.3, 3.2, -15), 46, u),
+  { w: "Son ombre serre", set: "PL", g: DAY, fr: "Derrière lui, sur la toile, son ombre géante frappe du poing", cam: (_w, u) => G(at("PL", 3.4, 2.6, -5.6), at("PL", 2.6, 2.8, -6.6), at("PL", -0.4, 3.0, -14.5), at("PL", -0.3, 3.2, -15), 48, u),
     st: (w, _u, t) => { maire(w, t); maireShadow(w, t); } },
   // ——— Depuis, il ne fait ses discours que les jours de pluie. Et il a été réélu trois fois.
   { w: "Depuis, il ne fait", set: "PL", g: GRAY, sunK: 0.05, amb: 1.0, sky: GSKY, fr: "Ciel gris, plus d'ombre : le maire parle, sûr de lui", cam: (_w, u) => G(at("PL", 3.0, 2.8, -6.5), at("PL", 2.0, 2.9, -7.6), at("PL", 0, 2.9, -12.3), at("PL", 0, 3.0, -12.3), 40, u),
@@ -143,25 +147,26 @@ export const SHOTS: Shot[] = [
   { w: "Alors les gens", set: "RUE", g: DAY, fr: "En terrasse, tout le monde tourne le dos au soleil ; leurs ombres s'étirent devant eux", cam: (_w, u) => G(at("RUE", -20, 1.3, -3.2), at("RUE", -19, 1.2, -3.6), at("RUE", -13, 1.0, -5.6), at("RUE", -13, 1.0, -5.6), 44, u),
     st: (w, _u, t) => { for (const [k, x, z] of [["t1", -13.4, -5.1], ["t2", -12.6, -6.1], ["k6", -11.4, -5.2], ["contraire", -10.6, -6.0]] as [string, number, number][]) put(w, k, "RUE", x, 0.32, z, -Math.PI / 2).pose(t, { sit: true, expr: "smile", talk: Math.sin(t * 2 + x) > 0.3, headYaw: (z < -5.5 ? 0.5 : -0.5) }); } },
   // ——— Les rendez-vous amoureux se font la nuit.
-  { w: "Les rendez-vous", set: "RUE", g: NIGHT, night: true, sunK: 0, amb: 0.12, sky: NSKY, fr: "Nuit : un couple main dans la main, dans le noir entre deux réverbères", cam: (_w, u) => G(at("RUE", -4, 1.4, 1.5), at("RUE", -5, 1.4, 1.0), at("RUE", -8.5, 1.3, 4.3), at("RUE", -8.5, 1.3, 4.3), 44, u),
-    st: (w, _u, t) => { put(w, "t1", "RUE", -8.9, 0, 4.4, 0.4).pose(t, { expr: "smile", armL: -0.5 }); put(w, "t2", "RUE", -8.1, 0, 4.4, -0.4).pose(t, { expr: "happy", armR: -0.5 }); spot(w, "RUE", [-13.8, 4.0, 4.1], [-13.8, 0, 4.1], 60, "#ffcf80", 0.9); } },
+  { w: "Les rendez-vous", set: "RUE", g: NIGHT, night: true, sunK: 0, amb: 0.35, sky: NSKY, fr: "Nuit : un couple main dans la main, dans le noir entre deux réverbères", cam: (_w, u) => G(at("RUE", -4, 1.4, 1.5), at("RUE", -5, 1.4, 1.0), at("RUE", -8.5, 1.3, 4.3), at("RUE", -8.5, 1.3, 4.3), 44, u),
+    st: (w, _u, t) => { put(w, "t1", "RUE", -8.9, 0, 4.4, 0.4).pose(t, { expr: "smile", armL: -0.5 }); put(w, "t2", "RUE", -8.1, 0, 4.4, -0.4).pose(t, { expr: "happy", armR: -0.5 }); spot(w, "RUE", [-13.8, 4.0, 4.1], [-13.8, 0, 4.1], 30, "#ffcf80", 0.9); } },
   // ——— Et quand il fait gris, tout le monde ment.
   { w: "Et quand il fait gris", set: "RUE", g: GRAY, sunK: 0.06, amb: 1.0, sky: GSKY, fr: "Temps gris, plus d'ombres : grands sourires et poignées de main partout", cam: (_w, u) => G(at("RUE", -2, 3.5, 3.5), at("RUE", -6, 3.0, 2.5), at("RUE", -14, 1.2, -2), at("RUE", -16, 1.2, -2.5), 46, u),
     st: (w, _u, t) => { const a = put(w, "t1", "RUE", -12.5, 0, -0.5, Math.PI / 2), b = put(w, "t2", "RUE", -11.6, 0, -0.5, -Math.PI / 2); a.pose(t, { expr: "happy", reach: 0.45, talk: true }); b.pose(t, { expr: "gummy", reach: 0.45 }); put(w, "k6", "RUE", -10, 0, 1.5, -1.2).pose(t, { expr: "happy", wave: "R" }); } },
   // ——— Les vendeurs de voitures, eux, adorent l'hiver.
-  { w: "Les vendeurs de voitures", set: "TOWN", g: GRAY, fr: "Temps gris : un vendeur tout sourire vend une voiture cabossée", cam: (_w, u) => G(at("TOWN", 9.5, 1.9, 6.5), at("TOWN", 8.2, 1.8, 5.4), at("TOWN", 5, 1.0, 0.4), at("TOWN", 4.6, 1.0, 0.4), 44, u),
-    st: (w, _u, t) => { const S2 = w.sets; S2.sun.TOWN.intensity = 0.15; S2.hemi.TOWN.intensity = 1.3; put(w, "facteur", "TOWN", 6.6, 0, 1.6, -1.2).pose(t, { expr: "gummy", reach: 0.45, talk: true }); put(w, "t3", "TOWN", 5.7, 0, 2.3, 2.0).pose(t, { expr: "smile", reach: 0.45 }); } },
+  { w: "Les vendeurs de voitures", set: "RUE", g: GRAY, sunK: 0.06, amb: 1.0, sky: GSKY, fr: "Temps gris : un vendeur tout sourire tape sur le capot d'une voiture cabossée", cam: (_w, u) => G(at("RUE", -9.0, 1.6, -3.4), at("RUE", -9.6, 1.6, -3.0), at("RUE", -13.8, 1.0, 0.2), at("RUE", -14.0, 1.0, 0.3), 44, u),
+    st: (w, _u, t) => { const car = w.sets.cars[1], R0 = w.sets.g.RUE; if (car.parent !== R0) R0.add(car); car.visible = true; car.position.set(-14.5, 0, 0.6); car.rotation.set(0, Math.PI / 2 + 0.3, 0.04);
+      put(w, "facteur", "RUE", -13.0, 0, -0.9, -0.9).pose(t, { expr: "gummy", knock: true, talk: true }); put(w, "t3", "RUE", -12.0, 0, 1.9, -2.2).pose(t, { expr: "smile", headYaw: 0.3 }); } },
   // ——— Moi, je n'ai jamais eu d'ombre.
-  { w: "Moi, je n'ai jamais", set: "RUE", g: DAY, fr: "Au ras du sol : toutes les ombres s'étirent… sauf celle de Joël, qui n'en a pas", cam: (_w, u) => G(at("RUE", -1.8, 0.55, 3.8), at("RUE", -2.4, 0.7, 3.2), at("RUE", -8, 0.8, 0.8), at("RUE", -8, 1.0, 1.0), 44, u),
-    st: (w, _u, t) => { JOUT(w, t, 0); MED(w).ring.set(t, (x, z) => Math.hypot(x - JX, z - JZ) < 1.8); } },
+  { w: "Moi, je n'ai jamais", set: "RUE", g: DAY, fr: "Au ras du sol : toutes les ombres s'étirent… sauf celle de Joël, qui n'en a pas", cam: (_w, u) => G(at("RUE", -2.2, 0.8, 1.6), at("RUE", -2.8, 0.9, 1.3), at("RUE", -8.5, 0.6, -0.8), at("RUE", -8.5, 0.6, -0.8), 46, u),
+    st: (w, _u, t) => { JOUT(w, t, 0); } },
   { w: "Ni au soleil", set: "RUE", g: DAY, fr: "Plongée verticale : Joël au milieu de la foule, le seul sans ombre", cam: (_w, u) => G(at("RUE", JX + 0.6, 16, JZ + 0.4), at("RUE", JX + 0.3, 11, JZ + 0.25), at("RUE", JX - 1.5, 0, JZ - 0.3), at("RUE", JX - 1.2, 0, JZ - 0.2), 44, u),
-    st: (w, _u, t) => { JOUT(w, t, 0, { headPitch: -0.6 }); MED(w).ring.set(t, (x, z) => Math.hypot(x - JX, z - JZ) < 1.8); } },
-  { w: "ni sous les lampadaires", set: "RUE", g: NIGHT, night: true, sunK: 0, amb: 0.12, sky: NSKY, fr: "Nuit, sous un réverbère : le poteau projette son ombre, pas Joël", cam: (_w, u) => G(at("RUE", 1.5, 3.2, 0.2), at("RUE", 0.5, 2.6, 0.8), at("RUE", -2.6, 0.6, 3.6), at("RUE", -2.6, 0.8, 3.6), 42, u),
-    st: (w, _u, t) => { put(w, "joel", "RUE", -2.3, 0, 3.3, 0.6).pose(t, { expr: "neutral" }); walk(w, "t3", "RUE", -5.5, 2.4, -4.2, 2.6, cl(t % 3 / 3), t, { expr: "neutral" }); spot(w, "RUE", [-2.8, 4.0, 4.1], [-2.6, 0, 3.4], 80, "#ffcf80", 0.85); } },
+    st: (w, _u, t) => { JOUT(w, t, 0, { headPitch: -0.6 }); } },
+  { w: "ni sous les lampadaires", set: "RUE", g: NIGHT, night: true, sunK: 0, amb: 0.3, sky: NSKY, fr: "Nuit, sous un réverbère : le poteau projette son ombre, pas Joël", cam: (_w, u) => G(at("RUE", -1.6, 2.4, -2.6), at("RUE", -2.0, 2.6, -1.9), at("RUE", -2.6, 0.7, 3.4), at("RUE", -2.6, 0.8, 3.4), 44, u),
+    st: (w, _u, t) => { put(w, "joel", "RUE", -2.3, 0, 3.3, 0.6).pose(t, { expr: "neutral" }); walk(w, "t3", "RUE", -5.5, 2.4, -4.2, 2.6, cl(t % 3 / 3), t, { expr: "neutral" }); spot(w, "RUE", [-2.8, 4.0, 4.1], [-2.6, 0, 3.4], 30, "#ffcf80", 0.85); } },
   // ——— Les médecins disent que c'est rare, mais que ce n'est pas grave.
-  { w: "Les médecins", set: "DOC", g: IN, fr: "Cabinet médical : sous la lampe, l'ombre du médecin sur le mur… pas celle de Joël", cam: (_w, u) => G(at("DOC", 2.4, 1.7, 1.9), at("DOC", 2.0, 1.65, 1.4), at("DOC", -0.4, 1.3, -2.2), at("DOC", -0.5, 1.3, -2.3), 46, u),
+  { w: "Les médecins", set: "DOC", g: IN, fr: "Cabinet médical : sous la lampe, l'ombre du médecin sur le mur… pas celle de Joël", cam: (_w, u) => G(at("DOC", -2.3, 1.7, 1.7), at("DOC", -2.0, 1.65, 1.3), at("DOC", 0.1, 1.3, -2.4), at("DOC", 0.2, 1.3, -2.5), 48, u),
     st: (w, _u, t) => { doc(w, t, { talk: true }); } },
-  { w: "mais que ce n'est pas grave", set: "DOC", g: IN, fr: "Le médecin hausse les épaules, souriant", cam: (_w, u) => G(at("DOC", -0.1, 1.7, 0.6), at("DOC", 0.0, 1.7, 0.3), at("DOC", 0.9, 1.6, -0.9), at("DOC", 0.9, 1.6, -0.9), 40, u),
+  { w: "mais que ce n'est pas grave", set: "DOC", g: IN, fr: "Le médecin hausse les épaules, souriant", cam: (_w, u) => G(at("DOC", -1.4, 1.7, 1.4), at("DOC", -1.2, 1.7, 1.0), at("DOC", 0.9, 1.5, -0.9), at("DOC", 0.9, 1.5, -0.9), 42, u),
     st: (w, _u, t) => { doc(w, t, { expr: "happy", armL: -0.5, armR: -0.5, talk: true }); } },
   // ——— Les gens, eux, n'aiment pas ça. Ils ne savent jamais ce que je pense.
   { w: "Les gens, eux", set: "RUE", g: DAY, fr: "Dans la rue, les passants s'arrêtent et dévisagent Joël", cam: (w, u) => { const h = headOf(J(w)); return G(h.clone().add(V(3.4, 0.2, 3.2)), h.clone().add(V(2.4, 0.1, 2.6)), h.clone().add(V(-1.5, -0.4, -1.5)), h.clone().add(V(-1.2, -0.4, -1.2)), 46, u); },
@@ -169,7 +174,7 @@ export const SHOTS: Shot[] = [
   { w: "Ils ne savent jamais", set: "RUE", g: DAY, fr: "Gros plan Joël, impassible ; autour, les ombres des autres, aucune à ses pieds", cam: (w, u) => { const h = headOf(J(w)); return G(h.clone().add(V(-2.4, -0.2, 1.6)), h.clone().add(V(-1.9, -0.15, 1.3)), h.clone().add(V(0, -0.15, 0)), h.clone().add(V(0, -0.15, 0)), 40, u); },
     st: (w, u, t) => { walk(w, "joel", "RUE", -6, 1.4, -7.2, 1.4, u, t, { expr: "neutral" }, 1.0); for (const [k, x, z] of [["t1", -9.0, -0.4], ["t2", -9.6, 3.0]] as [string, number, number][]) put(w, k, "RUE", x, 0, z, yawTo(x, z, -6.5, 1.4)).pose(t, { expr: "angry" }); } },
   // ——— Personne ne s'assoit à côté de moi dans le bus.
-  { w: "Personne ne s'assoit", set: "BUS", g: IN, fr: "Bus bondé : tout le monde debout, les sièges autour de Joël restent vides", cam: (_w, u) => G(at("BUS", 4.8, 1.85, -0.9), at("BUS", 4.2, 1.8, -0.6), at("BUS", -0.5, 1.0, 0.6), at("BUS", -0.3, 1.0, 0.7), 50, u),
+  { w: "Personne ne s'assoit", set: "BUS", g: IN, fr: "Bus bondé : tout le monde debout, les sièges autour de Joël restent vides", cam: (_w, u) => G(at("BUS", -2.4, 2.25, -0.5), at("BUS", -2.0, 2.2, -0.4), at("BUS", 0.3, 0.85, 1.0), at("BUS", 0.4, 0.85, 1.05), 52, u),
     st: (w, _u, t) => { bus(w, t); } },
   // ——— J'avais fini par m'y habituer.
   { w: "J'avais fini", set: "RUE", g: { ...DAY, fog: "#f0b890", fogD: 0.006, bri: -0.05, bloom: 1.05 }, fr: "Fin de journée : Joël seul en terrasse, les autres tables vides autour de lui", cam: (_w, u) => G(at("RUE", -9.5, 1.5, -1.5), at("RUE", -10.5, 1.4, -2.2), at("RUE", -13.4, 1.0, -5.1), at("RUE", -13.4, 1.0, -5.1), 42, u),
@@ -177,22 +182,22 @@ export const SHOTS: Shot[] = [
   // ——— Mais ce matin, en sortant de chez moi, il y avait quelque chose à mes pieds.
   { w: "Mais ce matin", set: "RUE", g: DAY, fr: "Matin : Joël sort de chez lui, soleil rasant", cam: (_w, u) => G(at("RUE", JX + 3.5, 1.6, 6.0), at("RUE", JX + 2.6, 1.5, 5.4), at("RUE", JX, 1.3, -4.0), at("RUE", JX, 1.2, -1.0), 44, u),
     st: (w, u, t) => { walk(w, "joel", "RUE", JX, -6.2, JX, JZ - 1.0, u, t, { expr: "neutral" }, 1.0); } },
-  { w: "il y avait quelque chose", set: "RUE", g: DAY, fr: "Au ras du sol : quelque chose de sombre s'étire à ses pieds", cam: (_w, u) => G(at("RUE", JX - 1.0, 0.35, JZ + 2.2), at("RUE", JX - 1.4, 0.3, JZ + 1.9), at("RUE", JX - 2.2, 0.1, JZ - 0.4), at("RUE", JX - 2.4, 0.1, JZ - 0.5), 46, u),
+  { w: "il y avait quelque chose", set: "RUE", g: DAY, fr: "Au ras du sol : quelque chose de sombre s'étire à ses pieds", cam: (_w, u) => G(at("RUE", JX + 0.6, 0.45, JZ + 2.4), at("RUE", JX + 0.3, 0.4, JZ + 2.0), at("RUE", JX - 0.8, 0.12, JZ - 0.1), at("RUE", JX - 1.2, 0.1, JZ), 46, u),
     st: (w, u, t) => { JOUT(w, t, u, { headPitch: 0.5 * u }); shade(w, "joel", t, {}, { sy: 0.03 + 0.25 * sm(u) }); } },
   // ——— Une ombre. La mienne.
-  { w: "Une ombre", set: "RUE", g: DAY, fr: "Son ombre pousse, longue, sur les pavés", cam: (_w, u) => G(at("RUE", JX + 1.5, 3.4, JZ + 3.0), at("RUE", JX + 1.0, 4.2, JZ + 2.4), at("RUE", JX - 3.0, 0, JZ - 0.9), at("RUE", JX - 3.6, 0, JZ - 1.0), 44, u),
+  { w: "Une ombre", set: "RUE", g: DAY, fr: "Son ombre pousse, longue, sur les pavés", cam: (_w, u) => G(at("RUE", JX + 2.6, 4.2, JZ + 0.3), at("RUE", JX + 2.2, 5.0, JZ + 0.3), at("RUE", JX - 3.2, 0, JZ + 0.35), at("RUE", JX - 3.8, 0, JZ + 0.4), 44, u),
     st: (w, u, t) => { JOUT(w, t, u, { headPitch: 0.5 }); shade(w, "joel", t, {}, { sy: 0.28 + 0.72 * sm(u * 1.3) }); } },
   { w: "La mienne", set: "RUE", g: DAY, fr: "Gros plan Joël, sidéré", cam: (w, u) => { const h = headOf(J(w)); return G(h.clone().add(V(0.6, -0.5, 2.6)), h.clone().add(V(0.5, -0.45, 2.2)), h.clone().add(V(0, -0.1, 0)), h.clone().add(V(0, -0.1, 0)), 40, u); },
     st: (w, _u, t) => { JOUT(w, t, 0, { expr: "worried", headPitch: 0.45 }); shade(w, "joel", t, {}); } },
   // ——— J'ai levé la main. Elle n'a pas bougé.
-  { w: "J'ai levé la main", set: "RUE", g: DAY, fr: "Joël lève la main ; au sol, son ombre reste immobile", cam: (_w, u) => G(at("RUE", JX + 2.8, 2.6, JZ + 3.6), at("RUE", JX + 2.4, 2.8, JZ + 3.2), at("RUE", JX - 2.0, 0.6, JZ - 0.4), at("RUE", JX - 2.0, 0.6, JZ - 0.4), 46, u),
+  { w: "J'ai levé la main", set: "RUE", g: DAY, fr: "Joël lève la main ; au sol, son ombre reste immobile", cam: (_w, u) => G(at("RUE", JX + 3.0, 3.0, JZ + 0.9), at("RUE", JX + 2.6, 3.2, JZ + 0.8), at("RUE", JX - 2.5, 0.4, JZ + 0.2), at("RUE", JX - 2.5, 0.4, JZ + 0.2), 46, u),
     st: (w, u, t) => { JOUT(w, t, u, { expr: "worried", armR: -2.7 * sm(u * 2.5), headPitch: 0.35 }); shade(w, "joel", t, {}); } },
-  { w: "Elle n'a pas bougé", set: "RUE", g: DAY, fr: "Plus près de l'ombre : pas un geste", cam: (_w, u) => G(at("RUE", JX - 2.2, 2.6, JZ + 1.8), at("RUE", JX - 2.6, 2.3, JZ + 1.5), at("RUE", JX - 4.0, 0, JZ - 0.9), at("RUE", JX - 4.2, 0, JZ - 1.0), 44, u),
+  { w: "Elle n'a pas bougé", set: "RUE", g: DAY, fr: "Plus près de l'ombre : pas un geste", cam: (_w, u) => G(at("RUE", JX - 2.2, 2.6, JZ + 1.8), at("RUE", JX - 2.6, 2.3, JZ + 1.5), at("RUE", JX - 4.0, 0, JZ + 0.4), at("RUE", JX - 4.2, 0, JZ + 0.45), 44, u),
     st: (w, _u, t) => { JOUT(w, t, 0, { expr: "worried", armR: -2.7 }); shade(w, "joel", t, {}); } },
   // ——— Elle ne fait pas ce que je veux. Elle montre quelque chose du doigt. Derrière moi.
   { w: "Elle ne fait pas", set: "RUE", g: DAY, fr: "Joël baisse lentement la main, inquiet", cam: (w, u) => { const h = headOf(J(w)); return G(h.clone().add(V(-1.8, -0.3, 2.2)), h.clone().add(V(-1.5, -0.25, 1.9)), h.clone().add(V(0, -0.2, 0)), h.clone().add(V(0, -0.2, 0)), 42, u); },
     st: (w, u, t) => { JOUT(w, t, u, { expr: "scared", armR: -2.7 * (1 - sm(u)), headPitch: 0.3 }); shade(w, "joel", t, {}); } },
-  { w: "Elle montre quelque chose", set: "RUE", g: DAY, fr: "Au sol, l'ombre se retourne et tend le bras vers l'arrière", cam: (_w, u) => G(at("RUE", JX - 1.2, 4.2, JZ + 2.8), at("RUE", JX - 1.6, 4.6, JZ + 2.4), at("RUE", JX - 3.6, 0, JZ - 1.0), at("RUE", JX - 3.6, 0, JZ - 1.4), 44, u),
+  { w: "Elle montre quelque chose", set: "RUE", g: DAY, fr: "Au sol, l'ombre se retourne et tend le bras vers l'arrière", cam: (_w, u) => G(at("RUE", JX + 1.6, 5.5, JZ + 0.6), at("RUE", JX + 1.2, 6.0, JZ + 0.5), at("RUE", JX - 3.6, 0, JZ + 0.4), at("RUE", JX - 3.6, 0, JZ + 0.2), 44, u),
     st: (w, u, t) => { JOUT(w, t, u, { expr: "scared" }); shade(w, "joel", t, { point: 0.15 - 0.15 * (1 - sm(u * 1.6)) * 0 }, { yaw: Math.PI * sm(u * 2) }); w.gh.joel.rArm.rotation.x = -1.6 * sm(u * 2 - 0.4); } },
   { w: "Derrière moi", set: "RUE", g: DAY, fr: "La caméra suit le doigt de l'ombre : derrière Joël, la porte de chez lui, entrouverte", cam: (_w, u) => G(at("RUE", JX + 0.8, 1.7, JZ + 1.6), at("RUE", JX + 0.6, 1.8, JZ + 0.6), at("RUE", JX, 1.5, -4), at("RUE", JX, 1.6, -7), 44, u),
     st: (w, _u, t) => { JOUT(w, t, 1, { expr: "scared" }); const g = shade(w, "joel", t, {}, { yaw: Math.PI }); g.rArm.rotation.x = -1.6; } },
@@ -200,11 +205,11 @@ export const SHOTS: Shot[] = [
   { w: "Je ne me suis pas", set: "RUE", g: DAY, fr: "Très gros plan : Joël, figé, les yeux écarquillés", cam: (w, u) => { const h = headOf(J(w)); return G(h.clone().add(V(0.2, -0.1, 2.0)), h.clone().add(V(0.15, -0.1, 1.5)), h.clone().add(V(0, -0.05, 0)), h.clone().add(V(0, -0.05, 0)), 38, u); },
     st: (w, _u, t) => { JOUT(w, t, 1, { expr: "scared", headPitch: 0 }); const g = shade(w, "joel", t, {}, { yaw: Math.PI }); g.rArm.rotation.x = -1.6; } },
   // ——— Parce que dans toute la rue, les ombres des gens se sont arrêtées. Et une par une, elles se sont tournées vers moi.
-  { w: "Parce que dans toute la rue", set: "RUE", g: DAY, fr: "Vue haute : la rue bondée, les passants marchent… mais leurs ombres ne les suivent plus", cam: (_w, u) => G(at("RUE", JX + 14, 20, JZ + 14), at("RUE", JX + 10, 17, JZ + 10), at("RUE", JX - 8, 0, JZ - 1), at("RUE", JX - 8, 0, JZ - 1.5), 46, u),
+  { w: "Parce que dans toute la rue", set: "RUE", g: DAY, fr: "Vue haute : la rue bondée, les passants marchent… mais leurs ombres ne les suivent plus", cam: (_w, u) => G(at("RUE", JX + 16, 14, JZ + 1), at("RUE", JX + 12, 12, JZ + 0.5), at("RUE", JX - 8, 0, JZ), at("RUE", JX - 8, 0, JZ), 46, u),
     st: (w, _u, t) => { JOUT(w, t, 1, { expr: "scared" }); const g = shade(w, "joel", t, {}, { yaw: Math.PI }); g.rArm.rotation.x = -1.6; } },
   { w: "les ombres des gens", set: "RUE", g: DAY, fr: "Au ras du sol : les gens sortent de leurs ombres, qui restent figées sur les pavés", cam: (_w, u) => G(at("RUE", JX - 6, 0.6, JZ + 3.5), at("RUE", JX - 8, 0.7, JZ + 3.0), at("RUE", JX - 16, 0.6, JZ - 1), at("RUE", JX - 18, 0.6, JZ - 1), 46, u),
     st: (w, _u, t) => { JOUT(w, t, 1, { expr: "scared" }); } },
-  { w: "Et une par une", set: "RUE", g: DAY, fr: "Les ombres pivotent une à une, comme des aiguilles, vers Joël", cam: (_w, u) => G(at("RUE", JX + 6, 14, JZ + 8), at("RUE", JX + 3, 16, JZ + 5), at("RUE", JX - 4, 0, JZ - 0.5), at("RUE", JX - 2, 0, JZ), 46, u),
+  { w: "Et une par une", set: "RUE", g: DAY, fr: "Les ombres pivotent une à une, comme des aiguilles, vers Joël", cam: (_w, u) => G(at("RUE", JX + 7, 13, JZ - 1), at("RUE", JX + 4, 15, JZ), at("RUE", JX - 4, 0, JZ), at("RUE", JX - 2, 0, JZ), 46, u),
     st: (w, _u, t) => { JOUT(w, t, 1, { expr: "scared" }); } },
   { w: "elles se sont tournées", set: "RUE", g: DAY, fr: "Plongée sur Joël : toutes les ombres de la rue pointent vers lui", cam: (_w, u) => G(at("RUE", JX + 0.5, 9, JZ + 2), at("RUE", JX + 0.2, 6, JZ + 1.2), at("RUE", JX, 0.5, JZ), at("RUE", JX, 0.8, JZ), 48, u, 44),
     st: (w, _u, t) => { JOUT(w, t, 1, { expr: "scared", headPitch: -0.4 }); } },
@@ -221,17 +226,18 @@ export const gradeOf = (i: number): Grade => ({ ...DEF, ...(SHOTS[i].g ?? {}) })
 const I_FREEZE = SHOTS.findIndex((s) => s.w === "Parce que dans toute la rue");
 
 export const applyShot = (w: World, i: number, u: number, t: number, _cam: THREE.Camera) => {
-  w.cam = _cam;
+  w.cam = _cam; CLEAR = null;
   const s = SHOTS[i], S = w.sets, m = S.med; S.show(s.set);
   for (const a of Object.values(w.actors)) { a.root.visible = false; a.root.position.y = 0; a.root.quaternion.identity(); a.torso.scale.set(1, 1, 1); castOf(a, true); }
   for (const g of Object.values(w.gh)) g.root.visible = false; castOf(w.actors.joel, false);   // Joël n'a pas d'ombre
   for (const x of Object.values(S.tags)) x.visible = false; for (const x of S.rain) x.visible = false; for (const x of Object.values(m.labels)) x.visible = false;
   for (const p of Object.values(m.props)) { p.visible = false; p.scale.setScalar(1); }
   m.crowd.root.visible = false; m.gulls.root.visible = false; m.walk.root.visible = false; m.walkPL.root.visible = false; m.ring.root.visible = false; m.decals.root.visible = false; m.walk.shadows(true); m.ring.shadows(true);
-  m.boardM.map = m.boards.nom; w.sl.intensity = 0;
+  m.boardM.map = m.boards.nom; w.sl.intensity = 0; if (S.cars[1].parent === S.g.RUE) S.cars[1].visible = false;
   for (const k of m.skies) { k.color.set(s.sky ?? "#ffffff"); k.map = m.day; }
-  for (const [l, base] of m.suns) l.intensity = base * (s.sunK ?? 1);
-  for (const [h, base] of m.hemis) h.intensity = base * (s.amb ?? 1);
+  const rueDay = s.set === "RUE" && s.sunK === undefined;   // soleil rasant : on le pousse et on baisse l'ambiance pour des ombres franches
+  for (const [l, base] of m.suns) l.intensity = base * (s.sunK ?? (rueDay ? 2.2 : 1));
+  for (const [h, base] of m.hemis) h.intensity = base * (s.amb ?? (rueDay ? 0.45 : 1));
   LAMPM.emissiveIntensity = s.night ? 4 : 0.25; m.lamp.emissiveIntensity = s.night ? 4 : 1.2; m.lampL.intensity = 0;
   w.fill.intensity = 0; w.key.intensity = 0;
   s.st?.(w, u, t);

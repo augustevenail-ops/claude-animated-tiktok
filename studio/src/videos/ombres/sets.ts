@@ -339,7 +339,7 @@ export class Sets {
     this.g = Object.fromEntries((Object.keys(O) as SetK[]).map((k) => { const g = new THREE.Group(); g.position.copy(O[k]); this.root.add(g); return [k, g]; })) as Record<SetK, THREE.Group>;
     const sun = (k: SetK, pos: THREE.Vector3, tgt: THREE.Vector3, i: number, size: number, col = "#fff2dc", hs = "#cfe6ff", hg = "#a8c890", hi = 0.9) => {
       const s = new THREE.DirectionalLight(col, i); s.position.copy(pos); s.target.position.copy(tgt); s.castShadow = true; s.shadow.mapSize.set(2048, 2048);
-      const c = s.shadow.camera; c.left = c.bottom = -size; c.right = c.top = size; c.near = 0.5; c.far = 120; s.shadow.bias = -0.0004; s.shadow.normalBias = 0.02; s.shadow.radius = 4;
+      const c = s.shadow.camera; c.left = c.bottom = -size; c.right = c.top = size; c.near = 0.5; c.far = 120; c.updateProjectionMatrix(); s.shadow.bias = -0.0004; s.shadow.normalBias = 0.02; s.shadow.radius = 4;
       this.g[k].add(s, s.target); this.sun[k] = s; const h = new THREE.HemisphereLight(hs, hg, hi); this.g[k].add(h); this.hemi[k] = h; return s; };
     const pt = (k: SetK | THREE.Object3D, x: number, y: number, z: number, col: string, i: number, d = 10) => { const l = new THREE.PointLight(col, i, d, 1.6); l.position.set(x, y, z); (typeof k === "string" ? this.g[k] : k).add(l); return l; };
 

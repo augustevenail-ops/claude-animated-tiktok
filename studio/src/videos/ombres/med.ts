@@ -179,7 +179,7 @@ export class Med {
   constructor(g: Record<string, THREE.Group>, root: THREE.Object3D) {
     this.root = root; this.day = skyDay(); this.dusk = skyDusk();
     const sun = (p: THREE.Group, pos: THREE.Vector3, i: number, size: number, hi = 1.15, col = "#fff0d8") => { const s = new THREE.DirectionalLight(col, i); this.suns.push([s, i]); s.position.copy(pos); s.target.position.set(0, 0, 0); s.castShadow = true; s.shadow.mapSize.set(2048, 2048);
-      const c = s.shadow.camera; c.left = c.bottom = -size; c.right = c.top = size; c.near = 0.5; c.far = 160; s.shadow.bias = -0.0004; s.shadow.normalBias = 0.02; s.shadow.radius = 4; p.add(s, s.target); const hl = new THREE.HemisphereLight("#cfe6ff", "#e8c8a0", hi); this.hemis.push([hl, hi]); p.add(hl); return s; };
+      const c = s.shadow.camera; c.left = c.bottom = -size; c.right = c.top = size; c.near = 0.5; c.far = 160; c.updateProjectionMatrix(); s.shadow.bias = -0.0004; s.shadow.normalBias = 0.02; s.shadow.radius = 4; p.add(s, s.target); const hl = new THREE.HemisphereLight("#cfe6ff", "#e8c8a0", hi); this.hemis.push([hl, hi]); p.add(hl); return s; };
     const sky = (p: THREE.Group) => { const mm = new THREE.MeshBasicMaterial({ map: this.day, side: THREE.BackSide, fog: false }); this.skies.push(mm); const m = new THREE.Mesh(new THREE.SphereGeometry(300, 32, 16), mm); m.userData.noEdge = true; p.add(m); };
     const prop = (k: string, o: THREE.Group) => { o.visible = false; root.add(o); this.props[k] = o; return o; };
     prop("baguette", mkBaguette()); prop("cahier", mkNotebook("Joel")); prop("loupe", mkLoupe()); prop("regle", mkRuler()); prop("chrono", mkChrono()); prop("dico", mkBook()); prop("steth", mkSteth()); prop("chrono2", mkChrono()); prop("dessin", (() => { const d = new THREE.Group(); add(d, new THREE.PlaneGeometry(0.42, 0.3), M("#ffffff", 0.8, kidArtTex(3), { side: THREE.DoubleSide }), 0, 0, 0, 0, false); return d; })());
@@ -226,7 +226,7 @@ export class Med {
 
 
     // ================= rue stylée (axe x) : pierre claire, auvents, réverbères, platanes ; la mer et le phare au bout (x > 62)
-    { const p = g.RUE; sun(p, V(46, 15, 13), 3.4, 50); sky(p);   // soleil bas : ombres longues (épisode « Les Ombres »)
+    { const p = g.RUE; sun(p, V(46, 15, -5), 3.4, 50); sky(p);   // soleil bas : ombres longues (épisode « Les Ombres »)
       this.decals = new ShadowDecals(400); p.add(this.decals.root);
       plane(p, 404, 400, M("#d8ccb8", 0.95), -150, -0.02, 0, -Math.PI / 2); plane(p, 140, 7, M("#ffffff", 0.85, rep(cobbleTex(), 46, 2.4)), -8, 0.005, 0, -Math.PI / 2);
       for (const s of [-1, 1]) { bx(p, 140, 0.16, 3.2, M("#e2d8c6", 0.85, rep(stoneTex(), 40, 1)), -8, 0.08, s * 5.1, 0, 0.02); bx(p, 140, 0.18, 0.2, M("#c8bca8", 0.8), -8, 0.09, s * 3.55, 0, 0.01); }
@@ -252,8 +252,8 @@ export class Med {
             d.position.y = b.h; d.scale.set(b.w * 1.02, 2.4, b.d * 1.02); d.updateMatrix(); rf.setMatrixAt(i, d.matrix); });
           for (const q of [im, rf]) { q.castShadow = q.receiveShadow = true; q.userData.noEdge = true; p.add(q); } });
         for (const [x, z] of parks) { plane(p, 20, 20, M("#6ab84a", 0.9), x, 0.03, z, -Math.PI / 2); for (let i = 0; i < 6; i++) plane2(p, x - 6 + (i % 3) * 6, z - 4 + Math.floor(i / 3) * 8, 1.0, x * 3 + z + i); }
-        for (let bz0 = -134; bz0 < 140; bz0 += 30) if (Math.abs(bz0 + 12) >= 26 || true) plane(p, 240, 4.6, M("#b8ad9a", 0.9), -62, 0.02, bz0 - 2.4, -Math.PI / 2);
-        for (let bx0 = -176; bx0 < 56; bx0 += 28) plane(p, 4.6, 280, M("#b8ad9a", 0.9), bx0 - 2.3, 0.02, 0, -Math.PI / 2); }
+        for (let bz0 = -134; bz0 < 140; bz0 += 30) if (Math.abs(bz0 + 12) >= 26 || true) plane(p, 240, 4.6, M("#b8ad9a", 0.9), -62, -0.008, bz0 - 2.4, -Math.PI / 2);
+        for (let bx0 = -176; bx0 < 56; bx0 += 28) plane(p, 4.6, 280, M("#b8ad9a", 0.9), bx0 - 2.3, -0.008, 0, -Math.PI / 2); }
       const fc = ["#e2262e", "#f2b51c", "#2a7ae8", "#2fae7a", "#ff8a3a", "#f4f0e8"];
       for (let x = -60; x <= 46; x += 13) for (let i = 0; i < 16; i++) { const z = -8.6 + i * 1.15, y = 7.4 - Math.sin((i + 0.5) / 16 * Math.PI) * 1.4; const f = add(p, new THREE.ConeGeometry(0.3, 0.62, 3), M(fc[(i + x) % 6 < 0 ? 0 : (i + x + 600) % 6], 0.6, undefined, { side: THREE.DoubleSide }), x, y - 0.3, z, 0, false); f.rotation.x = Math.PI; }
       for (const [x, s, c] of [[-14, -1, "#e2262e"], [6, -1, "#2a7ae8"], [22, 1, "#2fae7a"]] as [number, number, string][]) for (let i = 0; i < 3; i++) { const u = grp(p, x + i * 1.3, 0, s * 5.6); cyl(u, 0.03, 0.03, 2.3, M("#f4f0e8", 0.4), 0, 1.15, 0, 6); add(u, new THREE.ConeGeometry(0.95, 0.5, 12), M(i % 2 ? "#f4f0e8" : c, 0.6), 0, 2.45, 0); }
