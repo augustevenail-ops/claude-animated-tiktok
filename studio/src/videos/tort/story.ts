@@ -88,7 +88,7 @@ export const SHOTS: Shot[] = [
   // ——— Dans cette ville, tout le monde joue à « Tu as tort ».
   { w: "Dans cette ville", set: "RUE", fr: "Joël sur le trottoir regarde le ciel ; la caméra recule et s'élève : la rue animée, les toits, la mer et le phare", g: DAY,
     cam: (w, u) => { const h = headOf(J(w)); const e = sm(u); return { P: h.clone().add(V(0.25, -0.35, 2.1)).lerp(at("RUE", -42, 21, -0.5), e), T: h.clone().add(V(0, 0.25, 0)).lerp(at("RUE", 22, 2.5, -1), e), fov: 40 + 8 * e }; },
-    st: (w, u, t) => { put(w, "joel", "RUE", -6.0, 0, -4.6, 0.15).pose(t, { expr: "neutral", headPitch: -0.55 }); walkers(w, t);
+    st: (w, u, t) => { put(w, "joel", "RUE", -6.0, 0, -4.6, 0.15).pose(t, { expr: "neutral", headPitch: -0.75 }); walkers(w, t);
       put(w, "t1", "RUE", -16.2, 0, 4.9, Math.PI / 2 + 0.6).pose(t, { expr: "smug", talk: u < 0.55 }); const b = put(w, "t2", "RUE", -14.6, 0, 4.9, -Math.PI / 2 - 0.6); b.pose(t, { expr: "angry", point: 0.3, talk: u > 0.55 });
       lab(w, "tat1", "TU AS TORT !", "#ff4a4a", b, cl((u - 0.6) * 2.5), 2.4, 0.9); } },
   // ——— La règle est simple : quelqu'un dit une phrase, et toi, tu dois lui prouver qu'elle est fausse.
@@ -97,8 +97,8 @@ export const SHOTS: Shot[] = [
     st: (w, u, t) => { walkers(w, t); const a = put(w, "t3", "RUE", -12.6, 0, -5.6, 0.4); const k2 = u > 0.35 && u < 0.75; a.pose(t, { expr: u < 0.72 ? "smile" : "sad", talk: u < 0.35, armR: u < 0.35 ? -1.0 : 0 });
       const k = put(w, "k1", "RUE", -11.2, 0, -5.4, k2 ? -0.3 : -1.0); k.pose(t, { expr: k2 ? "focus" : u > 0.72 ? "smug" : "neutral", armR: k2 ? -2.3 : 0, headPitch: k2 ? -0.45 : 0, point: u > 0.75 ? 0.4 : undefined }); if (k2) inHand(w, "loupe", k, true, -0.6, 0, 0, V(0, 0.1, 0.1)); } },
   // ——— Par tous les moyens. (montage rapide)
-  { w: "Par tous", set: "RUE", fr: "Montage : une femme mesure un enfant à la règle", g: DAY, cam: (w, u) => CH("RUE", w.actors.k3, [2.6, 1.3, -2.6], [2.5, 1.3, -2.9], 40, u, -0.1),
-    st: (w, _u, t) => { walkers(w, t); const k = put(w, "k3", "RUE", 2.4, 0, -5.0, 0.1); k.pose(t, { expr: "worried" }); put(w, "t2", "RUE", 3.3, 0, -5.3, -0.9).pose(t, { expr: "focus", armR: -1.9 }); prop(w, "regle", "RUE", 2.6, 1.72, -5.0, 0, 0.4, 0); } },
+  { w: "Par tous", set: "RUE", fr: "Montage : une femme mesure un enfant à la règle", g: DAY, cam: (w, u) => CH("RUE", w.actors.k3, [7.6, 1.3, -2.6], [7.5, 1.3, -2.9], 40, u, -0.1),
+    st: (w, _u, t) => { walkers(w, t); const k = put(w, "k3", "RUE", 7.4, 0, -5.0, 0.1); k.pose(t, { expr: "worried" }); put(w, "t2", "RUE", 8.3, 0, -5.3, -0.9).pose(t, { expr: "focus", armR: -1.9 }); prop(w, "regle", "RUE", 7.6, 1.72, -5.0, 0, 0.4, 0); } },
   { w: "les moyens", set: "RUE", fr: "Montage : un chronomètre brandi", g: DAY, cam: (w, u) => CH("RUE", w.actors.t1, [-4.0, 1.7, -2.8], [-4.1, 1.72, -3.1], 38, u, -0.3),
     st: (w, _u, t) => { walkers(w, t); const a = put(w, "t1", "RUE", -4.2, 0, -5.2, 0.2); a.pose(t, { expr: "smug", armR: -2.4 }); inHand(w, "chrono", a, true, 0, 0, 0, V(0, 0.15, 0.05)); } },
   { w: "moyens", dt: 0.3, set: "RUE", fr: "Montage : un dictionnaire claqué sous le nez", g: DAY, cam: (w, u) => CH("RUE", w.actors.mere, [8.2, 1.7, -2.9], [8.1, 1.7, -3.2], 38, u, -0.25),
