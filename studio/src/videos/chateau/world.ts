@@ -204,7 +204,7 @@ export class Castle {
   root = new THREE.Group(); parts: Part[] = []; flags: Flag[] = []; bell = new THREE.Group(); bellTop = V(0, 0, 0);
   private hw: THREE.InstancedMesh; private hr: THREE.InstancedMesh; private houses: { x: number; z: number; ry: number; w: number; d: number; h: number; born: number; k: number; c: THREE.Color; rc: THREE.Color }[] = [];
   private dust: THREE.Points; private dustP: { x: number; z: number; st: number }[] = []; private d = new THREE.Object3D(); private last = -1;
-  people: THREE.InstancedMesh; private ppl: { x: number; z: number; a: number; sp: number }[] = [];
+  people: THREE.InstancedMesh; peopleB!: THREE.InstancedMesh; private ppl: { x: number; z: number; a: number; sp: number }[] = [];
   watch = V(-14, PH, -36); gateZ = 76;
   constructor() {
     this.root.position.y = PH; const R = this.root, ft = flagTex("ours", "#1f3f8a", "#f2c230", "lion");
@@ -245,12 +245,16 @@ export class Castle {
     this.hw = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1).translate(0, 0.5, 0), M("#ffffff", 0.9, wallT), n);
     this.hr = new THREE.InstancedMesh(prism(1, 1, 1), M("#ffffff", 0.7, rep(roofTex("#d8d8d8"), 1, 1)), n);
     this.houses.forEach((h, i) => { this.hw.setColorAt(i, h.c); this.hr.setColorAt(i, h.rc); });
-    for (const m of [this.hw, this.hr]) { m.castShadow = m.receiveShadow = true; R.add(m); }
+    for (const m of [this.hw, this.hr]) { m.castShadow = m.receiveShadow = true; m.frustumCulled = false; R.add(m); }
     // habitants (silhouettes minuscules, instanciées) dans les rues
-    const pg = mg([box(0.55, 1.1, 0.4), box(0.45, 0.45, 0.45, 0, 1.1, 0)]);
+    // petites figurines dans le style des personnages : jambes sombres, tunique colorée (couleur d'instance), bras, tête couleur peau, cheveux
+    const vc = (q: THREE.BufferGeometry, c: string) => { const cc = new THREE.Color(c), n = q.attributes.position.count, a = new Float32Array(n * 3); for (let i = 0; i < n; i++) a.set([cc.r, cc.g, cc.b], i * 3); q.setAttribute("color", new THREE.BufferAttribute(a, 3)); return q; };
+    const pg = mg([vc(box(0.24, 0.8, 0.28, -0.15), "#3a2c22"), vc(box(0.24, 0.8, 0.28, 0.15), "#3a2c22"), vc(box(0.52, 0.5, 0.5, 0, 1.52), "#f0c8a6"), vc(box(0.56, 0.16, 0.54, 0, 2.0), "#4a2e1a"), vc(box(0.56, 0.2, 0.18, 0, 1.86, -0.2), "#4a2e1a"),
+      vc(box(0.12, 0.1, 0.02, -0.12, 1.7, 0.26), "#1a1a1a"), vc(box(0.12, 0.1, 0.02, 0.12, 1.7, 0.26), "#1a1a1a")]);
+    const cg = mg([box(0.66, 0.74, 0.4, 0, 0.78), box(0.18, 0.68, 0.22, -0.44, 0.86), box(0.18, 0.68, 0.22, 0.44, 0.86), box(0.7, 0.12, 0.44, 0, 0.8)]);
     for (let i = 0; i < 700; i++) { const along = (hash(i, 21) - 0.5) * 140, side = (hash(i, 22) - 0.5) * 5.5, ax = hash(i, 23) < 0.5;
       const x = ax ? side : along, z = ax ? along : side + 2; if (Math.hypot(x, z) > 72 || (Math.abs(x) < 9 && Math.abs(z) < 9)) continue; this.ppl.push({ x, z, a: ax ? 0 : Math.PI / 2, sp: (hash(i, 24) - 0.5) * 2.4 }); }
-    this.people = new THREE.InstancedMesh(pg, M("#ffffff", 0.8), this.ppl.length); const pc = ["#c4383a", "#2a5cb8", "#e8b030", "#2fae7a", "#f4f0e8", "#8a5ad8", "#6a4428"];
+    this.people = new THREE.InstancedMesh(cg, M("#ffffff", 0.8), this.ppl.length); this.peopleB = new THREE.InstancedMesh(pg, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.8 }), this.ppl.length); this.peopleB.castShadow = true; this.people.add(this.peopleB); this.people.frustumCulled = this.peopleB.frustumCulled = false; const pc = ["#c4383a", "#2a5cb8", "#e8b030", "#2fae7a", "#f4f0e8", "#8a5ad8", "#6a4428"];
     this.ppl.forEach((_, i) => this.people.setColorAt(i, new THREE.Color(pc[Math.floor(hash(i, 25) * pc.length)]))); this.people.castShadow = true; R.add(this.people);
     // poussière de construction
     const dg = new THREE.BufferGeometry(); dg.setAttribute("position", new THREE.BufferAttribute(new Float32Array(900 * 3), 3));
@@ -267,7 +271,7 @@ export class Castle {
         d.position.y = h.h * k; d.scale.set(z0 * (h.w + 0.6), z0 * (2.4 * k + 1e-4), z0 * (h.d + 0.6)); d.updateMatrix(); this.hr.setMatrixAt(i, d.matrix); });
       this.hw.instanceMatrix.needsUpdate = true; this.hr.instanceMatrix.needsUpdate = true; }
     const vis = s >= 3.9; this.people.visible = vis;
-    if (vis) { const d = this.d; this.ppl.forEach((p, i) => { const off = ((t * p.sp) % 20); d.position.set(p.a === 0 ? p.x : p.x + off, Math.abs(Math.sin(t * 8 + i)) * 0.12, p.a === 0 ? p.z + off : p.z); d.rotation.set(0, p.a + (p.sp < 0 ? Math.PI : 0), 0); d.scale.setScalar(1); d.updateMatrix(); this.people.setMatrixAt(i, d.matrix); }); this.people.instanceMatrix.needsUpdate = true; }
+    if (vis) { const d = this.d; this.ppl.forEach((p, i) => { const off = ((t * p.sp) % 20); d.position.set(p.a === 0 ? p.x : p.x + off, Math.abs(Math.sin(t * 8 + i)) * 0.12, p.a === 0 ? p.z + off : p.z); d.rotation.set(0, p.a + (p.sp < 0 ? Math.PI : 0), 0); d.scale.setScalar(1); d.updateMatrix(); this.people.setMatrixAt(i, d.matrix); this.peopleB.setMatrixAt(i, d.matrix); }); this.people.instanceMatrix.needsUpdate = true; this.peopleB.instanceMatrix.needsUpdate = true; }
     // poussière : nuage autour des éléments de l'étape qui pousse
     const a = this.dust.geometry.attributes.position as THREE.BufferAttribute; let any = false;
     this.dustP.forEach((p, i) => { const q = (s - p.st + 0.05) / 0.8; const on = q > 0 && q < 1; if (on) any = true;
