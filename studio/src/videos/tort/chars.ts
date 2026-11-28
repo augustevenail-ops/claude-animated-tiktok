@@ -168,7 +168,7 @@ export class Actor {
     this.s = s; this.seed = seed;
     const k = s.kid ? 0.72 : 1, legH = s.kid ? 1.3 : 2;
     this.root.add(this.body); this.body.scale.setScalar(scale * (s.kid ? 0.95 : 1));
-    const skin = mat(s.skin, { map: null, bumpMap: null, sheen: 0, roughness: 0.38, clearcoat: 0.45, clearcoatRoughness: 0.3 }, "skin"), top = mat(s.top), pants = mat(s.style === "dress" ? s.top : s.pants), shoes = mat(s.shoes);
+    const skin = mat(s.skin, { map: null, bumpMap: null, sheen: 0, roughness: 0.62, clearcoat: 0.08, clearcoatRoughness: 0.5 }, "skin"), top = mat(s.top), pants = mat(s.style === "dress" ? s.top : s.pants), shoes = mat(s.shoes);
     // jambes (pivot à la hanche)
     for (const [leg, x] of [[this.lLeg, -0.5], [this.rLeg, 0.5]] as const) {
       leg.position.set(x, legH, 0); this.body.add(leg);
@@ -215,7 +215,7 @@ export class Actor {
     // tête
     this.neck.position.set(0, legH + tH, 0); this.body.add(this.neck);
     const head = mesh(rbox(1.3, 1.25, 1.25, 0.22), skin, 0, 0.66, 0); this.neck.add(head);
-    this.face = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 1.2), new THREE.MeshPhysicalMaterial({ map: faceTex(s, "smile"), transparent: true, roughness: 0.35, clearcoat: 0.6, clearcoatRoughness: 0.2, polygonOffset: true, polygonOffsetFactor: -2 }));
+    this.face = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 1.2), new THREE.MeshPhysicalMaterial({ map: faceTex(s, "smile"), transparent: true, roughness: 0.8, clearcoat: 0, polygonOffset: true, polygonOffsetFactor: -2 }));
     this.face.position.set(0, 0.64, 0.63); this.neck.add(this.face);
     this.hair(s);
   }
