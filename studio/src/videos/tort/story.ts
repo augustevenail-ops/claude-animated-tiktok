@@ -249,7 +249,7 @@ export const applyShot = (w: World, i: number, u: number, t: number, _cam: THREE
   for (const a of Object.values(w.actors)) { a.root.visible = false; a.root.position.y = 0; a.root.quaternion.identity(); a.torso.scale.set(1, 1, 1); }
   for (const x of Object.values(S.tags)) x.visible = false; for (const x of S.rain) x.visible = false; for (const x of Object.values(m.labels)) x.visible = false;
   for (const p of Object.values(m.props)) { p.visible = false; p.scale.setScalar(1); }
-  m.crowd.root.visible = false; m.gulls.root.visible = false; m.walk.root.visible = false; score(w, 0); m.boardM.map = m.boards.nom;
+  m.crowd.root.visible = false; m.gulls.root.visible = false; m.walk.root.visible = false; m.walkPL.root.visible = false; score(w, 0); m.boardM.map = m.boards.nom;
   const d = s.dusk ?? 0, sun0 = m.suns[0][0];
   for (const k of m.skies) { k.color.set(s.sky ?? "#ffffff"); k.map = d >= 1 ? m.dusk : m.day; }
   for (const [l, base] of m.suns) l.intensity = base * (s.sunK ?? 1);
@@ -258,5 +258,6 @@ export const applyShot = (w: World, i: number, u: number, t: number, _cam: THREE
   w.fill.intensity = 0; w.key.intensity = 0;
   s.st?.(w, u, t);
   if (s.set === "RUE") walkers(w, t);   // la rue vit dans tous les plans
+  if (s.set === "PL") m.walkPL.set(t, (x, z) => z < -2 && z > -20);   // et la place du phare aussi
   return s;
 };
