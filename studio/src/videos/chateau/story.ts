@@ -3,7 +3,7 @@
 import * as THREE from "three";
 import WORDS from "./words.json";
 import { Actor } from "./chars";
-import { V, H, PH, AZ, terrainMesh, Castle, Army, Ruins, Holo, Nature, VILLAGES, CHEF, GUET, SOLD, VIL, dressChef } from "./world";
+import { V, H, PH, AZ, WALL_R, terrainMesh, Castle, Army, Ruins, Holo, Nature, VILLAGES, CHEF, GUET, SOLD, VIL, dressChef } from "./world";
 import { ctex, hash } from "./tex";
 import { M } from "./kit";
 
@@ -23,7 +23,9 @@ const ex = (x: number) => { const t = Math.min(1, Math.max(0, x)); return t < 0.
 const cl = (x: number) => Math.min(1, Math.max(0, x));
 const L = (a: THREE.Vector3, b: THREE.Vector3, u: number) => a.clone().lerp(b, u);
 type Cam = { P: THREE.Vector3; T: THREE.Vector3; fov: number };
-const G = (P0: THREE.Vector3, P1: THREE.Vector3, T0: THREE.Vector3, T1: THREE.Vector3, fov: number, u: number, f1 = fov, e = gl): Cam => { const k = e(u); return { P: L(P0, P1, k), T: L(T0, T1, k), fov: fov + (f1 - fov) * k }; };
+/** v2 : travellings plus rapides — le déplacement de la caméra est amplifié (AMP, réglable par plan) */
+let AMP = 1;
+const G = (P0: THREE.Vector3, P1: THREE.Vector3, T0: THREE.Vector3, T1: THREE.Vector3, fov: number, u: number, f1 = fov, e = gl): Cam => { const k = e(u); const P1a = L(P0, P1, AMP); return { P: L(P0, P1a, k), T: L(T0, T1, k), fov: fov + (f1 - fov) * k }; };
 /** point au sol (+ hauteur) */
 const g = (x: number, dy: number, z: number) => V(x, H(x, z) + dy, z);
 
@@ -95,32 +97,32 @@ const chef = (w: World, t: number, extra = {}) => { const p = chefAt(t); const a
 const villagers = (w: World, t: number, P: THREE.Vector3, yaw: number, pose: (i: number) => object) => { for (let i = 0; i < 4; i++) { const dx = (i - 1.5) * 1.9, x = P.x + Math.cos(yaw) * dx, z = P.z - Math.sin(yaw) * dx;
   put(w, "v" + (i + 1), g(x, 0, z + (i % 2) * 0.7), yaw).pose(t + i, pose(i)); } };
 
-type HK = "wall" | "cats" | "gate" | "fire" | "cell";
-const ALL: Partial<Record<HK, number>> = { wall: 1, cats: 1, gate: 1, fire: 1 }, NOGATE: Partial<Record<HK, number>> = { wall: 1, cats: 1, fire: 1 };
-type Shot = { w: string; dt?: number; g?: Partial<Grade>; fr: string; cam: (w: World, u: number, t: number) => Cam; st?: (w: World, u: number, t: number) => void; holo?: Partial<Record<HK, number>>; sunAt?: THREE.Vector3 };
+type HK = "wall" | "cats" | "gate" | "fire" | "cell" | "moat" | "arch";
+const ALL: Partial<Record<HK, number>> = { wall: 1, cats: 1, gate: 1, fire: 1, moat: 1, arch: 1 }, NOGATE: Partial<Record<HK, number>> = { wall: 1, cats: 1, fire: 1, moat: 1, arch: 1 };
+type Shot = { w: string; dt?: number; amp?: number; g?: Partial<Grade>; fr: string; cam: (w: World, u: number, t: number) => Cam; st?: (w: World, u: number, t: number) => void; holo?: Partial<Record<HK, number>>; sunAt?: THREE.Vector3 };
 const C0 = V(0, PH, 0), TOP = () => V(-14, PH + 44.9, -36);
-const orbit = (t: number): Cam => { const s = stageAt(t), e = sm(s / 5.2), a = 0.55 + t * 0.3, R = 46 + 150 * e, y = PH + 16 + 62 * e;
+const orbit = (t: number): Cam => { const s = stageAt(t), e = sm(s / 5.2), a = 0.55 + t * 0.65, R = 46 + 150 * e, y = PH + 16 + 62 * e;
   return { P: V(Math.sin(a) * R, y, Math.cos(a) * R), T: V(0, PH + 5 + 7 * e, 0), fov: 40 }; };
-const holoOrbit = (a0: number, a1: number, R: number, y: number, u: number, ty = PH + 8): Cam => { const a = a0 + (a1 - a0) * gl(u); return { P: V(Math.sin(a) * R, y, Math.cos(a) * R), T: V(0, ty, 0), fov: 42 }; };
+const holoOrbit = (a0: number, a1: number, R: number, y: number, u: number, ty = PH + 8): Cam => { const a = a0 + (a1 - a0) * AMP * gl(u); return { P: V(Math.sin(a) * R, y, Math.cos(a) * R), T: V(0, ty, 0), fov: 42 }; };
 
 const SHOTS: Shot[] = [
   // ——— Voici notre château. Chaque abonné, c'est un habitant. Et chaque habitant le fait grandir.
   { w: "Voici notre château", fr: "Orbite continue : tour de bois → donjon → château pavoisé (chaque forme pousse du sol)", g: MORN, cam: (_w, _u, t) => orbit(t), st: (w, _u, t) => w.castle.set(stageAt(t), t) },
   // ——— Aujourd'hui, nous sommes onze mille quatre cents.
-  { w: "Aujourd'hui", fr: "Grue au-dessus du bourg vivant, rues pleines ; compteur 11 400", g: MORN, cam: (_w, u) => G(V(95, PH + 92, 150), V(52, PH + 46, 88), V(0, PH + 4, 0), V(-4, PH + 8, -6), 42, u), st: (w, _u, t) => w.castle.set(5.2, t) },
+  { w: "Aujourd'hui", amp: 1, fr: "Grue au-dessus du bourg vivant, rues pleines ; compteur 11 400", g: MORN, cam: (_w, u) => G(V(95, PH + 92, 150), V(52, PH + 46, 88), V(0, PH + 4, 0), V(-4, PH + 8, -6), 42, u), st: (w, _u, t) => w.castle.set(5.2, t) },
   // ——— Mais ce matin, le guetteur de la plus haute tour a sonné la cloche.
   { w: "Mais ce matin", fr: "Contre-plongée le long de la plus haute tour, soleil du matin", g: MORN, cam: (_w, u) => G(V(-2, PH + 3, -14), V(-3, PH + 6, -17), V(-14, PH + 30, -36), V(-14, PH + 50, -36), 52, u), st: (w, _u, t) => { w.castle.set(5.2, t); guet(w, t, 0); } },
   { w: "a sonné la cloche", fr: "Le guetteur sonne la cloche, la ville en contrebas", g: MORN, cam: (_w, u) => { const T = TOP(); return G(T.clone().add(V(17, 1.0, -9)), T.clone().add(V(14.5, 1.2, -7.5)), T.clone().add(V(-0.8, 2.6, 0.8)), T.clone().add(V(-0.8, 2.4, 0.8)), 34, u); },
     st: (w, _u, t) => { w.castle.set(5.2, t); guet(w, t, 1); } },
   // ——— À l'horizon, derrière les collines, il y avait une ligne noire. Et elle avançait.
-  { w: "À l'horizon", fr: "Guetteur de dos, les collines du nord", g: MORN, cam: (_w, u) => { const T = TOP(); return G(T.clone().add(V(1.2, 3.1, 2.6)), T.clone().add(V(1.1, 3.0, 2.2)), V(-30, 26, -330), V(-24, 22, -360), 42, u); },
+  { w: "À l'horizon", amp: 1, fr: "Guetteur de dos, les collines du nord", g: MORN, cam: (_w, u) => { const T = TOP(); return G(T.clone().add(V(1.2, 3.1, 2.6)), T.clone().add(V(1.1, 3.0, 2.2)), V(-30, 26, -330), V(-24, 22, -360), 42, u); },
     st: (w, _u, t) => { w.castle.set(5.2, t); guet(w, t, 0); } },
-  { w: "il y avait une ligne noire", fr: "Téléobjectif : une ligne noire sur la crête", g: MORN, cam: (_w, u) => { const T = TOP(); return G(T.clone().add(V(1.1, 3.0, 2.2)), T.clone().add(V(1.05, 3.0, 1.9)), V(0, 10, AZ - 70), V(0, 8, AZ - 60), 26, u, 11); },
+  { w: "il y avait une ligne noire", amp: 1, fr: "Téléobjectif : une ligne noire sur la crête", g: MORN, cam: (_w, u) => { const T = TOP(); return G(T.clone().add(V(1.1, 3.0, 2.2)), T.clone().add(V(1.05, 3.0, 1.9)), V(0, 10, AZ - 70), V(0, 8, AZ - 60), 26, u, 11); },
     st: (w, _u, t) => { w.castle.set(5.2, t); guet(w, t, 0); } },
-  { w: "Et elle avançait", fr: "Plus serré : la ligne avance", g: MORN, cam: (_w, u, t) => { const T = TOP(); return G(T.clone().add(V(1.05, 3.0, 1.9)), T.clone().add(V(1.0, 3.0, 1.7)), V(-10, 7, AZ - 50 + marchAt(t)), V(-10, 6, AZ - 45 + marchAt(t)), 7, u, 5); },
+  { w: "Et elle avançait", amp: 1, fr: "Plus serré : la ligne avance", g: MORN, cam: (_w, u, t) => { const T = TOP(); return G(T.clone().add(V(1.05, 3.0, 1.9)), T.clone().add(V(1.0, 3.0, 1.7)), V(-10, 7, AZ - 50 + marchAt(t)), V(-10, 6, AZ - 45 + marchAt(t)), 7, u, 5); },
     st: (w, _u, t) => { w.castle.set(5.2, t); guet(w, t, 0); } },
   // ——— C'était une armée.
-  { w: "C'était une armée", fr: "Travelling très rapide de la tour au-dessus des collines jusqu'à l'armée", g: MORN, cam: (_w, u, t) => { const T = TOP(); const m = marchAt(t);
+  { w: "C'était une armée", amp: 1, fr: "Travelling très rapide de la tour au-dessus des collines jusqu'à l'armée", g: MORN, cam: (_w, u, t) => { const T = TOP(); const m = marchAt(t);
       return G(T.clone().add(V(1.0, 3.0, 1.7)), V(30, 34, AZ + 95 + m), V(-10, 7, AZ - 45 + m), V(0, 2, AZ - 60 + m), 30, u, 55, ex); } },
   // ——— Des milliers de soldats en armure sombre, des étendards rouges, des tours de siège plus hautes que nos remparts.
   { w: "Des milliers de soldats", fr: "Survol bas des régiments jusqu'à l'horizon", g: MORN, cam: (_w, u, t) => { const m = marchAt(t); return G(V(-40, 26, AZ + 40 + m), V(-90, 20, AZ - 20 + m), V(10, 0, AZ - 120 + m), V(-40, 0, AZ - 200 + m), 55, u); } },
@@ -131,13 +133,21 @@ const SHOTS: Shot[] = [
   { w: "Et des tambours", fr: "Nuit : deux tambours devant l'armée aux torches", g: NIGHT, cam: (_w, u, t) => { const m = marchAt(t); return G(g(3.0, 2.6, AZ + 27 + m), g(2.2, 2.6, AZ + 23 + m), g(0, 2.2, AZ + 6 + m), g(0, 2.6, AZ + 6 + m), 42, u); },
     st: (w, _u, t) => { const m = marchAt(t); for (const [k, dx] of [["s1", -1.8], ["s2", 1.8]] as [string, number][]) put(w, k, g(dx, 0, AZ + 7 + m), 0).pose(t, { expr: "angry", armR: -1.2 - 0.9 * Math.abs(Math.sin(t * 5.2 + dx)), armL: -1.2 - 0.9 * Math.abs(Math.sin(t * 5.2 + dx + 1.6)) });
       w.army.torches.visible = true; w.torchL.forEach((l, i) => { l.position.copy(g((i - 1) * 6, 4, AZ + 2 + m)); l.intensity = 260 * (0.8 + 0.2 * Math.sin(t * 11 + i)); }); } },
-  { w: "même la nuit", fr: "Nuit au château : les habitants regardent la lueur derrière les collines", g: NIGHT, cam: (_w, u) => G(V(0.2, PH + 4.6, -53), V(0, PH + 4.6, -56), V(0, PH + 8, -260), V(0, PH + 10, -260), 40, u),
+  { w: "même la nuit", amp: 1, fr: "Nuit au château : les habitants regardent la lueur derrière les collines", g: NIGHT, cam: (_w, u) => G(V(0.2, PH + 4.6, -53), V(0, PH + 4.6, -56), V(0, PH + 8, -260), V(0, PH + 10, -260), 40, u),
     st: (w, _u, t) => { w.castle.set(5.2, t); w.glow.visible = true; villagers(w, t, V(0, 0, -64), Math.PI, (i) => ({ expr: i % 2 ? "scared" : "worried", headPitch: -0.08 })); } },
   // ——— Ils ont déjà pris trois villages. Ils ne laissent rien debout.
   { w: "Ils ont déjà pris", fr: "Vue aérienne : trois colonnes de fumée sur les villages", g: MORN, cam: (_w, u) => G(V(30, PH + 62, -70), V(22, PH + 58, -86), V(0, 10, -245), V(-5, 10, -250), 46, u), st: (w, _u, t) => w.castle.set(5.2, t) },
   { w: "Ils ne laissent rien debout", fr: "Ruines calcinées et fumée, la caméra glisse", g: MORN, cam: (_w, u) => { const c = VILLAGES[0]; return G(g(c.x + 26, 5, c.z + 22), g(c.x + 12, 4, c.z + 26), g(c.x, 2, c.z), g(c.x - 4, 2, c.z), 46, u); } },
+  // ——— (v2) À leur tête, il y a un seul homme. On dit qu'il n'a jamais perdu une bataille. Et qu'il ne fait jamais de prisonniers.
+  { w: "À leur tête", amp: 1, fr: "Plongée rapide depuis le ciel au-dessus de l'armée jusqu'au chef", g: MORN, cam: (w, u, t) => { const h = headOf(w.actors.chef); return G(h.clone().add(V(30, 60, -70)), h.clone().add(V(3.0, 0.4, 7.5)), V(0, 0, AZ - 40 + marchAt(t)), h, 50, u, 40); },
+    st: (w, _u, t) => { chef(w, t); } },
+  { w: "On dit qu'il", fr: "Orbite rapide en contre-plongée autour du chef qui marche", g: MORN, cam: (w, u) => { const h = headOf(w.actors.chef), a = 0.35 + 2.0 * gl(u), R = 6.8 - 1.6 * gl(u);
+      return { P: h.clone().add(V(Math.sin(a) * R, -1.1, Math.cos(a) * R)), T: h.clone().add(V(0, -0.2, 0)), fov: 44 }; },
+    st: (w, _u, t) => { chef(w, t); } },
+  { w: "Et qu'il ne fait jamais", fr: "Travelling latéral au ras du sol le long du premier rang de soldats", g: MORN, cam: (_w, u, t) => { const m = marchAt(t); return G(g(-44, 2.2, AZ + 14 + m), g(-6, 2.0, AZ + 14 + m), g(-34, 2.6, AZ + m), g(4, 2.6, AZ + m), 46, u); },
+    st: (w, _u, t) => { chef(w, t); } },
   // ——— Et au rythme où ils marchent… ils seront à nos portes demain.
-  { w: "Et au rythme où ils marchent", fr: "Plongée rapide depuis le ciel au-dessus de l'armée jusqu'au chef", g: MORN, cam: (w, u, t) => { const h = headOf(w.actors.chef); return G(h.clone().add(V(30, 60, -70)), h.clone().add(V(3.0, 0.4, 7.5)), V(0, 0, AZ - 40 + marchAt(t)), h, 50, u, 40); },
+  { w: "Et au rythme où ils marchent", amp: 1, fr: "Grue rapide derrière le chef : l'armée entière marche vers le château au loin", g: MORN, cam: (w, u) => { const h = headOf(w.actors.chef); return G(h.clone().add(V(2.5, 0.6, -6)), h.clone().add(V(20, 70, -140)), h.clone(), V(0, 5, AZ + 120), 44, u, 42); },
     st: (w, _u, t) => { chef(w, t); } },
   { w: "ils seront à nos portes demain", fr: "Le chef, en contre-plongée, pointe vers le château", g: MORN, cam: (w, u) => { const h = headOf(w.actors.chef); return G(h.clone().add(V(2.0, -1.2, 6.0)), h.clone().add(V(1.6, -1.1, 5.0)), h.clone().add(V(0, -0.2, 0)), h.clone().add(V(0, 0, 0)), 42, u); },
     st: (w, u, t) => { chef(w, t, { point: sm(u * 3), talk: u > 0.3 }); } },
@@ -148,9 +158,14 @@ const SHOTS: Shot[] = [
   { w: "À douze mille habitants", fr: "Travelling autour du château : la muraille se dessine en hologramme doré", g: MORN, cam: (_w, u) => holoOrbit(2.5, 3.5, 175, PH + 62, u), holo: { wall: -1 }, st: (w, _u, t) => w.castle.set(5.2, t) },
   { w: "avec des catapultes", fr: "Plus près d'une tour : les catapultes apparaissent", g: MORN, cam: (_w, u) => holoOrbit(3.6, 4.1, 128, PH + 46, u, PH + 22), holo: { wall: 1, cats: -1 }, st: (w, _u, t) => w.castle.set(5.2, t) },
   // ——— Les forgerons couleront des portes en fer… Au sommet de chaque tour, on allumera un grand feu… Et sous le château, on creusera des réserves…
-  { w: "Les forgerons couleront", fr: "Face à la porte sud : les grandes portes de fer se dessinent", g: MORN, cam: (_w, u) => G(V(-6, PH + 7, 158), V(4, PH + 9, 132), V(0, PH + 10, 86), V(0, PH + 12, 86), 44, u), holo: { wall: 1, cats: 1, gate: -1 }, st: (w, _u, t) => w.castle.set(5.2, t) },
+  { w: "Les forgerons couleront", amp: 1, fr: "Face à la porte sud : les grandes portes de fer se dessinent", g: MORN, cam: (_w, u) => G(V(-6, PH + 7, 158), V(4, PH + 9, 132), V(0, PH + 10, 86), V(0, PH + 12, 86), 44, u), holo: { wall: 1, cats: 1, gate: -1 }, st: (w, _u, t) => w.castle.set(5.2, t) },
   { w: "Au sommet de chaque tour", fr: "Nuit : un grand feu s'allume au sommet de chaque tour", g: NIGHT, cam: (_w, u) => holoOrbit(4.3, 4.95, 150, PH + 46, u, PH + 22), holo: { wall: 1, cats: 1, gate: 1, fire: -1 }, st: (w, _u, t) => { w.castle.set(5.2, t); } },
-  { w: "Et sous le château", fr: "Vue à travers le sol : réserves voûtées pleines de blé", g: MORN, cam: (_w, u) => G(V(78, PH + 34, 96), V(60, PH + 24, 74), V(0, PH - 10, 0), V(0, PH - 13, 0), 44, u), holo: { wall: 1, cats: 1, gate: 1, fire: 1, cell: -1 }, st: (w, _u, t) => w.castle.set(5.2, t) },
+  { w: "Et sous le château", amp: 1, fr: "Vue à travers le sol : réserves voûtées pleines de blé", g: MORN, cam: (_w, u) => G(V(78, PH + 34, 96), V(60, PH + 24, 74), V(0, PH - 10, 0), V(0, PH - 13, 0), 44, u), holo: { wall: 1, cats: 1, gate: 1, fire: 1, cell: -1 }, st: (w, _u, t) => w.castle.set(5.2, t) },
+  // ——— (v2) Autour des murs, on creusera des douves profondes, remplies d'eau noire. Et sur chaque rempart, cent archers veilleront, jour et nuit.
+  { w: "Autour des murs", fr: "Travelling circulaire bas : les douves se dessinent autour de la muraille", g: MORN, cam: (_w, u) => holoOrbit(5.2, 5.8, 200, PH + 85, u, PH - 12), holo: { wall: 1, cats: 1, gate: 1, fire: 1, moat: -1 }, st: (w, _u, t) => w.castle.set(5.2, t) },
+  { w: "Et sur chaque rempart", fr: "Crépuscule : travelling le long du chemin de ronde, les archers se dessinent", g: DUSK, cam: (_w, u) => { const a0 = Math.PI * 1.5 + 0.12, a1 = Math.PI * 1.5 + 0.55, k = gl(u), a = a0 + (a1 - a0) * k, at = a + 0.22;
+      const top = H(Math.cos(a) * WALL_R, Math.sin(a) * WALL_R) + 16; const P = V(Math.cos(a) * (WALL_R + 20), top + 9, Math.sin(a) * (WALL_R + 20)), T = V(Math.cos(at) * (WALL_R - 4), top + 1, Math.sin(at) * (WALL_R - 4));
+      return { P, T, fov: 44 }; }, holo: { wall: 1, cats: 1, gate: 1, fire: 1, moat: 1, arch: -1 }, st: (w, _u, t) => w.castle.set(5.2, t) },
   // ——— Aucune armée ne pourra entrer.
   { w: "Aucune armée ne pourra entrer", fr: "Plan large : la muraille complète, l'armée au loin", g: MORN, cam: (_w, u) => G(V(-170, PH + 150, 230), V(-150, PH + 132, 200), V(0, PH, -60), V(0, PH, -80), 42, u), holo: ALL, st: (w, _u, t) => w.castle.set(5.2, t) },
   // ——— Il nous manque six cents habitants. Abonne-toi. Viens défendre le château. Avant demain.
@@ -178,9 +193,9 @@ export const applyShot = (w: World, i: number, u: number, t: number, _f: number)
   (w.sky.material as THREE.MeshBasicMaterial).map = w.skies[gr.sky]; w.sun.intensity = gr.sun; w.sun.color.set(gr.sunCol); w.hemi.intensity = gr.hemi;
   // hologramme : [muraille, catapultes] : 0 = rien, -1 = se dessine pendant le plan, 1 = déjà là
   const hp = (k = 0) => (k === -1 ? 0.62 * cl(u * 1.3) : k === 0 ? 0 : 0.62), ho = s.holo ?? {};
-  (["wall", "cats", "gate", "fire", "cell"] as HK[]).forEach((k) => w.holo[k === "cell" ? "cell" : k].set(hp(ho[k]), t));
+  (["wall", "cats", "gate", "fire", "cell", "moat", "arch"] as HK[]).forEach((k) => w.holo[k].set(hp(ho[k]), t));
   const fp = hp(ho.fire); w.holo.flames.forEach((fl, i) => { fl.visible = fp > 0.4; const k = cl((fp - 0.4) / 0.2) * (0.85 + 0.15 * Math.sin(t * 13 + i * 2)); fl.scale.set(4 * k, 6 * k, 1); });
   s.st?.(w, u, t);
-  return { cam: (ww: World, uu: number, tt: number) => { const c = s.cam(ww, uu, tt); const foc = c.T.clone().lerp(c.P, 0.35); foc.y = H(foc.x, foc.z);
+  return { cam: (ww: World, uu: number, tt: number) => { AMP = s.amp ?? 1.6; const c = s.cam(ww, uu, tt); const foc = c.T.clone().lerp(c.P, 0.35); foc.y = H(foc.x, foc.z);
     ww.sun.target.position.copy(foc); ww.sun.position.copy(foc).addScaledVector(SUN_DIR, 700); ww.sun.target.updateMatrixWorld(); return c; } };
 };

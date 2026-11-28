@@ -345,7 +345,7 @@ export class Ruins { root = new THREE.Group(); smoke: THREE.Points[] = []; priva
 // ------------------------------------------------------------ muraille + catapultes (hologramme doré)
 export const WALL_R = 86;
 const flameT = () => ctex("flame", 64, 128, (q) => { const gr = q.createRadialGradient(32, 92, 2, 32, 80, 50); gr.addColorStop(0, "rgba(255,255,220,1)"); gr.addColorStop(0.35, "rgba(255,170,60,0.8)"); gr.addColorStop(1, "rgba(255,80,0,0)"); q.fillStyle = gr; q.beginPath(); q.moveTo(32, 4); q.quadraticCurveTo(62, 80, 32, 124); q.quadraticCurveTo(2, 80, 32, 4); q.fill(); });
-export class Holo { wall: Drawn; cats: Drawn; gate: Drawn; fire: Drawn; cell: Drawn; wallG = new THREE.Group(); catG = new THREE.Group(); gateG = new THREE.Group(); fireG = new THREE.Group(); cellG = new THREE.Group(); flames: THREE.Sprite[] = [];
+export class Holo { wall: Drawn; cats: Drawn; gate: Drawn; fire: Drawn; cell: Drawn; moat: Drawn; arch: Drawn; moatG = new THREE.Group(); archG = new THREE.Group(); wallG = new THREE.Group(); catG = new THREE.Group(); gateG = new THREE.Group(); fireG = new THREE.Group(); cellG = new THREE.Group(); flames: THREE.Sprite[] = [];
   constructor(root: THREE.Object3D) {
     const m = M("#f4e4c0", 0.6, undefined, { emissive: "#ffb040", emissiveIntensity: 0.35 }), N = 10;
     root.add(this.wallG, this.catG);
@@ -376,6 +376,20 @@ export class Holo { wall: Drawn; cats: Drawn; gate: Drawn; fire: Drawn; cell: Dr
     mesh(ce, box(4, 16, 4, 0, 0, 30), m);   // escalier vers la surface
     this.wall = new Drawn(this.wallG, 3.2, 28, 0, (x, _y, z) => (Math.atan2(z, x) - Math.PI / 2 + Math.PI * 4) % (Math.PI * 2)); this.cats = new Drawn(this.catG, 3.2, 28, 0);
     this.gate = new Drawn(this.gateG, 3.2, 28, 0); this.fire = new Drawn(this.fireG, 3.2, 28, 0); this.cell = new Drawn(this.cellG, 2.6, 28, 0);
+    // douves : anneau d'eau entre deux berges, épousant le relief (v2)
+    root.add(this.moatG); const R0 = WALL_R + 12, R1 = WALL_R + 22, onT = (g: THREE.BufferGeometry, dy: (y: number) => number) => { const q = g.attributes.position; for (let i = 0; i < q.count; i++) q.setY(i, H(q.getX(i), q.getZ(i)) + dy(q.getY(i))); q.needsUpdate = true; g.computeVertexNormals(); return g; };
+    mesh(this.moatG, onT(new THREE.RingGeometry(R0, R1, 120, 1).rotateX(-Math.PI / 2), () => 0.5), m);
+    for (const r of [R0, R1]) mesh(this.moatG, onT(new THREE.CylinderGeometry(r, r, 3, 120, 1, true), (y) => y + 1.0), m);
+    for (let k = 0; k < 40; k++) { const a = k / 40 * Math.PI * 2, r = (R0 + R1) / 2 + (k % 3 - 1) * 2.4, x = Math.cos(a) * r, z = Math.sin(a) * r; mesh(this.moatG, box(5, 0.2, 0.3), m, x, H(x, z) + 0.6, z, -a + Math.PI / 2); }   // vaguelettes
+    // archers sur les chemins de ronde (v2)
+    root.add(this.archG); for (let k = 0; k < N; k++) { const a = k / N * Math.PI * 2 + Math.PI / 2, x = Math.cos(a) * WALL_R, z = Math.sin(a) * WALL_R, y = H(x, z) - 1;
+      const a2 = (k + 1) / N * Math.PI * 2 + Math.PI / 2, x2 = Math.cos(a2) * WALL_R, z2 = Math.sin(a2) * WALL_R, len = Math.hypot(x2 - x, z2 - z) - 11, mx = (x + x2) / 2, mz = (z + z2) / 2, ang = Math.atan2(z2 - z, x2 - x);
+      const sg = Math.sign(-Math.sin(ang) * mx + Math.cos(ang) * mz) || 1, s = grp(this.archG, mx, Math.min(y, H(x2, z2) - 1) + 17, mz, -ang);
+      for (let i = -len / 2 + 2.5; i < len / 2 - 1; i += 3.4) { const f = grp(s, i, 0, -sg * 0.4, sg > 0 ? 0 : Math.PI);
+        mesh(f, box(1.0, 1.5, 0.6, 0, 0, 0), m); mesh(f, box(0.7, 0.8, 0.5, 0, 1.5, 0), m); mesh(f, new THREE.SphereGeometry(0.42, 8, 6).translate(0, 2.65, 0), m);
+        mesh(f, new THREE.TorusGeometry(1.0, 0.07, 4, 14, Math.PI).rotateZ(-Math.PI / 2).translate(0.2, 1.9, 0.9), m); mesh(f, box(0.08, 0.08, 1.4, 0.2, 1.9, 0.6), m); } }
+    this.moat = new Drawn(this.moatG, 3.0, 28, 0, (x, _y, z) => (Math.atan2(z, x) - Math.PI / 2 + Math.PI * 4) % (Math.PI * 2));
+    this.arch = new Drawn(this.archG, 2.4, 28, 0, (x, _y, z) => (Math.atan2(z, x) - Math.PI / 2 + Math.PI * 4) % (Math.PI * 2));
     this.cellG.traverse((o) => { const mm = (o as THREE.Mesh).material as THREE.Material | undefined; if (mm) { mm.depthTest = false; } }); this.cellG.renderOrder = 10; this.cell.lm.depthTest = false; this.cell.lines.renderOrder = 11;
   }
 }
