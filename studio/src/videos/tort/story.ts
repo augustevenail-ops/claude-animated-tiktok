@@ -88,11 +88,21 @@ const lying = (w: World, t: number) => { const a = put(w, "hutt", "MAI", 2.95, 0
 
 export const SHOTS: Shot[] = [
   // ——— Dans cette ville, tout le monde joue à « Tu as tort ».
-  { w: "Dans cette ville", set: "RUE", sunK: 1, g: { ...DAY, fogD: 0.0009 }, fr: "Plongée à 3 m au-dessus de Joël, qui regarde la caméra ; la caméra s'éloigne et monte en accélérant : toute la ville vue du ciel",
-    cam: (w, u) => { const h = headOf(J(w)); const e = 0.06 * u + 0.94 * Math.pow(u, 2.3); const P = h.clone().add(V(0.9, 3.0, 1.3)).lerp(at("RUE", -70, 270, 45), e); return { P, T: h.clone().add(V(0, -0.6, 0)).lerp(at("RUE", -40, 0, -6), Math.min(1, e * 1.3)), fov: 46 + 4 * e }; },
-    st: (w, u, t) => { put(w, "joel", "RUE", -6.0, 0, 0, 0.6).pose(t, { expr: "neutral", headPitch: -0.95 }); walkers(w, t); MED(w).ring.set(t, (x, z) => Math.hypot(x + 6, z) < 1.7);
-      put(w, "t1", "RUE", -16.2, 0, 4.9, Math.PI / 2 + 0.6).pose(t, { expr: "smug", talk: u < 0.55 }); const b = put(w, "t2", "RUE", -14.6, 0, 4.9, -Math.PI / 2 - 0.6); b.pose(t, { expr: "angry", point: 0.3, talk: u > 0.55 });
-      lab(w, "tat1", "TU AS TORT !", "#ff4a4a", b, cl((u - 0.6) * 2.5), 2.4, 0.9); } },
+  // v3 (demande du 2026-11-28) : travelling rapide vers Joël → la caméra monte → Joël, énervé : « Tu as tort ! »
+  { w: "Dans cette ville", set: "RUE", sunK: 1, g: { ...DAY, fogD: 0.0009 }, fr: "Travelling très rapide dans la rue bondée jusqu'à Joël, qui fixe la caméra",
+    cam: (w, u) => { const h = headOf(J(w)), f = V(1, 0, 0), e = 1 - Math.pow(1 - u, 2.6);
+      const P = h.clone().addScaledVector(f, 34).add(V(0, 3.5, 0)).lerp(h.clone().addScaledVector(f, 2.3).add(V(0, 0.15, 0)), e); return { P, T: h.clone().add(V(0, -0.25 * e, 0)), fov: 44 - 6 * e }; },
+    st: (w, _u, t) => { put(w, "joel", "RUE", -6.0, 0, 0, Math.PI / 2).pose(t, { expr: "neutral" }); walkers(w, t); MED(w).ring.set(t, (x, z) => Math.hypot(x + 6, z) < 1.7 || (x > -6 && Math.abs(z) < 1.6)); } },
+  { w: "tout le monde", set: "RUE", sunK: 1, g: { ...DAY, fogD: 0.0009 }, fr: "La caméra monte d'un coup au-dessus de Joël : la rue pleine de joueurs, puis la ville",
+    cam: (w, u) => { const h = headOf(J(w)), f = V(1, 0, 0), e = 0.15 * u + 0.85 * u * u * (3 - 2 * u);
+      const P = h.clone().addScaledVector(f, 2.3).add(V(0, 0.15, 0)).lerp(h.clone().addScaledVector(f, 14).add(V(0, 42, 0)), e); return { P, T: h.clone().lerp(h.clone().addScaledVector(f, -14), e * 0.8), fov: 38 + 12 * e }; },
+    st: (w, u, t) => { put(w, "joel", "RUE", -6.0, 0, 0, Math.PI / 2).pose(t, { expr: "neutral", headPitch: -0.6 * u }); walkers(w, t); MED(w).ring.set(t, (x, z) => Math.hypot(x + 6, z) < 1.7 || (x > -6 && Math.abs(z) < 1.6));
+      put(w, "t1", "RUE", -16.2, 0, 4.9, Math.PI / 2 + 0.6).pose(t, { expr: "smug", talk: true }); put(w, "t2", "RUE", -14.6, 0, 4.9, -Math.PI / 2 - 0.6).pose(t, { expr: "angry", point: 0.3, talk: true }); } },
+  { w: "Tu as tort", set: "RUE", sunK: 1, g: { ...DAY, fogD: 0.0009 }, fr: "Retour sur Joël, de face, qui s'énerve et pointe la caméra : « Tu as tort ! »",
+    cam: (w, u) => { const h = headOf(J(w)), f = V(1, 0, 0), e = 1 - Math.pow(1 - u, 2);
+      return { P: h.clone().addScaledVector(f, 3.0 - 0.9 * e).add(V(0.25, -0.15, 0)), T: h.clone().add(V(0, -0.35, 0)), fov: 40 }; },
+    st: (w, u, t) => { const j = put(w, "joel", "RUE", -6.0, 0, 0, Math.PI / 2); j.pose(t, { expr: "angry", point: 0.25, talk: u < 0.75 }); walkers(w, t); MED(w).ring.set(t, (x, z) => Math.hypot(x + 6, z) < 1.7 || (x > -6 && Math.abs(z) < 1.6));
+      lab(w, "tat1", "TU AS TORT !", "#ff4a4a", j, cl((u - 0.05) * 4), 2.4, 0.9); } },
   // ——— La règle est simple : quelqu'un dit une phrase, et toi, tu dois lui prouver qu'elle est fausse.
   { w: "La règle est simple", set: "RUE", fr: "En terrasse, un homme affirme qu'il fait beau ; à côté, un enfant scrute le ciel à la loupe et trouve un nuage ; l'homme se décompose", g: DAY,
     cam: (_w, u) => G(at("RUE", -16.0, 2.2, -1.2), at("RUE", -15.0, 1.9, -2.4), at("RUE", -12.0, 1.5, -5.5), at("RUE", -11.9, 1.5, -5.5), 42, u),
