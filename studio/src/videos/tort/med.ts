@@ -138,12 +138,12 @@ export class Walkers { root = new THREE.Group(); private a: THREE.InstancedMesh;
     const base = mergeGeometries(geos.map((q, v) => { const g2 = q.clone(); return g2; }).slice(0, 1))!;
     this.a = new THREE.InstancedMesh(body, new THREE.MeshStandardMaterial({ color: "#ffffff", roughness: 0.8 }), n); this.b = new THREE.InstancedMesh(base, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.8 }), n);
     const cols = ["#e2262e", "#2a7ae8", "#f2b51c", "#2fae7a", "#ff8a3a", "#9a5ad8", "#ff5fa4", "#1f3a5a", "#f4f0e8", "#2ab4d8"];
-    for (let i = 0; i < n; i++) { const side = hash(i, 1) < 0.5 ? -1 : 1; this.p.push({ x: -70 + hash(i, 2) * 120, z: side * (4.2 + hash(i, 3) * 1.6), dir: hash(i, 4) < 0.5 ? -1 : 1, sp: 1.0 + hash(i, 5) * 0.6, ph: hash(i, 6) * 6 });
+    for (let i = 0; i < n; i++) { const side = hash(i, 1) < 0.5 ? -1 : 1, still = hash(i, 9) < 0.28; this.p.push({ x: -70 + hash(i, 2) * 120, z: side * (still ? 4.6 + hash(i, 3) * 1.0 : 4.0 + hash(i, 3) * 1.8), dir: hash(i, 4) < 0.5 ? -1 : 1, sp: still ? 0 : 1.0 + hash(i, 5) * 0.6, ph: hash(i, 6) * 6 });
       this.a.setColorAt(i, new THREE.Color(cols[Math.floor(hash(i, 7) * cols.length)])); this.b.setColorAt(i, new THREE.Color(skin[Math.floor(hash(i, 8) * 5)]).lerp(new THREE.Color("#ffffff"), 0.75)); }
     for (const q of [this.a, this.b]) { q.castShadow = true; q.receiveShadow = true; q.frustumCulled = false; this.root.add(q); }
   }
   set(t: number, skip?: (x: number, z: number) => boolean) { const d = this.d; this.p.forEach((p, i) => { let x = p.x + p.dir * p.sp * t; x = ((x + 70) % 120 + 120) % 120 - 70;
-      const hide = skip?.(x, p.z) ?? false; d.position.set(x, Math.abs(Math.sin(t * 7 * p.sp + p.ph)) * 0.08, p.z); d.rotation.set(0, p.dir > 0 ? Math.PI / 2 : -Math.PI / 2, Math.sin(t * 7 * p.sp + p.ph) * 0.04); d.scale.setScalar(hide ? 0 : 1); d.updateMatrix();
+      const hide = skip?.(x, p.z) ?? false; d.position.set(x, Math.abs(Math.sin(t * 7 * p.sp + p.ph)) * 0.08, p.z); d.rotation.set(0, p.sp === 0 ? p.ph : p.dir > 0 ? Math.PI / 2 : -Math.PI / 2, Math.sin(t * 7 * p.sp + p.ph) * 0.04); d.scale.setScalar(hide ? 0 : 1); d.updateMatrix();
       this.a.setMatrixAt(i, d.matrix); this.b.setMatrixAt(i, d.matrix); }); this.a.instanceMatrix.needsUpdate = true; this.b.instanceMatrix.needsUpdate = true; this.root.visible = true; }
 }
 
@@ -211,7 +211,7 @@ export class Med {
       for (let x = -66; x <= 50; x += 11) { plane2(p, x, -5.3, 1.0, x + 100); plane2(p, x + 5.5, 5.3, 0.95, x + 300); lampPost(p, x + 2.7, -4.1); lampPost(p, x + 8.2, 4.1); }
       for (const [x, s] of [[-14, -1], [6, -1], [22, 1]] as [number, number][]) { for (let i = 0; i < 3; i++) { const t = grp(p, x + i * 1.3, 0, s * 5.6); cyl(t, 0.35, 0.35, 0.04, M("#f4f0e8", 0.4), 0, 0.74, 0, 16); cyl(t, 0.03, 0.03, 0.74, M("#16181c", 0.4), 0, 0.37, 0, 6);
           for (const d of [-0.5, 0.5]) { const c = grp(t, d, 0, 0, d > 0 ? -Math.PI / 2 : Math.PI / 2); bx(c, 0.4, 0.04, 0.4, M("#c8962a", 0.6), 0, 0.45, 0); bx(c, 0.4, 0.4, 0.04, M("#c8962a", 0.6), 0, 0.67, -0.19); } } }
-      this.walk = new Walkers(80); p.add(this.walk.root); this.walk.root.visible = false;
+      this.walk = new Walkers(200); p.add(this.walk.root); this.walk.root.visible = false;
       const fc = ["#e2262e", "#f2b51c", "#2a7ae8", "#2fae7a", "#ff8a3a", "#f4f0e8"];
       for (let x = -60; x <= 46; x += 13) for (let i = 0; i < 16; i++) { const z = -8.6 + i * 1.15, y = 7.4 - Math.sin((i + 0.5) / 16 * Math.PI) * 1.4; const f = add(p, new THREE.ConeGeometry(0.3, 0.62, 3), M(fc[(i + x) % 6 < 0 ? 0 : (i + x + 600) % 6], 0.6, undefined, { side: THREE.DoubleSide }), x, y - 0.3, z, 0, false); f.rotation.x = Math.PI; }
       for (const [x, s, c] of [[-14, -1, "#e2262e"], [6, -1, "#2a7ae8"], [22, 1, "#2fae7a"]] as [number, number, string][]) for (let i = 0; i < 3; i++) { const u = grp(p, x + i * 1.3, 0, s * 5.6); cyl(u, 0.03, 0.03, 2.3, M("#f4f0e8", 0.4), 0, 1.15, 0, 6); add(u, new THREE.ConeGeometry(0.95, 0.5, 12), M(i % 2 ? "#f4f0e8" : c, 0.6), 0, 2.45, 0); }

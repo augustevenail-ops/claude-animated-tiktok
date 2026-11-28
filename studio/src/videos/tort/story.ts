@@ -87,13 +87,13 @@ const lying = (w: World, t: number) => { const a = put(w, "hutt", "MAI", 2.95, 0
 export const SHOTS: Shot[] = [
   // ——— Dans cette ville, tout le monde joue à « Tu as tort ».
   { w: "Dans cette ville", set: "RUE", fr: "Joël sur le trottoir regarde le ciel ; la caméra recule et s'élève : la rue animée, les toits, la mer et le phare", g: DAY,
-    cam: (_w, u) => G(at("RUE", -6.2, 2.0, -2.2), at("RUE", -34, 24, 17), at("RUE", -6.0, 2.15, -4.6), at("RUE", 24, 3, -2), 44, u, 50),
+    cam: (w, u) => { const h = headOf(J(w)); const e = sm(u); return { P: h.clone().add(V(0.25, -0.35, 2.1)).lerp(at("RUE", -42, 21, -0.5), e), T: h.clone().add(V(0, 0.25, 0)).lerp(at("RUE", 22, 2.5, -1), e), fov: 40 + 8 * e }; },
     st: (w, u, t) => { put(w, "joel", "RUE", -6.0, 0, -4.6, 0.15).pose(t, { expr: "neutral", headPitch: -0.55 }); walkers(w, t);
       put(w, "t1", "RUE", -16.2, 0, 4.9, Math.PI / 2 + 0.6).pose(t, { expr: "smug", talk: u < 0.55 }); const b = put(w, "t2", "RUE", -14.6, 0, 4.9, -Math.PI / 2 - 0.6); b.pose(t, { expr: "angry", point: 0.3, talk: u > 0.55 });
       lab(w, "tat1", "TU AS TORT !", "#ff4a4a", b, cl((u - 0.6) * 2.5), 2.4, 0.9); } },
   // ——— La règle est simple : quelqu'un dit une phrase, et toi, tu dois lui prouver qu'elle est fausse.
   { w: "La règle est simple", set: "RUE", fr: "En terrasse, un homme affirme qu'il fait beau ; à côté, un enfant scrute le ciel à la loupe et trouve un nuage ; l'homme se décompose", g: DAY,
-    cam: (_w, u) => G(at("RUE", -9.0, 2.3, -0.4), at("RUE", -10.4, 1.9, -2.2), at("RUE", -12.0, 1.6, -5.5), at("RUE", -11.8, 1.6, -5.5), 42, u),
+    cam: (_w, u) => G(at("RUE", -16.0, 2.2, -1.2), at("RUE", -15.0, 1.9, -2.4), at("RUE", -12.0, 1.5, -5.5), at("RUE", -11.9, 1.5, -5.5), 42, u),
     st: (w, u, t) => { walkers(w, t); const a = put(w, "t3", "RUE", -12.6, 0, -5.6, 0.4); const k2 = u > 0.35 && u < 0.75; a.pose(t, { expr: u < 0.72 ? "smile" : "sad", talk: u < 0.35, armR: u < 0.35 ? -1.0 : 0 });
       const k = put(w, "k1", "RUE", -11.2, 0, -5.4, k2 ? -0.3 : -1.0); k.pose(t, { expr: k2 ? "focus" : u > 0.72 ? "smug" : "neutral", armR: k2 ? -2.3 : 0, headPitch: k2 ? -0.45 : 0, point: u > 0.75 ? 0.4 : undefined }); if (k2) inHand(w, "loupe", k, true, -0.6, 0, 0, V(0, 0.1, 0.1)); } },
   // ——— Par tous les moyens. (montage rapide)
