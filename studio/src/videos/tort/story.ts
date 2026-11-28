@@ -63,7 +63,7 @@ const gulls = (w: World, t: number, fly = 0) => { const m = MED(w); m.gulls.root
 const score = (w: World, k: number) => { const m = MED(w); m.score.map = m.scores[k]; m.score.emissiveMap = m.scores[k]; m.score.needsUpdate = true; };
 const J = (w: World) => w.actors.joel;
 /** passants dans la rue (cachés près des personnages principaux pour ne pas les traverser) */
-const walkers = (w: World, t: number) => { const acts = Object.values(w.actors).filter((a) => a.root.visible).map((a) => a.root.position.clone().sub(O.RUE)); MED(w).walk.set(t, (x, z) => acts.some((p) => Math.abs(p.x - x) < 1.4 && Math.abs(p.z - z) < 1.4)); };
+const walkers = (w: World, t: number) => { const acts = Object.entries(w.actors).filter(([, a]) => a.root.visible).map(([k, a]) => [a.root.position.clone().sub(O.RUE), k === "joel" ? 3.6 : 1.4] as [THREE.Vector3, number]); MED(w).walk.set(t, (x, z) => acts.some(([p, r]) => Math.hypot(p.x - x, p.z - z) < r)); };   // un peu d'espace autour de Joël pour qu'il ressorte
 /** file d'attente à la boulangerie */
 const queue = (w: World, t: number) => { put(w, "t2", "VILLE", 30.7, 0, 1.9, Math.PI + 0.1).pose(t, { expr: "neutral", headYaw: 0.3 }); put(w, "k6", "VILLE", 31.0, 0, 3.0, Math.PI - 0.2).pose(t, { expr: "smile" }); };
 // scène du championnat : Joël au pupitre gauche (bleu), Contraire au pupitre droit (violet)
@@ -86,9 +86,9 @@ const lying = (w: World, t: number) => { const a = put(w, "hutt", "MAI", 2.95, 0
 
 export const SHOTS: Shot[] = [
   // ——— Dans cette ville, tout le monde joue à « Tu as tort ».
-  { w: "Dans cette ville", set: "RUE", fr: "Joël sur le trottoir regarde le ciel ; la caméra recule et s'élève : la rue animée, les toits, la mer et le phare", g: DAY,
-    cam: (w, u) => { const h = headOf(J(w)); const e = sm(u); return { P: h.clone().add(V(0.25, -0.35, 2.1)).lerp(at("RUE", -42, 21, -0.5), e), T: h.clone().add(V(0, 0.25, 0)).lerp(at("RUE", 22, 2.5, -1), e), fov: 40 + 8 * e }; },
-    st: (w, u, t) => { put(w, "joel", "RUE", -6.0, 0, -4.6, 0.15).pose(t, { expr: "neutral", headPitch: -0.75 }); walkers(w, t);
+  { w: "Dans cette ville", set: "RUE", sunK: 1, g: { ...DAY, fogD: 0.0009 }, fr: "Plongée à 3 m au-dessus de Joël, qui regarde la caméra ; la caméra s'éloigne et monte en accélérant : toute la ville vue du ciel",
+    cam: (w, u) => { const h = headOf(J(w)); const e = 0.06 * u + 0.94 * Math.pow(u, 2.3); const P = h.clone().add(V(0.9, 3.0, 1.3)).lerp(at("RUE", -30, 250, 150), e); return { P, T: h.clone().add(V(0, -0.6, 0)).lerp(at("RUE", -40, 0, -6), Math.min(1, e * 1.3)), fov: 46 + 4 * e }; },
+    st: (w, u, t) => { put(w, "joel", "RUE", -6.0, 0, 0, 0.6).pose(t, { expr: "neutral", headPitch: -0.95 }); walkers(w, t);
       put(w, "t1", "RUE", -16.2, 0, 4.9, Math.PI / 2 + 0.6).pose(t, { expr: "smug", talk: u < 0.55 }); const b = put(w, "t2", "RUE", -14.6, 0, 4.9, -Math.PI / 2 - 0.6); b.pose(t, { expr: "angry", point: 0.3, talk: u > 0.55 });
       lab(w, "tat1", "TU AS TORT !", "#ff4a4a", b, cl((u - 0.6) * 2.5), 2.4, 0.9); } },
   // ——— La règle est simple : quelqu'un dit une phrase, et toi, tu dois lui prouver qu'elle est fausse.

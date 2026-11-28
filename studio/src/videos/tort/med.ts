@@ -2,7 +2,7 @@
 // avec canapé), classe (CL2), studio météo + boulangerie (VILLE). La rue colorée de jour (TOWN, reprise des Dessins) est dans sets.ts.
 import * as THREE from "three";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
-import { ctex, hash, signTex, stoneTex } from "./tex";
+import { ctex, hash, signTex, stoneTex, facadeTex } from "./tex";
 import { V, M, P, E, rep, bx, cyl, plane, grp, room, desk, chair, add, tileTex, stripesTex, woodTex, kidArtTex, posterTex, Crowd, HouseD } from "./sets";
 
 const WALL = ["#ff8a6a", "#3cc8c8", "#ffd04a", "#7ad8a0", "#b08ae8", "#f0a040", "#ff9ac0", "#5aa8f0", "#e8e05a", "#ff6a5a"];
@@ -138,7 +138,7 @@ export class Walkers { root = new THREE.Group(); private a: THREE.InstancedMesh;
     const base = mergeGeometries(geos.map((q, v) => { const g2 = q.clone(); return g2; }).slice(0, 1))!;
     this.a = new THREE.InstancedMesh(body, new THREE.MeshStandardMaterial({ color: "#ffffff", roughness: 0.8 }), n); this.b = new THREE.InstancedMesh(base, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.8 }), n);
     const cols = ["#e2262e", "#2a7ae8", "#f2b51c", "#2fae7a", "#ff8a3a", "#9a5ad8", "#ff5fa4", "#1f3a5a", "#f4f0e8", "#2ab4d8"];
-    for (let i = 0; i < n; i++) { const side = hash(i, 1) < 0.5 ? -1 : 1, still = hash(i, 9) < 0.28; this.p.push({ x: x0 + hash(i, 2) * span, z: zpick ? zpick(i, still) : side * (still ? 4.6 + hash(i, 3) * 1.0 : 4.0 + hash(i, 3) * 1.8), dir: hash(i, 4) < 0.5 ? -1 : 1, sp: still ? 0 : 1.0 + hash(i, 5) * 0.6, ph: hash(i, 6) * 6 });
+    for (let i = 0; i < n; i++) { const side = hash(i, 1) < 0.5 ? -1 : 1, still = hash(i, 9) < 0.28; this.p.push({ x: x0 + hash(i, 2) * span, z: zpick ? zpick(i, still) : hash(i, 10) < 0.4 ? (hash(i, 3) - 0.5) * 6.4 : side * (still ? 4.6 + hash(i, 3) * 1.0 : 4.0 + hash(i, 3) * 1.8), dir: hash(i, 4) < 0.5 ? -1 : 1, sp: still ? 0 : 1.0 + hash(i, 5) * 0.6, ph: hash(i, 6) * 6 });
       this.a.setColorAt(i, new THREE.Color(cols[Math.floor(hash(i, 7) * cols.length)])); this.b.setColorAt(i, new THREE.Color(skin[Math.floor(hash(i, 8) * 5)]).lerp(new THREE.Color("#ffffff"), 0.75)); }
     for (const q of [this.a, this.b]) { q.castShadow = true; q.receiveShadow = true; q.frustumCulled = false; this.root.add(q); }
   }
@@ -213,7 +213,22 @@ export class Med {
       for (let x = -66; x <= 50; x += 11) { plane2(p, x, -5.3, 1.0, x + 100); plane2(p, x + 5.5, 5.3, 0.95, x + 300); lampPost(p, x + 2.7, -4.1); lampPost(p, x + 8.2, 4.1); }
       for (const [x, s] of [[-14, -1], [6, -1], [22, 1]] as [number, number][]) { for (let i = 0; i < 3; i++) { const t = grp(p, x + i * 1.3, 0, s * 5.6); cyl(t, 0.35, 0.35, 0.04, M("#f4f0e8", 0.4), 0, 0.74, 0, 16); cyl(t, 0.03, 0.03, 0.74, M("#16181c", 0.4), 0, 0.37, 0, 6);
           for (const d of [-0.5, 0.5]) { const c = grp(t, d, 0, 0, d > 0 ? -Math.PI / 2 : Math.PI / 2); bx(c, 0.4, 0.04, 0.4, M("#c8962a", 0.6), 0, 0.45, 0); bx(c, 0.4, 0.4, 0.04, M("#c8962a", 0.6), 0, 0.67, -0.19); } } }
-      this.walk = new Walkers(260); p.add(this.walk.root); this.walk.root.visible = false;
+      this.walk = new Walkers(340); p.add(this.walk.root); this.walk.root.visible = false;
+      // quartiers autour de la rue (vus du ciel au premier plan) : îlots d'immeubles en pierre claire, toits en zinc, rues, petits parcs
+      { const fac = facadeTex("#efe6d6", "#6fa8dc", 4, 5, false, "#3a5a7a", "q1"), fac2 = facadeTex("#e8d8c0", "#6fa8dc", 4, 5, false, "#8a2a2a", "q2");
+        const bl: { x: number; z: number; w: number; d: number; h: number; c: string; f: number }[] = [], parks: [number, number][] = [];
+        for (let bx0 = -176; bx0 < 50; bx0 += 28) for (let bz0 = -134; bz0 < 134; bz0 += 30) { if (Math.abs(bz0 + 12) < 26) continue; const k = hash(bx0 * 7 + bz0, 3);
+          if (k < 0.1) { parks.push([bx0 + 11, bz0 + 11]); continue; }
+          for (let i = 0; i < 3; i++) for (let j = 0; j < 2; j++) bl.push({ x: bx0 + 3.5 + i * 7.5, z: bz0 + 5 + j * 12, w: 7.2, d: 10, h: 10 + hash(bx0 + i * 13, bz0 + j * 7) * 8, c: ["#ffffff", "#fff4e4", "#f4ecff", "#fff0f0", "#eef6ff"][Math.floor(hash(i + bx0, j + bz0) * 5)], f: hash(i * 3 + bx0, j + 9 + bz0) < 0.5 ? 0 : 1 }); }
+        const d = new THREE.Object3D();
+        [0, 1].forEach((f) => { const L = bl.filter((b) => b.f === f); const im = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1).translate(0, 0.5, 0), new THREE.MeshStandardMaterial({ map: f ? fac2 : fac, roughness: 0.85 }), L.length);
+          const rf = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.62, 0.72, 1, 4, 1).rotateY(Math.PI / 4).translate(0, 0.5, 0), M("#5a6878", 0.5), L.length);
+          L.forEach((b, i) => { d.position.set(b.x, 0, b.z); d.rotation.set(0, 0, 0); d.scale.set(b.w, b.h, b.d); d.updateMatrix(); im.setMatrixAt(i, d.matrix); im.setColorAt(i, new THREE.Color(b.c));
+            d.position.y = b.h; d.scale.set(b.w * 1.02, 2.4, b.d * 1.02); d.updateMatrix(); rf.setMatrixAt(i, d.matrix); });
+          for (const q of [im, rf]) { q.castShadow = q.receiveShadow = true; q.userData.noEdge = true; p.add(q); } });
+        for (const [x, z] of parks) { plane(p, 20, 20, M("#6ab84a", 0.9), x, 0.03, z, -Math.PI / 2); for (let i = 0; i < 6; i++) plane2(p, x - 6 + (i % 3) * 6, z - 4 + Math.floor(i / 3) * 8, 1.0, x * 3 + z + i); }
+        for (let bz0 = -134; bz0 < 140; bz0 += 30) if (Math.abs(bz0 + 12) >= 26 || true) plane(p, 240, 4.6, M("#b8ad9a", 0.9), -62, 0.02, bz0 - 2.4, -Math.PI / 2);
+        for (let bx0 = -176; bx0 < 56; bx0 += 28) plane(p, 4.6, 280, M("#b8ad9a", 0.9), bx0 - 2.3, 0.02, 0, -Math.PI / 2); }
       const fc = ["#e2262e", "#f2b51c", "#2a7ae8", "#2fae7a", "#ff8a3a", "#f4f0e8"];
       for (let x = -60; x <= 46; x += 13) for (let i = 0; i < 16; i++) { const z = -8.6 + i * 1.15, y = 7.4 - Math.sin((i + 0.5) / 16 * Math.PI) * 1.4; const f = add(p, new THREE.ConeGeometry(0.3, 0.62, 3), M(fc[(i + x) % 6 < 0 ? 0 : (i + x + 600) % 6], 0.6, undefined, { side: THREE.DoubleSide }), x, y - 0.3, z, 0, false); f.rotation.x = Math.PI; }
       for (const [x, s, c] of [[-14, -1, "#e2262e"], [6, -1, "#2a7ae8"], [22, 1, "#2fae7a"]] as [number, number, string][]) for (let i = 0; i < 3; i++) { const u = grp(p, x + i * 1.3, 0, s * 5.6); cyl(u, 0.03, 0.03, 2.3, M("#f4f0e8", 0.4), 0, 1.15, 0, 6); add(u, new THREE.ConeGeometry(0.95, 0.5, 12), M(i % 2 ? "#f4f0e8" : c, 0.6), 0, 2.45, 0); }
