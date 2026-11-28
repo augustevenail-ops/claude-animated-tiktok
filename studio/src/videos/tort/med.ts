@@ -151,7 +151,7 @@ export class Med {
   suns: [THREE.DirectionalLight, number][] = []; skies: THREE.MeshBasicMaterial[] = []; labels: Record<string, THREE.Sprite> = {}; parent!: THREE.Object3D; root!: THREE.Object3D;
   crowd!: Crowd; gulls!: Gulls; gullBase: THREE.Vector3[] = []; lamp!: THREE.MeshStandardMaterial; lampL!: THREE.PointLight; dusk!: THREE.Texture; day!: THREE.Texture;
   boardM!: THREE.MeshStandardMaterial; boards: Record<string, THREE.Texture> = {}; tvScreen!: THREE.MeshStandardMaterial; chips: THREE.Group[] = []; sofa!: THREE.Group;
-  props: Record<string, THREE.Group> = {}; walk!: Walkers; walkPL!: Walkers; score!: THREE.MeshStandardMaterial; scores: THREE.Texture[] = []; stage!: THREE.Group; mics: THREE.Group[] = [];
+  props: Record<string, THREE.Group> = {}; walk!: Walkers; walkPL!: Walkers; ring!: Walkers; score!: THREE.MeshStandardMaterial; scores: THREE.Texture[] = []; stage!: THREE.Group; mics: THREE.Group[] = [];
   /** étiquette (texte flottant) créée à la demande */
   lab(key: string, text: string, col = "#ffffff", w = 2.4) { let s = this.labels[key]; if (!s) { s = label(text, col, w); this.root.add(s); this.labels[key] = s; } return s; }
   constructor(g: Record<string, THREE.Group>, root: THREE.Object3D) {
@@ -214,6 +214,7 @@ export class Med {
       for (const [x, s] of [[-14, -1], [6, -1], [22, 1]] as [number, number][]) { for (let i = 0; i < 3; i++) { const t = grp(p, x + i * 1.3, 0, s * 5.6); cyl(t, 0.35, 0.35, 0.04, M("#f4f0e8", 0.4), 0, 0.74, 0, 16); cyl(t, 0.03, 0.03, 0.74, M("#16181c", 0.4), 0, 0.37, 0, 6);
           for (const d of [-0.5, 0.5]) { const c = grp(t, d, 0, 0, d > 0 ? -Math.PI / 2 : Math.PI / 2); bx(c, 0.4, 0.04, 0.4, M("#c8962a", 0.6), 0, 0.45, 0); bx(c, 0.4, 0.4, 0.04, M("#c8962a", 0.6), 0, 0.67, -0.19); } } }
       this.walk = new Walkers(340); p.add(this.walk.root); this.walk.root.visible = false;
+      this.ring = new Walkers(46, -13, 14, (i) => (hash(i, 21) - 0.5) * 7.6); p.add(this.ring.root); this.ring.root.visible = false;
       // quartiers autour de la rue (vus du ciel au premier plan) : îlots d'immeubles en pierre claire, toits en zinc, rues, petits parcs
       { const fac = facadeTex("#efe6d6", "#6fa8dc", 4, 5, false, "#3a5a7a", "q1"), fac2 = facadeTex("#e8d8c0", "#6fa8dc", 4, 5, false, "#8a2a2a", "q2");
         const bl: { x: number; z: number; w: number; d: number; h: number; c: string; f: number }[] = [], parks: [number, number][] = [];
