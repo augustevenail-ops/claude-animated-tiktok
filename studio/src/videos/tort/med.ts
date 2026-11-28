@@ -1,6 +1,7 @@
 // « Tu as tort » : place du phare au bord de la mer (PL : championnat, foule, mouettes, coucher de soleil), maison de Joël (MAI : cuisine + salon
 // avec canapé), classe (CL2), studio météo + boulangerie (VILLE). La rue colorée de jour (TOWN, reprise des Dessins) est dans sets.ts.
 import * as THREE from "three";
+import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { ctex, hash, signTex, stoneTex } from "./tex";
 import { V, M, P, E, rep, bx, cyl, plane, grp, room, desk, chair, add, tileTex, stripesTex, woodTex, kidArtTex, posterTex, Crowd, HouseD } from "./sets";
 
@@ -123,11 +124,34 @@ export const mkBook = () => { const g = new THREE.Group(); bx(g, 0.5, 0.65, 0.18
 export const mkSteth = () => { const g = new THREE.Group(), k = M("#2a2e36", 0.4); add(g, new THREE.TorusGeometry(0.2, 0.015, 8, 24, Math.PI), k, 0, 0, 0).rotation.z = Math.PI;
   add(g, new THREE.CylinderGeometry(0.06, 0.06, 0.03, 20).rotateX(Math.PI / 2), M("#d8dce4", 0.2, undefined, { metalness: 0.9 }), 0, -0.45, 0.05); add(g, new THREE.CylinderGeometry(0.012, 0.012, 0.3, 6), k, 0, -0.3, 0); return g; };
 
+
+/** passants (figurines instanciées, même style blocs) qui marchent sur les trottoirs de la rue : la ville vit */
+export class Walkers { root = new THREE.Group(); private a: THREE.InstancedMesh; private b: THREE.InstancedMesh; private p: { x: number; z: number; dir: number; sp: number; ph: number }[] = []; private d = new THREE.Object3D();
+  constructor(n = 70) {
+    const B = (w: number, h: number, dd: number, x = 0, y = 0, z = 0) => new THREE.BoxGeometry(w, h, dd).translate(x, y + h / 2, z).toNonIndexed();
+    const vc = (q: THREE.BufferGeometry, c: string) => { const cc = new THREE.Color(c), k = q.attributes.position.count, a = new Float32Array(k * 3); for (let i = 0; i < k; i++) a.set([cc.r, cc.g, cc.b], i * 3); q.setAttribute("color", new THREE.BufferAttribute(a, 3)); return q; };
+    const skin = ["#f2cbaa", "#e8b890", "#c98a5c", "#f6d3b8", "#8a5a3c"], hair = ["#2a1d16", "#6b4426", "#d8a650", "#111111", "#9a948c"];
+    const geos: THREE.BufferGeometry[] = [];
+    for (let v = 0; v < 5; v++) geos.push(mergeGeometries([vc(B(0.26, 0.86, 0.3, -0.16), "#2a2e3a"), vc(B(0.26, 0.86, 0.3, 0.16), "#2a2e3a"), vc(B(0.56, 0.54, 0.54, 0, 1.64), skin[v]), vc(B(0.6, 0.17, 0.58, 0, 2.17), hair[v]), vc(B(0.6, 0.24, 0.2, 0, 1.98, -0.22), hair[v]),
+      vc(B(0.1, 0.12, 0.02, -0.13, 1.84, 0.28), "#1a1a1a"), vc(B(0.1, 0.12, 0.02, 0.13, 1.84, 0.28), "#1a1a1a")])!);
+    const body = mergeGeometries([B(0.7, 0.8, 0.42, 0, 0.84), B(0.2, 0.74, 0.24, -0.47, 0.92), B(0.2, 0.74, 0.24, 0.47, 0.92)])!;
+    const base = mergeGeometries(geos.map((q, v) => { const g2 = q.clone(); return g2; }).slice(0, 1))!;
+    this.a = new THREE.InstancedMesh(body, new THREE.MeshStandardMaterial({ color: "#ffffff", roughness: 0.8 }), n); this.b = new THREE.InstancedMesh(base, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.8 }), n);
+    const cols = ["#e2262e", "#2a7ae8", "#f2b51c", "#2fae7a", "#ff8a3a", "#9a5ad8", "#ff5fa4", "#1f3a5a", "#f4f0e8", "#2ab4d8"];
+    for (let i = 0; i < n; i++) { const side = hash(i, 1) < 0.5 ? -1 : 1; this.p.push({ x: -70 + hash(i, 2) * 120, z: side * (4.2 + hash(i, 3) * 1.6), dir: hash(i, 4) < 0.5 ? -1 : 1, sp: 1.0 + hash(i, 5) * 0.6, ph: hash(i, 6) * 6 });
+      this.a.setColorAt(i, new THREE.Color(cols[Math.floor(hash(i, 7) * cols.length)])); this.b.setColorAt(i, new THREE.Color(skin[Math.floor(hash(i, 8) * 5)]).lerp(new THREE.Color("#ffffff"), 0.75)); }
+    for (const q of [this.a, this.b]) { q.castShadow = true; q.receiveShadow = true; q.frustumCulled = false; this.root.add(q); }
+  }
+  set(t: number, skip?: (x: number, z: number) => boolean) { const d = this.d; this.p.forEach((p, i) => { let x = p.x + p.dir * p.sp * t; x = ((x + 70) % 120 + 120) % 120 - 70;
+      const hide = skip?.(x, p.z) ?? false; d.position.set(x, Math.abs(Math.sin(t * 7 * p.sp + p.ph)) * 0.08, p.z); d.rotation.set(0, p.dir > 0 ? Math.PI / 2 : -Math.PI / 2, Math.sin(t * 7 * p.sp + p.ph) * 0.04); d.scale.setScalar(hide ? 0 : 1); d.updateMatrix();
+      this.a.setMatrixAt(i, d.matrix); this.b.setMatrixAt(i, d.matrix); }); this.a.instanceMatrix.needsUpdate = true; this.b.instanceMatrix.needsUpdate = true; this.root.visible = true; }
+}
+
 export class Med {
   suns: [THREE.DirectionalLight, number][] = []; skies: THREE.MeshBasicMaterial[] = []; labels: Record<string, THREE.Sprite> = {}; parent!: THREE.Object3D; root!: THREE.Object3D;
   crowd!: Crowd; gulls!: Gulls; gullBase: THREE.Vector3[] = []; lamp!: THREE.MeshStandardMaterial; lampL!: THREE.PointLight; dusk!: THREE.Texture; day!: THREE.Texture;
   boardM!: THREE.MeshStandardMaterial; boards: Record<string, THREE.Texture> = {}; tvScreen!: THREE.MeshStandardMaterial; chips: THREE.Group[] = []; sofa!: THREE.Group;
-  props: Record<string, THREE.Group> = {}; score!: THREE.MeshStandardMaterial; scores: THREE.Texture[] = []; stage!: THREE.Group; mics: THREE.Group[] = [];
+  props: Record<string, THREE.Group> = {}; walk!: Walkers; score!: THREE.MeshStandardMaterial; scores: THREE.Texture[] = []; stage!: THREE.Group; mics: THREE.Group[] = [];
   /** étiquette (texte flottant) créée à la demande */
   lab(key: string, text: string, col = "#ffffff", w = 2.4) { let s = this.labels[key]; if (!s) { s = label(text, col, w); this.root.add(s); this.labels[key] = s; } return s; }
   constructor(g: Record<string, THREE.Group>, root: THREE.Object3D) {
@@ -187,6 +211,10 @@ export class Med {
       for (let x = -66; x <= 50; x += 11) { plane2(p, x, -5.3, 1.0, x + 100); plane2(p, x + 5.5, 5.3, 0.95, x + 300); lampPost(p, x + 2.7, -4.1); lampPost(p, x + 8.2, 4.1); }
       for (const [x, s] of [[-14, -1], [6, -1], [22, 1]] as [number, number][]) { for (let i = 0; i < 3; i++) { const t = grp(p, x + i * 1.3, 0, s * 5.6); cyl(t, 0.35, 0.35, 0.04, M("#f4f0e8", 0.4), 0, 0.74, 0, 16); cyl(t, 0.03, 0.03, 0.74, M("#16181c", 0.4), 0, 0.37, 0, 6);
           for (const d of [-0.5, 0.5]) { const c = grp(t, d, 0, 0, d > 0 ? -Math.PI / 2 : Math.PI / 2); bx(c, 0.4, 0.04, 0.4, M("#c8962a", 0.6), 0, 0.45, 0); bx(c, 0.4, 0.4, 0.04, M("#c8962a", 0.6), 0, 0.67, -0.19); } } }
+      this.walk = new Walkers(80); p.add(this.walk.root); this.walk.root.visible = false;
+      const fc = ["#e2262e", "#f2b51c", "#2a7ae8", "#2fae7a", "#ff8a3a", "#f4f0e8"];
+      for (let x = -60; x <= 46; x += 13) for (let i = 0; i < 16; i++) { const z = -8.6 + i * 1.15, y = 7.4 - Math.sin((i + 0.5) / 16 * Math.PI) * 1.4; const f = add(p, new THREE.ConeGeometry(0.3, 0.62, 3), M(fc[(i + x) % 6 < 0 ? 0 : (i + x + 600) % 6], 0.6, undefined, { side: THREE.DoubleSide }), x, y - 0.3, z, 0, false); f.rotation.x = Math.PI; }
+      for (const [x, s, c] of [[-14, -1, "#e2262e"], [6, -1, "#2a7ae8"], [22, 1, "#2fae7a"]] as [number, number, string][]) for (let i = 0; i < 3; i++) { const u = grp(p, x + i * 1.3, 0, s * 5.6); cyl(u, 0.03, 0.03, 2.3, M("#f4f0e8", 0.4), 0, 1.15, 0, 6); add(u, new THREE.ConeGeometry(0.95, 0.5, 12), M(i % 2 ? "#f4f0e8" : c, 0.6), 0, 2.45, 0); }
       // le bout de la rue : quai, mer, phare au loin
       bx(p, 30, 0.6, 30, M("#c8bca8", 0.85, rep(stoneTex(), 6, 6)), 66, -0.3, 0); const sea = new THREE.MeshPhysicalMaterial({ map: rep(seaTex(), 40, 60), roughness: 0.15, clearcoat: 1 }); plane(p, 300, 400, sea, 230, -0.9, 0, -Math.PI / 2);
       { const j = grp(p, 120, 0, -14); cyl(j, 3, 3.6, 2, M("#a89c88", 0.9), 0, 0, 0, 20); add(j, new THREE.CylinderGeometry(1.4, 2.0, 16, 24), M("#ffffff", 0.5, hstripe()), 0, 8.8, 0); add(j, new THREE.CylinderGeometry(1.0, 1.0, 2, 16), M("#fff4c0", 0.3, undefined, { emissive: "#ffd870", emissiveIntensity: 1 }), 0, 17.8, 0); add(j, new THREE.SphereGeometry(1.2, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2), M("#e2262e", 0.4), 0, 18.8, 0); }
