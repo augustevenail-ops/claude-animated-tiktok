@@ -53,7 +53,7 @@ const terrain = () => {
     const n = 0.5 + 0.5 * Math.sin(x * 0.021 + Math.cos(z * 0.017) * 2) * Math.cos(z * 0.019 - x * 0.006);
     c.set("#5a9636").lerp(c2.set("#9cc452"), n);
     const fd = forestD(x, z); if (fd > 0.3) c.lerp(c2.set("#3a6a2a"), 0.6);                                        // sous-bois
-    if (r < 79) { const dirt = Math.abs(x) < 4 || Math.abs(z - 2) < 4 || r < 16 ? 0.9 : 0.25 + 0.35 * (0.5 + 0.5 * Math.sin(x * 0.3) * Math.cos(z * 0.27)); c.set("#7aa84a").lerp(c2.set("#b49a6e"), dirt); }   // bourg : herbe, terre battue, rues
+    if (r < 79) { const dirt = Math.abs(x) < 4 || Math.abs(z - 2) < 4 || r < 16 ? 0.85 : 0.08 + 0.3 * Math.max(0, Math.sin(x * 0.3) * Math.cos(z * 0.27)); c.set("#7aa84a").lerp(c2.set("#b49a6e"), dirt); }   // bourg : herbe, terre battue, rues
     else if (r > 150 && r < 560 && z > 120 && x > -120 && x < 200 && hash(Math.floor(x / 90) * 13 + Math.floor(z / 90), 9) > 0.2) c.lerp(c2.set(fieldCol(x, z)), 0.8);   // champs au sud
     if (z < -420 && Math.abs(x) < 420) c.lerp(c2.set("#7a8a4a"), 0.5);                                           // plaine du nord
     if (Math.abs(x) < 3.5 && z > 76 && z < 700) c.set("#c8b088");                                                // chemin vers le sud
@@ -81,7 +81,7 @@ export class Nature { root = new THREE.Group(); clouds: THREE.Sprite[] = [];
     const T: { x: number; z: number; s: number; k: number }[][] = [[], []], d = new THREE.Object3D();
     for (let i = 0; i < 26000 && T[0].length + T[1].length < 9000; i++) {
       const x = -900 + hash(i, 51) * 1900, z = -900 + hash(i, 52) * 1700, r = Math.hypot(x, z), fd = forestD(x, z), y = H(x, z);
-      if (r < 100 || y < SEA + 1.5 || (Math.abs(x) < 8 && z > 70) || (z < -420 && Math.abs(x) < 420)) continue;
+      if (r < 100 || y < SEA + 1.5 || VILLAGES.some((v) => Math.hypot(x - v.x, z - v.z) < 45) || (Math.abs(x) < 8 && z > 70) || (z < -420 && Math.abs(x) < 420)) continue;
       const grove = 0.5 + 0.5 * Math.sin(x * 0.045 + 1) * Math.sin(z * 0.05 + 2), m = MOUNT(x, z);
       const keepP = fd > 0.25 ? fd : m > 0.05 ? (y < 150 ? 0.35 : 0) : (z > 120 && x > -120 && x < 200) ? 0.012 : grove > 0.82 ? 0.5 : 0.02;
       if (hash(i, 53) > keepP) continue;
@@ -222,8 +222,8 @@ export class Castle {
     // étape 4 : la plus haute tour (guet + cloche), tours de quartier, palissade finale faible
     const wt = tower(R, 3.4, 44, SLATE(), this.flags, ft, true); P(wt, 4, 99, this.watch.x, this.watch.z);
     const plat = new THREE.Group(); wt.add(plat); plat.position.y = 44.9;
-    this.bell.position.set(0, 4.2, 0); plat.add(this.bell); mesh(this.bell, new THREE.CylinderGeometry(0.5, 1.0, 1.5, 16, 1, true).translate(0, -0.9, 0), M("#c8962a", 0.3, undefined, { metalness: 0.9, side: THREE.DoubleSide }));
-    mesh(plat, box(4.2, 0.3, 0.4, 0, 4.4, 0), WOOD());
+    this.bell.position.set(-1.5, 4.2, 1.5); plat.add(this.bell); mesh(this.bell, new THREE.CylinderGeometry(0.5, 1.0, 1.5, 16, 1, true).translate(0, -0.9, 0), M("#c8962a", 0.3, undefined, { metalness: 0.9, side: THREE.DoubleSide }));
+    mesh(plat, box(4.6, 0.3, 0.4, 0, 4.4, 0), WOOD(), -1.5, 0, 1.5, Math.PI / 4);
     this.bellTop.set(this.watch.x, PH + 44.9, this.watch.z);
     P(tower(R, 2.6, 14, TILE(), this.flags, ft), 4.1, 99, 34, 30); P(tower(R, 2.6, 14, TILE(), this.flags, ft), 4.15, 99, -36, 26); P(tower(R, 2.6, 13, SLATE(), this.flags, ft), 4.2, 99, 40, -22);
     P(palisade(R, 76, 3.6, true), 4.0);
@@ -329,7 +329,7 @@ export class Ruins { root = new THREE.Group(); smoke: THREE.Points[] = []; priva
         const hg = grp(g, x, y, z, a); mesh(hg, box(w, h, 0.4, 0, 0, 2), char); mesh(hg, box(0.4, h * 0.7, 4, w / 2, 0, 0), char); mesh(hg, box(w * 0.6, h * 0.5, 0.4, -w * 0.2, 0, -2), black);
         mesh(hg, box(0.3, 0.3, 5, 0, 0.1, 0), black).rotation.set(0.3, 0.6, 0.2); }
       const n = 160, pg = new THREE.BufferGeometry(); pg.setAttribute("position", new THREE.BufferAttribute(new Float32Array(n * 3), 3));
-      const pts = new THREE.Points(pg, new THREE.PointsMaterial({ color: "#3a3634", size: 16, map: puff(), transparent: true, opacity: 0.55, depthWrite: false })); pts.frustumCulled = false; this.root.add(pts); this.smoke.push(pts);
+      const pts = new THREE.Points(pg, new THREE.PointsMaterial({ color: "#2e2a28", size: 30, map: puff(), transparent: true, opacity: 0.55, depthWrite: false })); pts.frustumCulled = false; this.root.add(pts); this.smoke.push(pts);
       this.sp.push([...Array(n).keys()].map((i) => ({ b: c.clone().add(V((hash(i, 41) - 0.5) * 22, 0, (hash(i, 42) - 0.5) * 22)), ph: hash(i, 43) })));
       const l = new THREE.PointLight("#ff6a1a", 0, 60, 1.6); l.position.copy(c).add(V(0, 3, 0)); this.root.add(l); this.embers.push(l); });
   }

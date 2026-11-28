@@ -241,10 +241,10 @@
  },
  {
   "phrase": 8,
-  "take": "p2_1.wav",
-  "drop": -6.8,
-  "mean": 0.905,
-  "min": 0.333,
+  "take": "p2_2.wav",
+  "drop": -4.31,
+  "mean": 0.924,
+  "min": 0.596,
   "drops": [
    [
     "p2_0.wav",
