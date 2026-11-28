@@ -75,7 +75,7 @@ def analyse(f, a, b):
         res.append(dict(seg=(s0, cut), last=en[w1] - st[w1], mean=float(np.mean(scs)), min=float(min(scs)), hole=best * 0.01, sd=sdq, drop=drop))
     return x, res
 SEL = []
-FORCE = {}
+FORCE = {20: "q5_1.wav"}   # q5_2 : syllabes inventées après « habituer » (whisper)
 EXTRA = {}   # v2 : écarts standard de la série (GAP 0.3), sans silences ajoutés
 out, rep = [np.zeros(int(0.2 * SR))], []
 for p, a, b in PASS:

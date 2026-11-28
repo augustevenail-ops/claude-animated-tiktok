@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""« Les Ombres » (Dans cette ville ép. 5) — bande-son v1 : voix (voix/voix_off_v1.wav) + musique commune (celle du Monstre : bunker/musique, x1,2)
+"""« Les Ombres » (Dans cette ville ép. 5) — bande-son v1 : voix (voix/voix_off_v2.wav) + musique commune (celle du Monstre : bunker/musique, x1,2)
 + bruitages discrets (rue, mouettes, vagues, boulangerie, studio, classe, foule, cœur, souffle). Fin nette 0,2 s après le dernier mot.
 Voix > bruitages > musique. -14 LUFS.
   python3 sound_v1.py   ->  v1_mix.wav, v1_sfx.wav, v1_music.wav"""
@@ -9,9 +9,9 @@ ROOT = pathlib.Path(__file__).resolve().parents[3]; sys.path.insert(0, str(ROOT 
 from sound_kit import Kit
 D = pathlib.Path(__file__).parent; EP = D.parent; SR = 48000; LIB = ROOT / "productions/sfx_lib"
 MUS_GAIN = float(os.environ.get("MUS_GAIN", "1.0"))
-words = json.load(open(EP / "voix/words_v1.json", encoding="utf-8"))
+words = json.load(open(EP / "voix/words_v2.json", encoding="utf-8"))
 dec = lambda p, af=None: np.frombuffer(subprocess.run(["ffmpeg", "-v", "quiet", "-i", str(p)] + (["-af", af] if af else []) + ["-ac", "1", "-ar", str(SR), "-f", "f32le", "-"], capture_output=True).stdout, np.float32).astype(np.float64)
-v = dec(EP / "voix/voix_off_v1.wav")
+v = dec(EP / "voix/voix_off_v2.wav")
 LAST = [w for w in words if re.search(r"[a-zà-ÿ]", w["w"], re.I)][-1]
 FPS = 30; TOTAL = round((LAST["e"] + 0.2) * FPS); DUR = TOTAL / FPS; N = int(DUR * SR)
 voice = np.zeros(N); voice[: min(N, len(v))] = v[:N]
@@ -179,10 +179,13 @@ k.whoosh(W("ton ombre fait") - 0.05, 0.3, 0.2); laugh(W("Ce que tu veux") + 0.2,
 scribble(P + 0.3, P + 1.6, -30); tick(P, W("Le maire"), -36); snore(W("Son ombre, elle") + 0.2, W("Le maire") - 0.2, -32)
 cheer(W("Le maire"), W("Son ombre serre"), -30); murmur(W("Son ombre serre"), W("Ma mère"), -36)
 for i in range(4): k.thud(W("Son ombre serre") + 0.15 + i * 0.45, 0.35, 70)
+rain(W("Depuis, il ne fait"), W("Ma mère"), -32); cheer(W("Et il a été réélu"), W("Ma mère"), -28); applause(W("Et il a été réélu"), W("Ma mère"), -26)
 paper(W("froissé") - 0.1, 0.9, -24); k.thud(W("poubelle") + 0.1, 0.5, 90)
 birds(W("Ici, personne"), W("Les rendez-vous"), -34); murmur(W("Ici, personne"), W("Les rendez-vous"), -36); cue("sting_soft", W("Enfin, pas en plein soleil") + 0.1, -32)
 crickets(W("Les rendez-vous"), W("Et quand il fait gris"), -36)
-murmur(W("Et quand il fait gris"), W("Moi, je n'ai jamais"), -32)
+murmur(W("Et quand il fait gris"), W("Les vendeurs"), -32)
+murmur(W("Les vendeurs"), W("Moi, je n'ai jamais"), -34); cue("door_close_soft", W("Les vendeurs") + 0.8, -30)
+birds(W("J'avais fini"), W("Mais ce matin"), -38)
 drone(W("Moi, je n'ai jamais"), W("Les médecins"), -34, 49); birds(W("Moi, je n'ai jamais"), W("ni sous les lampadaires"), -38)
 crickets(W("ni sous les lampadaires"), W("Les médecins"), -38); cue("elec_hum", W("ni sous les lampadaires"), -34)
 ding(W("Les médecins") + 0.4, -36); murmur(W("Les gens, eux"), W("Personne ne s'assoit"), -34)

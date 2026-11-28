@@ -1,6 +1,6 @@
 # Sous-titres ASS (libass) : un mot à la fois, jaune #FFE900, Montserrat Black, contour noir épais, ombre vers le bas, centrés.
 import json, re
-W = json.load(open("voix/words_v1.json", encoding="utf-8"))
+W = json.load(open("voix/words_v2.json", encoding="utf-8"))
 clean = lambda w: re.sub(r"[.,:;!?]+$", "", w.replace("«", "").replace("»", "").replace("…", "").replace('"', "")).strip().lower()
 CW = [dict(t=clean(w["w"]), s=w["s"], e=w["e"], p=bool(re.search(r"[.,:;!?…]$", w["w"].strip()))) for w in W]
 CW = [c for c in CW if c["t"]]

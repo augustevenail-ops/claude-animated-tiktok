@@ -124,6 +124,11 @@ export const SHOTS: Shot[] = [
     st: (w, _u, t) => { maire(w, t); MED(w).crowd.root.visible = true; MED(w).crowd.jump(t, 0.25, at("PL", 0, 2, -13)); maireShadow(w, t); w.sl.intensity = 0; } },
   { w: "Son ombre serre", set: "PL", g: DAY, fr: "Derrière lui, sur la toile, son ombre géante frappe du poing", cam: (_w, u) => G(at("PL", 2.4, 2.4, -7.6), at("PL", 1.6, 2.6, -8.6), at("PL", -0.4, 3.0, -14.5), at("PL", -0.3, 3.2, -15), 46, u),
     st: (w, _u, t) => { maire(w, t); maireShadow(w, t); } },
+  // ——— Depuis, il ne fait ses discours que les jours de pluie. Et il a été réélu trois fois.
+  { w: "Depuis, il ne fait", set: "PL", g: GRAY, sunK: 0.05, amb: 1.0, sky: GSKY, fr: "Ciel gris, plus d'ombre : le maire parle, sûr de lui", cam: (_w, u) => G(at("PL", 3.0, 2.8, -6.5), at("PL", 2.0, 2.9, -7.6), at("PL", 0, 2.9, -12.3), at("PL", 0, 3.0, -12.3), 40, u),
+    st: (w, _u, t) => { put(w, "maire", "PL", 0, 1.0, -12.3, 0).pose(t, { expr: "smug", talk: true, point: 0.1 }); } },
+  { w: "Et il a été réélu", set: "PL", g: GRAY, sunK: 0.05, amb: 1.0, sky: GSKY, fr: "La foule l'acclame sous le ciel gris", cam: (_w, u) => G(at("PL", -8, 5, 8), at("PL", -5, 6.5, 4), at("PL", 0, 2.5, -12), at("PL", 0, 2.6, -12.5), 46, u),
+    st: (w, _u, t) => { put(w, "maire", "PL", 0, 1.0, -12.3, 0).pose(t, { expr: "happy", cheer: true }); MED(w).crowd.root.visible = true; MED(w).crowd.jump(t, 1.0, at("PL", 0, 2, -13)); } },
   // ——— Ma mère m'a dit qu'elle adorait mon dessin. Son ombre l'a froissé, et l'a jeté à la poubelle.
   { w: "Ma mère m'a dit", set: "MAI", g: IN, fr: "Cuisine : la mère de Joël tient son dessin, ravie", cam: (_w, u) => G(at("MAI", -1.2, 1.6, 2.4), at("MAI", -1.8, 1.55, 2.1), at("MAI", -4.0, 1.4, 1.1), at("MAI", -4.1, 1.45, 1.2), 44, u),
     st: (w, _u, t) => { kitchen(w, t, { talk: true }); mereShadow(w, t, 0); w.sl.intensity = 0; } },
@@ -143,6 +148,9 @@ export const SHOTS: Shot[] = [
   // ——— Et quand il fait gris, tout le monde ment.
   { w: "Et quand il fait gris", set: "RUE", g: GRAY, sunK: 0.06, amb: 1.0, sky: GSKY, fr: "Temps gris, plus d'ombres : grands sourires et poignées de main partout", cam: (_w, u) => G(at("RUE", -2, 3.5, 3.5), at("RUE", -6, 3.0, 2.5), at("RUE", -14, 1.2, -2), at("RUE", -16, 1.2, -2.5), 46, u),
     st: (w, _u, t) => { const a = put(w, "t1", "RUE", -12.5, 0, -0.5, Math.PI / 2), b = put(w, "t2", "RUE", -11.6, 0, -0.5, -Math.PI / 2); a.pose(t, { expr: "happy", reach: 0.45, talk: true }); b.pose(t, { expr: "gummy", reach: 0.45 }); put(w, "k6", "RUE", -10, 0, 1.5, -1.2).pose(t, { expr: "happy", wave: "R" }); } },
+  // ——— Les vendeurs de voitures, eux, adorent l'hiver.
+  { w: "Les vendeurs de voitures", set: "TOWN", g: GRAY, fr: "Temps gris : un vendeur tout sourire vend une voiture cabossée", cam: (_w, u) => G(at("TOWN", 9.5, 1.9, 6.5), at("TOWN", 8.2, 1.8, 5.4), at("TOWN", 5, 1.0, 0.4), at("TOWN", 4.6, 1.0, 0.4), 44, u),
+    st: (w, _u, t) => { const S2 = w.sets; S2.sun.TOWN.intensity = 0.15; S2.hemi.TOWN.intensity = 1.3; put(w, "facteur", "TOWN", 6.6, 0, 1.6, -1.2).pose(t, { expr: "gummy", reach: 0.45, talk: true }); put(w, "t3", "TOWN", 5.7, 0, 2.3, 2.0).pose(t, { expr: "smile", reach: 0.45 }); } },
   // ——— Moi, je n'ai jamais eu d'ombre.
   { w: "Moi, je n'ai jamais", set: "RUE", g: DAY, fr: "Au ras du sol : toutes les ombres s'étirent… sauf celle de Joël, qui n'en a pas", cam: (_w, u) => G(at("RUE", -1.8, 0.55, 3.8), at("RUE", -2.4, 0.7, 3.2), at("RUE", -8, 0.8, 0.8), at("RUE", -8, 1.0, 1.0), 44, u),
     st: (w, _u, t) => { JOUT(w, t, 0); MED(w).ring.set(t, (x, z) => Math.hypot(x - JX, z - JZ) < 1.8); } },
@@ -163,6 +171,9 @@ export const SHOTS: Shot[] = [
   // ——— Personne ne s'assoit à côté de moi dans le bus.
   { w: "Personne ne s'assoit", set: "BUS", g: IN, fr: "Bus bondé : tout le monde debout, les sièges autour de Joël restent vides", cam: (_w, u) => G(at("BUS", 4.8, 1.85, -0.9), at("BUS", 4.2, 1.8, -0.6), at("BUS", -0.5, 1.0, 0.6), at("BUS", -0.3, 1.0, 0.7), 50, u),
     st: (w, _u, t) => { bus(w, t); } },
+  // ——— J'avais fini par m'y habituer.
+  { w: "J'avais fini", set: "RUE", g: { ...DAY, fog: "#f0b890", fogD: 0.006, bri: -0.05, bloom: 1.05 }, fr: "Fin de journée : Joël seul en terrasse, les autres tables vides autour de lui", cam: (_w, u) => G(at("RUE", -9.5, 1.5, -1.5), at("RUE", -10.5, 1.4, -2.2), at("RUE", -13.4, 1.0, -5.1), at("RUE", -13.4, 1.0, -5.1), 42, u),
+    st: (w, _u, t) => { put(w, "joel", "RUE", -13.4, 0.32, -5.1, Math.PI / 2 + 0.4).pose(t, { sit: true, expr: "neutral", headPitch: 0.15 }); } },
   // ——— Mais ce matin, en sortant de chez moi, il y avait quelque chose à mes pieds.
   { w: "Mais ce matin", set: "RUE", g: DAY, fr: "Matin : Joël sort de chez lui, soleil rasant", cam: (_w, u) => G(at("RUE", JX + 3.5, 1.6, 6.0), at("RUE", JX + 2.6, 1.5, 5.4), at("RUE", JX, 1.3, -4.0), at("RUE", JX, 1.2, -1.0), 44, u),
     st: (w, u, t) => { walk(w, "joel", "RUE", JX, -6.2, JX, JZ - 1.0, u, t, { expr: "neutral" }, 1.0); } },
